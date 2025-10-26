@@ -24,6 +24,7 @@ export interface InventoryDetailResponse {
   supplierCompanyName: string;
   statusCode: string;
   currentStock: number;
+  safetyStock: number;
   uomName: string;
   unitPrice: number;
   totalAmount: number;

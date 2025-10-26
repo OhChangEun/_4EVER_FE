@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import InventoryMoveModal from './InventoryMoveModal';
-import InventorySafetyModal from './InventorySafetyModal';
+import InventorySafetyModal from './InventorySafetyStockModal';
 import {
   InventoryDetailModalProps,
   InventoryDetailResponse,
@@ -25,6 +25,7 @@ const InventoryDetailModal = ({
     itemNumber: '',
     warehouseName: '',
     warehouseNumber: '',
+    safetyStock: 0,
     currentStock: 0,
     uomName: '',
   });
@@ -36,6 +37,7 @@ const InventoryDetailModal = ({
       itemNumber: inventoryDetailRes?.itemNumber || '',
       warehouseName: inventoryDetailRes?.warehouseName || '',
       warehouseNumber: inventoryDetailRes?.warehouseNumber || '',
+      safetyStock: inventoryDetailRes?.safetyStock || 0,
       currentStock: inventoryDetailRes?.currentStock || 0,
       uomName: inventoryDetailRes?.uomName || '',
     });
@@ -68,8 +70,16 @@ const InventoryDetailModal = ({
       />
     );
 
-  const handleSafetyStockEdit = (itemId: string) => {
-    $setSelectedItemId(itemId);
+  const handleSafetyStockEdit = () => {
+    setSelectedStock({
+      itemName: inventoryDetailRes?.itemName || '',
+      itemNumber: inventoryDetailRes?.itemNumber || '',
+      warehouseName: inventoryDetailRes?.warehouseName || '',
+      warehouseNumber: inventoryDetailRes?.warehouseNumber || '',
+      safetyStock: inventoryDetailRes?.safetyStock || 0,
+      currentStock: inventoryDetailRes?.currentStock || 0,
+      uomName: inventoryDetailRes?.uomName || '',
+    });
     setShowSafetyStockModal(true);
   };
 
@@ -248,8 +258,8 @@ const InventoryDetailModal = ({
               </button>
               <button
                 onClick={() => {
-                  $setShowDetailModal(false);
-                  //   handleSafetyStockEdit(selectedItem);
+                  // $setShowDetailModal(false);
+                  handleSafetyStockEdit();
                 }}
                 className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium cursor-pointer"
               >
@@ -265,7 +275,12 @@ const InventoryDetailModal = ({
         <InventoryMoveModal $setShowMoveModal={setShowMoveModal} $selectedStock={selectedStock} />
       )}
       {/* 안전재고 수정 모달 */}
-      {showSafetyStockModal && <InventorySafetyModal />}
+      {showSafetyStockModal && (
+        <InventorySafetyModal
+          $setShowSafetyStockModal={setShowSafetyStockModal}
+          $selectedStock={selectedStock}
+        />
+      )}
     </div>
   );
 };

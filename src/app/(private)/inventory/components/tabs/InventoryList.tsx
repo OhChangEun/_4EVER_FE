@@ -15,7 +15,7 @@ import { Page } from '@/types/Page';
 import StatusLabel from '@/app/components/common/StatusLabel';
 import InventoryDetailModal from '../modals/InventoryDetailModal';
 import InventoryMoveModal from '../modals/InventoryMoveModal';
-import InventorySafetyModal from '../modals/InventorySafetyModal';
+import InventorySafetyModal from '../modals/InventorySafetyStockModal';
 import LowStockAlert from '../LowStockAlert';
 import StockMovement from '../StockMovement';
 import AddInventoryModal from '../modals/AddInventoryModal';
