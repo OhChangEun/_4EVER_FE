@@ -14,7 +14,7 @@ export default function IconButton({
   ...props
 }: ButtonProps) {
   const base =
-    'inline-flex items-center justify-center rounded-lg font-semibold focus:outline-none transition cursor-pointer';
+    'inline-flex items-center justify-center rounded-lg font-semibold focus:outline-none transition cursor-pointer whitespace-nowrap';
 
   const variants = {
     primary: 'bg-blue-500 text-white hover:opacity-85',
@@ -38,13 +38,15 @@ export default function IconButton({
   // 아이콘만 있으면 정사각형
   const isIconOnly = !label;
 
+  const variantClasses = 'bg-gray-400 text-gray-800 opacity-30 pointer-events-none'; // disabled용 배경/텍스트
+
   return (
     <button
       className={`
         ${base} 
-        ${variants[variant]} 
         ${isIconOnly ? sizes[size].square : `${sizes[size].px} ${sizes[size].py}`} 
-        ${sizes[size].text} 
+        ${sizes[size].text}
+        ${props.disabled ? variantClasses : variants[variant]} 
         ${className}
       `}
       {...props}

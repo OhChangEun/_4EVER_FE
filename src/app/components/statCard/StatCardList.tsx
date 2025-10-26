@@ -1,4 +1,4 @@
-import { Period, StatCardType } from '@/types/StatType';
+import { Period, StatCardType } from '@/app/types/StatType';
 import StatCardItem from '@/app/components/statCard/StatCardItem';
 
 interface StatsGridProps {

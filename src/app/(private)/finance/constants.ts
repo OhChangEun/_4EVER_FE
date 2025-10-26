@@ -1,4 +1,4 @@
-import { KeyValueItem } from '@/types/CommonType';
+import { KeyValueItem } from '@/app/types/CommonType';
 import { InvoiceStatus } from './types/InvoiceListType';
 
 // 전표 상태 필터링

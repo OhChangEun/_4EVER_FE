@@ -7,7 +7,7 @@ import { QuoteQueryParams } from '@/app/(private)/sales/types/SalesQuoteListType
 import StatSection from '@/app/components/common/StatSection';
 import { mapSalesStatsToCards } from '@/app/(private)/sales/sales.service';
 import TabNavigation from '@/app/components/common/TabNavigation';
-import { SALES_TABS } from '@/types/componentConstant';
+import { SALES_TABS } from '@/app/types/componentConstant';
 
 export default async function SalesPage() {
   const queryClient = getQueryClient();

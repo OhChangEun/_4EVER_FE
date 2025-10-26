@@ -163,11 +163,6 @@ export default function PurchaseOrderListTab() {
     setCurrentPage(1); // 첫 페이지로
   };
 
-  const getStatusValue = (): string => {
-    const item = PURCHASE_ORDER_STATUS.find((s) => s.key === selectedStatus);
-    return item?.value || '전체';
-  };
-
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-6">
@@ -185,8 +180,8 @@ export default function PurchaseOrderListTab() {
 
         {/* 상태 필터 */}
         <Dropdown
-          label={getStatusValue()}
           items={PURCHASE_ORDER_STATUS}
+          value={selectedStatus}
           onChange={handleStatusChange}
         />
       </div>

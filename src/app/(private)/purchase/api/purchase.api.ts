@@ -1,7 +1,5 @@
 import axios from 'axios';
-import { API_BASE_URL } from '@/config/api';
-import { PURCHASE_ENDPOINTS } from '@/config/purchaseEndpoints';
-import { ApiResponse } from '@/types/api';
+import { ApiResponse } from '@/app/types/api';
 import { PurchaseStatResponse } from '@/app/(private)/purchase/types/PurchaseStatsType';
 import {
   PurchaseOrderDetailResponse,
@@ -22,14 +20,20 @@ import {
   FetchPurchaseReqParams,
   FetchSupplierListParams,
 } from '@/app/(private)/purchase/types/PurchaseApiRequestType';
+import { PURCHASE_ENDPOINTS } from '@/app/(private)/purchase/api/purchase.endpoints';
 
 // 구매 관리 지표
-export const fetchPurchaseStats = async (): Promise<ApiResponse<PurchaseStatResponse>> => {
-  const res = await axios.get<ApiResponse<PurchaseStatResponse>>(
-    `${API_BASE_URL}${PURCHASE_ENDPOINTS.STATISTICS}`,
-  );
-  // console.log(res);
-  return res.data;
+export const fetchPurchaseStats = async (): Promise<PurchaseStatResponse | null> => {
+  try {
+    const res = await axios.get<ApiResponse<PurchaseStatResponse>>(
+      `${PURCHASE_ENDPOINTS.STATISTICS}`,
+    );
+    return res.data.data;
+    // console.log(res);
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
 };
 
 // 구매 요청 목록
@@ -39,7 +43,7 @@ export const fetchPurchaseReqList = async (
   const { page = 0, size = 10, status = 'ALL', createdFrom, createdTo } = params;
 
   const res = await axios.get<ApiResponse<PurchaseReqListResponse>>(
-    `${API_BASE_URL}${PURCHASE_ENDPOINTS.PURCHASE_REQUISITIONS}`,
+    `${PURCHASE_ENDPOINTS.PURCHASE_REQUISITIONS}`,
     {
       params: {
         page,
@@ -57,7 +61,7 @@ export const fetchPurchaseReqList = async (
 // 구매 요청 승인
 export const postApporvePurchaseReq = async (prId: number) => {
   const res = await axios.post<ApiResponse<null>>(
-    `${API_BASE_URL}${PURCHASE_ENDPOINTS.PURCHASE_REQUISITION_RELEASE(prId)}`,
+    `${PURCHASE_ENDPOINTS.PURCHASE_REQUISITION_RELEASE(prId)}`,
   );
   return res.data;
 };
@@ -65,7 +69,7 @@ export const postApporvePurchaseReq = async (prId: number) => {
 // 구매 요청 반려
 export const postRejectPurchaseReq = async (prId: number) => {
   const res = await axios.post<ApiResponse<null>>(
-    `${API_BASE_URL}${PURCHASE_ENDPOINTS.PURCHASE_REQUISITION_REJECT(prId)}`,
+    `${PURCHASE_ENDPOINTS.PURCHASE_REQUISITION_REJECT(prId)}`,
   );
   return res.data;
 };
@@ -75,7 +79,7 @@ export const fetchPurchaseReqDetail = async (
   purchaseId: number,
 ): Promise<PurchaseReqDetailResponse> => {
   const res = await axios.get<ApiResponse<PurchaseReqDetailResponse>>(
-    `${API_BASE_URL}${PURCHASE_ENDPOINTS.PURCHASE_REQUISITION_DETAIL(purchaseId)}`,
+    `${PURCHASE_ENDPOINTS.PURCHASE_REQUISITION_DETAIL(purchaseId)}`,
   );
 
   // console.log(res.data.data);
@@ -87,7 +91,7 @@ export const createPurchaseRequest = async (
   data: CreatePurchaseRequest,
 ): Promise<ApiResponse<null>> => {
   const res = await axios.post<ApiResponse<null>>(
-    `${API_BASE_URL}${PURCHASE_ENDPOINTS.PURCHASE_REQUISITIONS}`,
+    `${PURCHASE_ENDPOINTS.PURCHASE_REQUISITIONS}`,
     data,
   );
   return res.data;
@@ -100,7 +104,7 @@ export const fetchPurchaseOrderList = async (
   const { page = 0, size = 10, status, orderDateFrom, orderDateTo } = params;
 
   const res = await axios.get<ApiResponse<PurchaseOrderListResponse>>(
-    `${API_BASE_URL}${PURCHASE_ENDPOINTS.PURCHASE_ORDERS}`,
+    `${PURCHASE_ENDPOINTS.PURCHASE_ORDERS}`,
     {
       params: {
         page,
@@ -118,7 +122,7 @@ export const fetchPurchaseOrderList = async (
 // 발주서 승인
 export const postApprovePurchaseOrder = async (poId: number) => {
   const res = await axios.post<ApiResponse<null>>(
-    `${API_BASE_URL}${PURCHASE_ENDPOINTS.PURCHASE_ORDER_APPROVE(poId)}`,
+    `${PURCHASE_ENDPOINTS.PURCHASE_ORDER_APPROVE(poId)}`,
   );
   return res.data;
 };
@@ -126,7 +130,7 @@ export const postApprovePurchaseOrder = async (poId: number) => {
 // 발주서 반려
 export const postRejectPurchaseOrder = async (poId: number) => {
   const res = await axios.post<ApiResponse<null>>(
-    `${API_BASE_URL}${PURCHASE_ENDPOINTS.PURCHASE_ORDER_REJECT(poId)}`,
+    `${PURCHASE_ENDPOINTS.PURCHASE_ORDER_REJECT(poId)}`,
   );
   return res.data;
 };
@@ -136,7 +140,7 @@ export const fetchPurchaseOrderDetail = async (
   purchaseId: number,
 ): Promise<PurchaseOrderDetailResponse> => {
   const res = await axios.get<ApiResponse<PurchaseOrderDetailResponse>>(
-    `${API_BASE_URL}${PURCHASE_ENDPOINTS.PURCHASE_ORDER_DETAIL(purchaseId)}`,
+    `${PURCHASE_ENDPOINTS.PURCHASE_ORDER_DETAIL(purchaseId)}`,
   );
 
   console.log(res.data.data);
@@ -149,25 +153,22 @@ export const fetchSupplierList = async (
 ): Promise<SupplierListResponse> => {
   const { page = 0, size = 10, category, status, searchKeyword } = params;
 
-  const res = await axios.get<ApiResponse<SupplierListResponse>>(
-    `${API_BASE_URL}${PURCHASE_ENDPOINTS.SUPPLIER}`,
-    {
-      params: {
-        page,
-        size,
-        ...(category && { category }),
-        ...(status && { status }),
-        ...(searchKeyword && { searchKeyword }),
-      },
+  const res = await axios.get<ApiResponse<SupplierListResponse>>(`${PURCHASE_ENDPOINTS.SUPPLIER}`, {
+    params: {
+      page,
+      size,
+      ...(category && { category }),
+      ...(status && { status }),
+      ...(searchKeyword && { searchKeyword }),
     },
-  );
+  });
   return res.data.data;
 };
 
 // 공급업체 상세정보
 export const fetchSupplierDetail = async (supplierId: number): Promise<SupplierDetailResponse> => {
   const res = await axios.get<ApiResponse<SupplierDetailResponse>>(
-    `${API_BASE_URL}${PURCHASE_ENDPOINTS.SUPPLIER_DETAIL(supplierId)}`,
+    `${PURCHASE_ENDPOINTS.SUPPLIER_DETAIL(supplierId)}`,
   );
 
   // console.log(res.data.data);
@@ -178,9 +179,6 @@ export const fetchSupplierDetail = async (supplierId: number): Promise<SupplierD
 export const createSupplyRequest = async (
   data: CreateSupplierRequest,
 ): Promise<ApiResponse<null>> => {
-  const res = await axios.post<ApiResponse<null>>(
-    `${API_BASE_URL}${PURCHASE_ENDPOINTS.SUPPLIER}`,
-    data,
-  );
+  const res = await axios.post<ApiResponse<null>>(`${PURCHASE_ENDPOINTS.SUPPLIER}`, data);
   return res.data;
 };

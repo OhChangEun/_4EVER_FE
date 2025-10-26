@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import PurchaseRequestModal from '@/app/(private)/purchase/components/modals/PurchaseRequestModal';
 import PurchaseRequestDetailModal from '@/app/(private)/purchase/components/modals/PurchaseRequestDetailModal';
 import {
@@ -116,11 +116,6 @@ export default function PurchaseRequestListTab() {
 
   const totalPages = pageInfo?.totalPages ?? 1;
 
-  const getStatusValue = (): string => {
-    const item = PURCHASE_REQ_STATUS.find((s) => s.key === selectedStatus);
-    return item?.value || '전체 상태';
-  };
-
   const handleStatusChange = (status: string): void => {
     setSelectedStatus(status);
     setCurrentPage(1);
@@ -162,8 +157,8 @@ export default function PurchaseRequestListTab() {
               onEndDateChange={setEndDate}
             />
             <Dropdown
-              label={getStatusValue()}
               items={PURCHASE_REQ_STATUS}
+              value={selectedStatus}
               onChange={handleStatusChange}
             />
 
@@ -266,10 +261,10 @@ export default function PurchaseRequestListTab() {
 
         {isError || isLoading ? null : (
           <Pagination
-            currentPage={currentPage + 1} // 0-based를 1-based로 변환
+            currentPage={currentPage}
             totalPages={totalPages}
             totalElements={pageInfo?.totalElements}
-            onPageChange={(page) => setCurrentPage(page - 1)} // 1-based를 0-based로 변환
+            onPageChange={(page) => setCurrentPage(page)}
           />
         )}
       </div>

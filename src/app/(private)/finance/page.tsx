@@ -8,7 +8,7 @@ import ErrorMessage from '@/app/components/common/ErrorMessage';
 import { mapFinanceStatsToCards } from './finance.service';
 import StatSection from '@/app/components/common/StatSection';
 import TabNavigation from '@/app/components/common/TabNavigation';
-import { FINANCE_TABS } from '@/types/componentConstant';
+import { FINANCE_TABS } from '@/app/types/componentConstant';
 
 export default async function FinancePage() {
   const queryClient = getQueryClient();

@@ -1,7 +1,7 @@
 // services/purchase.ts
 import { PurchaseStatResponse } from '@/app/(private)/purchase/types/PurchaseStatsType';
 import { createStatCard } from '@/lib/CreateStatCard';
-import { StatCardType } from '@/types/StatType';
+import { StatCardType } from '@/app/types/StatType';
 
 // 변환 함수
 export const mapPurchaseStatsToCards = (

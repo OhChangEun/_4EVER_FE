@@ -1,4 +1,4 @@
-import { Page } from '@/types/Page';
+import { Page } from '@/app/types/Page';
 
 export interface PurchaseReqItem {
   id: number;

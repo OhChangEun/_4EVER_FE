@@ -5,3 +5,8 @@ export interface Page {
   totalPages: number;
   hasNext: boolean;
 }
+
+export interface PageRequest {
+  page?: number;
+  size?: number;
+}

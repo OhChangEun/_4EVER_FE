@@ -1,5 +1,5 @@
 import { createStatCard } from '@/lib/CreateStatCard';
-import { StatCardType } from '@/types/StatType';
+import { StatCardType } from '@/app/types/StatType';
 import { SalesStatResponse } from '@/app/(private)/sales/types/SalesStatsType';
 
 export const mapSalesStatsToCards = (data: SalesStatResponse): Record<string, StatCardType[]> => {

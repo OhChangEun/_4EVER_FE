@@ -1,6 +1,6 @@
 // services/purchase.ts
 import { createStatCard } from '@/lib/CreateStatCard';
-import { StatCardType } from '@/types/StatType';
+import { StatCardType } from '@/app/types/StatType';
 import { FinanceStatResponse } from './types/FinanceStatsType';
 
 // 변환 함수

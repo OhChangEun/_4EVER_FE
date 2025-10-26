@@ -1,5 +1,6 @@
-// src/config/purchaseEndpoints.ts
-import { PURCHASE_BASE_PATH } from '@/config/api';
+import { API_BASE_URL } from '@/app/types/api';
+
+export const PURCHASE_BASE_PATH = `${API_BASE_URL}/scm-pp/mm`;
 
 export const PURCHASE_ENDPOINTS = {
   // 발주서
