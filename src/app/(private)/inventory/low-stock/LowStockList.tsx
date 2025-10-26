@@ -1,13 +1,18 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { LowStockItemResponse } from '../types/LowStockItems';
-import { getLowStockItems } from '../inventory.api';
+import { getLowStockItems, getLowStockList } from '../inventory.api';
 import Link from 'next/link';
+import { LowStockListQueryParams } from '../types/LowStockListType';
+import StatusLabel from '@/app/components/common/StatusLabel';
+import Pagination from '@/app/components/common/Pagination';
 
 export default function LowStockList() {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [statusFilter, setStatusFilter] = useState('ALL');
 
   const lowStockItems = [
     {
@@ -87,18 +92,27 @@ export default function LowStockList() {
     },
   ];
 
-  const getStatusBadge = (status: string) => {
-    const statusConfig = {
-      warning: { label: '주의', class: 'bg-yellow-100 text-yellow-800' },
-      critical: { label: '긴급', class: 'bg-red-100 text-red-800' },
-    };
-    const config = statusConfig[status as keyof typeof statusConfig];
-    return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${config.class}`}>
-        {config.label}
-      </span>
-    );
-  };
+  const queryParams = useMemo(
+    () => ({
+      page: currentPage - 1,
+      size: 10,
+      status: statusFilter || 'ALL',
+    }),
+    [currentPage, statusFilter],
+  );
+  const {
+    data: lowStockRes,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['lowStockList', queryParams],
+    queryFn: ({ queryKey }) => getLowStockList(queryKey[1] as LowStockListQueryParams),
+    staleTime: 1000,
+  });
+
+  const lowStocks = lowStockRes?.data ?? [];
+  const pageInfo = lowStockRes?.pageData;
+  const totalPages = pageInfo?.totalPages ?? 1;
 
   const toggleSelectItem = (itemId: string) => {
     setSelectedItems((prev) =>
@@ -195,55 +209,67 @@ export default function LowStockList() {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {lowStockItems.map((item) => (
-              <tr key={item.id} className="hover:bg-gray-50">
+            {lowStocks.map((lowStock) => (
+              <tr key={lowStock.itemId} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <input
                     type="checkbox"
                     className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    checked={selectedItems.includes(item.id)}
-                    onChange={() => toggleSelectItem(item.id)}
+                    checked={selectedItems.includes(lowStock.itemId)}
+                    onChange={() => toggleSelectItem(lowStock.itemId)}
                   />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div>
-                    <div className="text-sm font-medium text-gray-900">{item.name}</div>
-                    <div className="text-sm text-gray-500">{item.code}</div>
+                    <div className="text-sm font-medium text-gray-900">{lowStock.itemName}</div>
+                    <div className="text-sm text-gray-500">{lowStock.itemNumber}</div>
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
-                    {item.category}
+                    {lowStock.category}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-900">
-                    {item.currentStock.toLocaleString()} {item.unit}
+                    {lowStock.currentStock.toLocaleString()} {lowStock.uomName}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-500">
-                    {item.safetyStock.toLocaleString()} {item.unit}
+                    {lowStock.safetyStock.toLocaleString()} {lowStock.uomName}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">₩{item.unitPrice.toLocaleString()}</div>
+                  <div className="text-sm text-gray-900">
+                    ₩{lowStock.unitPrice.toLocaleString()}
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-gray-900">
-                    ₩{item.totalValue.toLocaleString()}
+                    ₩{lowStock.totalAmount.toLocaleString()}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">{item.warehouse}</div>
-                  <div className="text-sm text-gray-500">{item.location}</div>
+                  <div className="text-sm text-gray-900">{lowStock.warehouseName}</div>
+                  <div className="text-sm text-gray-500">{lowStock.warehouseNumber}</div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(item.status)}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <StatusLabel $statusCode={lowStock.statusCode} />
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+      {isError || isLoading ? null : (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalElements={pageInfo?.totalElements}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
+      )}
     </div>
   );
 }
