@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { LowStockListQueryParams } from '../types/LowStockListType';
 import StatusLabel from '@/app/components/common/StatusLabel';
 import Pagination from '@/app/components/common/Pagination';
+import { LOW_STOCK_STATUS_OPTIONS } from '../inventory.constants';
 
 export default function LowStockList() {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
@@ -137,7 +138,20 @@ export default function LowStockList() {
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900">주의 재고 부족</h2>
-          {selectedItems.length > 0 && (
+          <div className="flex items-center space-x-4">
+            <select
+              value={statusFilter}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                setStatusFilter(e.target.value as string)
+              }
+              className="bg-white px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-8"
+            >
+              {LOW_STOCK_STATUS_OPTIONS.map(({ key, value }) => (
+                <option key={key} value={key}>
+                  {value}
+                </option>
+              ))}
+            </select>
             <button
               onClick={handleBulkOrder}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium cursor-pointer whitespace-nowrap"
@@ -145,22 +159,23 @@ export default function LowStockList() {
               <i className="ri-shopping-cart-line mr-1"></i>
               선택 품목 발주 ({selectedItems.length})
             </button>
-          )}
-          <Link
+          </div>
+
+          {/* <Link
             href="/purchase/request/new"
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer whitespace-nowrap"
           >
             <i className="ri-shopping-cart-line mr-1"></i>
             일괄 발주 요청
-          </Link>
+          </Link> */}
 
-          <Link
+          {/* <Link
             href="/inventory"
             className="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 cursor-pointer flex items-center"
           >
             <i className="ri-arrow-left-line mr-1"></i>
             재고관리로 돌아가기
-          </Link>
+          </Link> */}
         </div>
       </div>
 

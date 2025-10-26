@@ -43,3 +43,9 @@ export const INVENTORY_STATUS_OPTIONS: KeyValueItem<string>[] = [
   { key: 'CAUTION', value: '주의' },
   { key: 'URGENT', value: '긴급' },
 ] as const;
+
+export const LOW_STOCK_STATUS_OPTIONS: KeyValueItem<string>[] = [
+  { key: 'ALL', value: '전체' },
+  { key: 'CAUTION', value: '주의' },
+  { key: 'URGENT', value: '긴급' },
+] as const;
