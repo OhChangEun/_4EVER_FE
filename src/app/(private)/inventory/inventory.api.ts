@@ -1,5 +1,6 @@
 import {
   ApiResponse,
+  ApiResponseNoData,
   INVENTORY_ENDPOINTS,
   LOWSTOCK_ENDPOINTS,
   WAREHOUSE_ENDPOINTS,
@@ -8,7 +9,7 @@ import { InventoryStatResponse } from './types/InventoryStatsType';
 import axios from 'axios';
 import { InventoryQueryParams, InventoryResponse } from './types/InventoryListType';
 import { Page } from '@/types/Page';
-import { InventoryDetailResponse } from './types/InventoryDetailType';
+import { InventoryDetailResponse, StockMovementRequest } from './types/InventoryDetailType';
 import { LowStockItemResponse } from '../low-stock/types/LowStockItems';
 import { StockMovementResponse } from './types/StockMovement';
 import {
@@ -65,6 +66,17 @@ export const getCurrentStockMovement = async (): Promise<StockMovementResponse[]
   );
 
   return res.data.data.content;
+};
+
+export const postStockMovement = async (
+  payload: StockMovementRequest,
+): Promise<ApiResponseNoData> => {
+  const res = await axios.post<ApiResponseNoData>(
+    INVENTORY_ENDPOINTS.RECENT_STOCK_MOVEMENT,
+    payload,
+  );
+
+  return res.data;
 };
 
 // ----------------------- 입고 관리 -----------------------

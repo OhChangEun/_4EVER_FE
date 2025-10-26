@@ -1,5 +1,9 @@
 'use client';
 
+import { useMutation } from '@tanstack/react-query';
+import { postStockMovement } from '../../inventory.api';
+import { StockMovementRequest } from '../../types/InventoryDetailType';
+
 interface InventoryMoveModalProps {
   $setShowMoveModal: (show: boolean) => void;
   $selectedStock: {
@@ -12,7 +16,25 @@ interface InventoryMoveModalProps {
   };
 }
 
+const mockStockMovement: StockMovementRequest = {
+  fromWarehouseId: 1,
+  toWarehouseId: 2,
+  stockId: 101,
+  stockQuantity: 50,
+  uomName: 'EA',
+};
+
 const InventoryMoveModal = ({ $setShowMoveModal, $selectedStock }: InventoryMoveModalProps) => {
+  const { mutate: moveStock } = useMutation({
+    mutationFn: postStockMovement,
+    onSuccess: (data) => {
+      alert(`${data.status} : ${data.message}
+      `);
+    },
+    onError: (error) => {
+      alert(` 등록 중 오류가 발생했습니다. ${error}`);
+    },
+  });
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
@@ -69,15 +91,6 @@ const InventoryMoveModal = ({ $setShowMoveModal, $selectedStock }: InventoryMove
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">이동 사유</label>
-            <textarea
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-              rows={3}
-              placeholder="이동 사유를 입력하세요"
-            ></textarea>
-          </div>
-
           <div className="flex gap-3 pt-4">
             <button
               type="button"
@@ -88,6 +101,9 @@ const InventoryMoveModal = ({ $setShowMoveModal, $selectedStock }: InventoryMove
             </button>
             <button
               type="submit"
+              onClick={() => {
+                moveStock(mockStockMovement);
+              }}
               className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium cursor-pointer"
             >
               이동

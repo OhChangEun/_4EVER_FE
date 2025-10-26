@@ -34,3 +34,11 @@ export interface InventoryDetailResponse {
   description: string;
   stockMovements: StockMovement[];
 }
+
+export interface StockMovementRequest {
+  fromWarehouseId: number;
+  toWarehouseId: number;
+  stockId: number;
+  stockQuantity: number;
+  uomName: string;
+}
