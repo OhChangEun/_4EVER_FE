@@ -10,7 +10,7 @@ import AddWarehouseModal from './modals/AddWarehouseModal';
 import WarehouseDetailModal from './modals/WarehouseDetailModal';
 import ManageWarehouseModal from './modals/ManageWarehouseModal';
 
-export default function WarehouseList() {
+const WarehouseList = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showManageModal, setShowManageModal] = useState(false);
@@ -37,12 +37,6 @@ export default function WarehouseList() {
   const warehouses = warehouseRes?.data ?? [];
   const pageInfo = warehouseRes?.pageData;
   const totalPages = pageInfo?.totalPages ?? 1;
-
-  const getUsageColor = (rate: number) => {
-    if (rate >= 90) return 'text-red-600 bg-red-100';
-    if (rate >= 80) return 'text-yellow-600 bg-yellow-100';
-    return 'text-green-600 bg-green-100';
-  };
 
   const handleWarehouseDetail = (warehouseId: string) => {
     setSelectedWarehouseId(warehouseId);
@@ -149,4 +143,6 @@ export default function WarehouseList() {
       {showManageModal && <ManageWarehouseModal $setShowManageModal={setShowManageModal} />}
     </div>
   );
-}
+};
+
+export default WarehouseList;

@@ -12,8 +12,6 @@ import { mapWarehouseStatsToCards } from './warehouse.service';
 export default async function WarehousePage() {
   const queryClient = getQueryClient();
 
-  const dehydratedState = dehydrate(queryClient);
-
   await queryClient.prefetchQuery({
     queryKey: ['warehouseStats'],
     queryFn: getWarehouseStats,
@@ -26,6 +24,8 @@ export default async function WarehousePage() {
 
   const warehouseStats = await getWarehouseStats();
   const warehouseStatsData = mapWarehouseStatsToCards(warehouseStats);
+
+  const dehydratedState = dehydrate(queryClient);
   return (
     <Providers dehydratedState={dehydratedState}>
       <div className="min-h-screen bg-gray-50">
