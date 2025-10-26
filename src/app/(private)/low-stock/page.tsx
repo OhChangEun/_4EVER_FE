@@ -1,14 +1,13 @@
-import LowStockList from './LowStockList';
-import LowStockStats from './LowStockStats';
-import LowStockActions from './LowStockActions';
+import LowStockList from './components/LowStockList';
+import LowStockActions from './components/LowStockActions';
 import { getQueryClient } from '@/lib/queryClient';
-import { getLowStockList, getLowStockStats } from '../inventory.api';
 import { dehydrate } from '@tanstack/react-query';
-import { mapLowStockStatsToCards } from '../inventory.service';
 import StatSection from '@/app/components/common/StatSection';
-import { LowStockListQueryParams } from '../types/LowStockListType';
+import { LowStockListQueryParams } from './types/LowStockListType';
 import Providers from '@/app/providers';
 import { Suspense } from 'react';
+import { getLowStockList, getLowStockStats } from './lowStock.api';
+import { mapLowStockStatsToCards } from './lowStock.service';
 
 export default async function LowStockPage() {
   const queryClient = getQueryClient();

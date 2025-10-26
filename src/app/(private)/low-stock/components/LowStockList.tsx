@@ -3,95 +3,17 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { LowStockItemResponse } from '../types/LowStockItems';
-import { getLowStockItems, getLowStockList } from '../inventory.api';
 import Link from 'next/link';
 import { LowStockListQueryParams } from '../types/LowStockListType';
 import StatusLabel from '@/app/components/common/StatusLabel';
 import Pagination from '@/app/components/common/Pagination';
-import { LOW_STOCK_STATUS_OPTIONS } from '../inventory.constants';
+import { LOW_STOCK_STATUS_OPTIONS } from '../../inventory/inventory.constants';
+import { getLowStockList } from '../lowStock.api';
 
 export default function LowStockList() {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState('ALL');
-
-  const lowStockItems = [
-    {
-      id: 'INV001',
-      name: '스테인리스 스틸 파이프',
-      code: 'SS-PIPE-001',
-      category: '원자재',
-      currentStock: 45,
-      safetyStock: 50,
-      unit: 'EA',
-      unitPrice: 25000,
-      totalValue: 1125000,
-      location: 'A-01-01',
-      warehouse: '제1창고',
-      status: 'critical',
-      supplier: '스테인리스코리아',
-    },
-    {
-      id: 'INV002',
-      name: '볼트 M8x20',
-      code: 'BOLT-M8-20',
-      category: '부품',
-      currentStock: 110,
-      safetyStock: 100,
-      unit: 'EA',
-      unitPrice: 500,
-      totalValue: 55000,
-      location: 'B-02-15',
-      warehouse: '제3창고',
-      status: 'warning',
-      supplier: '패스너코리아',
-    },
-    {
-      id: 'INV003',
-      name: '산업용 모터 5HP',
-      code: 'MOTOR-5HP-001',
-      category: '부품',
-      currentStock: 5,
-      safetyStock: 10,
-      unit: 'EA',
-      unitPrice: 850000,
-      totalValue: 4250000,
-      location: 'C-01-05',
-      warehouse: '제2창고',
-      status: 'critical',
-      supplier: '모터테크',
-    },
-    {
-      id: 'INV004',
-      name: '용접봉 3.2mm',
-      code: 'WELD-ROD-32',
-      category: '원자재',
-      currentStock: 5,
-      safetyStock: 20,
-      unit: 'KG',
-      unitPrice: 8000,
-      totalValue: 40000,
-      location: 'D-03-08',
-      warehouse: '제1창고',
-      status: 'critical',
-      supplier: '용접재료상사',
-    },
-    {
-      id: 'INV005',
-      name: '베어링 6205',
-      code: 'BEAR-6205',
-      category: '부품',
-      currentStock: 35,
-      safetyStock: 30,
-      unit: 'EA',
-      unitPrice: 12000,
-      totalValue: 420000,
-      location: 'B-01-20',
-      warehouse: '제3창고',
-      status: 'warning',
-      supplier: '베어링코리아',
-    },
-  ];
 
   const queryParams = useMemo(
     () => ({
@@ -127,8 +49,6 @@ export default function LowStockList() {
       return;
     }
 
-    const selectedItemsData = lowStockItems.filter((item) => selectedItems.includes(item.id));
-    console.log('선택된 품목들:', selectedItemsData);
     alert(`${selectedItems.length}개 품목에 대한 발주 요청이 생성되었습니다.`);
     setSelectedItems([]);
   };
@@ -187,14 +107,14 @@ export default function LowStockList() {
                   <input
                     type="checkbox"
                     className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedItems(lowStockItems.map((item) => item.id));
-                      } else {
-                        setSelectedItems([]);
-                      }
-                    }}
-                    checked={selectedItems.length === lowStockItems.length}
+                    // onChange={(e) => {
+                    //   if (e.target.checked) {
+                    //     setSelectedItems(lowStockItems.map((item) => item.id));
+                    //   } else {
+                    //     setSelectedItems([]);
+                    //   }
+                    // }}
+                    // checked={selectedItems.length === lowStockItems.length}
                   />
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
