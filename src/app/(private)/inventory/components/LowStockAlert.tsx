@@ -26,7 +26,7 @@ export default function LowStockAlert() {
               {lowStockRes?.length}건
             </span>
           </div>
-          <Link href="/inventory/low-stock">
+          <Link href="/low-stock">
             <button className="flex items-center text-sm text-blue-600 hover:text-blue-500 cursor-pointer font-medium">
               전체 보기
               <i className="ri-arrow-right-line ml-1"></i>

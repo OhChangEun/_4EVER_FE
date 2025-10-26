@@ -1,11 +1,48 @@
 'use client';
 
-import { WarehouseDetailModalProps } from '../../types/WarehouseDetailType';
+import { useQuery } from '@tanstack/react-query';
+import {
+  WarehouseDetailModalProps,
+  WarehouseDetailResponse,
+} from '../../types/WarehouseDetailType';
+import { useEffect, useState } from 'react';
+import ModalStatusBox from '@/app/components/common/ModalStatusBox';
+import { getProductionDetail } from '../../warehouse.api';
+import StatusLabel from '@/app/components/common/StatusLabel';
 
 const WarehouseDetailModal = ({
   $selectedWarehouseId,
   $setShowDetailModal,
 }: WarehouseDetailModalProps) => {
+  const {
+    data: warehouseDetailRes,
+    isLoading,
+    isError,
+  } = useQuery<WarehouseDetailResponse>({
+    queryKey: ['warehouseDetail', $selectedWarehouseId],
+    queryFn: () => getProductionDetail($selectedWarehouseId),
+    enabled: !!$selectedWarehouseId,
+  });
+
+  const warehouseInfo = warehouseDetailRes?.warehouseInfo;
+  const managerInfo = warehouseDetailRes?.manager;
+
+  const [errorModal, setErrorModal] = useState(false);
+  useEffect(() => {
+    setErrorModal(isError);
+  }, [isError]);
+
+  if (isLoading)
+    return <ModalStatusBox $type="loading" $message="재고 상세 데이터를 불러오는 중입니다..." />;
+
+  if (errorModal)
+    return (
+      <ModalStatusBox
+        $type="error"
+        $message="재고 상세 데이터를 불러오는 중 오류가 발생했습니다."
+        $onClose={() => setErrorModal(false)}
+      />
+    );
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-4xl mx-4 max-h-[94vh] overflow-y-auto">
@@ -27,24 +64,24 @@ const WarehouseDetailModal = ({
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">창고명:</span>
                   <span className="text-sm font-medium text-gray-900">
-                    {/* {selectedWarehouse.name} */}
+                    {warehouseInfo?.warehouseName}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">창고코드:</span>
                   <span className="text-sm font-medium text-gray-900">
-                    {/* {selectedWarehouse.code} */}
+                    {warehouseInfo?.warehouseNumber}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">창고 유형:</span>
                   <span className="text-sm font-medium text-gray-900">
-                    {/* {selectedWarehouse.type} */}
+                    {warehouseInfo?.warehouseType}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">상태:</span>
-                  {/* {<StatusLabel $statusCode={selectedWarehouse.status} />} */}
+                  {<StatusLabel $statusCode={warehouseInfo?.statusCode as string} />}
                 </div>
               </div>
             </div>
@@ -54,7 +91,7 @@ const WarehouseDetailModal = ({
               <div className="space-y-3">
                 <div>
                   <span className="text-sm text-gray-600 block mb-1">주소:</span>
-                  {/* <span className="text-sm text-gray-900">{selectedWarehouse.location}</span> */}
+                  <span className="text-sm text-gray-900">{warehouseInfo?.location}</span>
                 </div>
               </div>
             </div>
@@ -65,19 +102,19 @@ const WarehouseDetailModal = ({
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">담당자:</span>
                 <span className="text-sm font-medium text-gray-900">
-                  {/* {selectedWarehouse.manager} */}
+                  {managerInfo?.managerName}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">연락처:</span>
                 <span className="text-sm font-medium text-blue-600">
-                  {/* {selectedWarehouse.phone} */}
+                  {managerInfo?.managerPhoneNumber}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">이메일:</span>
                 <span className="text-sm font-medium text-blue-600">
-                  {/* {selectedWarehouse.email} */}
+                  {managerInfo?.managerEmail}
                 </span>
               </div>
             </div>
@@ -85,7 +122,7 @@ const WarehouseDetailModal = ({
           <div className="space-y-6">
             <div className="bg-gray-50 p-4 rounded-lg">
               <h4 className="text-lg font-semibold text-gray-900 mb-3">설명</h4>
-              {/* <p className="text-sm text-gray-700">{selectedWarehouse.description}</p> */}
+              <p className="text-sm text-gray-700">{warehouseInfo?.description}</p>
             </div>
           </div>
         </div>

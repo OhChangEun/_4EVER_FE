@@ -1,6 +1,6 @@
 'use client';
 
-import { AddWarehouseModalProps } from '../../types/AddWarehouseModalType';
+import { AddWarehouseModalProps } from '../../types/AddWarehouseType';
 
 const AddWarehouseModal = ({ $setShowAddModal }: AddWarehouseModalProps) => {
   return (

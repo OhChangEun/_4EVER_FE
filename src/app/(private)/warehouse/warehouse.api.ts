@@ -3,6 +3,7 @@ import { WarehouseStatResponse } from './types/WarehouseStatsType';
 import axios from 'axios';
 import { WarehouseListQueryParams, WarehouseListResponse } from './types/WarehouseListType';
 import { Page } from '@/types/Page';
+import { WarehouseDetailResponse } from './types/WarehouseDetailType';
 
 // ----------------------- 창고 관리 -----------------------
 export const getWarehouseStats = async (): Promise<WarehouseStatResponse> => {
@@ -25,4 +26,13 @@ export const getWarehouseList = async (
   );
 
   return { data: res.data.data.content, pageData: res.data.data.page };
+};
+
+export const getProductionDetail = async (
+  warehouseId: string,
+): Promise<WarehouseDetailResponse> => {
+  const res = await axios.get<ApiResponse<WarehouseDetailResponse>>(
+    WAREHOUSE_ENDPOINTS.WAREHOUSE_DETAIL(warehouseId),
+  );
+  return res.data.data;
 };
