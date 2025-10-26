@@ -1,4 +1,22 @@
+import React from 'react';
+
+// Mock 부서 데이터
+const MOCK_DEPARTMENTS = [
+  { id: 1, name: '경영지원팀', headCount: 15, manager: '김철수 부장' },
+  { id: 2, name: '개발 1팀', headCount: 25, manager: '이영희 차장' },
+  { id: 3, name: '마케팅팀', headCount: 12, manager: '박민준 과장' },
+  { id: 4, name: '영업 2팀', headCount: 18, manager: '최지아 이사' },
+];
+
 export default function OrganizationTab() {
+  // Mock Data를 직접 사용하거나, 간단한 상태로 관리할 수 있습니다.
+  const departments = MOCK_DEPARTMENTS;
+
+  // 더미 핸들러 함수
+  const handleViewDepartment = (dept) => {
+    alert(`[${dept.name}] 부서 상세 보기 기능 실행`);
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
@@ -20,7 +38,7 @@ export default function OrganizationTab() {
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">인원 수</span>
-                <span className="text-sm font-medium text-gray-900">{dept.headCount}명</span>
+                <span className="text-sm font-medium text-gray-900">**{dept.headCount}명**</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">부서장</span>

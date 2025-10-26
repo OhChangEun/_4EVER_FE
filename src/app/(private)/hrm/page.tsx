@@ -46,7 +46,7 @@ export default async function HrmPage() {
                 </button>
               </div> */}
 
-          {/* 구매 관리 탭 / 발주서 탭 / 공급업체 탭  */}
+          {/* 직원관리 탭 / 급여관리 탭 / 근태관리 탭 / 교육관리 탭 */}
           <Suspense fallback={<div>Loading...</div>}>
             <TabNavigation tabs={HRM_TABS} />
           </Suspense>
