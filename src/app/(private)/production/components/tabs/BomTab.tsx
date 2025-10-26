@@ -4,7 +4,7 @@ import IconButton from '@/app/components/common/IconButton';
 import { useState } from 'react';
 import { BomListData, BomListResponse } from '@/app/(private)/production/types/BomListApiType';
 import BomDetailModal from '@/app/(private)/production/components/modals/BomDetailModal';
-import BomInputFormModal from '@/app/(private)/production/components/modals/BomInputFormModal';
+// import BomInputFormModal from '@/app/(private)/production/components/modals/BomInputFormModal';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { deletBomItem, fetchBomList } from '../../api/production.api';
 import { getQueryClient } from '@/lib/queryClient';
