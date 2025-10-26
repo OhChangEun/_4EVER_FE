@@ -119,7 +119,7 @@ const ShippingDetailModal = ({
             </div>
           </div>
 
-          {$selectedSubTab === 'producing' && (
+          {$selectedSubTab !== 'producing' && (
             <div className="flex gap-3 pt-4">
               <button
                 onClick={() => $setShowShipDetailModal(false)}
@@ -133,7 +133,7 @@ const ShippingDetailModal = ({
                 }}
                 className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium cursor-pointer"
               >
-                출고 준비 완료로 변경
+                배송 시작
               </button>
             </div>
           )}

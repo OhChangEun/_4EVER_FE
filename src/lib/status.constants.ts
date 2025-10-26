@@ -17,6 +17,7 @@ export const STATUS_TEXT_MAP: Record<string, string> = {
 
   MATERIAL_PREPARATION: '자재 준비 중',
   IN_PRODUCTION: '생산중',
+  READY_TO_SHIP: '출고 준비 완료',
   READY_FOR_SHIPMENT: '출고 준비 완료',
   DELIVERING: '배송중',
   DELIVERED: '배송완료',
@@ -64,13 +65,14 @@ export const STATUS_COLOR_MAP: Record<string, string> = {
 
   COMPLETED: 'bg-emerald-100 text-emerald-700 border-emerald-300',
   COMPLETE: 'bg-emerald-100 text-emerald-700 border-emerald-300',
-  READY_FOR_SHIPMENT: 'bg-emerald-100 text-emerald-700 border-emerald-300',
+  READY_FOR_SHIPMENT: 'bg-green-100 text-green-700 border-green-300',
   DELIVERED: 'bg-green-100 text-green-700 border-green-300',
   RECEIVED: 'bg-emerald-100 text-emerald-700 border-emerald-300',
 
   DELIVERING: 'bg-blue-100 text-blue-700 border-blue-300',
   IN_PRODUCTION: 'bg-orange-100 text-orange-700 border-orange-300',
   MATERIAL_PREPARATION: 'bg-yellow-100 text-yellow-700 border-yellow-300',
+  READY_TO_SHIP: 'bg-green-100 text-green-700 border-green-300',
 
   CAUTION: 'bg-orange-100 text-orange-700 border-orange-300',
   URGENT: 'bg-orange-100 text-orange-700 border-orange-300',
