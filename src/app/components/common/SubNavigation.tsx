@@ -26,14 +26,14 @@ export default function SubNavigation({ tabs, paramName = 'subTab' }: SubNavigat
   const ActiveComponent = activeTab?.component;
 
   return (
-    <div className="my-4">
+    <>
       {/* 네비게이션바 */}
       <nav className="-mb-px border-b border-gray-200 flex space-x-6">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => handleTabChange(tab.id)}
-            className={`group inline-flex items-center pt-4 pb-2.5 px-1 border-b-2 font-medium text-sm cursor-pointer whitespace-nowrap ${
+            className={`group inline-flex items-center pt-2 pb-2 px-1 border-b-2 font-medium text-sm cursor-pointer whitespace-nowrap ${
               currentTab === tab.id
                 ? 'border-blue-500 text-blue-500'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -46,6 +46,6 @@ export default function SubNavigation({ tabs, paramName = 'subTab' }: SubNavigat
       </nav>
       {/* 렌더링 되는 컴포넌트 */}
       <div className="mt-4">{ActiveComponent && <ActiveComponent />}</div>
-    </div>
+    </>
   );
 }

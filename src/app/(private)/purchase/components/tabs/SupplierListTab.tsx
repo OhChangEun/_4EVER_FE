@@ -82,131 +82,127 @@ export default function SupplierListTab() {
 
   return (
     <>
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-6 border-b border-gray-200">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold text-gray-900">공급업체 목록</h3>
-            <div className="flex items-center space-x-4">
-              {/* 공급업체 카테고리 드롭다운 */}
-              <Dropdown
-                items={SUPPLIER_CATEGORY_ITEMS}
-                value={selectedCategory}
-                onChange={(category: SupplierCategory) => setSelectedCategory(category)}
-              />
-              {/* 공급업체 상태 드롭다운 */}
-              <Dropdown
-                items={SUPPLIER_STATUS_ITEMS}
-                value={selectedSupplierStatus}
-                onChange={(status: SupplierStatus) => setSelectedSupplierStatus(status)}
-              />
-              <IconButton
-                label="공급업체 등록"
-                icon="ri-add-line"
-                onClick={() => setShowAddSupplierModal(true)}
-              />
-            </div>
-          </div>
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-semibold text-gray-900">공급업체 목록</h3>
+        <div className="flex items-center space-x-4">
+          {/* 공급업체 카테고리 드롭다운 */}
+          <Dropdown
+            items={SUPPLIER_CATEGORY_ITEMS}
+            value={selectedCategory}
+            onChange={(category: SupplierCategory) => setSelectedCategory(category)}
+          />
+          {/* 공급업체 상태 드롭다운 */}
+          <Dropdown
+            items={SUPPLIER_STATUS_ITEMS}
+            value={selectedSupplierStatus}
+            onChange={(status: SupplierStatus) => setSelectedSupplierStatus(status)}
+          />
+          <IconButton
+            label="공급업체 등록"
+            icon="ri-add-line"
+            onClick={() => setShowAddSupplierModal(true)}
+          />
         </div>
+      </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr className="text-center">
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  공급업체 코드
-                </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  업체명
-                </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  카테고리
-                </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  언락처
-                </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  주소
-                </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  배송 기간
-                </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  상태
-                </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  작업
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {suppliers.map((supplier) => {
-                const { statusCode, supplierInfo } = supplier;
-                return (
-                  <tr key={supplierInfo.supplierId} className="hover:bg-gray-50 text-center">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {supplierInfo.supplierCode}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {supplierInfo.supplierName}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {getCategoryValue(supplierInfo.category)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <div className="flex flex-col">
-                        <span>{supplierInfo.supplierEmail}</span>
-                        <span>{supplierInfo.supplierPhone}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <div className="flex flex-col">
-                        <span>{supplierInfo.supplierBaseAddress}</span>
-                        <span>{supplierInfo.supplierDetailAddress}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {supplierInfo.deliveryLeadTime}일
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={getStatusBadge(supplierInfo.supplierStatus)}>
-                        {getStatusText(supplierInfo.supplierStatus)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => handleViewDetail(supplierInfo.supplierId)}
-                          className="w-8 h-8 flex items-center justify-center text-blue-500 hover:bg-blue-50 rounded cursor-pointer"
-                          title="상세보기"
-                        >
-                          <i className="ri-eye-line"></i>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-              {suppliers.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="px-6 py-8 text-center text-gray-500 text-sm">
-                    공급업체가 없습니다.
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead className="bg-gray-50">
+            <tr className="text-center">
+              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                공급업체 코드
+              </th>
+              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                업체명
+              </th>
+              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                카테고리
+              </th>
+              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                언락처
+              </th>
+              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                주소
+              </th>
+              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                배송 기간
+              </th>
+              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                상태
+              </th>
+              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                작업
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {suppliers.map((supplier) => {
+              const { statusCode, supplierInfo } = supplier;
+              return (
+                <tr key={supplierInfo.supplierId} className="hover:bg-gray-50 text-center">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {supplierInfo.supplierCode}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {supplierInfo.supplierName}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {getCategoryValue(supplierInfo.category)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <div className="flex flex-col">
+                      <span>{supplierInfo.supplierEmail}</span>
+                      <span>{supplierInfo.supplierPhone}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <div className="flex flex-col">
+                      <span>{supplierInfo.supplierBaseAddress}</span>
+                      <span>{supplierInfo.supplierDetailAddress}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {supplierInfo.deliveryLeadTime}일
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={getStatusBadge(supplierInfo.supplierStatus)}>
+                      {getStatusText(supplierInfo.supplierStatus)}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleViewDetail(supplierInfo.supplierId)}
+                        className="w-8 h-8 flex items-center justify-center text-blue-500 hover:bg-blue-50 rounded cursor-pointer"
+                        title="상세보기"
+                      >
+                        <i className="ri-eye-line"></i>
+                      </button>
+                    </div>
                   </td>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* 페이지네이션 */}
-        {isError || isLoading ? null : (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalElements={pageInfo?.totalElements}
-            onPageChange={(page) => setCurrentPage(page)}
-          />
-        )}
+              );
+            })}
+            {suppliers.length === 0 && (
+              <tr>
+                <td colSpan={7} className="px-6 py-8 text-center text-gray-500 text-sm">
+                  공급업체가 없습니다.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
+
+      {/* 페이지네이션 */}
+      {isError || isLoading ? null : (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalElements={pageInfo?.totalElements}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
+      )}
 
       {showAddSupplierModal && <SupplierAddModal onClose={() => setShowAddSupplierModal(false)} />}
 

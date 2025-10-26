@@ -145,129 +145,126 @@ export default function PurchaseRequestListTab() {
 
   return (
     <>
-      <div className="bg-white rounded-lg shadow">
-        {/* 필터 헤더 */}
-        <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-          <h3 className="text-lg font-semibold text-gray-900">구매 요청 목록</h3>
-          <div className="flex items-center space-x-4">
-            <DateRangePicker
-              startDate={startDate}
-              onStartDateChange={setStartDate}
-              endDate={endDate}
-              onEndDateChange={setEndDate}
-            />
-            <Dropdown
-              items={PURCHASE_REQ_STATUS}
-              value={selectedStatus}
-              onChange={handleStatusChange}
-            />
-
-            {/* 구매 요청 작성 버튼 */}
-            <IconButton
-              label="구매 요청 작성"
-              icon="ri-add-line"
-              onClick={() => setShowRequestModal(true)}
-            />
-          </div>
-        </div>
-
-        {/* 테이블 */}
-        <div className="overflow-x-auto">
-          {isLoading ? (
-            <TableStatusBox $type="loading" $message="구매 요청 목록을 불러오는 중입니다..." />
-          ) : isError ? (
-            <TableStatusBox
-              $type="error"
-              $message="구매 요청 목록을 불러오는 중 오류가 발생했습니다."
-            />
-          ) : !requests || requests.length === 0 ? (
-            <TableStatusBox $type="empty" $message="구매 요청 정보가 없습니다." />
-          ) : (
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  {PURCHASE_LIST_TABLE_HEADERS.map((header) => (
-                    <th
-                      key={header}
-                      className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center"
-                    >
-                      {header}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {requests.map((request) => (
-                  <tr key={request.id} className="hover:bg-gray-50 text-center">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      <div className="flex flex-col">
-                        <span>{request.prNumber}</span>
-                        <span>{request.departmentName}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">{request.requesterName}</td>
-                    <td className="px-6 py-4 text-sm text-gray-500">{request.requestDate}</td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      {request.desiredDeliveryDate}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">{request.totalAmount}원</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor('APPROVED')}`}
-                      >
-                        {getStatusText('APPROVED')}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      <div className="flex items-center justify-center space-x-2">
-                        <button
-                          onClick={() => handleViewDetail(request)}
-                          className="w-8 h-8 flex items-center justify-center text-blue-500 hover:bg-blue-50 rounded cursor-pointer"
-                          title="상세보기"
-                        >
-                          <i className="ri-eye-line"></i>
-                        </button>
-                        <>
-                          <button
-                            onClick={() => handleApprove(request.id)}
-                            className="text-green-600 hover:text-green-900 cursor-pointer"
-                            title="승인"
-                          >
-                            <i className="ri-check-line"></i>
-                          </button>
-                          <button
-                            onClick={() => handleReject(request.id)}
-                            className="text-red-600 hover:text-red-900 cursor-pointer"
-                            title="반려"
-                          >
-                            <i className="ri-close-line"></i>
-                          </button>
-                        </>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-                {requests.length === 0 && (
-                  <tr>
-                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500 text-sm">
-                      구매 요청이 없습니다.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          )}
-        </div>
-
-        {isError || isLoading ? null : (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalElements={pageInfo?.totalElements}
-            onPageChange={(page) => setCurrentPage(page)}
+      {/* 필터 헤더 */}
+      <div className="pb-4 border-b border-gray-200 flex justify-between items-center">
+        <h3 className="text-lg font-semibold text-gray-900">구매 요청 목록</h3>
+        <div className="flex items-center space-x-4">
+          <Dropdown
+            items={PURCHASE_REQ_STATUS}
+            value={selectedStatus}
+            onChange={handleStatusChange}
           />
+
+          <DateRangePicker
+            startDate={startDate}
+            onStartDateChange={setStartDate}
+            endDate={endDate}
+            onEndDateChange={setEndDate}
+          />
+
+          {/* 구매 요청 작성 버튼 */}
+          <IconButton
+            label="구매 요청 작성"
+            icon="ri-add-line"
+            onClick={() => setShowRequestModal(true)}
+          />
+        </div>
+      </div>
+
+      {/* 테이블 */}
+      <div className="overflow-x-auto">
+        {isLoading ? (
+          <TableStatusBox $type="loading" $message="구매 요청 목록을 불러오는 중입니다..." />
+        ) : isError ? (
+          <TableStatusBox
+            $type="error"
+            $message="구매 요청 목록을 불러오는 중 오류가 발생했습니다."
+          />
+        ) : !requests || requests.length === 0 ? (
+          <TableStatusBox $type="empty" $message="구매 요청 정보가 없습니다." />
+        ) : (
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                {PURCHASE_LIST_TABLE_HEADERS.map((header) => (
+                  <th
+                    key={header}
+                    className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center"
+                  >
+                    {header}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {requests.map((request) => (
+                <tr key={request.id} className="hover:bg-gray-50 text-center">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <div className="flex flex-col">
+                      <span>{request.prNumber}</span>
+                      <span>{request.departmentName}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{request.requesterName}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{request.requestDate}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{request.desiredDeliveryDate}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{request.totalAmount}원</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor('APPROVED')}`}
+                    >
+                      {getStatusText('APPROVED')}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500">
+                    <div className="flex items-center justify-center space-x-2">
+                      <button
+                        onClick={() => handleViewDetail(request)}
+                        className="w-8 h-8 flex items-center justify-center text-blue-500 hover:bg-blue-50 rounded cursor-pointer"
+                        title="상세보기"
+                      >
+                        <i className="ri-eye-line"></i>
+                      </button>
+                      <>
+                        <button
+                          onClick={() => handleApprove(request.id)}
+                          className="text-green-600 hover:text-green-900 cursor-pointer"
+                          title="승인"
+                        >
+                          <i className="ri-check-line"></i>
+                        </button>
+                        <button
+                          onClick={() => handleReject(request.id)}
+                          className="text-red-600 hover:text-red-900 cursor-pointer"
+                          title="반려"
+                        >
+                          <i className="ri-close-line"></i>
+                        </button>
+                      </>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {requests.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500 text-sm">
+                    구매 요청이 없습니다.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         )}
       </div>
+
+      {isError || isLoading ? null : (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalElements={pageInfo?.totalElements}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
+      )}
       {/* 구매 요청 작성 모달 */}
       {showRequestModal && (
         <PurchaseRequestModal
