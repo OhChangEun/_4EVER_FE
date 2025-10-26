@@ -19,6 +19,7 @@ import InventorySafetyModal from '../modals/InventorySafetyStockModal';
 import LowStockAlert from '../LowStockAlert';
 import StockMovement from '../StockMovement';
 import AddInventoryModal from '../modals/AddInventoryModal';
+import Link from 'next/link';
 
 const InventoryList = () => {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -152,6 +153,11 @@ const InventoryList = () => {
                       className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-80 bg-white"
                     />
                   </div>
+                  <Link href="/inventory/low-stock">
+                    <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium cursor-pointer whitespace-nowrap">
+                      창고 관리
+                    </button>
+                  </Link>
                   <button
                     onClick={() => setShowAddModal(true)}
                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium cursor-pointer whitespace-nowrap"
