@@ -1,4 +1,3 @@
-
 export default function LowStockStats() {
   const stats = [
     {
@@ -7,7 +6,7 @@ export default function LowStockStats() {
       change: '+2',
       changeType: 'increase',
       icon: 'ri-error-warning-line',
-      color: 'red'
+      color: 'red',
     },
     {
       title: '주의 재고 부족',
@@ -15,14 +14,14 @@ export default function LowStockStats() {
       change: '+3',
       changeType: 'increase',
       icon: 'ri-alert-line',
-      color: 'yellow'
-    }
+      color: 'yellow',
+    },
   ];
 
   const getColorClasses = (color: string) => {
     const colors = {
       red: 'bg-red-50 text-red-600',
-      yellow: 'bg-yellow-50 text-yellow-600'
+      yellow: 'bg-yellow-50 text-yellow-600',
     };
     return colors[color as keyof typeof colors];
   };
@@ -36,15 +35,19 @@ export default function LowStockStats() {
               <p className="text-sm font-medium text-gray-600">{stat.title}</p>
               <p className="text-2xl font-bold text-gray-900 mt-2">{stat.value}</p>
               <div className="flex items-center mt-2">
-                <span className={`text-sm font-medium ${
-                  stat.changeType === 'increase' ? 'text-red-600' : 'text-green-600'
-                }`}>
+                <span
+                  className={`text-sm font-medium ${
+                    stat.changeType === 'increase' ? 'text-red-600' : 'text-green-600'
+                  }`}
+                >
                   {stat.changeType === 'increase' ? '↗' : '↘'} {stat.change}
                 </span>
                 <span className="text-sm text-gray-500 ml-1">전월 대비</span>
               </div>
             </div>
-            <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${getColorClasses(stat.color)}`}>
+            <div
+              className={`w-12 h-12 rounded-lg flex items-center justify-center ${getColorClasses(stat.color)}`}
+            >
               <i className={`${stat.icon} text-xl`}></i>
             </div>
           </div>

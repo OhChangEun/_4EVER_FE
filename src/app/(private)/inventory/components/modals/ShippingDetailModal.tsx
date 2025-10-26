@@ -119,7 +119,7 @@ const ShippingDetailModal = ({
             </div>
           </div>
 
-          {$selectedSubTab !== 'producing' && (
+          {$selectedSubTab === 'producing' && (
             <div className="flex gap-3 pt-4">
               <button
                 onClick={() => $setShowShipDetailModal(false)}
