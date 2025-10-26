@@ -18,7 +18,7 @@ export default async function LowStockPage() {
   });
 
   await queryClient.prefetchQuery({
-    queryKey: ['lowStockList', { page: 0, size: 10, status: 'ALL' }],
+    queryKey: ['lowStockList', { page: 0, size: 10, statusCode: 'ALL' }],
     queryFn: ({ queryKey }) => getLowStockList(queryKey[1] as LowStockListQueryParams),
   });
 

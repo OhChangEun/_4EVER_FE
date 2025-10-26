@@ -32,7 +32,7 @@ export const getInventoryList = async (
   const query = new URLSearchParams({
     ...(params?.category && { category: params.category }),
     ...(params?.warehouse && { warehouse: params.warehouse }),
-    ...(params?.status && { status: params.status }),
+    ...(params?.statusCode && { statusCode: params.statusCode }),
     ...(params?.itemName && { itemName: params.itemName }),
     ...(params?.page && { page: String(params.page) }),
     ...(params?.size && { size: String(params.size) }),

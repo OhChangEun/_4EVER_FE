@@ -25,7 +25,7 @@ export default async function InventoryPage() {
   await queryClient.prefetchQuery({
     queryKey: [
       'inventoryList',
-      { page: 0, size: 10, category: '', warehouse: '', status: 'ALL', itemName: '' },
+      { page: 0, size: 10, category: '', warehouse: '', statusCode: 'ALL', itemName: '' },
     ],
     queryFn: ({ queryKey }) => getInventoryList(queryKey[1] as InventoryQueryParams),
   });

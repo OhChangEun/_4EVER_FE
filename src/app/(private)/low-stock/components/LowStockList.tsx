@@ -19,7 +19,7 @@ export default function LowStockList() {
     () => ({
       page: currentPage - 1,
       size: 10,
-      status: statusFilter || 'ALL',
+      statusCode: statusFilter || 'ALL',
     }),
     [currentPage, statusFilter],
   );

@@ -14,7 +14,7 @@ export interface LowStockListResponse {
 }
 
 export interface LowStockListQueryParams {
-  status?: string;
+  statusCode?: string;
   page?: number;
   size?: number;
 }

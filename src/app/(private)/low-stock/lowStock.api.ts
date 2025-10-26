@@ -17,7 +17,7 @@ export const getLowStockList = async (
   pageData: Page;
 }> => {
   const query = new URLSearchParams({
-    ...(params?.status && { status: String(params.status) }),
+    ...(params?.statusCode && { statusCode: String(params.statusCode) }),
     ...(params?.page && { page: String(params.page) }),
     ...(params?.size && { size: String(params.size) }),
   }).toString();

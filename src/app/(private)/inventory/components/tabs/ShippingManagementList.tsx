@@ -49,7 +49,7 @@ const ShippingManagementList = () => {
 
   const shippingStatusTabs = [
     { id: 'producing', name: '생산중', count: ProductionRes?.pageData.totalElements },
-    { id: 'readyToShip', name: '출고 대기 완료', count: ReadyToShipRes?.pageData.totalElements },
+    { id: 'readyToShip', name: '출고 준비 완료', count: ReadyToShipRes?.pageData.totalElements },
   ];
 
   useEffect(() => {

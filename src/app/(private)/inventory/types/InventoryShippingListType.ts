@@ -14,6 +14,7 @@ export interface ReadyToShipListResponse {
   salesOrderNumber: string;
   customerName: string;
   orderDate: string;
+  dueDate: string;
   productionCompletionDate: string;
   readyToShipDate: string;
   totalAmount: number;

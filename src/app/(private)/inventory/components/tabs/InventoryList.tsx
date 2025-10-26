@@ -75,7 +75,7 @@ const InventoryList = () => {
       size: 10,
       category: debouncedCategory || '',
       warehouse: debouncedWarehouse || '',
-      status: statusFilter || 'ALL',
+      statusCode: statusFilter || 'ALL',
       itemName: debouncedItemName || '',
     }),
     [currentPage, statusFilter, debouncedCategory, debouncedWarehouse, debouncedItemName],
