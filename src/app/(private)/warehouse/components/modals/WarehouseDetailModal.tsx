@@ -8,7 +8,7 @@ const WarehouseDetailModal = ({
 }: WarehouseDetailModalProps) => {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-lg p-6 w-full max-w-4xl mx-4 max-h-[94vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-semibold">창고 상세 정보</h3>
           <button
@@ -19,7 +19,7 @@ const WarehouseDetailModal = ({
           </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
           <div className="space-y-6">
             <div className="bg-gray-50 p-4 rounded-lg">
               <h4 className="text-lg font-semibold text-gray-900 mb-3">기본 정보</h4>
@@ -49,30 +49,6 @@ const WarehouseDetailModal = ({
               </div>
             </div>
 
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <h4 className="text-lg font-semibold text-gray-900 mb-3">담당자 정보</h4>
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">담당자:</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {/* {selectedWarehouse.manager} */}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">연락처:</span>
-                  <span className="text-sm font-medium text-blue-600">
-                    {/* {selectedWarehouse.phone} */}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">이메일:</span>
-                  <span className="text-sm font-medium text-blue-600">
-                    {/* {selectedWarehouse.email} */}
-                  </span>
-                </div>
-              </div>
-            </div>
-
             <div className="bg-green-50 p-4 rounded-lg">
               <h4 className="text-lg font-semibold text-gray-900 mb-3">위치 정보</h4>
               <div className="space-y-3">
@@ -83,7 +59,29 @@ const WarehouseDetailModal = ({
               </div>
             </div>
           </div>
-
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <h4 className="text-lg font-semibold text-gray-900 mb-3">담당자 정보</h4>
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">담당자:</span>
+                <span className="text-sm font-medium text-gray-900">
+                  {/* {selectedWarehouse.manager} */}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">연락처:</span>
+                <span className="text-sm font-medium text-blue-600">
+                  {/* {selectedWarehouse.phone} */}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">이메일:</span>
+                <span className="text-sm font-medium text-blue-600">
+                  {/* {selectedWarehouse.email} */}
+                </span>
+              </div>
+            </div>
+          </div>
           <div className="space-y-6">
             <div className="bg-gray-50 p-4 rounded-lg">
               <h4 className="text-lg font-semibold text-gray-900 mb-3">설명</h4>
