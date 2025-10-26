@@ -2,15 +2,15 @@ import { OrderStatus } from '@/app/(private)/sales/types/SalesOrderListType';
 
 export interface SalesOrderDetailProps {
   $onClose: () => void;
-  $selectedOrderId: number;
+  $selectedSalesOrderId: string;
 }
 
 export interface OrderDetail {
   order: {
-    soId: number;
-    soNumber: string;
+    salesOrderId: number;
+    salesOrderNumber: string;
     orderDate: string;
-    deliveryDate: string;
+    dueDate: string;
     statusCode: OrderStatus;
     totalAmount: number;
   };
@@ -27,7 +27,8 @@ export interface OrderDetail {
     };
   };
   items: {
-    productName: string;
+    itemId: string;
+    itemName: string;
     quantity: number;
     uonName: string;
     unitPrice: number;

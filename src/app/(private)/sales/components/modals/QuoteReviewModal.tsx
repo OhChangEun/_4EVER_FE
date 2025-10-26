@@ -16,9 +16,10 @@ import {
   postInventoryCheck,
   postQuotationConfirm,
 } from '../../sales.api';
-import { getQuoteStatusColor, getQuoteStatusText, isAllInventoryFulfilled } from '../../utils';
+import { isAllInventoryFulfilled } from '../../utils';
+import StatusLabel from '@/app/components/common/StatusLabel';
 
-const QuoteReviewModal = ({ $onClose, $selectedQuoteId }: QuoteReviewModalProps) => {
+const QuoteReviewModal = ({ $onClose, $selectedQuotationId }: QuoteReviewModalProps) => {
   const [inventoryCheckResult, setInventoryCheckResult] = useState<InventoryCheckRes[] | null>(
     null,
   );
@@ -28,7 +29,7 @@ const QuoteReviewModal = ({ $onClose, $selectedQuoteId }: QuoteReviewModalProps)
   };
 
   const handleDelieveryProcess = () => {
-    delieveryProcessReq($selectedQuoteId);
+    delieveryProcessReq($selectedQuotationId);
   };
 
   const {
@@ -36,22 +37,22 @@ const QuoteReviewModal = ({ $onClose, $selectedQuoteId }: QuoteReviewModalProps)
     isLoading,
     isError,
   } = useQuery<QuoteDetail>({
-    queryKey: ['quoteDetailForReview', $selectedQuoteId],
-    queryFn: () => getQuoteDetail($selectedQuoteId),
-    enabled: !!$selectedQuoteId,
+    queryKey: ['quoteDetailForReview', $selectedQuotationId],
+    queryFn: () => getQuoteDetail($selectedQuotationId),
+    enabled: !!$selectedQuotationId,
   });
 
   const haveToCheckItems: Inventories[] =
     quote?.items.map(({ itemId, itemName, quantity }) => ({
       itemId,
       itemName,
-      requiredQty: quantity,
+      requiredQuantity: quantity,
     })) ?? [];
 
   const { mutate: quotationConfirmReq } = useMutation({
-    mutationFn: (id: number) => postQuotationConfirm([id]),
+    mutationFn: (id: string) => postQuotationConfirm(id),
     onSuccess: (data) => {
-      alert(`${data.status} : ${quote?.quotationCode}
+      alert(`${data.status} : ${quote?.quotationId}
           `);
     },
     onError: (error) => {
@@ -70,9 +71,9 @@ const QuoteReviewModal = ({ $onClose, $selectedQuoteId }: QuoteReviewModalProps)
   });
 
   const { mutate: delieveryProcessReq } = useMutation({
-    mutationFn: (id: number) => postDeliveryProcess(id),
+    mutationFn: (id: string) => postDeliveryProcess(id),
     onSuccess: (data) => {
-      alert(`${data.status} : ${quote?.quotationCode}
+      alert(`${data.status} : ${quote?.quotationNumber}
           `);
     },
     onError: (error) => {
@@ -102,7 +103,7 @@ const QuoteReviewModal = ({ $onClose, $selectedQuoteId }: QuoteReviewModalProps)
       <div className="bg-white rounded-lg p-6 w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-semibold text-gray-900">
-            견적 검토 요청 - {quote?.quotationId}
+            견적 검토 요청 - {quote?.quotationNumber}
           </h3>
           <button onClick={$onClose} className="text-gray-400 hover:text-gray-600 cursor-pointer">
             <i className="ri-close-line text-2xl"></i>
@@ -141,11 +142,7 @@ const QuoteReviewModal = ({ $onClose, $selectedQuoteId }: QuoteReviewModalProps)
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">상태:</span>
-                  <span
-                    className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getQuoteStatusColor(quote!.statusCode)}`}
-                  >
-                    {getQuoteStatusText(quote!.statusCode)}
-                  </span>
+                  <StatusLabel $statusCode={quote!.statusCode} />
                 </div>
               </div>
             </div>
@@ -231,8 +228,10 @@ const QuoteReviewModal = ({ $onClose, $selectedQuoteId }: QuoteReviewModalProps)
                       {inventoryCheckResult?.map((item, index: number) => (
                         <tr key={index} className="border-b">
                           <td className="px-4 py-3 text-sm font-medium">{item.itemName}</td>
-                          <td className="px-4 py-3 text-sm text-center">{item.requiredQty}</td>
-                          <td className="px-4 py-3 text-sm text-center">{item.inventoryQty}</td>
+                          <td className="px-4 py-3 text-sm text-center">{item.requiredQuantity}</td>
+                          <td className="px-4 py-3 text-sm text-center">
+                            {item.inventoryQuantity}
+                          </td>
                           <td className="px-4 py-3 text-center">
                             <span
                               className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
@@ -291,7 +290,7 @@ const QuoteReviewModal = ({ $onClose, $selectedQuoteId }: QuoteReviewModalProps)
                       href="/production"
                       className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors cursor-pointer whitespace-nowrap flex items-center space-x-2"
                       onClick={() => {
-                        quotationConfirmReq($selectedQuoteId);
+                        quotationConfirmReq($selectedQuotationId);
                         $onClose();
                       }}
                     >

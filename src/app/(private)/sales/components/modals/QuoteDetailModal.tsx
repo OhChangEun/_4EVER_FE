@@ -7,13 +7,13 @@ import { getQuoteDetail } from '../../sales.api';
 import { useEffect, useState } from 'react';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
 import { QUOTE_DETAIL_TABLE_HEADERS } from '../../constant';
-import { getQuoteStatusColor, getQuoteStatusText } from '../../utils';
+import StatusLabel from '@/app/components/common/StatusLabel';
 
-const QuoteDetailModal = ({ $onClose, $selectedQuoteId }: QuoteDetailModalProps) => {
+const QuoteDetailModal = ({ $onClose, $selectedQuotationId }: QuoteDetailModalProps) => {
   const { data, isLoading, isError } = useQuery<QuoteDetail>({
-    queryKey: ['quoteDetail', $selectedQuoteId],
-    queryFn: () => getQuoteDetail($selectedQuoteId),
-    enabled: !!$selectedQuoteId,
+    queryKey: ['quoteDetail', $selectedQuotationId],
+    queryFn: () => getQuoteDetail($selectedQuotationId),
+    enabled: !!$selectedQuotationId,
   });
 
   useEffect(() => {
@@ -38,7 +38,7 @@ const QuoteDetailModal = ({ $onClose, $selectedQuoteId }: QuoteDetailModalProps)
         <div className="bg-white rounded-lg p-6 w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-semibold text-gray-900">
-              견적서 상세보기 - {data!.quotationId}
+              견적서 상세보기 - {data!.quotationNumber}
             </h3>
             <button onClick={$onClose} className="text-gray-400 hover:text-gray-600 cursor-pointer">
               <i className="ri-close-line text-2xl"></i>
@@ -54,7 +54,7 @@ const QuoteDetailModal = ({ $onClose, $selectedQuoteId }: QuoteDetailModalProps)
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span className="text-gray-600">견적번호:</span>
-                      <span className="font-medium">{data!.quotationId}</span>
+                      <span className="font-medium">{data!.quotationNumber}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">견적일자:</span>
@@ -79,11 +79,7 @@ const QuoteDetailModal = ({ $onClose, $selectedQuoteId }: QuoteDetailModalProps)
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">상태:</span>
-                      <span
-                        className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getQuoteStatusColor(data!.statusCode)}`}
-                      >
-                        {getQuoteStatusText(data!.statusCode)}
-                      </span>
+                      <StatusLabel $statusCode={data!.statusCode} />
                     </div>
                   </div>
                 </div>

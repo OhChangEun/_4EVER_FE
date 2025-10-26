@@ -1,31 +1,20 @@
-import { CustomerStatus } from '@/app/(private)/sales/types/SalesCustomerListType';
-
 export interface CustomerDetail {
-  customerId: number;
-  customerCode: string;
-  companyName: string;
-  businessNumber: string;
+  customerId: string;
+  customerNumber: string;
+  customerName: string;
   ceoName: string;
-  statusCode: CustomerStatus;
-  contact: Contact;
-  manager: Manager;
-  transaction: Transaction;
-  note: string;
-}
-
-export interface Contact {
-  phone: string;
-  email: string;
-  address: string;
-}
-
-export interface Manager {
-  name: string;
-  mobile: string;
-  email: string;
-}
-
-export interface Transaction {
+  businessNumber: string;
+  statusCode: string;
+  customerPhone: string;
+  customerEmail: string;
+  baseAddress: string;
+  detailAddress: string;
+  manager: {
+    managerName: string;
+    managerPhone: string;
+    managerEmail: string;
+  };
   totalOrders: number;
-  totalAmount: number;
+  totalTransactionAmount: number;
+  note: string;
 }

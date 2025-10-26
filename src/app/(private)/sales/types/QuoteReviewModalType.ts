@@ -16,11 +16,11 @@ export interface InventoryItem {
 }
 
 export interface InventoryCheckRes {
-  itemId: number;
+  itemId: string;
   itemName: string;
-  requiredQty: number;
-  inventoryQty: number;
-  shortageQty: number;
+  requiredQuantity: number;
+  inventoryQuantity: number;
+  shortageQuantity: number;
   statusCode: string;
   productionRequired: boolean;
   inventoryCheckTime: string;
@@ -28,5 +28,5 @@ export interface InventoryCheckRes {
 
 export interface QuoteReviewModalProps {
   $onClose: () => void;
-  $selectedQuoteId: number;
+  $selectedQuotationId: string;
 }

@@ -14,8 +14,8 @@ export type OrderStatus =
   | 'DELIVERED';
 
 export interface Order {
-  soId: number;
-  soNumber: string;
+  salesOrderId: string;
+  salesOrderNumber: string;
   customerName: string;
   manager: {
     managerName: string;
@@ -23,7 +23,7 @@ export interface Order {
     managerEmail: string;
   };
   orderDate: string;
-  deliveryDate: string;
+  dueDate: string;
   totalAmount: number;
   statusCode: OrderStatus;
 }
@@ -32,6 +32,7 @@ export interface OrderQueryParams {
   start: string;
   end: string;
   keyword: string;
+  type: string;
   status: string;
   page: number;
   size: number;

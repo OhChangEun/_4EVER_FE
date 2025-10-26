@@ -15,16 +15,18 @@ import { CustomerDetail } from '../../types/SalesCustomerDetailType';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
 import {
   CUSTOMER_LIST_TABLE_HEADERS,
+  CUSTOMER_SEARCH_KEYWORD_OPTIONS,
   CUSTOMER_STATUS_OPTIONS,
 } from '@/app/(private)/sales/constant';
-import { getCustomerStatusColor } from '@/app/(private)/sales/utils';
 import Pagination from '@/app/components/common/Pagination';
+import StatusLabel from '@/app/components/common/StatusLabel';
 
 const CustomerList = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchType, setSearchType] = useState('customerName');
   const [statusFilter, setStatusFilter] = useState<CustomerStatus>('ALL');
   const [showDetailModal, setShowDetailModal] = useState(false);
-  const [selectedCustomerId, setSelectedCustomerId] = useState<number>(0);
+  const [selectedCustomerId, setSelectedCustomerId] = useState<string>('');
   const [showCustomerModal, setShowCustomerModal] = useState(false);
   const [debouncedSearchTerm] = useDebounce(searchTerm, 200);
   const [currentPage, setCurrentPage] = useState(1);
@@ -38,9 +40,10 @@ const CustomerList = () => {
       page: currentPage - 1,
       size: 10,
       status: statusFilter || 'ALL',
+      type: searchType || '',
       keyword: debouncedSearchTerm || '',
     }),
-    [currentPage, statusFilter, debouncedSearchTerm],
+    [currentPage, statusFilter, debouncedSearchTerm, searchType],
   );
   const {
     data: customerRes,
@@ -54,17 +57,17 @@ const CustomerList = () => {
   const customers = customerRes?.data ?? [];
   const pageInfo = customerRes?.pageData;
 
-  const handleViewClick = (id: number) => {
+  const handleViewClick = (id: string) => {
     setSelectedCustomerId(id);
     setShowDetailModal(true);
   };
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [editFormData, setEditFormData] = useState<CustomerDetail | null>(null);
-  const handleEditClick = (customer: CustomerDetail) => {
-    setEditFormData({ ...customer });
-    setShowEditModal(true);
-  };
+  // const handleEditClick = (customer: CustomerDetail) => {
+  //   setEditFormData({ ...customer });
+  //   setShowEditModal(true);
+  // };
 
   const totalPages = pageInfo?.totalPages ?? 1;
 
@@ -85,6 +88,30 @@ const CustomerList = () => {
 
         {/* 필터 및 검색 */}
         <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+          <select
+            value={searchType}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSearchType(e.target.value)}
+            className="bg-white px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-8"
+          >
+            {CUSTOMER_SEARCH_KEYWORD_OPTIONS.map(({ key, value }) => (
+              <option key={key} value={key}>
+                {value}
+              </option>
+            ))}
+          </select>
+          <select
+            value={statusFilter}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              setStatusFilter(e.target.value as CustomerStatus)
+            }
+            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+          >
+            {CUSTOMER_STATUS_OPTIONS.map(({ key, value }) => (
+              <option key={key} value={key}>
+                {value}
+              </option>
+            ))}
+          </select>
           <div className="flex-1 max-w-md">
             <div className="relative">
               <i className="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
@@ -97,21 +124,7 @@ const CustomerList = () => {
               />
             </div>
           </div>
-          <div className="flex items-center space-x-2">
-            <select
-              value={statusFilter}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                setStatusFilter(e.target.value as CustomerStatus)
-              }
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
-            >
-              {CUSTOMER_STATUS_OPTIONS.map(({ key, value }) => (
-                <option key={key} value={key}>
-                  {value}
-                </option>
-              ))}
-            </select>
-          </div>
+          <div className="flex items-center space-x-2"></div>
         </div>
       </div>
 
@@ -144,17 +157,17 @@ const CustomerList = () => {
                     <div className="flex items-center">
                       <div>
                         <div className="text-sm font-medium text-gray-900">
-                          {customer.companyName}
+                          {customer.customerName}
                         </div>
-                        <div className="text-xs text-gray-500">{customer.customerCode}</div>
+                        <div className="text-xs text-gray-500">{customer.customerNumber}</div>
                       </div>
                     </div>
                   </td>
 
                   <td className="px-6 py-4">
-                    <div className="text-sm text-gray-900">{customer.contactPerson}</div>
-                    <div className="text-xs text-gray-500">{customer.phone}</div>
-                    <div className="text-xs text-gray-500">{customer.email}</div>
+                    <div className="text-sm text-gray-900">{customer.manager.managerName}</div>
+                    <div className="text-xs text-gray-500">{customer.manager.managerPhone}</div>
+                    <div className="text-xs text-gray-500">{customer.manager.managerEmail}</div>
                   </td>
                   <td className="px-6 py-4">
                     <div className="text-sm text-gray-900 max-w-xs truncate">
@@ -163,17 +176,13 @@ const CustomerList = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">
-                      ₩{customer.transactionAmount.toLocaleString()}
+                      ₩{customer.totalTransactionAmount.toLocaleString()}
                     </div>
                     <div className="text-xs text-gray-500">{customer.orderCount}건</div>
                   </td>
 
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getCustomerStatusColor(customer.status)}`}
-                    >
-                      {customer.status}
-                    </span>
+                    <StatusLabel $statusCode={customer.statusCode} />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex items-center space-x-2">

@@ -2,7 +2,7 @@ import { CustomerDetail } from '@/app/(private)/sales/types/SalesCustomerDetailT
 
 export interface CustomerDetailModalProps {
   $setShowDetailModal: React.Dispatch<React.SetStateAction<boolean>>;
-  $selectedCustomerId: number;
+  $selectedCustomerId: string;
   $setShowEditModal: (show: boolean) => void;
   $setEditFormData: React.Dispatch<React.SetStateAction<CustomerDetail | null>>;
 }

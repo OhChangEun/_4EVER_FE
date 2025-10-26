@@ -70,8 +70,7 @@ const NewCustomerModal = ({ $onClose }: NewCustomerModalProps) => {
   const { mutate: createCustomer, isPending } = useMutation({
     mutationFn: postCustomer,
     onSuccess: (data) => {
-      alert(`${data.data.manager.name} 등록 성공 \n
-        고객 아이디 : ${data.data.customerCode}
+      alert(`고객이 성공적으로 등록되었습니다.
         `);
 
       $onClose();

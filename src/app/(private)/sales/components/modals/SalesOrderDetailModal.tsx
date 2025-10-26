@@ -8,17 +8,17 @@ import { useEffect, useState } from 'react';
 import { getOrderDetail } from '@/app/(private)/sales/sales.api';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
 import { ORDER_DETAIL_TABLE_HEADERS } from '@/app/(private)/sales/constant';
-import { getOrderStatusText, getOrderStatusColor } from '@/app/(private)/sales/utils';
+import StatusLabel from '@/app/components/common/StatusLabel';
 
-const SalesOrderDetailModal = ({ $onClose, $selectedOrderId }: SalesOrderDetailProps) => {
+const SalesOrderDetailModal = ({ $onClose, $selectedSalesOrderId }: SalesOrderDetailProps) => {
   const {
     data: orderDetailRes,
     isLoading,
     isError,
   } = useQuery<OrderDetail>({
-    queryKey: ['orderDetail', $selectedOrderId],
-    queryFn: () => getOrderDetail($selectedOrderId),
-    enabled: !!$selectedOrderId,
+    queryKey: ['orderDetail', $selectedSalesOrderId],
+    queryFn: () => getOrderDetail($selectedSalesOrderId),
+    enabled: !!$selectedSalesOrderId,
   });
   const [errorModal, setErrorModal] = useState(false);
   useEffect(() => {
@@ -67,7 +67,7 @@ const SalesOrderDetailModal = ({ $onClose, $selectedOrderId }: SalesOrderDetailP
                     <div className="space-y-3">
                       <div>
                         <label className="text-sm font-medium text-gray-500">주문번호</label>
-                        <p className="text-sm text-gray-900">{order?.soNumber}</p>
+                        <p className="text-sm text-gray-900">{order?.salesOrderNumber}</p>
                       </div>
                       <div>
                         <label className="text-sm font-medium text-gray-500">주문일</label>
@@ -75,17 +75,11 @@ const SalesOrderDetailModal = ({ $onClose, $selectedOrderId }: SalesOrderDetailP
                       </div>
                       <div>
                         <label className="text-sm font-medium text-gray-500">납기일</label>
-                        <p className="text-sm text-gray-900">{order?.deliveryDate}</p>
+                        <p className="text-sm text-gray-900">{order?.dueDate}</p>
                       </div>
                       <div>
                         <label className="text-sm font-medium text-gray-500">상태</label>
-                        <span
-                          className={`inline-block px-2 py-1 text-xs font-medium rounded-full ml-2 ${getOrderStatusColor(
-                            order!.statusCode,
-                          )}`}
-                        >
-                          {getOrderStatusText(order!.statusCode)}
-                        </span>
+                        <StatusLabel $statusCode={order?.statusCode as string} />
                       </div>
                     </div>
                   </div>
@@ -138,8 +132,8 @@ const SalesOrderDetailModal = ({ $onClose, $selectedOrderId }: SalesOrderDetailP
                       </thead>
                       <tbody className="divide-y divide-gray-200">
                         {items?.map((item, index) => (
-                          <tr key={`${item.productName}-${index}`}>
-                            <td className="px-4 py-3 text-sm text-gray-900">{item.productName}</td>
+                          <tr key={`${item.itemName}-${index}`}>
+                            <td className="px-4 py-3 text-sm text-gray-900">{item.itemName}</td>
                             <td className="px-4 py-3 text-sm text-gray-900">{item.quantity}</td>
                             <td className="px-4 py-3 text-sm text-gray-900">{item.uonName}</td>
                             <td className="px-4 py-3 text-sm text-gray-900">

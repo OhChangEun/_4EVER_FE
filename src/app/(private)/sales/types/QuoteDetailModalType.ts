@@ -2,16 +2,15 @@ import { QuoteStatus } from '@/app/(private)/sales/types/SalesQuoteListType';
 
 export interface QuoteDetailModalProps {
   $onClose: () => void;
-  $selectedQuoteId: number;
+  $selectedQuotationId: string;
 }
 
 export interface QuoteDetail {
-  quotationId: number;
-  quotationCode: string;
+  quotationId: string;
+  quotationNumber: string;
   quotationDate: string;
   dueDate: string;
   statusCode: QuoteStatus;
-  statusLabel: QuoteStatus;
   customerName: string;
   ceoName: string;
   items: Item[];
@@ -19,7 +18,7 @@ export interface QuoteDetail {
 }
 
 interface Item {
-  itemId: number;
+  itemId: string;
   itemName: string;
   quantity: number;
   uomName: string;
@@ -28,7 +27,7 @@ interface Item {
 }
 
 export interface Inventories {
-  itemId: number;
+  itemId: string;
   itemName: string;
-  requiredQty: number;
+  requiredQuantity: number;
 }

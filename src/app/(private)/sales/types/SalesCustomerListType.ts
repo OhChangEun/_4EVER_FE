@@ -1,16 +1,18 @@
 export type CustomerStatus = 'ALL' | 'ACTIVE' | 'DEACTIVE';
 export interface SalesCustomer {
-  customerId: number;
-  customerCode: string;
-  companyName: string;
-  contactPerson: string;
-  phone: string;
-  email: string;
+  customerId: string;
+  customerNumber: string;
+  customerName: string;
+  manager: {
+    managerName: string;
+    managerPhone: string;
+    managerEmail: string;
+  };
   address: string;
-  transactionAmount: number;
+  totalTransactionAmount: number;
   orderCount: number;
   lastOrderDate: string;
-  status: string;
+  statusCode: string;
 }
 
 export interface CustomerQueryParams {
@@ -18,4 +20,5 @@ export interface CustomerQueryParams {
   keyword?: string;
   page?: number;
   size?: number;
+  type?: string;
 }
