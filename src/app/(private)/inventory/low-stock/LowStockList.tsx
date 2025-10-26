@@ -134,157 +134,158 @@ export default function LowStockList() {
   };
 
   return (
-    <div className="bg-white rounded-lg  border border-gray-200 my-10">
-      <div className="p-6 border-b border-gray-200">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">주의 재고 부족</h2>
-          <div className="flex items-center space-x-4">
-            <select
-              value={statusFilter}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                setStatusFilter(e.target.value as string)
-              }
-              className="bg-white px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-8"
-            >
-              {LOW_STOCK_STATUS_OPTIONS.map(({ key, value }) => (
-                <option key={key} value={key}>
-                  {value}
-                </option>
-              ))}
-            </select>
-            <button
-              onClick={handleBulkOrder}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium cursor-pointer whitespace-nowrap"
-            >
-              <i className="ri-shopping-cart-line mr-1"></i>
-              선택 품목 발주 ({selectedItems.length})
-            </button>
-          </div>
+    <div className="">
+      <Link
+        href="/inventory"
+        className="px-3 text-sm text-gray-600 hover:text-gray-800 cursor-pointer flex items-center justify-end my-5"
+      >
+        <i className="ri-arrow-left-line mr-1"></i>
+        재고관리로 돌아가기
+      </Link>
+      <div className="bg-white rounded-lg  border border-gray-200 ">
+        <div className="p-6 border-b border-gray-200">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-900">주의 재고 부족</h2>
+            <div className="flex items-center space-x-4">
+              <select
+                value={statusFilter}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                  setStatusFilter(e.target.value as string)
+                }
+                className="bg-white px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-8"
+              >
+                {LOW_STOCK_STATUS_OPTIONS.map(({ key, value }) => (
+                  <option key={key} value={key}>
+                    {value}
+                  </option>
+                ))}
+              </select>
+              <button
+                onClick={handleBulkOrder}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium cursor-pointer whitespace-nowrap"
+              >
+                <i className="ri-shopping-cart-line mr-1"></i>
+                선택 품목 발주 ({selectedItems.length})
+              </button>
+            </div>
 
-          {/* <Link
+            {/* <Link
             href="/purchase/request/new"
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer whitespace-nowrap"
           >
             <i className="ri-shopping-cart-line mr-1"></i>
             일괄 발주 요청
           </Link> */}
-
-          {/* <Link
-            href="/inventory"
-            className="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 cursor-pointer flex items-center"
-          >
-            <i className="ri-arrow-left-line mr-1"></i>
-            재고관리로 돌아가기
-          </Link> */}
+          </div>
         </div>
-      </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <input
-                  type="checkbox"
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setSelectedItems(lowStockItems.map((item) => item.id));
-                    } else {
-                      setSelectedItems([]);
-                    }
-                  }}
-                  checked={selectedItems.length === lowStockItems.length}
-                />
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                품목
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                카테고리
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                현재재고
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                안전재고
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                단가
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                총 가치
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                창고 위치
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                상태
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {lowStocks.map((lowStock) => (
-              <tr key={lowStock.itemId} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   <input
                     type="checkbox"
                     className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    checked={selectedItems.includes(lowStock.itemId)}
-                    onChange={() => toggleSelectItem(lowStock.itemId)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedItems(lowStockItems.map((item) => item.id));
+                      } else {
+                        setSelectedItems([]);
+                      }
+                    }}
+                    checked={selectedItems.length === lowStockItems.length}
                   />
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">{lowStock.itemName}</div>
-                    <div className="text-sm text-gray-500">{lowStock.itemNumber}</div>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
-                    {lowStock.category}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {lowStock.currentStock.toLocaleString()} {lowStock.uomName}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-500">
-                    {lowStock.safetyStock.toLocaleString()} {lowStock.uomName}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    ₩{lowStock.unitPrice.toLocaleString()}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">
-                    ₩{lowStock.totalAmount.toLocaleString()}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">{lowStock.warehouseName}</div>
-                  <div className="text-sm text-gray-500">{lowStock.warehouseNumber}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <StatusLabel $statusCode={lowStock.statusCode} />
-                </td>
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  품목
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  카테고리
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  현재재고
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  안전재고
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  단가
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  총 가치
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  창고 위치
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  상태
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {lowStocks.map((lowStock) => (
+                <tr key={lowStock.itemId} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <input
+                      type="checkbox"
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      checked={selectedItems.includes(lowStock.itemId)}
+                      onChange={() => toggleSelectItem(lowStock.itemId)}
+                    />
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div>
+                      <div className="text-sm font-medium text-gray-900">{lowStock.itemName}</div>
+                      <div className="text-sm text-gray-500">{lowStock.itemNumber}</div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
+                      {lowStock.category}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">
+                      {lowStock.currentStock.toLocaleString()} {lowStock.uomName}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-500">
+                      {lowStock.safetyStock.toLocaleString()} {lowStock.uomName}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">
+                      ₩{lowStock.unitPrice.toLocaleString()}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">
+                      ₩{lowStock.totalAmount.toLocaleString()}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">{lowStock.warehouseName}</div>
+                    <div className="text-sm text-gray-500">{lowStock.warehouseNumber}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <StatusLabel $statusCode={lowStock.statusCode} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {isError || isLoading ? null : (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalElements={pageInfo?.totalElements}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
+        )}
       </div>
-      {isError || isLoading ? null : (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalElements={pageInfo?.totalElements}
-          onPageChange={(page) => setCurrentPage(page)}
-        />
-      )}
     </div>
   );
 }
