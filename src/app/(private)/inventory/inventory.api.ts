@@ -1,4 +1,4 @@
-import { ApiResponse, INVENTORY_ENDPOINTS } from '@/app/api';
+import { ApiResponse, INVENTORY_ENDPOINTS, LOWSTOCK_ENDPOINTS } from '@/app/api';
 import { InventoryStatResponse } from './types/InventoryStatsType';
 import axios from 'axios';
 import { InventoryQueryParams, InventoryResponse } from './types/InventoryListType';
@@ -13,6 +13,7 @@ import {
 } from './types/InventoryShippingListType';
 import { ReceivedListResponse } from './types/InventoryReceivingListType';
 import { markAsReadyToShipResponse, ShippingDetailResponse } from './types/ShippingDetailType';
+import { LowStockStatResponse } from './types/LowStockStatsType';
 // ----------------------- 재고 통계 -----------------------
 export const getInventoryStats = async (): Promise<InventoryStatResponse> => {
   const res = await axios.get<ApiResponse<InventoryStatResponse>>(INVENTORY_ENDPOINTS.STATS);
@@ -153,4 +154,10 @@ export const getReceivedList = async (
   );
 
   return { data: res.data.data.content, pageData: res.data.data.page };
+};
+
+// ----------------------- 재고 부족 관리 -----------------------
+export const getLowStockStats = async (): Promise<LowStockStatResponse> => {
+  const res = await axios.get<ApiResponse<LowStockStatResponse>>(LOWSTOCK_ENDPOINTS.STATS);
+  return res.data.data;
 };

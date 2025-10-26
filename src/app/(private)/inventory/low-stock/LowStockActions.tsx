@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -12,7 +11,7 @@ export default function LowStockActions() {
     { value: 'all', label: '전체', count: 23 },
     { value: 'critical', label: '긴급', count: 8 },
     { value: 'warning', label: '주의', count: 15 },
-    { value: 'pending', label: '발주대기', count: 12 }
+    { value: 'pending', label: '발주대기', count: 12 },
   ];
 
   return (
@@ -26,7 +25,7 @@ export default function LowStockActions() {
           필터
           <i className="ri-arrow-down-s-line ml-1"></i>
         </button>
-        
+
         {isFilterOpen && (
           <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
             <div className="py-1">
@@ -51,27 +50,11 @@ export default function LowStockActions() {
           </div>
         )}
       </div>
-      
+
       <button className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
         <i className="ri-download-line mr-1"></i>
         내보내기
       </button>
-      
-      <Link
-        href="/purchase/request/new"
-        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer whitespace-nowrap"
-      >
-        <i className="ri-shopping-cart-line mr-1"></i>
-        일괄 발주 요청
-      </Link>
-      
-      <Link
-        href="/inventory"
-        className="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 cursor-pointer flex items-center"
-      >
-        <i className="ri-arrow-left-line mr-1"></i>
-        재고관리로 돌아가기
-      </Link>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { createStatCard } from '@/lib/CreateStatCard';
 import { StatCardType } from '@/types/StatType';
 import { InventoryStatResponse } from '@/app/(private)/inventory/types/InventoryStatsType';
+import { LowStockStatResponse } from './types/LowStockStatsType';
 
 export const mapInventoryStatsToCards = (
   data: InventoryStatResponse,
@@ -31,6 +32,33 @@ export const mapInventoryStatsToCards = (
           '출고 대기',
           stats.delivery_pending.value,
           stats.delivery_pending.delta_rate,
+          '건',
+        ),
+      ];
+
+      acc[period] = cards;
+      return acc;
+    },
+    {} as Record<string, StatCardType[]>,
+  );
+};
+
+export const mapLowStockStatsToCards = (
+  data: LowStockStatResponse,
+): Record<string, StatCardType[]> => {
+  return Object.entries(data).reduce(
+    (acc, [period, stats]) => {
+      const cards: StatCardType[] = [
+        createStatCard(
+          '긴급 재고 부족',
+          stats.total_emergency.value,
+          stats.total_emergency.delta_rate,
+          '건',
+        ),
+        createStatCard(
+          '주의 재고 부족',
+          stats.total_warning.value,
+          stats.total_warning.delta_rate,
           '건',
         ),
       ];

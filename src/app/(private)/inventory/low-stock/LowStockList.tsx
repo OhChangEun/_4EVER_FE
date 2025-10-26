@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { LowStockItemResponse } from '../types/LowStockItems';
 import { getLowStockItems } from '../inventory.api';
+import Link from 'next/link';
 
 export default function LowStockList() {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
@@ -118,7 +119,7 @@ export default function LowStockList() {
   };
 
   return (
-    <div className="bg-white rounded-lg  border border-gray-200">
+    <div className="bg-white rounded-lg  border border-gray-200 my-10">
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900">주의 재고 부족</h2>
@@ -131,6 +132,21 @@ export default function LowStockList() {
               선택 품목 발주 ({selectedItems.length})
             </button>
           )}
+          <Link
+            href="/purchase/request/new"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer whitespace-nowrap"
+          >
+            <i className="ri-shopping-cart-line mr-1"></i>
+            일괄 발주 요청
+          </Link>
+
+          <Link
+            href="/inventory"
+            className="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 cursor-pointer flex items-center"
+          >
+            <i className="ri-arrow-left-line mr-1"></i>
+            재고관리로 돌아가기
+          </Link>
         </div>
       </div>
 
