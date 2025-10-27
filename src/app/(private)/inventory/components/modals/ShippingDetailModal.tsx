@@ -6,7 +6,7 @@ import {
   OrderItemsType,
   ShippingDetailModalProps,
   ShippingDetailResponse,
-} from '../../types/ShippingDetailType';
+} from '../../types/ShippingDetailModalType';
 import { useEffect, useState } from 'react';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
 import {
@@ -99,7 +99,9 @@ const ShippingDetailModal = ({
             </div>
             <div>
               <span className="text-sm text-gray-600">납기일:</span>
-              <div className="font-medium text-gray-900">{shippingDetailRes?.dueDate}</div>
+              <div className="font-medium text-gray-900">
+                {shippingDetailRes?.dueDate.slice(0, 10)}
+              </div>
             </div>
           </div>
 

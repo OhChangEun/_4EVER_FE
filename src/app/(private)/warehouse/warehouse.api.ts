@@ -1,9 +1,9 @@
 import { WarehouseStatResponse } from './types/WarehouseStatsType';
 import axios from 'axios';
 import { WarehouseListQueryParams, WarehouseListResponse } from './types/WarehouseListType';
-import { WarehouseDetailResponse } from './types/WarehouseDetailType';
-import { AddWarehouseRequest, WarehouseManagerInfoResponse } from './types/AddWarehouseType';
-import { EditWarehouseRequest } from './types/ManageWarehouseType';
+import { WarehouseDetailResponse } from './types/WarehouseDetailModalType';
+import { AddWarehouseRequest, WarehouseManagerInfoResponse } from './types/AddWarehouseModalType';
+import { EditWarehouseRequest } from './types/ManageWarehouseModalType';
 import { ApiResponse, ApiResponseNoData, WAREHOUSE_ENDPOINTS } from '@/app/types/api';
 import { Page } from '@/app/types/Page';
 

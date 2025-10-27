@@ -1,7 +1,7 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
-import { InventorySafetyStockModalProps } from '../../types/EditSafetyStockType';
+import { InventorySafetyStockModalProps } from '../../types/InventorySafetyStockModalType';
 import { useMutation } from '@tanstack/react-query';
 import { PatchSafetyStock } from '../../inventory.api';
 
@@ -11,21 +11,23 @@ const InventorySafetyStockModal = ({
 }: InventorySafetyStockModalProps) => {
   const [newSafetyStock, setNewSafetyStock] = useState<number>(0);
 
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    editSafetyStock({ itemId: $selectedStock?.itemId as string, safetyStock: newSafetyStock });
+  };
+
   const { mutate: editSafetyStock } = useMutation({
     mutationFn: PatchSafetyStock,
     onSuccess: (data) => {
       alert(`${data.status} : ${data.message}
       `);
+      $setShowSafetyStockModal(false);
     },
     onError: (error) => {
       alert(` 등록 중 오류가 발생했습니다. ${error}`);
     },
   });
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    editSafetyStock({ itemId: $selectedStock?.itemId as string, safetyStock: newSafetyStock });
-  };
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">

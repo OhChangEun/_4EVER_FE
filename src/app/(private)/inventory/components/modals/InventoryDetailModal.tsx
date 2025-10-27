@@ -6,7 +6,7 @@ import InventorySafetyModal from './InventorySafetyStockModal';
 import {
   InventoryDetailModalProps,
   InventoryDetailResponse,
-} from '../../types/InventoryDetailType';
+} from '../../types/InventoryDetailModalType';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { getInventoryDetail, postStockMovement } from '../../inventory.api';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
@@ -24,6 +24,7 @@ const InventoryDetailModal = ({
     itemId: '',
     itemName: '',
     itemNumber: '',
+    warehouseId: '',
     warehouseName: '',
     warehouseNumber: '',
     safetyStock: 0,
@@ -37,6 +38,7 @@ const InventoryDetailModal = ({
       itemId: inventoryDetailRes?.itemId || '',
       itemName: inventoryDetailRes?.itemName || '',
       itemNumber: inventoryDetailRes?.itemNumber || '',
+      warehouseId: inventoryDetailRes?.warehouseId || '',
       warehouseName: inventoryDetailRes?.warehouseName || '',
       warehouseNumber: inventoryDetailRes?.warehouseNumber || '',
       safetyStock: inventoryDetailRes?.safetyStock || 0,
@@ -44,6 +46,21 @@ const InventoryDetailModal = ({
       uomName: inventoryDetailRes?.uomName || '',
     });
     setShowMoveModal(true);
+  };
+
+  const handleSafetyStockEdit = () => {
+    setSelectedStock({
+      itemId: inventoryDetailRes?.itemId || '',
+      itemName: inventoryDetailRes?.itemName || '',
+      itemNumber: inventoryDetailRes?.itemNumber || '',
+      warehouseId: inventoryDetailRes?.warehouseId || '',
+      warehouseName: inventoryDetailRes?.warehouseName || '',
+      warehouseNumber: inventoryDetailRes?.warehouseNumber || '',
+      safetyStock: inventoryDetailRes?.safetyStock || 0,
+      currentStock: inventoryDetailRes?.currentStock || 0,
+      uomName: inventoryDetailRes?.uomName || '',
+    });
+    setShowSafetyStockModal(true);
   };
 
   const {
@@ -71,20 +88,6 @@ const InventoryDetailModal = ({
         $onClose={() => setErrorModal(false)}
       />
     );
-
-  const handleSafetyStockEdit = () => {
-    setSelectedStock({
-      itemId: inventoryDetailRes?.itemId || '',
-      itemName: inventoryDetailRes?.itemName || '',
-      itemNumber: inventoryDetailRes?.itemNumber || '',
-      warehouseName: inventoryDetailRes?.warehouseName || '',
-      warehouseNumber: inventoryDetailRes?.warehouseNumber || '',
-      safetyStock: inventoryDetailRes?.safetyStock || 0,
-      currentStock: inventoryDetailRes?.currentStock || 0,
-      uomName: inventoryDetailRes?.uomName || '',
-    });
-    setShowSafetyStockModal(true);
-  };
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">

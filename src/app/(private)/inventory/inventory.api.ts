@@ -1,16 +1,16 @@
 import { InventoryStatResponse } from './types/InventoryStatsType';
 import axios from 'axios';
 import { InventoryQueryParams, InventoryResponse } from './types/InventoryListType';
-import { InventoryDetailResponse, StockMovementRequest } from './types/InventoryDetailType';
-import { LowStockItemResponse } from '../low-stock/types/LowStockItems';
+import { InventoryDetailResponse, StockMovementRequest } from './types/InventoryDetailModalType';
+import { LowStockItemResponse } from '../low-stock/types/LowStockAlertType';
 import { StockMovementResponse } from './types/StockMovement';
 import {
   ManageMentCommonQueryParams,
   ProductionListResponse,
   ReadyToShipListResponse,
-} from './types/InventoryShippingListType';
-import { ReceivedListResponse } from './types/InventoryReceivingListType';
-import { markAsReadyToShipResponse, ShippingDetailResponse } from './types/ShippingDetailType';
+} from './types/ShippingManagementListType';
+import { ReceivedListResponse } from './types/ReceivingManagementListType';
+import { markAsReadyToShipResponse, ShippingDetailResponse } from './types/ShippingDetailModalType';
 import {
   AddInventoryItemsRequest,
   AddInventoryItemsToggleResponse,

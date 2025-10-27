@@ -28,6 +28,7 @@ export interface InventoryDetailResponse {
   uomName: string;
   unitPrice: number;
   totalAmount: number;
+  warehouseId: string;
   warehouseName: string;
   warehouseNumber: string;
   lastModified: string;

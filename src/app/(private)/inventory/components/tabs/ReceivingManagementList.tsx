@@ -1,26 +1,31 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import {
   RECEIVING_COMPLETED_TABLE_HEADERS,
   RECEIVING_PENDING_TABLE_HEADERS,
 } from '../../inventory.constants';
 import { useQuery } from '@tanstack/react-query';
-import {
-  getPendingList,
-  getProductionList,
-  getReadyToShipList,
-  getReceivedList,
-} from '../../inventory.api';
-import { ManageMentCommonQueryParams } from '../../types/InventoryShippingListType';
+import { getPendingList, getReceivedList } from '../../inventory.api';
+import { ManageMentCommonQueryParams } from '../../types/ShippingManagementListType';
 import StatusLabel from '@/app/components/common/StatusLabel';
 import Pagination from '@/app/components/common/Pagination';
+import TableStatusBox from '@/app/components/common/TableStatusBox';
 const ReceivingManagementList = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedSubTab, setSelectedSubTab] = useState('pending');
+
+  const getTableHeader = () => {
+    return selectedSubTab === 'pending'
+      ? RECEIVING_PENDING_TABLE_HEADERS
+      : RECEIVING_COMPLETED_TABLE_HEADERS;
+  };
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedSubTab]);
 
   const queryPendingParams = useMemo(() => {
     const params: ManageMentCommonQueryParams = {
@@ -71,16 +76,6 @@ const ReceivingManagementList = () => {
     { id: 'received', name: '입고 완료', count: ReceivedRes?.pageData.totalElements },
   ];
 
-  const getTableHeader = () => {
-    return selectedSubTab === 'pending'
-      ? RECEIVING_PENDING_TABLE_HEADERS
-      : RECEIVING_COMPLETED_TABLE_HEADERS;
-  };
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedSubTab]);
-
   return (
     <div className="bg-white rounded-lg border border-gray-200 mt-6">
       <div className="p-6 border-b border-gray-200">
@@ -128,40 +123,50 @@ const ReceivingManagementList = () => {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                {getTableHeader().map((header) => (
-                  <th
-                    key={header}
-                    className="py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider text-left"
-                  >
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {currentData.map((order) => (
-                <tr key={order.purchaseOrderId} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                    {order.purchaseOrderNumber}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{order.supplierCompanyName}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">
-                    {order.orderDate.slice(0, 10)}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{order.dueDate.slice(0, 10)}</td>
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                    ₩{order.totalAmount.toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4">
-                    <StatusLabel $statusCode={order.statusCode} />
-                  </td>
+          {isReceivedLoading || isPendingLoading ? (
+            <TableStatusBox $type="loading" $message="입고 목록을 불러오는 중입니다..." />
+          ) : isReceivedError || isPendingError ? (
+            <TableStatusBox $type="error" $message="입고 목록을 불러오는 중 오류가 발생했습니다." />
+          ) : !currentData || currentData.length === 0 ? (
+            <TableStatusBox $type="empty" $message="등록된 입고 정보가 없습니다." />
+          ) : (
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  {getTableHeader().map((header) => (
+                    <th
+                      key={header}
+                      className="py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider text-left"
+                    >
+                      {header}
+                    </th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {currentData.map((order) => (
+                  <tr key={order.purchaseOrderId} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                      {order.purchaseOrderNumber}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">{order.supplierCompanyName}</td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      {order.orderDate.slice(0, 10)}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      {order.dueDate.slice(0, 10)}
+                    </td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                      ₩{order.totalAmount.toLocaleString()}
+                    </td>
+                    <td className="px-6 py-4">
+                      <StatusLabel $statusCode={order.statusCode} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
         {/* 페이지네이션 */}
         {isCurrentError || isCurrentLoading ? null : (
