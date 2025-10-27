@@ -1,0 +1,68 @@
+@import 'tailwindcss';
+@import 'remixicon/fonts/remixicon.css';
+
+@theme {
+  /* ===== Blue 팔레트 ===== */
+  --color-blue-50: #f2f5fc;
+  --color-blue-100: #dce5f9;
+  --color-blue-200: #aec4f5;
+  --color-blue-300: #7da2f3;
+  --color-blue-400: #497ef3;
+  --color-blue-500: #2563eb;
+  --color-blue-600: #0d48c9;
+  --color-blue-700: #0e3895;
+  --color-blue-800: #0d2863;
+  --color-blue-900: #091635;
+
+  /* ===== Red 팔레트 ===== */
+  --color-red-50: #fcf2f4;
+  --color-red-100: #f9dce1;
+  --color-red-200: #f5aebf;
+  --color-red-300: #f37d99;
+  --color-red-400: #f34970;
+  --color-red-500: #eb253d;
+  --color-red-600: #c90d27;
+  --color-red-700: #950e1d;
+  --color-red-800: #630d14;
+  --color-red-900: #35090b;
+
+  /* ===== Green 팔레트 ===== */
+  --color-green-50: #f2fcf5;
+  --color-green-100: #dcf9e2;
+  --color-green-200: #aef5c2;
+  --color-green-300: #7df39f;
+  --color-green-400: #49f375;
+  --color-green-500: #25eb56;
+  --color-green-600: #0dc943;
+  --color-green-700: #0e9533;
+  --color-green-800: #0d6324;
+  --color-green-900: #093514;
+
+  /* ===== Purple 팔레트 ===== */
+  --color-purple-50: #f8f2fc;
+  --color-purple-100: #eadcf9;
+  --color-purple-200: #cdaef5;
+  --color-purple-300: #a67df3;
+  --color-purple-400: #8a49f3;
+  --color-purple-500: #6b25eb;
+  --color-purple-600: #510dc9;
+  --color-purple-700: #3d0e95;
+  --color-purple-800: #2a0d63;
+  --color-purple-900: #160935;
+
+  /* ===== Gray 팔레트 ===== */
+  --color-gray-50: #f9f9fa;
+  --color-gray-100: #f0f0f1;
+  --color-gray-200: #e0e0e2;
+  --color-gray-300: #c7c7ca;
+  --color-gray-400: #a0a0a6;
+  --color-gray-500: #7a7a80;
+  --color-gray-600: #5f5f66;
+  --color-gray-700: #45454c;
+  --color-gray-800: #2b2b33;
+  --color-gray-900: #141418;
+}
+
+html {
+  font-family: var(--font-geist-sans), var(--font-geist-mono), var(--font-pacifico), sans-serif;
+}
