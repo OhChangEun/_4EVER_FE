@@ -14,6 +14,7 @@ export interface WarehouseDetailResponse {
     description: string;
   };
   manager: {
+    managerId: string;
     managerName: string;
     managerPhoneNumber: string;
     managerEmail: string;

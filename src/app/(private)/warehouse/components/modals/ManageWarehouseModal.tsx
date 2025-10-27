@@ -72,7 +72,7 @@ const ManageWarehouseModal = ({
   };
   const {
     data: warehouseDetailRes,
-    isLoading: isWarehousInfoLoading,
+    isLoading: isWarehouseInfoLoading,
     isError: isWarehouseInfoError,
   } = useQuery<WarehouseDetailResponse>({
     queryKey: ['warehouseDetail', $selectedWarehouseId],
@@ -107,29 +107,35 @@ const ManageWarehouseModal = ({
   });
 
   useEffect(() => {
-    if (warehouseInfo && managerInfo) {
+    if (warehouseInfo && managerInfo && ManagerInfoRes?.length) {
+      let matched = ManagerInfoRes.find((m) => m.managerId === managerInfo.managerId);
+
+      if (!matched) {
+        matched = ManagerInfoRes.find((m) => m.managerName === managerInfo.managerName);
+      }
+
       setFormData({
         warehouseName: warehouseInfo.warehouseName ?? '',
         warehouseNumber: warehouseInfo.warehouseNumber ?? '',
         warehouseType: warehouseInfo.warehouseType ?? '',
         statusCode: warehouseInfo.statusCode ?? '',
         location: warehouseInfo.location ?? '',
-        managerId: '',
+        managerId: matched?.managerId ?? managerInfo.managerId ?? '',
         managerName: managerInfo.managerName ?? '',
         managerPhoneNumber: managerInfo.managerPhoneNumber ?? '',
         managerEmail: managerInfo.managerEmail ?? '',
         description: warehouseInfo.description ?? '',
       });
     }
-  }, [warehouseInfo, managerInfo]);
+  }, [warehouseInfo, managerInfo, ManagerInfoRes]);
 
   const [errorModal, setErrorModal] = useState(false);
 
   useEffect(() => {
-    setErrorModal(isWarehousInfoLoading || isManagerInfoLoading);
-  }, [isWarehousInfoLoading, isManagerInfoLoading]);
+    setErrorModal(isWarehouseInfoLoading || isManagerInfoLoading);
+  }, [isWarehouseInfoLoading, isManagerInfoLoading]);
 
-  if (isWarehousInfoLoading)
+  if (isWarehouseInfoLoading)
     return <ModalStatusBox $type="loading" $message="창고 정보를 불러오는 중입니다..." />;
 
   if (isManagerInfoLoading)
@@ -201,7 +207,7 @@ const ManageWarehouseModal = ({
                 name="warehouseType"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm pr-8"
               >
-                <option value=" MATERIAL">원자재</option>
+                <option value="MATERIAL">원자재</option>
                 <option value="ITEM">부품</option>
                 <option value="ETC">기타</option>
               </select>
@@ -246,7 +252,7 @@ const ManageWarehouseModal = ({
                     managerEmail: selectedManager?.managerEmail ?? '',
                   }));
                 }}
-                name="manager"
+                name="managerId"
                 value={formData.managerId}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm pr-8"
               >
