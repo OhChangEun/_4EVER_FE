@@ -102,11 +102,14 @@ export default function LowStockList() {
 
         <div className="overflow-x-auto">
           {isLoading ? (
-            <TableStatusBox $type="loading" $message="재고 목록을 불러오는 중입니다..." />
+            <TableStatusBox $type="loading" $message="재고 부족 목록을 불러오는 중입니다..." />
           ) : isError ? (
-            <TableStatusBox $type="error" $message="재고 목록을 불러오는 중 오류가 발생했습니다." />
+            <TableStatusBox
+              $type="error"
+              $message="재고 부족 목록을 불러오는 중 오류가 발생했습니다."
+            />
           ) : !lowStocks || lowStocks.length === 0 ? (
-            <TableStatusBox $type="empty" $message="등록된 재고가 없습니다." />
+            <TableStatusBox $type="empty" $message="부족한 재고가 없습니다." />
           ) : (
             <table className="w-full">
               <thead className="bg-gray-50">

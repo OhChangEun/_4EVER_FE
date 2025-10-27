@@ -124,11 +124,11 @@ const ReceivingManagementList = () => {
 
         <div className="overflow-x-auto">
           {isReceivedLoading || isPendingLoading ? (
-            <TableStatusBox $type="loading" $message="재고 목록을 불러오는 중입니다..." />
+            <TableStatusBox $type="loading" $message="입고 목록을 불러오는 중입니다..." />
           ) : isReceivedError || isPendingError ? (
-            <TableStatusBox $type="error" $message="재고 목록을 불러오는 중 오류가 발생했습니다." />
+            <TableStatusBox $type="error" $message="입고 목록을 불러오는 중 오류가 발생했습니다." />
           ) : !currentData || currentData.length === 0 ? (
-            <TableStatusBox $type="empty" $message="등록된 재고가 없습니다." />
+            <TableStatusBox $type="empty" $message="등록된 입고 정보가 없습니다." />
           ) : (
             <table className="w-full">
               <thead className="bg-gray-50">
