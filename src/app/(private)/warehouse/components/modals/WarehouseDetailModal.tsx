@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import {
   WarehouseDetailModalProps,
   WarehouseDetailResponse,
-} from '../../types/WarehouseDetailType';
+} from '../../types/WarehouseDetailModalType';
 import { useEffect, useState } from 'react';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
 import { getWarehouseDetail } from '../../warehouse.api';

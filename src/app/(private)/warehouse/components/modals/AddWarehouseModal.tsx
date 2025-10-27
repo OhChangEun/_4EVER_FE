@@ -5,7 +5,7 @@ import {
   AddWarehouseModalProps,
   AddWarehouseRequest,
   WarehouseManagerInfoResponse,
-} from '../../types/AddWarehouseType';
+} from '../../types/AddWarehouseModalType';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { getWarehouseManagerInfo, postAddWarehouse } from '../../warehouse.api';
 import { ApiResponseNoData } from '@/app/types/api';

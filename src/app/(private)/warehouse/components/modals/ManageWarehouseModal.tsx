@@ -1,9 +1,12 @@
 'use client';
 
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { EditWarehouseRequest, ManageWarehouseModalProps } from '../../types/ManageWarehouseType';
-import { InventoryDetailResponse } from '@/app/(private)/inventory/types/InventoryDetailType';
-import { WarehouseDetailResponse } from '../../types/WarehouseDetailType';
+import {
+  EditWarehouseRequest,
+  ManageWarehouseModalProps,
+} from '../../types/ManageWarehouseModalType';
+import { InventoryDetailResponse } from '@/app/(private)/inventory/types/InventoryDetailModalType';
+import { WarehouseDetailResponse } from '../../types/WarehouseDetailModalType';
 import {
   getWarehouseDetail,
   getWarehouseManagerInfo,
@@ -12,7 +15,7 @@ import {
 import { useEffect, useState } from 'react';
 import { getStatusText } from '@/lib/status.constants';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
-import { WarehouseManagerInfoResponse } from '../../types/AddWarehouseType';
+import { WarehouseManagerInfoResponse } from '../../types/AddWarehouseModalType';
 import { ApiResponseNoData } from '@/app/types/api';
 
 interface ManageWarehouseRequest {

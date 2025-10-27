@@ -6,7 +6,7 @@ import {
   OrderItemsType,
   ShippingDetailModalProps,
   ShippingDetailResponse,
-} from '../../types/ShippingDetailType';
+} from '../../types/ShippingDetailModalType';
 import { useEffect, useState } from 'react';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
 import {

@@ -1,7 +1,7 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
-import { InventorySafetyStockModalProps } from '../../types/EditSafetyStockType';
+import { InventorySafetyStockModalProps } from '../../types/InventorySafetyStockModalType';
 import { useMutation } from '@tanstack/react-query';
 import { PatchSafetyStock } from '../../inventory.api';
 

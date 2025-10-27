@@ -7,7 +7,7 @@ import {
 } from '../../inventory.constants';
 import { useQuery } from '@tanstack/react-query';
 import { getPendingList, getReceivedList } from '../../inventory.api';
-import { ManageMentCommonQueryParams } from '../../types/InventoryShippingListType';
+import { ManageMentCommonQueryParams } from '../../types/ShippingManagementListType';
 import StatusLabel from '@/app/components/common/StatusLabel';
 import Pagination from '@/app/components/common/Pagination';
 const ReceivingManagementList = () => {

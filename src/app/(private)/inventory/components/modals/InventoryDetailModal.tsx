@@ -6,7 +6,7 @@ import InventorySafetyModal from './InventorySafetyStockModal';
 import {
   InventoryDetailModalProps,
   InventoryDetailResponse,
-} from '../../types/InventoryDetailType';
+} from '../../types/InventoryDetailModalType';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { getInventoryDetail, postStockMovement } from '../../inventory.api';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';

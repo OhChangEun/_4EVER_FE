@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
-import { LowStockItemResponse } from '../types/LowStockItems';
+import { LowStockItemResponse } from '../types/LowStockAlertType';
 import Link from 'next/link';
 import { LowStockListQueryParams } from '../types/LowStockListType';
 import StatusLabel from '@/app/components/common/StatusLabel';
