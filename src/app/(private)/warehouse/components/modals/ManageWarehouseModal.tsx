@@ -190,7 +190,7 @@ const ManageWarehouseModal = ({
               <input
                 type="tel"
                 value={formData.managerPhoneNumber}
-                onChange={(e) => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   e.target.value = e.target.value.replace(/[^0-9-]/g, '');
                   handleInputChange(e);
                 }}

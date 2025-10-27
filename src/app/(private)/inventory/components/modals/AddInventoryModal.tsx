@@ -1,48 +1,88 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-
-interface AddInventoryModalProps {
-  $setShowAddModal: (show: boolean) => void;
-}
+import {
+  AddInventoryItemsRequest,
+  AddInventoryItemsToggleResponse,
+  AddInventoryModalProps,
+  WarehouseToggleResponse,
+} from '../../types/AddInventoryModalType';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { getItemInfo, getWarehouseInfo, postAddMaterial } from '../../inventory.api';
 
 const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
-  const [formData, setFormData] = useState({
-    materialType: '',
-    supplier: '',
-    unitPrice: '',
-    unit: '',
-    safetyStock: '',
-    initialStock: '',
-    warehouse: '',
+  const [selectedItem, setSelectedItem] = useState<AddInventoryItemsToggleResponse | null>(null);
+
+  const [formData, setFormData] = useState<AddInventoryItemsRequest>({
+    itemId: '',
+    supplierCompanyId: '',
+    safetyStock: 0,
+    currentStock: 0,
+    warehouseId: '',
   });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSelectMaterial = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const id = e.target.value;
+    const found = ItemInfoRes?.find((item) => item.itemId === id) || null;
+
+    setSelectedItem(found);
+    setFormData((prev) => ({
+      ...prev,
+      itemId: found?.itemId ?? '',
+      supplierCompanyId: found?.supplierCompanyId ?? '',
+    }));
+  };
 
   useEffect(() => {
     console.log(formData);
   }, [formData]);
 
-  const materials = ['강철', '알루미늄', '스테인리스', '구리', '플라스틱', '고무'];
-  const suppliers = ['스테인리스코리아', '알루텍', '모터테크', '패스너코리아', '용접재료상사'];
-  const warehouses = ['제1창고', '제2창고', '제3창고', '냉동창고', '임시창고'];
-  const units = ['EA', 'KG', 'M', 'L', 'BOX', 'SET'];
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert('원자재가 성공적으로 추가되었습니다.');
+    addMaterial(formData);
     $setShowAddModal(false);
   };
 
   const handleClose = () => {
     $setShowAddModal(false);
   };
+
+  //------------------------------
+  const {
+    data: ItemInfoRes,
+    isLoading: isItemInfoLoading,
+    isError: isItemInfoError,
+  } = useQuery<AddInventoryItemsToggleResponse[]>({
+    queryKey: ['getItemInfo'],
+    queryFn: getItemInfo,
+  });
+
+  const {
+    data: warehouseInfoRes,
+    isLoading: isWarehouseInfoLoading,
+    isError: isWarehouseInfoError,
+  } = useQuery<WarehouseToggleResponse[]>({
+    queryKey: ['getWarehouseInfo', formData.itemId],
+    queryFn: () => getWarehouseInfo(formData.itemId),
+    enabled: !!formData.itemId,
+  });
+
+  const { mutate: addMaterial } = useMutation({
+    mutationFn: postAddMaterial,
+    onSuccess: (data) => {
+      alert(`${data.status} : ${data.message}
+      `);
+    },
+    onError: (error) => {
+      alert(` 자재 등록 중 오류가 발생했습니다. ${error}`);
+    },
+  });
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
@@ -63,77 +103,52 @@ const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
                 자재명 <span className="text-red-500">*</span>
               </label>
               <select
-                name="materialType"
-                value={formData.materialType}
-                onChange={handleInputChange}
+                name="itemId"
+                value={formData.itemId}
+                onChange={handleSelectMaterial}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm pr-8"
                 required
               >
                 <option value="">자재를 선택하세요</option>
-                {materials.map((material) => (
-                  <option key={material} value={material}>
-                    {material}
+                {ItemInfoRes?.map((item) => (
+                  <option key={item.itemId} value={item.itemId}>
+                    {item.itemIdName}
                   </option>
                 ))}
               </select>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                공급사 <span className="text-red-500">*</span>
-              </label>
-              <select
-                name="supplier"
-                value={formData.supplier}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm pr-8"
-                required
-              >
-                <option value="">공급사를 선택하세요</option>
-                {suppliers.map((supplier) => (
-                  <option key={supplier} value={supplier}>
-                    {supplier}
-                  </option>
-                ))}
-              </select>
+              <label className="block text-sm font-medium text-gray-700 mb-2">공급사</label>
+              <input
+                type="text"
+                readOnly
+                value={selectedItem?.supplierCompanyName ?? ''}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 text-sm"
+              />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                단가 <span className="text-red-500">*</span>
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">단가</label>
               <div className="relative">
                 <span className="absolute left-3 top-2 text-gray-500 text-sm">₩</span>
                 <input
-                  type="number"
-                  name="unitPrice"
-                  value={formData.unitPrice}
-                  onChange={handleInputChange}
-                  className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                  placeholder="0"
-                  required
+                  type="text"
+                  readOnly
+                  value={selectedItem?.unitPrice?.toLocaleString() ?? ''}
+                  className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 text-sm"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                단위 <span className="text-red-500">*</span>
-              </label>
-              <select
-                name="unit"
-                value={formData.unit}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm pr-8"
-                required
-              >
-                <option value="">단위를 선택하세요</option>
-                {units.map((unit) => (
-                  <option key={unit} value={unit}>
-                    {unit}
-                  </option>
-                ))}
-              </select>
+              <label className="block text-sm font-medium text-gray-700 mb-2">단위</label>
+              <input
+                type="text"
+                readOnly
+                value={selectedItem?.uomName ?? ''}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 text-sm"
+              />
             </div>
 
             <div>
@@ -157,8 +172,8 @@ const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
               </label>
               <input
                 type="number"
-                name="initialStock"
-                value={formData.initialStock}
+                name="currentStock"
+                value={formData.currentStock}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                 placeholder="초기 재고 수량"
@@ -171,16 +186,16 @@ const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
                 보관위치 (창고) <span className="text-red-500">*</span>
               </label>
               <select
-                name="warehouse"
-                value={formData.warehouse}
+                name="warehouseId"
+                value={formData.warehouseId}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm pr-8"
                 required
               >
                 <option value="">창고를 선택하세요</option>
-                {warehouses.map((warehouse) => (
-                  <option key={warehouse} value={warehouse}>
-                    {warehouse}
+                {warehouseInfoRes?.map((warehouse) => (
+                  <option key={warehouse.warehouseId} value={warehouse.warehouseId}>
+                    {warehouse.warehouseName}
                   </option>
                 ))}
               </select>

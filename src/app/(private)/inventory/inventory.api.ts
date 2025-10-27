@@ -21,6 +21,11 @@ import { ReceivedListResponse } from './types/InventoryReceivingListType';
 import { markAsReadyToShipResponse, ShippingDetailResponse } from './types/ShippingDetailType';
 import { LowStockStatResponse } from '../low-stock/types/LowStockStatsType';
 import { LowStockListQueryParams, LowStockListResponse } from '../low-stock/types/LowStockListType';
+import {
+  AddInventoryItemsRequest,
+  AddInventoryItemsToggleResponse,
+  WarehouseToggleResponse,
+} from './types/AddInventoryModalType';
 // ----------------------- 재고 통계 -----------------------
 export const getInventoryStats = async (): Promise<InventoryStatResponse> => {
   const res = await axios.get<ApiResponse<InventoryStatResponse>>(INVENTORY_ENDPOINTS.STATS);
@@ -172,4 +177,27 @@ export const getReceivedList = async (
   );
 
   return { data: res.data.data.content, pageData: res.data.data.page };
+};
+
+// ----------------------- 원자재 추가 -----------------------
+export const getItemInfo = async (): Promise<AddInventoryItemsToggleResponse[]> => {
+  const res = await axios.get<ApiResponse<AddInventoryItemsToggleResponse[]>>(
+    INVENTORY_ENDPOINTS.ITEM_TOGGLE,
+  );
+  return res.data.data;
+};
+
+export const getWarehouseInfo = async (itemId: string): Promise<WarehouseToggleResponse[]> => {
+  const res = await axios.get<ApiResponse<{ warehouses: WarehouseToggleResponse[] }>>(
+    INVENTORY_ENDPOINTS.WAREHOUSE_TOGGLE(itemId),
+  );
+  return res.data.data.warehouses;
+};
+
+export const postAddMaterial = async (
+  payload: AddInventoryItemsRequest,
+): Promise<ApiResponseNoData> => {
+  const res = await axios.post<ApiResponseNoData>(INVENTORY_ENDPOINTS.ADD_MATERIALS, payload);
+
+  return res.data;
 };

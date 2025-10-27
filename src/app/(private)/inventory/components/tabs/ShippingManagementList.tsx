@@ -106,7 +106,7 @@ const ShippingManagementList = () => {
                     {production.orderDate.slice(0, 10)}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-900">
-                    {/* {production.dueDate.slice(0, 10)} */}
+                    {production.dueDate.slice(0, 10)}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-900">
                     ₩{production.totalAmount.toLocaleString()}
