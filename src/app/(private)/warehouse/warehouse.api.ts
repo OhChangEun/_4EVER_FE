@@ -5,6 +5,7 @@ import { WarehouseListQueryParams, WarehouseListResponse } from './types/Warehou
 import { Page } from '@/types/Page';
 import { WarehouseDetailResponse } from './types/WarehouseDetailType';
 import { AddWarehouseRequest, WarehouseManagerInfoResponse } from './types/AddWarehouseType';
+import { EditWarehouseRequest } from './types/ManageWarehouseType';
 
 // ----------------------- 창고 관리 -----------------------
 export const getWarehouseStats = async (): Promise<WarehouseStatResponse> => {
@@ -49,4 +50,18 @@ export const getWarehouseManagerInfo = async (): Promise<WarehouseManagerInfoRes
     WAREHOUSE_ENDPOINTS.WAREHOUSE_MANAGER_INFO,
   );
   return res.data.data;
+};
+
+export const patchManageWarehouse = async ({
+  warehouseId,
+  payload,
+}: {
+  warehouseId: string;
+  payload: EditWarehouseRequest;
+}): Promise<ApiResponseNoData> => {
+  const res = await axios.patch<ApiResponseNoData>(
+    WAREHOUSE_ENDPOINTS.WAREHOUSE_MANAGE(warehouseId),
+    payload,
+  );
+  return res.data;
 };

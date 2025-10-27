@@ -1,13 +1,19 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
-import { ManageWarehouseModalProps } from '../../types/ManageWarehouseType';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { EditWarehouseRequest, ManageWarehouseModalProps } from '../../types/ManageWarehouseType';
 import { InventoryDetailResponse } from '@/app/(private)/inventory/types/InventoryDetailType';
 import { WarehouseDetailResponse } from '../../types/WarehouseDetailType';
-import { getWarehouseDetail } from '../../warehouse.api';
+import {
+  getWarehouseDetail,
+  getWarehouseManagerInfo,
+  patchManageWarehouse,
+} from '../../warehouse.api';
 import { useEffect, useState } from 'react';
 import { getStatusText } from '@/lib/status.constants';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
+import { ApiResponseNoData } from '@/app/api';
+import { WarehouseManagerInfoResponse } from '../../types/AddWarehouseType';
 
 interface ManageWarehouseRequest {
   warehouseName: string;
@@ -15,6 +21,7 @@ interface ManageWarehouseRequest {
   warehouseType: string;
   statusCode: string;
   location: string;
+  managerId: string;
   managerName: string;
   managerPhoneNumber: string;
   managerEmail: string;
@@ -31,15 +38,12 @@ const ManageWarehouseModal = ({
     warehouseType: '',
     statusCode: '',
     location: '',
+    managerId: '',
     managerName: '',
     managerPhoneNumber: '',
     managerEmail: '',
     description: '',
   });
-
-  // useEffect(() => {
-  //   console.log(formData);
-  // }, [formData]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
@@ -49,6 +53,19 @@ const ManageWarehouseModal = ({
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const data = {
+      warehouseName: formData.warehouseName,
+      warehouseType: formData.warehouseType,
+      location: formData.location,
+      managerId: formData.managerId,
+      warehouseStatusCode: formData.statusCode,
+      note: formData.description ?? '',
+    };
+    editWarehouse({ warehouseId: $selectedWarehouseId, payload: data });
   };
   const {
     data: warehouseDetailRes,
@@ -63,6 +80,29 @@ const ManageWarehouseModal = ({
   const warehouseInfo = warehouseDetailRes?.warehouseInfo;
   const managerInfo = warehouseDetailRes?.manager;
 
+  const {
+    data: ManagerInfoRes,
+    isLoading: isManagerInfoLoading,
+    isError: isManagerInfoError,
+  } = useQuery<WarehouseManagerInfoResponse[]>({
+    queryKey: ['getWarehouseManagerInfo'],
+    queryFn: getWarehouseManagerInfo,
+  });
+
+  const { mutate: editWarehouse } = useMutation<
+    ApiResponseNoData,
+    Error,
+    { warehouseId: string; payload: EditWarehouseRequest }
+  >({
+    mutationFn: patchManageWarehouse,
+    onSuccess: (data) => {
+      alert(`${data.status} : ${data.message}`);
+    },
+    onError: (error) => {
+      alert(`창고 수정 중 오류가 발생했습니다. ${error}`);
+    },
+  });
+
   useEffect(() => {
     if (warehouseInfo && managerInfo) {
       setFormData({
@@ -71,6 +111,7 @@ const ManageWarehouseModal = ({
         warehouseType: warehouseInfo.warehouseType ?? '',
         statusCode: warehouseInfo.statusCode ?? '',
         location: warehouseInfo.location ?? '',
+        managerId: '',
         managerName: managerInfo.managerName ?? '',
         managerPhoneNumber: managerInfo.managerPhoneNumber ?? '',
         managerEmail: managerInfo.managerEmail ?? '',
@@ -95,11 +136,12 @@ const ManageWarehouseModal = ({
         $onClose={() => setErrorModal(false)}
       />
     );
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
-          {/* <h3 className="text-xl font-semibold">창고 관리 - {selectedWarehouse.name}</h3> */}
+          <h3 className="text-xl font-semibold">창고 관리 - {formData.warehouseName}</h3>
           <button
             onClick={() => $setShowManageModal(false)}
             className="text-gray-400 hover:text-gray-600 cursor-pointer"
@@ -123,6 +165,8 @@ const ManageWarehouseModal = ({
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">창고 코드</label>
               <input
+                readOnly
+                disabled
                 type="text"
                 value={formData.warehouseNumber}
                 onChange={handleInputChange}
@@ -141,11 +185,9 @@ const ManageWarehouseModal = ({
                 name="warehouseType"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm pr-8"
               >
-                <option>원자재</option>
-                <option>완제품</option>
-                <option>부품</option>
-                <option>특수보관</option>
-                <option>임시보관</option>
+                <option value=" MATERIAL">원자재</option>
+                <option value="ITEM">부품</option>
+                <option value="ETC">기타</option>
               </select>
             </div>
             <div>
@@ -156,9 +198,8 @@ const ManageWarehouseModal = ({
                 name="statusCode"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm pr-8"
               >
-                <option value="active">운영중</option>
-                <option value="maintenance">점검중</option>
-                <option value="inactive">비활성</option>
+                <option value="ACTIVE">운영중</option>
+                <option value="INACTIVE">비활성</option>
               </select>
             </div>
           </div>
@@ -177,17 +218,35 @@ const ManageWarehouseModal = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">담당자</label>
-              <input
-                type="text"
-                value={formData.managerName}
-                onChange={handleInputChange}
-                name="managerName"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-              />
+              <select
+                onChange={(e) => {
+                  const managerId = e.target.value;
+                  const selectedManager = ManagerInfoRes?.find((m) => m.managerId === managerId);
+
+                  setFormData((prev) => ({
+                    ...prev,
+                    managerId,
+                    managerPhoneNumber: selectedManager?.managerPhone ?? '',
+                    managerEmail: selectedManager?.managerEmail ?? '',
+                  }));
+                }}
+                name="manager"
+                value={formData.managerId}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm pr-8"
+              >
+                <option value="">창고 담당자를 선택하세요</option>
+                {ManagerInfoRes?.map((manager) => (
+                  <option key={manager.managerId} value={manager.managerId}>
+                    {manager.managerName}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">연락처</label>
               <input
+                readOnly
+                disabled
                 type="tel"
                 value={formData.managerPhoneNumber}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -205,6 +264,8 @@ const ManageWarehouseModal = ({
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">이메일</label>
             <input
+              readOnly
+              disabled
               type="email"
               value={formData.managerEmail}
               onChange={handleInputChange}
@@ -234,9 +295,7 @@ const ManageWarehouseModal = ({
             </button>
             <button
               // type="submit"
-              onClick={() => {
-                console.log(formData);
-              }}
+              onClick={handleSubmit}
               className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium cursor-pointer"
             >
               저장

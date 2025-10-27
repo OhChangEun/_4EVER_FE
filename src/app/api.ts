@@ -90,6 +90,7 @@ export const WAREHOUSE_ENDPOINTS = {
   STATS: `${INVENTORY_BASE_PATH}/iv/warehouses/statistic`,
   WAREHOUSE_LIST: `${INVENTORY_BASE_PATH}/iv/warehouses`,
   WAREHOUSE_DETAIL: (warehouseId: string) => `${INVENTORY_BASE_PATH}/iv/warehouses/${warehouseId}`,
+  WAREHOUSE_MANAGE: (warehouseId: string) => `${INVENTORY_BASE_PATH}/iv/warehouses/${warehouseId}`,
   ADD_WAREHOUSE: `${INVENTORY_BASE_PATH}/iv/warehouses`,
   WAREHOUSE_MANAGER_INFO: `${INVENTORY_BASE_PATH}/iv/warehouses/managers/toggle`,
 };

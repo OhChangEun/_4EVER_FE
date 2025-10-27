@@ -7,6 +7,7 @@ export interface AddWarehouseRequest {
   warehouseType: string;
   location: string;
   managerId: string;
+  note: string;
   managerPhone?: string;
 }
 

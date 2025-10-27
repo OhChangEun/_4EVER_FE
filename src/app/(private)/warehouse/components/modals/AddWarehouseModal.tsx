@@ -17,6 +17,7 @@ const AddWarehouseModal = ({ $setShowAddModal }: AddWarehouseModalProps) => {
     location: '',
     managerId: '',
     managerPhone: '',
+    note: '',
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
