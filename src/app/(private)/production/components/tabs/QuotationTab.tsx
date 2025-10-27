@@ -173,7 +173,7 @@ export default function QuotationTab() {
   }
 
   return (
-    <div className="bg-white rounded-2xl p-6 space-y-6 shadow-sm">
+    <>
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-900">견적 관리</h3>
         <div className="flex items-center">
@@ -323,6 +323,6 @@ export default function QuotationTab() {
           onConfirm={handleConfirmMps}
         />
       )}
-    </div>
+    </>
   );
 }

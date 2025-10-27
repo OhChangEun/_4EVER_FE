@@ -30,9 +30,9 @@ export default function Header({
       }`}
     >
       <div className="min-w-full mx-auto px-8 sm:px-6 lg:px-4">
-        <div className="flex justify-between items-center h-16 pt-1">
+        <div className="flex justify-between items-center h-16">
           {/* 좌측: 로고 + 네비게이션 바*/}
-          <div className="flex gap-6">
+          <div className="flex gap-4">
             <Logo />
             <Navigation />
           </div>

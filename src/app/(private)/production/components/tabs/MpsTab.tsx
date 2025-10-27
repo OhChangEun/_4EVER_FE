@@ -118,10 +118,8 @@ export default function MpsTab() {
   };
 
   return (
-    <div className="bg-white rounded-2xl p-6 space-y-6 shadow-sm">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900">주생산계획 (MPS)</h3>
-      </div>
+    <>
+      <h3 className="text-lg font-semibold text-gray-900">주생산계획 (MPS)</h3>
 
       {/* 제품 선택 드롭다운 및 날짜 선택 */}
       <div className="flex justify-between gap-4">
@@ -217,6 +215,6 @@ export default function MpsTab() {
           </div>
         )
       )}
-    </div>
+    </>
   );
 }

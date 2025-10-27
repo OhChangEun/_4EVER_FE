@@ -85,7 +85,7 @@ export default function PlannedOrdersTab() {
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+    <>
       <div className="p-4 border-b border-gray-200 flex items-center justify-between">
         <h4 className="text-md font-semibold text-gray-900">
           계획 주문 - 무엇을 언제 발주 지시할까?
@@ -198,6 +198,6 @@ export default function PlannedOrdersTab() {
       {showDetailModal && selectedMrpId && (
         <MrpPlannedOrderDetailModal mrpId={selectedMrpId} onClose={handleCloseDetail} />
       )}
-    </div>
+    </>
   );
 }
