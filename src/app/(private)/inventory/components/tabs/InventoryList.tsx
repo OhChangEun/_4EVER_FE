@@ -231,7 +231,7 @@ const InventoryList = () => {
                       onClick={() => handleItemDetail(inventory.itemId)}
                       className="text-blue-600 hover:text-blue-900 cursor-pointer"
                     >
-                      상세보기
+                      <i className="ri-eye-line"></i>
                     </button>
                   </td>
                 </tr>
