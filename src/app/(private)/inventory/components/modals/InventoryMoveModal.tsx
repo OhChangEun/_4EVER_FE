@@ -2,29 +2,8 @@
 
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { getWarehouseInfo, postStockMovement } from '../../inventory.api';
-import { StockMovementRequest } from '../../types/InventoryDetailType';
 import { useState } from 'react';
-import { WarehouseToggleResponse } from '../../types/AddInventoryModalType';
-
-interface InventoryMoveModalProps {
-  $setShowMoveModal: (show: boolean) => void;
-  $selectedStock: {
-    itemName: string;
-    itemNumber: string;
-    warehouseName: string;
-    warehouseNumber: string;
-    currentStock: number;
-    uomName: string;
-  };
-}
-
-const mockStockMovement: StockMovementRequest = {
-  fromWarehouseId: 1,
-  toWarehouseId: 2,
-  stockId: 101,
-  stockQuantity: 50,
-  uomName: 'EA',
-};
+import { InventoryMoveModalProps } from '../../types/InventoryMoveModalType';
 
 const InventoryMoveModal = ({ $setShowMoveModal, $selectedStock }: InventoryMoveModalProps) => {
   const [formData, setFormData] = useState({

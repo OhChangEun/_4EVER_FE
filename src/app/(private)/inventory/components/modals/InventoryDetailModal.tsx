@@ -46,6 +46,20 @@ const InventoryDetailModal = ({
     setShowMoveModal(true);
   };
 
+  const handleSafetyStockEdit = () => {
+    setSelectedStock({
+      itemId: inventoryDetailRes?.itemId || '',
+      itemName: inventoryDetailRes?.itemName || '',
+      itemNumber: inventoryDetailRes?.itemNumber || '',
+      warehouseName: inventoryDetailRes?.warehouseName || '',
+      warehouseNumber: inventoryDetailRes?.warehouseNumber || '',
+      safetyStock: inventoryDetailRes?.safetyStock || 0,
+      currentStock: inventoryDetailRes?.currentStock || 0,
+      uomName: inventoryDetailRes?.uomName || '',
+    });
+    setShowSafetyStockModal(true);
+  };
+
   const {
     data: inventoryDetailRes,
     isLoading,
@@ -71,20 +85,6 @@ const InventoryDetailModal = ({
         $onClose={() => setErrorModal(false)}
       />
     );
-
-  const handleSafetyStockEdit = () => {
-    setSelectedStock({
-      itemId: inventoryDetailRes?.itemId || '',
-      itemName: inventoryDetailRes?.itemName || '',
-      itemNumber: inventoryDetailRes?.itemNumber || '',
-      warehouseName: inventoryDetailRes?.warehouseName || '',
-      warehouseNumber: inventoryDetailRes?.warehouseNumber || '',
-      safetyStock: inventoryDetailRes?.safetyStock || 0,
-      currentStock: inventoryDetailRes?.currentStock || 0,
-      uomName: inventoryDetailRes?.uomName || '',
-    });
-    setShowSafetyStockModal(true);
-  };
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">

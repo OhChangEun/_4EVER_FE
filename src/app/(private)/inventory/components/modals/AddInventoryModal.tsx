@@ -38,10 +38,6 @@ const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
     }));
   };
 
-  useEffect(() => {
-    console.log(formData);
-  }, [formData]);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     addMaterial(formData);

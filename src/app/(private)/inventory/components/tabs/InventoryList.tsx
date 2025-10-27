@@ -41,7 +41,6 @@ const InventoryList = () => {
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-
     switch (searchType) {
       case 'category':
         setCategory(value);
@@ -58,16 +57,6 @@ const InventoryList = () => {
   };
 
   const [currentPage, setCurrentPage] = useState(1);
-
-  useEffect(() => {
-    console.log(category);
-    console.log(warehouse);
-    console.log(itemName);
-  }, [category, warehouse, itemName]);
-
-  useEffect(() => {
-    console.log(searchType);
-  }, [searchType]);
 
   const queryParams = useMemo(
     () => ({

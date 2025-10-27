@@ -1,18 +1,12 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import {
   RECEIVING_COMPLETED_TABLE_HEADERS,
   RECEIVING_PENDING_TABLE_HEADERS,
 } from '../../inventory.constants';
 import { useQuery } from '@tanstack/react-query';
-import {
-  getPendingList,
-  getProductionList,
-  getReadyToShipList,
-  getReceivedList,
-} from '../../inventory.api';
+import { getPendingList, getReceivedList } from '../../inventory.api';
 import { ManageMentCommonQueryParams } from '../../types/InventoryShippingListType';
 import StatusLabel from '@/app/components/common/StatusLabel';
 import Pagination from '@/app/components/common/Pagination';
@@ -21,6 +15,16 @@ const ReceivingManagementList = () => {
   const [endDate, setEndDate] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedSubTab, setSelectedSubTab] = useState('pending');
+
+  const getTableHeader = () => {
+    return selectedSubTab === 'pending'
+      ? RECEIVING_PENDING_TABLE_HEADERS
+      : RECEIVING_COMPLETED_TABLE_HEADERS;
+  };
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedSubTab]);
 
   const queryPendingParams = useMemo(() => {
     const params: ManageMentCommonQueryParams = {
@@ -70,16 +74,6 @@ const ReceivingManagementList = () => {
     { id: 'pending', name: '입고 대기', count: PendingRes?.pageData.totalElements },
     { id: 'received', name: '입고 완료', count: ReceivedRes?.pageData.totalElements },
   ];
-
-  const getTableHeader = () => {
-    return selectedSubTab === 'pending'
-      ? RECEIVING_PENDING_TABLE_HEADERS
-      : RECEIVING_COMPLETED_TABLE_HEADERS;
-  };
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedSubTab]);
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 mt-6">

@@ -17,6 +17,16 @@ const WarehouseList = () => {
   const [selectedWarehouseId, setSelectedWarehouseId] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(1);
 
+  const handleWarehouseDetail = (warehouseId: string) => {
+    setSelectedWarehouseId(warehouseId);
+    setShowDetailModal(true);
+  };
+
+  const handleWarehouseManage = (warehouseId: string) => {
+    setSelectedWarehouseId(warehouseId);
+    setShowManageModal(true);
+  };
+
   const queryParams = useMemo(
     () => ({
       page: currentPage - 1,
@@ -38,15 +48,6 @@ const WarehouseList = () => {
   const pageInfo = warehouseRes?.pageData;
   const totalPages = pageInfo?.totalPages ?? 1;
 
-  const handleWarehouseDetail = (warehouseId: string) => {
-    setSelectedWarehouseId(warehouseId);
-    setShowDetailModal(true);
-  };
-
-  const handleWarehouseManage = (warehouseId: string) => {
-    setSelectedWarehouseId(warehouseId);
-    setShowManageModal(true);
-  };
   return (
     <div className="bg-white rounded-lg  border border-gray-200 mt-8">
       <div className="p-6 border-b border-gray-200">
