@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import {
   AddWarehouseModalProps,
   AddWarehouseRequest,
@@ -20,7 +20,9 @@ const AddWarehouseModal = ({ $setShowAddModal }: AddWarehouseModalProps) => {
     note: '',
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -28,7 +30,8 @@ const AddWarehouseModal = ({ $setShowAddModal }: AddWarehouseModalProps) => {
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
     const { managerPhone, ...requestData } = formData;
     addWarehouse(requestData);
   };
@@ -145,6 +148,17 @@ const AddWarehouseModal = ({ $setShowAddModal }: AddWarehouseModalProps) => {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               placeholder="연락처를 입력하세요"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">설명</label>
+            <textarea
+              value={formData.note}
+              onChange={handleInputChange}
+              name="note"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+              rows={3}
+            ></textarea>
           </div>
 
           <div className="flex gap-3 pt-4">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { InventorySafetyStockModalProps } from '../../types/EditSafetyStockType';
 import { useMutation } from '@tanstack/react-query';
 import { PatchSafetyStock } from '../../inventory.api';
@@ -22,7 +22,8 @@ const InventorySafetyStockModal = ({
     },
   });
 
-  const handleSubmit = () => {
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
     editSafetyStock({ itemId: $selectedStock?.itemId as string, safetyStock: newSafetyStock });
   };
   return (
