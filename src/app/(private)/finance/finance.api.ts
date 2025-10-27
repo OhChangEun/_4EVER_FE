@@ -1,9 +1,10 @@
 import axios from 'axios';
-import { FINANCE_ENDPOINTS, ApiResponse, ApiResponseNoData } from '@/types/api';
+
+import { FINANCE_ENDPOINTS, ApiResponse, ApiResponseNoData } from '@/app/types/api';
 import { FinanceStatResponse } from '@/app/(private)/finance/types/FinanceStatsType';
 import { InvoiceListRes, InvoiceQueryParams } from './types/InvoiceListType';
 import { InvoicetDetailRes } from './types/InvoiceDetailModalType';
-import { Page } from '@/types/Page';
+import { Page } from '@/app/types/Page';
 
 // ----------------------- 통계 지표 -----------------------
 export const getFinanceStats = async (): Promise<ApiResponse<FinanceStatResponse>> => {

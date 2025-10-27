@@ -1,6 +1,5 @@
 import axios from 'axios';
-import { SALES_ENDPOINTS, ApiResponse, ApiResponseNoData } from '@/types/api';
-
+import { SALES_ENDPOINTS, ApiResponse, ApiResponseNoData } from '@/app/types/api';
 import { SalesStatResponse } from '@/app/(private)/sales/types/SalesStatsType';
 import { Quote, QuoteQueryParams } from '@/app/(private)/sales/types/SalesQuoteListType';
 import { Inventories, QuoteDetail } from '@/app/(private)/sales/types/QuoteDetailModalType';
@@ -13,9 +12,9 @@ import { CustomerData, ServerResponse } from '@/app/(private)/sales/types/NewCus
 import { AnalyticsQueryParams, SalesAnalysis } from '@/app/(private)/sales/types/SalesChartType';
 import { Order, OrderQueryParams } from '@/app/(private)/sales/types/SalesOrderListType';
 import { OrderDetail } from '@/app/(private)/sales/types/SalesOrderDetailType';
-import { Page } from '@/types/Page';
 import { InventoryCheckRes } from './types/QuoteReviewModalType';
 import { CustomerEditData, CustomerResponse } from './types/CustomerEditModalType';
+import { Page } from '@/app/types/Page';
 
 // ----------------------- 통계 지표 -----------------------
 export const getSalesStats = async (): Promise<SalesStatResponse> => {

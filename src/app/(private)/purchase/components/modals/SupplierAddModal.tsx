@@ -210,11 +210,8 @@ export default function SupplierAddModal({ onClose }: AddSupplierModalProps) {
                   카테고리 <span className="text-red-500">*</span>
                 </label>
                 <Dropdown
-                  label={
-                    SUPPLIER_CATEGORY_ITEMS.find((c) => c.key === supplierInfo.category)?.value ||
-                    '선택'
-                  }
                   items={SUPPLIER_CATEGORY_ITEMS}
+                  value={supplierInfo.category}
                   onChange={(key) =>
                     setSupplierInfo({ ...supplierInfo, category: key as SupplierCategory })
                   }

@@ -1,4 +1,4 @@
-import { Period, Stat, StatResponse } from '@/types/StatType';
+import { Period, Stat, StatResponse } from '@/app/types/StatType';
 
 interface FinanceStat {
   totalPurchases: Stat;

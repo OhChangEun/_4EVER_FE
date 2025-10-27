@@ -163,32 +163,29 @@ export default function PurchaseOrderListTab() {
     setCurrentPage(1); // 첫 페이지로
   };
 
-  const getStatusValue = (): string => {
-    const item = PURCHASE_ORDER_STATUS.find((s) => s.key === selectedStatus);
-    return item?.value || '전체';
-  };
-
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
+    <>
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-2">
           <i className="ri-file-list-3-line text-blue-600 text-lg"></i>
           <h3 className="text-lg font-semibold text-gray-900">발주서 목록</h3>
         </div>
 
-        <DateRangePicker
-          startDate={startDate}
-          onStartDateChange={setStartDate}
-          endDate={endDate}
-          onEndDateChange={setEndDate}
-        />
+        <div className="flex items-center gap-3">
+          <Dropdown
+            items={PURCHASE_ORDER_STATUS}
+            value={selectedStatus}
+            onChange={handleStatusChange}
+          />
+          <DateRangePicker
+            startDate={startDate}
+            onStartDateChange={setStartDate}
+            endDate={endDate}
+            onEndDateChange={setEndDate}
+          />
+        </div>
 
         {/* 상태 필터 */}
-        <Dropdown
-          label={getStatusValue()}
-          items={PURCHASE_ORDER_STATUS}
-          onChange={handleStatusChange}
-        />
       </div>
 
       {/* 테이블 컴포넌트 */}
@@ -219,6 +216,6 @@ export default function PurchaseOrderListTab() {
           onClose={() => setShowDetailModal(false)}
         />
       )}
-    </div>
+    </>
   );
 }

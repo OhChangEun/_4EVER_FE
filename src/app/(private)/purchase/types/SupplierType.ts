@@ -1,4 +1,4 @@
-import { Page } from '@/types/Page';
+import { Page } from '@/app/types/Page';
 import { SupplierStatus } from '@/app/(private)/purchase/constants';
 
 // 자재 정보

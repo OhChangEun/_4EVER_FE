@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Period, StatCardType } from '@/types/StatType';
+import { Period, StatCardType } from '@/app/types/StatType';
 import { STAT_PERIODS } from '@/app/(private)/purchase/constants';
 import PageTitle from '@/app/components/common/PageTitle';
 import StatCardList from '@/app/components/statCard/StatCardList';

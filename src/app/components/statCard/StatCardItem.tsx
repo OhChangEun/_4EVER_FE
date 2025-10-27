@@ -1,5 +1,5 @@
 import React from 'react';
-import { StatCardType } from '@/types/StatType';
+import { StatCardType } from '@/app/types/StatType';
 
 interface StatCardProps {
   stat: StatCardType;

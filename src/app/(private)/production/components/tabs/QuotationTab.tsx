@@ -1,139 +1,150 @@
 'use client';
-
-import { useState } from 'react';
+import Dropdown from '@/app/components/common/Dropdown';
+import { useState, useMemo } from 'react'; // useMemo 추가
+import {
+  AVAILABLE_STOCK_STATUS,
+  AvailableStockStatus,
+  QUOTATIONS_STATUS,
+  QuotationStatus,
+} from '@/app/(private)/production/constants';
+import IconButton from '@/app/components/common/IconButton';
+import {
+  QuotationData,
+  FetchQuotationParams,
+  QuotationListResponse,
+} from '@/app/(private)/production/types/QuotationApiType';
+import SimulationResultModal from '@/app/(private)/production/components/modals/SimulationResultModal';
+import MpsPreviewModal from '@/app/(private)/production/components/modals/MpsPreviewModal';
+import {
+  fetchQuotationSimulationResult,
+  fetchQuotationList, // API 함수 추가
+} from '@/app/(private)/production/api/production.api';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import {
+  FetchQuotationSimulationParams,
+  QuotationSimulationResponse,
+} from '@/app/(private)/production/types/QuotationSimulationApiType';
+import { QuotationPreviewResponse } from '@/app/(private)/production/types/QuotationPreviewApiType'; // 타입은 여전히 필요
+import Pagination from '@/app/components/common/Pagination';
+import DateRangePicker from '@/app/components/common/DateRangePicker';
 
 export default function QuotationTab() {
-  const [selectedQuotes, setSelectedQuotes] = useState<string[]>([]);
+  // 모달 open 여부
   const [showSimulationModal, setShowSimulationModal] = useState(false);
   const [showMpsPreviewModal, setShowMpsPreviewModal] = useState(false);
-  // const [simulationResult, setSimulationResult] = useState<any>(null);
+  // 필터링 상태(날짜, 가용재고 상태, 견적 상태)
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [selectedStockStatus, setSelectedStockStatus] = useState<AvailableStockStatus>('ALL');
+  const [selectedQuotationsStatus, setSelectedQuotationsStatus] = useState<QuotationStatus>('ALL');
 
-  const quotes = [
-    {
-      id: 'Q-2024-001',
-      customer: '현대자동차',
-      product: '도어패널',
-      requestQuantity: 500,
-      requestDelivery: '2024-02-15',
-      stockStatus: 'NOT_CHECKED',
-      proposedDelivery: '2024-02-20',
-      status: 'NEW',
-    },
-    {
-      id: 'Q-2024-002',
-      customer: '기아자동차',
-      product: 'Hood Panel',
-      requestQuantity: 300,
-      requestDelivery: '2024-02-10',
-      stockStatus: 'NOT_CHECKED',
-      proposedDelivery: '2024-02-10',
-      status: 'COMMITTED',
-    },
-    {
-      id: 'Q-2024-003',
-      customer: '삼성전자',
-      product: 'Fender Panel',
-      requestQuantity: 200,
-      requestDelivery: '2024-02-25',
-      stockStatus: 'NOT_CHECKED',
-      proposedDelivery: '',
-      status: 'NEW',
-    },
-    {
-      id: 'Q-2024-004',
-      customer: 'LG전자',
-      product: 'Trunk Lid',
-      requestQuantity: 150,
-      requestDelivery: '2024-03-01',
-      stockStatus: 'NOT_CHECKED',
-      proposedDelivery: '',
-      status: 'NEW',
-    },
-    {
-      id: 'Q-2024-005',
-      customer: '포스코',
-      product: 'Roof Panel',
-      requestQuantity: 400,
-      requestDelivery: '2024-02-28',
-      stockStatus: 'NOT_CHECKED',
-      proposedDelivery: '2024-03-05',
-      status: 'SIMULATED',
-    },
-  ];
+  // 선택된 견적
+  const [selectedQuotes, setSelectedQuotes] = useState<string[]>([]);
+  // 페이지네이션 상태
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(10);
+  // MPS 프리뷰 결과를 저장할 state
+  const [mpsPreviewData, setMpsPreviewData] = useState<QuotationPreviewResponse>();
+  // 시뮬레이션 응답 저장
+  const [simulationResponse, setSimulationResponse] = useState<QuotationSimulationResponse | null>(
+    null,
+  );
 
-  const getStatusBadge = (status: string) => {
-    const statusConfig = {
-      NEW: { label: '신규', class: 'bg-blue-100 text-blue-800' },
-      SIMULATED: { label: '시뮬레이션', class: 'bg-yellow-100 text-yellow-800' },
-      COMMITTED: { label: '확정', class: 'bg-green-100 text-green-800' },
-      REJECTED: { label: '거절', class: 'bg-red-100 text-red-800' },
-    };
-    const config = statusConfig[status as keyof typeof statusConfig];
-    return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${config.class}`}>
-        {config.label}
-      </span>
-    );
-  };
+  // --- API 호출 및 상태 관리 ---
 
-  const getStockStatusBadge = (status: string) => {
-    const statusConfig = {
-      PASS: { label: '충족', class: 'bg-green-100 text-green-800' },
-      FAIL: { label: '부족', class: 'bg-red-100 text-red-800' },
-      NOT_CHECKED: { label: '미확인', class: 'bg-gray-100 text-gray-800' },
-    };
-    const config = statusConfig[status as keyof typeof statusConfig];
-    return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${config.class}`}>
-        {config.label}
-      </span>
-    );
-  };
+  // 1. 견적 리스트를 가져오는 useQuery
+  const quotationListQueryParams: FetchQuotationParams = useMemo(
+    () => ({
+      page: currentPage - 1, // API는 0-based
+      size: pageSize,
+      stockStatusCode: selectedStockStatus, // 가용재고 상태
+      statusCode: selectedQuotationsStatus, // 견적 상태
+      startDate: startDate || undefined,
+      endDate: endDate || undefined,
+    }),
+    [currentPage, pageSize, startDate, endDate, selectedStockStatus, selectedQuotationsStatus],
+  );
 
-  const handleQuoteSelect = (quoteId: string) => {
+  const {
+    data: quotationListData,
+    isLoading: isQuotationListLoading,
+    isError: isQuotationListError,
+  } = useQuery<QuotationListResponse>({
+    queryKey: ['quotationList', quotationListQueryParams], // 쿼리 키에 파라미터를 넣어 파라미터 변경 시 재요청
+    queryFn: () => fetchQuotationList(quotationListQueryParams),
+    staleTime: 1000,
+  });
+
+  // API에서 가져온 견적 데이터 리스트
+  const quotationDataList: QuotationData[] = quotationListData?.content || [];
+  const totalPages = quotationListData?.page?.totalPages || 1;
+  const totalElements = quotationListData?.page?.totalElements || 0;
+
+  // 2. 시뮬레이션 쿼리
+  const simulationMutation = useMutation({
+    mutationFn: (params: FetchQuotationSimulationParams) => fetchQuotationSimulationResult(params),
+    onSuccess: (data) => {
+      setSimulationResponse(data);
+      setShowSimulationModal(true);
+    },
+    onError: (error) => {
+      console.error('시뮬레이션 실패:', error);
+      alert('시뮬레이션 결과를 가져오는데 실패했습니다.');
+    },
+  });
+
+  const handleQuoteSelect = (quotationNumber: string) => {
     setSelectedQuotes((prev) =>
-      prev.includes(quoteId) ? prev.filter((id) => id !== quoteId) : [...prev, quoteId],
+      prev.includes(quotationNumber)
+        ? prev.filter((id) => id !== quotationNumber)
+        : [...prev, quotationNumber],
     );
   };
 
+  // --- 이벤트 핸들러 ---
   const handleSimulation = () => {
-    const failQuotes = selectedQuotes.filter((id) => {
-      const quote = quotes.find((q) => q.id === id);
-      return quote?.stockStatus === 'FAIL';
+    if (selectedQuotes.length === 0) {
+      alert('시뮬레이션을 실행할 견적을 선택해주세요');
+      return;
+    }
+    // API 데이터에서 선택된 견적 중 'NOT_CHECKED'인지 확인
+    const unCheckedQuotes = selectedQuotes.filter((quotationNumber) => {
+      const quote = quotationDataList.find((q) => q.quotationNumber === quotationNumber);
+      return quote && quote.stockStatusCode === 'UNCHECKED';
     });
 
-    if (failQuotes.length === 0) {
-      alert('가용 재고가 FAIL인 견적을 선택해주세요.');
+    if (unCheckedQuotes.length === 0) {
+      alert("가용 재고가 '미확인'인 견적을 선택해주세요.");
       return;
     }
 
-    // 시뮬레이션 결과 생성
-    const result = {
-      selectedQuotes: failQuotes,
-      mpsResult: failQuotes.map((id) => {
-        const quote = quotes.find((q) => q.id === id);
-        return {
-          quoteId: id,
-          customer: quote?.customer,
-          product: quote?.product,
-          quantity: quote?.requestQuantity,
-          requestDelivery: quote?.requestDelivery,
-          proposedDelivery: '2024-03-10',
-          materials: [
-            { name: '스테인리스 스틸', required: 100, available: 50, shortage: 50 },
-            { name: '구리선', required: 200, available: 150, shortage: 50 },
-            { name: '베어링', required: 50, available: 30, shortage: 20 },
-          ],
-        };
-      }),
-    };
-
-    // setSimulationResult(result);
-    setShowSimulationModal(true);
+    // Mutation 실행
+    simulationMutation.mutate({
+      quotationIds: selectedQuotes,
+      page: currentPage - 1, // 0-based 인덱스
+      size: pageSize,
+      // 날짜 필터링 상태가 있다면 여기에 추가
+    });
   };
 
-  const handleConfirmProposedDelivery = () => {
+  const handleStartDateChange = (value: string) => {
+    setStartDate(value);
+    setCurrentPage(1);
+  };
+  const handleEndDateChange = (value: string) => {
+    setEndDate(value);
+    setCurrentPage(1);
+  };
+
+  // 페이지 변경 핸들러
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // useQuery가 currentPage 변경을 감지하고 자동으로 데이터를 다시 불러옴
+  };
+
+  const handleConfirmProposedDelivery = (previewData: QuotationPreviewResponse) => {
     setShowSimulationModal(false);
+    setMpsPreviewData(previewData);
     setShowMpsPreviewModal(true);
   };
 
@@ -142,26 +153,62 @@ export default function QuotationTab() {
     alert('MRP 실행이 시작되었습니다. MRP 탭에서 결과를 확인하세요.');
   };
 
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900">견적 관리</h3>
-        <div className="flex gap-2">
-          <button
-            onClick={handleSimulation}
-            disabled={selectedQuotes.length === 0}
-            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
-              selectedQuotes.length > 0
-                ? 'bg-purple-600 text-white hover:bg-purple-700 cursor-pointer'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }`}
-          >
-            <i className="ri-play-line mr-1"></i>
-            시뮬레이션 실행
-          </button>
+  // --- 렌더링 ---
+  if (isQuotationListLoading) {
+    return (
+      <div className="bg-white rounded-2xl p-6 shadow-sm flex justify-center items-center h-64">
+        <div className="text-lg font-semibold text-gray-900">견적 리스트를 불러오는 중...</div>
+      </div>
+    );
+  }
+
+  if (isQuotationListError) {
+    return (
+      <div className="bg-white rounded-2xl p-6 shadow-sm flex justify-center items-center h-64">
+        <div className="text-lg font-semibold text-red-600">
+          견적 리스트를 불러오는데 실패했습니다.
         </div>
       </div>
+    );
+  }
 
+  return (
+    <>
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-gray-900">견적 관리</h3>
+        <div className="flex items-center">
+          <div className="flex gap-3 pr-5">
+            <Dropdown
+              items={AVAILABLE_STOCK_STATUS}
+              value={selectedStockStatus}
+              onChange={(status: AvailableStockStatus) => {
+                setSelectedStockStatus(status);
+                setCurrentPage(1); // 필터 변경 시 첫 페이지로
+              }}
+            />
+            <Dropdown
+              items={QUOTATIONS_STATUS}
+              value={selectedQuotationsStatus}
+              onChange={(status: QuotationStatus) => {
+                setSelectedQuotationsStatus(status);
+                setCurrentPage(1); // 필터 변경 시 첫 페이지로
+              }}
+            />
+            <DateRangePicker
+              startDate={startDate}
+              endDate={endDate}
+              onStartDateChange={handleStartDateChange}
+              onEndDateChange={handleEndDateChange}
+            />
+          </div>
+          <IconButton
+            label={simulationMutation.isPending ? '시뮬레이션 중...' : '시뮬레이션 실행'}
+            icon={simulationMutation.isPending ? 'ri-loader-4-line animate-spin' : 'ri-play-line'}
+            onClick={handleSimulation}
+            disabled={selectedQuotes.length === 0 || simulationMutation.isPending}
+          />
+        </div>
+      </div>
       <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
@@ -173,11 +220,16 @@ export default function QuotationTab() {
                     className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     onChange={(e) => {
                       if (e.target.checked) {
-                        setSelectedQuotes(quotes.map((q) => q.id));
+                        setSelectedQuotes(quotationDataList.map((q) => q.quotationNumber));
                       } else {
                         setSelectedQuotes([]);
                       }
                     }}
+                    // 현재 페이지 데이터만 모두 선택했는지 확인
+                    checked={
+                      quotationDataList.length > 0 &&
+                      quotationDataList.every((q) => selectedQuotes.includes(q.quotationNumber))
+                    }
                   />
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -207,241 +259,70 @@ export default function QuotationTab() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {quotes.map((quote) => (
-                <tr key={quote.id} className="hover:bg-gray-50">
+              {/* API 데이터로 렌더링 */}
+              {quotationDataList.map((quote) => (
+                <tr key={quote.quotationNumber} className="hover:bg-gray-50">
                   <td className="px-4 py-3">
                     <input
                       type="checkbox"
                       className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      checked={selectedQuotes.includes(quote.id)}
-                      onChange={() => handleQuoteSelect(quote.id)}
+                      checked={selectedQuotes.includes(quote.quotationNumber)}
+                      onChange={() => handleQuoteSelect(quote.quotationNumber)}
                     />
                   </td>
-                  <td className="px-4 py-3 text-sm font-medium text-gray-900">{quote.id}</td>
-                  <td className="px-4 py-3 text-sm text-gray-900">{quote.customer}</td>
+                  <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                    {quote.quotationNumber}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-900">{quote.customerCompanyName}</td>
                   <td className="px-4 py-3 text-sm text-gray-900">{quote.product}</td>
                   <td className="px-4 py-3 text-sm text-gray-900">
-                    {quote.requestQuantity.toLocaleString()}EA
+                    {/* 숫자로 변환 후 포맷팅이 필요할 수 있으나, 현재는 string 타입 그대로 사용 */}
+                    {quote.requestQuantity}EA
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-900">{quote.requestDelivery}</td>
-                  <td className="px-4 py-3">{getStockStatusBadge(quote.stockStatus)}</td>
+                  <td className="px-4 py-3 text-sm text-gray-900">{quote.requestDate}</td>
+                  <td className="px-4 py-3">{quote.stockStatusCode}</td>
                   <td className="px-4 py-3 text-sm text-gray-900">
-                    {quote.proposedDelivery || '-'}
+                    {quote.suggestedDueDate || '-'}
                   </td>
-                  <td className="px-4 py-3">{getStatusBadge(quote.status)}</td>
+                  <td className="px-4 py-3">{quote.statusCode}</td>
                 </tr>
               ))}
+              {quotationDataList.length === 0 && (
+                <tr>
+                  <td colSpan={9} className="px-4 py-8 text-center text-gray-500">
+                    조회된 견적 데이터가 없습니다.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
+        {/* 페이지네이션 */}
+        {quotationDataList.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalElements={totalElements}
+            onPageChange={handlePageChange} // 수정된 핸들러 사용
+          />
+        )}
       </div>
-
       {/* 시뮬레이션 결과 모달 */}
-      {/* {showSimulationModal && simulationResult && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold">MPS/MRP 시뮬레이션 결과</h3>
-              <button
-                onClick={() => setShowSimulationModal(false)}
-                className="text-gray-400 hover:text-gray-600 cursor-pointer"
-              >
-                <i className="ri-close-line text-xl"></i>
-              </button>
-            </div>
-
-            <div className="space-y-6">
-              {/* {simulationResult.mpsResult.map((result: any, index: number) => (
-                <div key={index} className="border border-gray-200 rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h4 className="text-lg font-semibold text-gray-900">{result.quoteId}</h4>
-                      <p className="text-sm text-gray-600">
-                        {result.customer} - {result.product}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm text-gray-600">수량: {result.quantity}EA</div>
-                      <div className="text-sm text-gray-600">
-                        요청 납기: {result.requestDelivery}
-                      </div>
-                      <div className="text-sm font-medium text-blue-600">
-                        제안 납기: {result.proposedDelivery}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                    <h5 className="text-sm font-semibold text-red-800 mb-2">부족 자재</h5>
-                    <div className="space-y-1">
-                      {result.materials.map((material: any, idx: number) => (
-                        <div key={idx} className="flex justify-between text-sm">
-                          <span className="text-red-700">{material.name}</span>
-                          <span className="text-red-700 font-medium">
-                            부족: {material.shortage} (필요: {material.required}, 보유:{' '}
-                            {material.available})
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ))} 
-
-              <div className="flex gap-3 pt-4">
-                <button
-                  onClick={() => setShowSimulationModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium cursor-pointer"
-                >
-                  취소
-                </button>
-                <button
-                  onClick={handleConfirmProposedDelivery}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium cursor-pointer"
-                >
-                  제안 납기 확정
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )} */}
-
+      {showSimulationModal && simulationResponse && (
+        <SimulationResultModal
+          simulationResults={simulationResponse.content}
+          onClose={() => setShowSimulationModal(false)}
+          onConfirm={handleConfirmProposedDelivery}
+        />
+      )}
       {/* MPS 생성 Preview 모달 */}
-      {/* {showMpsPreviewModal && simulationResult && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-5xl mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold">MPS 생성 Preview</h3>
-              <button
-                onClick={() => setShowMpsPreviewModal(false)}
-                className="text-gray-400 hover:text-gray-600 cursor-pointer"
-              >
-                <i className="ri-close-line text-xl"></i>
-              </button>
-            </div>
-
-            <div className="space-y-6">
-              {/* {simulationResult.mpsResult.map((result: any, index: number) => (
-                <div key={index} className="border border-gray-200 rounded-lg p-4">
-                  <h4 className="text-lg font-semibold text-gray-900 mb-4">
-                    {result.product} - {result.customer}
-                  </h4>
-
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full border-collapse border border-gray-300">
-                      <thead>
-                        <tr className="bg-gray-50">
-                          <th className="border border-gray-300 px-4 py-3 text-left text-sm font-medium text-gray-900">
-                            구분
-                          </th>
-                          <th className="border border-gray-300 px-4 py-3 text-center text-sm font-medium text-gray-900">
-                            2월 3주차
-                          </th>
-                          <th className="border border-gray-300 px-4 py-3 text-center text-sm font-medium text-gray-900">
-                            2월 4주차
-                          </th>
-                          <th className="border border-gray-300 px-4 py-3 text-center text-sm font-medium text-gray-900">
-                            3월 1주차
-                          </th>
-                          <th className="border border-gray-300 px-4 py-3 text-center text-sm font-medium text-gray-900">
-                            3월 2주차
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td className="border border-gray-300 px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50">
-                            수요
-                          </td>
-                          <td className="border border-gray-300 px-4 py-3 text-center text-sm text-gray-900">
-                            0
-                          </td>
-                          <td className="border border-gray-300 px-4 py-3 text-center text-sm text-gray-900">
-                            0
-                          </td>
-                          <td className="border border-gray-300 px-4 py-3 text-center text-sm text-gray-900">
-                            {result.quantity}
-                          </td>
-                          <td className="border border-gray-300 px-4 py-3 text-center text-sm text-gray-900">
-                            0
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="border border-gray-300 px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50">
-                            재고 필요량
-                          </td>
-                          <td className="border border-gray-300 px-4 py-3 text-center text-sm text-gray-900">
-                            0
-                          </td>
-                          <td className="border border-gray-300 px-4 py-3 text-center text-sm text-gray-900">
-                            0
-                          </td>
-                          <td className="border border-gray-300 px-4 py-3 text-center text-sm text-gray-900">
-                            {result.quantity}
-                          </td>
-                          <td className="border border-gray-300 px-4 py-3 text-center text-sm text-gray-900">
-                            0
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="border border-gray-300 px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50">
-                            생산 소요량
-                          </td>
-                          <td className="border border-gray-300 px-4 py-3 text-center text-sm text-gray-900">
-                            {Math.floor(result.quantity * 0.6)}
-                          </td>
-                          <td className="border border-gray-300 px-4 py-3 text-center text-sm text-gray-900">
-                            {Math.floor(result.quantity * 0.4)}
-                          </td>
-                          <td className="border border-gray-300 px-4 py-3 text-center text-sm text-gray-900">
-                            0
-                          </td>
-                          <td className="border border-gray-300 px-4 py-3 text-center text-sm text-gray-900">
-                            0
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="border border-gray-300 px-4 py-3 text-sm font-medium text-gray-900 bg-blue-50">
-                            계획 생산 (MPS)
-                          </td>
-                          <td className="border border-gray-300 px-4 py-3 text-center text-sm font-semibold text-blue-700 bg-blue-50">
-                            {Math.floor(result.quantity * 0.6)}
-                          </td>
-                          <td className="border border-gray-300 px-4 py-3 text-center text-sm font-semibold text-blue-700 bg-blue-50">
-                            {Math.floor(result.quantity * 0.4)}
-                          </td>
-                          <td className="border border-gray-300 px-4 py-3 text-center text-sm font-semibold text-blue-700 bg-blue-50">
-                            0
-                          </td>
-                          <td className="border border-gray-300 px-4 py-3 text-center text-sm font-semibold text-blue-700 bg-blue-50">
-                            0
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              ))} 
-
-              <div className="flex gap-3 pt-4">
-                <button
-                  onClick={() => setShowMpsPreviewModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium cursor-pointer"
-                >
-                  취소
-                </button>
-                <button
-                  onClick={handleConfirmMps}
-                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium cursor-pointer"
-                >
-                  MPS 확정
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )} */}
-    </div>
+      {showMpsPreviewModal && mpsPreviewData?.content && (
+        <MpsPreviewModal
+          previewResults={mpsPreviewData.content}
+          onClose={() => setShowMpsPreviewModal(false)}
+          onConfirm={handleConfirmMps}
+        />
+      )}
+    </>
   );
 }

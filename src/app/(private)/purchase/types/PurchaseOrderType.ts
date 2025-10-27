@@ -1,4 +1,4 @@
-import { Page } from '@/types/Page';
+import { Page } from '@/app/types/Page';
 import { PurchaseOrderStatus } from '@/app/(private)/purchase/constants';
 
 // 발주서 주문 품목 상세

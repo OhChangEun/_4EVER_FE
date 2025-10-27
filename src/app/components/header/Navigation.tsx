@@ -24,7 +24,7 @@ export default function Navigation() {
         <Link
           key={item.href}
           href={item.href}
-          className={`px-3.5 py-2 cursor-pointer transition-colors font-normal ${
+          className={`px-3 pt-3.5 pb-2 cursor-pointer transition-colors font-normal ${
             isActive(item.href)
               ? 'text-gray-900 font-semibold'
               : 'text-gray-400 hover:text-gray-800 hover:font-semibold'

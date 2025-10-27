@@ -1,4 +1,4 @@
-import { KeyValueItem } from '@/types/CommonType';
+import { KeyValueItem } from '@/app/types/CommonType';
 import { QuoteStatus } from '@/app/(private)/sales/types/SalesQuoteListType';
 import { OrderStatus } from '@/app/(private)/sales/types/SalesOrderListType';
 import { CustomerStatus } from '@/app/(private)/sales/types/SalesCustomerListType';
