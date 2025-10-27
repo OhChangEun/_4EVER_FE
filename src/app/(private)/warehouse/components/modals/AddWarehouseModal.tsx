@@ -1,8 +1,28 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { AddWarehouseModalProps } from '../../types/AddWarehouseType';
 
 const AddWarehouseModal = ({ $setShowAddModal }: AddWarehouseModalProps) => {
+  const [formData, setFormData] = useState({
+    warehouseName: '',
+    warehouseType: '',
+    location: '',
+    manager: '',
+    managerPhone: '',
+  });
+
+  useEffect(() => {
+    console.log(formData);
+  }, [formData]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
@@ -21,23 +41,22 @@ const AddWarehouseModal = ({ $setShowAddModal }: AddWarehouseModalProps) => {
             <label className="block text-sm font-medium text-gray-700 mb-1">창고명</label>
             <input
               type="text"
+              name="warehouseName"
+              value={formData.warehouseName}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               placeholder="창고명을 입력하세요"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">창고 코드</label>
-            <input
-              type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-              placeholder="WH-F"
+              onChange={handleInputChange}
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">창고 유형</label>
-            <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm pr-8">
+            <select
+              onChange={handleInputChange}
+              name="warehouseType"
+              value={formData.warehouseType}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm pr-8"
+            >
               <option>원자재</option>
               <option>완제품</option>
               <option>부품</option>
@@ -50,6 +69,9 @@ const AddWarehouseModal = ({ $setShowAddModal }: AddWarehouseModalProps) => {
             <label className="block text-sm font-medium text-gray-700 mb-1">위치</label>
             <input
               type="text"
+              name="location"
+              onChange={handleInputChange}
+              value={formData.location}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               placeholder="창고 위치를 입력하세요"
             />
@@ -59,6 +81,9 @@ const AddWarehouseModal = ({ $setShowAddModal }: AddWarehouseModalProps) => {
             <label className="block text-sm font-medium text-gray-700 mb-1">담당자</label>
             <input
               type="text"
+              name="manager"
+              value={formData.manager}
+              onChange={handleInputChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               placeholder="담당자명을 입력하세요"
             />
@@ -67,29 +92,13 @@ const AddWarehouseModal = ({ $setShowAddModal }: AddWarehouseModalProps) => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">연락처</label>
             <input
+              onChange={handleInputChange}
+              name="managerPhone"
+              value={formData.managerPhone}
               type="tel"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               placeholder="연락처를 입력하세요"
             />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">총 면적 (㎡)</label>
-              <input
-                type="number"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                placeholder="1000"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">구역 수</label>
-              <input
-                type="number"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                placeholder="10"
-              />
-            </div>
           </div>
 
           <div className="flex gap-3 pt-4">

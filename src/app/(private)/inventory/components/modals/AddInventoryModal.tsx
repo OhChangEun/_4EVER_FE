@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface AddInventoryModalProps {
   $setShowAddModal: (show: boolean) => void;
@@ -16,6 +16,10 @@ const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
     initialStock: '',
     warehouse: '',
   });
+
+  useEffect(() => {
+    console.log(formData);
+  }, [formData]);
 
   const materials = ['강철', '알루미늄', '스테인리스', '구리', '플라스틱', '고무'];
   const suppliers = ['스테인리스코리아', '알루텍', '모터테크', '패스너코리아', '용접재료상사'];

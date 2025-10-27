@@ -1,8 +1,100 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
 import { ManageWarehouseModalProps } from '../../types/ManageWarehouseType';
+import { InventoryDetailResponse } from '@/app/(private)/inventory/types/InventoryDetailType';
+import { WarehouseDetailResponse } from '../../types/WarehouseDetailType';
+import { getWarehouseDetail } from '../../warehouse.api';
+import { useEffect, useState } from 'react';
+import { getStatusText } from '@/lib/status.constants';
+import ModalStatusBox from '@/app/components/common/ModalStatusBox';
 
-const ManageWarehouseModal = ({ $setShowManageModal }: ManageWarehouseModalProps) => {
+interface ManageWarehouseRequest {
+  warehouseName: string;
+  warehouseNumber: string;
+  warehouseType: string;
+  statusCode: string;
+  location: string;
+  managerName: string;
+  managerPhoneNumber: string;
+  managerEmail: string;
+  description: string;
+}
+
+const ManageWarehouseModal = ({
+  $setShowManageModal,
+  $selectedWarehouseId,
+}: ManageWarehouseModalProps) => {
+  const [formData, setFormData] = useState<ManageWarehouseRequest>({
+    warehouseName: '',
+    warehouseNumber: '',
+    warehouseType: '',
+    statusCode: '',
+    location: '',
+    managerName: '',
+    managerPhoneNumber: '',
+    managerEmail: '',
+    description: '',
+  });
+
+  // useEffect(() => {
+  //   console.log(formData);
+  // }, [formData]);
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+  const {
+    data: warehouseDetailRes,
+    isLoading,
+    isError,
+  } = useQuery<WarehouseDetailResponse>({
+    queryKey: ['warehouseDetail', $selectedWarehouseId],
+    queryFn: () => getWarehouseDetail($selectedWarehouseId),
+    enabled: !!$selectedWarehouseId,
+  });
+
+  const warehouseInfo = warehouseDetailRes?.warehouseInfo;
+  const managerInfo = warehouseDetailRes?.manager;
+
+  useEffect(() => {
+    if (warehouseInfo && managerInfo) {
+      setFormData({
+        warehouseName: warehouseInfo.warehouseName ?? '',
+        warehouseNumber: warehouseInfo.warehouseNumber ?? '',
+        warehouseType: warehouseInfo.warehouseType ?? '',
+        statusCode: warehouseInfo.statusCode ?? '',
+        location: warehouseInfo.location ?? '',
+        managerName: managerInfo.managerName ?? '',
+        managerPhoneNumber: managerInfo.managerPhoneNumber ?? '',
+        managerEmail: managerInfo.managerEmail ?? '',
+        description: warehouseInfo.description ?? '',
+      });
+    }
+  }, [warehouseInfo, managerInfo]);
+
+  const [errorModal, setErrorModal] = useState(false);
+  useEffect(() => {
+    setErrorModal(isError);
+  }, [isError]);
+
+  if (isLoading)
+    return <ModalStatusBox $type="loading" $message="창고 상세 데이터를 불러오는 중입니다..." />;
+
+  if (errorModal)
+    return (
+      <ModalStatusBox
+        $type="error"
+        $message="창고 상세 데이터를 불러오는 중 오류가 발생했습니다."
+        $onClose={() => setErrorModal(false)}
+      />
+    );
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
@@ -22,7 +114,9 @@ const ManageWarehouseModal = ({ $setShowManageModal }: ManageWarehouseModalProps
               <label className="block text-sm font-medium text-gray-700 mb-1">창고명</label>
               <input
                 type="text"
-                // defaultValue={selectedWarehouse.name}
+                value={formData.warehouseName}
+                onChange={handleInputChange}
+                name="warehouseName"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               />
             </div>
@@ -30,7 +124,9 @@ const ManageWarehouseModal = ({ $setShowManageModal }: ManageWarehouseModalProps
               <label className="block text-sm font-medium text-gray-700 mb-1">창고 코드</label>
               <input
                 type="text"
-                // defaultValue={selectedWarehouse.code}
+                value={formData.warehouseNumber}
+                onChange={handleInputChange}
+                name="warehouseNumber"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               />
             </div>
@@ -40,7 +136,9 @@ const ManageWarehouseModal = ({ $setShowManageModal }: ManageWarehouseModalProps
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">창고 유형</label>
               <select
-                // defaultValue={selectedWarehouse.type}
+                value={formData.warehouseType}
+                onChange={handleInputChange}
+                name="warehouseType"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm pr-8"
               >
                 <option>원자재</option>
@@ -53,7 +151,9 @@ const ManageWarehouseModal = ({ $setShowManageModal }: ManageWarehouseModalProps
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">상태</label>
               <select
-                // defaultValue={selectedWarehouse.status}
+                value={formData.statusCode}
+                onChange={handleInputChange}
+                name="statusCode"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm pr-8"
               >
                 <option value="active">운영중</option>
@@ -67,7 +167,9 @@ const ManageWarehouseModal = ({ $setShowManageModal }: ManageWarehouseModalProps
             <label className="block text-sm font-medium text-gray-700 mb-1">주소</label>
             <input
               type="text"
-              // defaultValue={selectedWarehouse.location}
+              value={formData.location}
+              onChange={handleInputChange}
+              name="location"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
             />
           </div>
@@ -77,7 +179,9 @@ const ManageWarehouseModal = ({ $setShowManageModal }: ManageWarehouseModalProps
               <label className="block text-sm font-medium text-gray-700 mb-1">담당자</label>
               <input
                 type="text"
-                // defaultValue={selectedWarehouse.manager}
+                value={formData.managerName}
+                onChange={handleInputChange}
+                name="managerName"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               />
             </div>
@@ -85,7 +189,14 @@ const ManageWarehouseModal = ({ $setShowManageModal }: ManageWarehouseModalProps
               <label className="block text-sm font-medium text-gray-700 mb-1">연락처</label>
               <input
                 type="tel"
-                // defaultValue={selectedWarehouse.phone}
+                value={formData.managerPhoneNumber}
+                onChange={(e) => {
+                  e.target.value = e.target.value.replace(/[^0-9-]/g, '');
+                  handleInputChange(e);
+                }}
+                inputMode="numeric"
+                pattern="[0-9-]*"
+                name="managerPhoneNumber"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               />
             </div>
@@ -95,61 +206,19 @@ const ManageWarehouseModal = ({ $setShowManageModal }: ManageWarehouseModalProps
             <label className="block text-sm font-medium text-gray-700 mb-1">이메일</label>
             <input
               type="email"
-              // defaultValue={selectedWarehouse.email}
+              value={formData.managerEmail}
+              onChange={handleInputChange}
+              name="managerEmail"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
             />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">총 면적 (㎡)</label>
-              <input
-                type="number"
-                // defaultValue={selectedWarehouse.capacity}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">사용 면적 (㎡)</label>
-              <input
-                type="number"
-                // defaultValue={selectedWarehouse.currentUsage}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">구역 수</label>
-              <input
-                type="number"
-                // defaultValue={selectedWarehouse.zones}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">온도</label>
-              <input
-                type="text"
-                // defaultValue={selectedWarehouse.temperature}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">습도</label>
-              <input
-                type="text"
-                // defaultValue={selectedWarehouse.humidity}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-              />
-            </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">설명</label>
             <textarea
-              // defaultValue={selectedWarehouse.description}
+              value={formData.description}
+              onChange={handleInputChange}
+              name="description"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               rows={3}
             ></textarea>
@@ -164,7 +233,10 @@ const ManageWarehouseModal = ({ $setShowManageModal }: ManageWarehouseModalProps
               취소
             </button>
             <button
-              type="submit"
+              // type="submit"
+              onClick={() => {
+                console.log(formData);
+              }}
               className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium cursor-pointer"
             >
               저장

@@ -20,7 +20,6 @@ const InventorySafetyStockModal = ({
   $selectedStock,
 }: InventorySafetyStockModalProps) => {
   const [newSafetyStock, setNewSafetyStock] = useState<number>(0);
-  const [editReason, setEditReason] = useState('');
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
@@ -55,18 +54,6 @@ const InventorySafetyStockModal = ({
                 setNewSafetyStock(Number(e.target.value));
               }}
             />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">수정 사유</label>
-            <textarea
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-              rows={3}
-              placeholder="수정 사유를 입력하세요"
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
-                setEditReason(e.target.value as string);
-              }}
-            ></textarea>
           </div>
 
           <div className="flex gap-3 pt-4">

@@ -3,6 +3,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { postStockMovement } from '../../inventory.api';
 import { StockMovementRequest } from '../../types/InventoryDetailType';
+import { useState } from 'react';
 
 interface InventoryMoveModalProps {
   $setShowMoveModal: (show: boolean) => void;
@@ -25,6 +26,13 @@ const mockStockMovement: StockMovementRequest = {
 };
 
 const InventoryMoveModal = ({ $setShowMoveModal, $selectedStock }: InventoryMoveModalProps) => {
+  const [formData, setFormData] = useState({
+    fromWarehouseId: 0,
+    toWarehouseId: 0,
+    stockId: 0,
+    stockQuantity: 0,
+    uomName: '',
+  });
   const { mutate: moveStock } = useMutation({
     mutationFn: postStockMovement,
     onSuccess: (data) => {

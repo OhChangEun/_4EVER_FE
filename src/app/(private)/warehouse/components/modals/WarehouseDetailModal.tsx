@@ -7,10 +7,11 @@ import {
 } from '../../types/WarehouseDetailType';
 import { useEffect, useState } from 'react';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
-import { getProductionDetail } from '../../warehouse.api';
+import { getWarehouseDetail } from '../../warehouse.api';
 import StatusLabel from '@/app/components/common/StatusLabel';
 
 const WarehouseDetailModal = ({
+  $handleWarehouseManage,
   $selectedWarehouseId,
   $setShowDetailModal,
 }: WarehouseDetailModalProps) => {
@@ -20,7 +21,7 @@ const WarehouseDetailModal = ({
     isError,
   } = useQuery<WarehouseDetailResponse>({
     queryKey: ['warehouseDetail', $selectedWarehouseId],
-    queryFn: () => getProductionDetail($selectedWarehouseId),
+    queryFn: () => getWarehouseDetail($selectedWarehouseId),
     enabled: !!$selectedWarehouseId,
   });
 
@@ -130,8 +131,8 @@ const WarehouseDetailModal = ({
         <div className="mt-6 flex gap-3">
           <button
             onClick={() => {
-              $setShowDetailModal(false);
-              //   handleWarehouseManage(selectedWarehouse);
+              // $setShowDetailModal(false);
+              $handleWarehouseManage($selectedWarehouseId);
             }}
             className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium cursor-pointer"
           >

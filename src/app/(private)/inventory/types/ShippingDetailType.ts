@@ -17,6 +17,12 @@ export interface ShippingDetailResponse {
   }[];
 }
 
+export interface OrderItemsType {
+  itemName: string;
+  quantity: number;
+  uomName: string;
+}
+
 export interface markAsReadyToShipResponse {
   salesOrderId: string;
   salesOrderCode: string;

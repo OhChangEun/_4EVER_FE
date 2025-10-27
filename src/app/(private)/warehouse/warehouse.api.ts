@@ -28,9 +28,7 @@ export const getWarehouseList = async (
   return { data: res.data.data.content, pageData: res.data.data.page };
 };
 
-export const getProductionDetail = async (
-  warehouseId: string,
-): Promise<WarehouseDetailResponse> => {
+export const getWarehouseDetail = async (warehouseId: string): Promise<WarehouseDetailResponse> => {
   const res = await axios.get<ApiResponse<WarehouseDetailResponse>>(
     WAREHOUSE_ENDPOINTS.WAREHOUSE_DETAIL(warehouseId),
   );

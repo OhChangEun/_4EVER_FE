@@ -2,7 +2,10 @@
 
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import { RECEIVING_TABLE_HEADERS, SHIPPING_TABLE_HEADERS } from '../../inventory.constants';
+import {
+  RECEIVING_COMPLETED_TABLE_HEADERS,
+  RECEIVING_PENDING_TABLE_HEADERS,
+} from '../../inventory.constants';
 import { useQuery } from '@tanstack/react-query';
 import {
   getPendingList,
@@ -68,6 +71,12 @@ const ReceivingManagementList = () => {
     { id: 'received', name: '입고 완료', count: ReceivedRes?.pageData.totalElements },
   ];
 
+  const getTableHeader = () => {
+    return selectedSubTab === 'pending'
+      ? RECEIVING_PENDING_TABLE_HEADERS
+      : RECEIVING_COMPLETED_TABLE_HEADERS;
+  };
+
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedSubTab]);
@@ -122,7 +131,7 @@ const ReceivingManagementList = () => {
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                {RECEIVING_TABLE_HEADERS.map((header) => (
+                {getTableHeader().map((header) => (
                   <th
                     key={header}
                     className="py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider text-left"

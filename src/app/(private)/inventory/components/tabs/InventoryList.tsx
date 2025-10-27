@@ -46,10 +46,10 @@ const InventoryList = () => {
       case 'category':
         setCategory(value);
         break;
-      case 'warehouseName':
+      case 'WAREHOUSE_NAME':
         setWarehouse(value);
         break;
-      case 'itemName':
+      case 'ITEM_NAME':
         setItemName(value);
         break;
       default:

@@ -1,4 +1,5 @@
 export interface WarehouseDetailModalProps {
+  $handleWarehouseManage: (id: string) => void;
   $selectedWarehouseId: string;
   $setShowDetailModal: (show: boolean) => void;
 }

@@ -10,11 +10,20 @@ export const SHIPPING_TABLE_HEADERS = [
   '작업',
 ] as const;
 
-export const RECEIVING_TABLE_HEADERS = [
+export const RECEIVING_PENDING_TABLE_HEADERS = [
   '발주서 번호',
   '공급업체',
   '주문일',
   '납기일',
+  '주문 금액',
+  '상태',
+] as const;
+
+export const RECEIVING_COMPLETED_TABLE_HEADERS = [
+  '발주서 번호',
+  '공급업체',
+  '주문일',
+  '입고 완료일',
   '주문 금액',
   '상태',
 ] as const;
@@ -32,9 +41,8 @@ export const INVENTORY_TABLE_HEADERS = [
 ] as const;
 
 export const INVENTORY_SEARCH_KEYWORD_OPTIONS: KeyValueItem<string>[] = [
-  { key: 'category', value: '원자재, 부품' },
-  { key: 'warehouseName', value: '창고명' },
-  { key: 'itemName', value: '품목명' },
+  { key: 'WAREHOUSE_NAME', value: '창고명' },
+  { key: 'ITEM_NAME', value: '품목명' },
 ] as const;
 
 export const INVENTORY_STATUS_OPTIONS: KeyValueItem<string>[] = [

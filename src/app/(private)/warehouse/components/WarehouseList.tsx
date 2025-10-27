@@ -134,13 +134,19 @@ const WarehouseList = () => {
       {/* 창고 상세보기 모달 */}
       {showDetailModal && (
         <WarehouseDetailModal
+          $handleWarehouseManage={handleWarehouseManage}
           $selectedWarehouseId={selectedWarehouseId}
           $setShowDetailModal={setShowDetailModal}
         />
       )}
 
       {/* 창고 관리 모달 */}
-      {showManageModal && <ManageWarehouseModal $setShowManageModal={setShowManageModal} />}
+      {showManageModal && (
+        <ManageWarehouseModal
+          $setShowManageModal={setShowManageModal}
+          $selectedWarehouseId={selectedWarehouseId}
+        />
+      )}
     </div>
   );
 };
