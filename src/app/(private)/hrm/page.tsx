@@ -36,26 +36,11 @@ export default async function HrmPage() {
           ) : (
             <ErrorMessage message={'인적자원관리 통계 데이터를 불러오는데 실패했습니다.'} />
           )}
-          {/* <div className="flex items-center space-x-3">
-                <button
-                  onClick={() => setIsEmployeeRegisterModalOpen(true)}
-                  className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 cursor-pointer whitespace-nowrap flex items-center space-x-2"
-                >
-                  <i className="ri-user-add-line"></i>
-                  <span>신규 직원 등록</span>
-                </button>
-              </div> */}
 
           {/* 직원관리 탭 / 급여관리 탭 / 근태관리 탭 / 교육관리 탭 */}
           <Suspense fallback={<div>Loading...</div>}>
             <TabNavigation tabs={HRM_TABS} />
           </Suspense>
-          {/* <div className="space-y-8">
-            <EmployeeManagement />
-            <PayrollManagement />
-            <AttendanceManagement />
-            <TrainingManagement />
-          </div> */}
         </main>
       </div>
 

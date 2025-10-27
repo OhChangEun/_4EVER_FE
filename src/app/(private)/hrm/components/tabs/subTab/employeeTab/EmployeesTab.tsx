@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 // 1. 각 탭 컴포넌트 분리
 export default function EmployeesTab() {
@@ -152,9 +152,30 @@ export default function EmployeesTab() {
   const [positionFilter, setPositionFilter] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 5;
+
+  // ✅ 필터 + 검색
+  const filteredEmployees = useMemo(() => {
+    return employees.filter((emp) => {
+      const matchesPosition = positionFilter ? emp.position === positionFilter : true;
+      const matchesSearch = emp.name.includes(searchTerm);
+      return matchesPosition && matchesSearch;
+    });
+  }, [employees, positionFilter, searchTerm]);
+
+  // ✅ 페이지네이션
+  const totalPages = Math.ceil(filteredEmployees.length / pageSize);
+  const paginatedEmployees = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredEmployees.slice(start, start + pageSize);
+  }, [filteredEmployees, currentPage]);
 
   const handleFilterChange = () => {
     setCurrentPage(1);
+  };
+
+  const handleViewEmployee = (emp) => {
+    alert(`${emp.name} 상세보기 클릭됨`);
   };
 
   return (
@@ -240,7 +261,7 @@ export default function EmployeesTab() {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {/* {paginatedEmployees.map((employee) => (
+            {paginatedEmployees.map((employee) => (
               <tr key={employee.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div>
@@ -271,19 +292,10 @@ export default function EmployeesTab() {
                   </button>
                 </td>
               </tr>
-            ))} */}
+            ))}
           </tbody>
         </table>
       </div>
     </div>
   );
 }
-
-// // 3. 메인 컴포넌트에서 사용
-// // 기존 코드를 다음과 같이 교체:
-// <div>
-//   <SubNavigation tabs={HR_TABS} paramName="subTab" />
-//   <div className="p-6">
-//     {/* SubNavigation이 자동으로 해당 탭의 component를 렌더링합니다 */}
-//   </div>
-// </div>
