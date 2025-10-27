@@ -24,6 +24,7 @@ import { getQueryClient } from '@/lib/queryClient';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
 import Pagination from '@/app/components/common/Pagination';
 import { FetchPurchaseReqParams } from '@/app/(private)/purchase/types/PurchaseApiRequestType';
+import { useModal } from '@/app/components/common/modal/useModal';
 
 const getStatusColor = (status: string): string => {
   switch (status) {
@@ -52,10 +53,10 @@ const getStatusText = (status: string): string => {
 };
 
 export default function PurchaseRequestListTab() {
+  const { openModal } = useModal();
+
   const [selectedStatus, setSelectedStatus] = useState<string>('ALL');
   const [showRequestModal, setShowRequestModal] = useState(false);
-  const [showDetailModal, setShowDetailModal] = useState(false);
-  const [selectedRequestId, setSelectedRequestId] = useState<number>(-1);
 
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -122,13 +123,7 @@ export default function PurchaseRequestListTab() {
   };
 
   const handleViewDetail = (request: PurchaseReqResponse): void => {
-    setSelectedRequestId(request.id);
-    setShowDetailModal(true);
-  };
-
-  const handleCloseDetail = () => {
-    setShowDetailModal(false);
-    setSelectedRequestId(-1);
+    openModal(PurchaseRequestDetailModal, { title: '구매 요청 상세 정보', purchaseId: request.id });
   };
 
   const handleApprove = (prId: number) => {
@@ -274,11 +269,6 @@ export default function PurchaseRequestListTab() {
           //   refetch();
           // }}
         />
-      )}
-
-      {/* 구매 요청 상세 모달 */}
-      {showDetailModal && (
-        <PurchaseRequestDetailModal purchaseId={selectedRequestId} onClose={handleCloseDetail} />
       )}
     </>
   );
