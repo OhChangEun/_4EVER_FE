@@ -45,7 +45,6 @@ const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     addMaterial(formData);
-    $setShowAddModal(false);
   };
 
   const handleClose = () => {
@@ -77,6 +76,7 @@ const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
     onSuccess: (data) => {
       alert(`${data.status} : ${data.message}
       `);
+      $setShowAddModal(false);
     },
     onError: (error) => {
       alert(` 자재 등록 중 오류가 발생했습니다. ${error}`);
