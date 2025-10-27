@@ -1,4 +1,4 @@
-import { Stat, StatResponse } from '@/types/StatType';
+import { Stat, StatResponse } from '@/app/types/StatType';
 
 interface WarehouseStat {
   totalWarehouse: Stat;

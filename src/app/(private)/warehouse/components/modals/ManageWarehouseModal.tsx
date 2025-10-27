@@ -12,8 +12,8 @@ import {
 import { useEffect, useState } from 'react';
 import { getStatusText } from '@/lib/status.constants';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
-import { ApiResponseNoData } from '@/types/api';
 import { WarehouseManagerInfoResponse } from '../../types/AddWarehouseType';
+import { ApiResponseNoData } from '@/app/types/api';
 
 interface ManageWarehouseRequest {
   warehouseName: string;

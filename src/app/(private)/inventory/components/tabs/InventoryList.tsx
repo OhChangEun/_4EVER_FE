@@ -11,7 +11,6 @@ import { useDebounce } from 'use-debounce';
 import { useQuery } from '@tanstack/react-query';
 import { InventoryQueryParams, InventoryResponse } from '../../types/InventoryListType';
 import { getInventoryList } from '../../inventory.api';
-import { Page } from '@/types/Page';
 import StatusLabel from '@/app/components/common/StatusLabel';
 import InventoryDetailModal from '../modals/InventoryDetailModal';
 import InventoryMoveModal from '../modals/InventoryMoveModal';
@@ -20,6 +19,7 @@ import LowStockAlert from '../LowStockAlert';
 import StockMovement from '../StockMovement';
 import AddInventoryModal from '../modals/AddInventoryModal';
 import Link from 'next/link';
+import { Page } from '@/app/types/Page';
 
 const InventoryList = () => {
   const [showAddModal, setShowAddModal] = useState(false);

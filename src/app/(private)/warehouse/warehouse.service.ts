@@ -1,4 +1,4 @@
-import { StatCardType } from '@/types/StatType';
+import { StatCardType } from '@/app/types/StatType';
 import { WarehouseStatResponse } from './types/WarehouseStatsType';
 import { createStatCard } from '@/lib/CreateStatCard';
 

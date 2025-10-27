@@ -1,11 +1,11 @@
-import { ApiResponse, ApiResponseNoData, WAREHOUSE_ENDPOINTS } from '@/types/api';
 import { WarehouseStatResponse } from './types/WarehouseStatsType';
 import axios from 'axios';
 import { WarehouseListQueryParams, WarehouseListResponse } from './types/WarehouseListType';
-import { Page } from '@/types/Page';
 import { WarehouseDetailResponse } from './types/WarehouseDetailType';
 import { AddWarehouseRequest, WarehouseManagerInfoResponse } from './types/AddWarehouseType';
 import { EditWarehouseRequest } from './types/ManageWarehouseType';
+import { ApiResponse, ApiResponseNoData, WAREHOUSE_ENDPOINTS } from '@/app/types/api';
+import { Page } from '@/app/types/Page';
 
 // ----------------------- 창고 관리 -----------------------
 export const getWarehouseStats = async (): Promise<WarehouseStatResponse> => {

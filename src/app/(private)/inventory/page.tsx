@@ -2,7 +2,6 @@ import StatSection from '@/app/components/common/StatSection';
 import TabNavigation from '@/app/components/common/TabNavigation';
 import Providers from '@/app/providers';
 import { getQueryClient } from '@/lib/queryClient';
-import { INVENTORY_TABS } from '@/types/componentConstant';
 import { dehydrate } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import {
@@ -13,6 +12,7 @@ import {
 } from '@/app/(private)/inventory/inventory.api';
 import { mapInventoryStatsToCards } from './inventory.service';
 import { InventoryQueryParams } from './types/InventoryListType';
+import { INVENTORY_TABS } from '@/app/types/componentConstant';
 
 export default async function InventoryPage() {
   const queryClient = getQueryClient();
