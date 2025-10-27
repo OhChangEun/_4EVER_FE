@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { SALES_ENDPOINTS, ApiResponse, ApiResponseNoData } from '@/app/types/api';
-
 import { SalesStatResponse } from '@/app/(private)/sales/types/SalesStatsType';
 import { Quote, QuoteQueryParams } from '@/app/(private)/sales/types/SalesQuoteListType';
 import { Inventories, QuoteDetail } from '@/app/(private)/sales/types/QuoteDetailModalType';
