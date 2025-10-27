@@ -34,13 +34,13 @@ const WarehouseDetailModal = ({
   }, [isError]);
 
   if (isLoading)
-    return <ModalStatusBox $type="loading" $message="재고 상세 데이터를 불러오는 중입니다..." />;
+    return <ModalStatusBox $type="loading" $message="창고 상세 정보를 불러오는 중입니다..." />;
 
   if (errorModal)
     return (
       <ModalStatusBox
         $type="error"
-        $message="재고 상세 데이터를 불러오는 중 오류가 발생했습니다."
+        $message="창고 상세 정보를 불러오는 중 오류가 발생했습니다."
         $onClose={() => setErrorModal(false)}
       />
     );

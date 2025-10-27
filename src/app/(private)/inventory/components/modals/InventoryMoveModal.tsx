@@ -47,6 +47,23 @@ const InventoryMoveModal = ({ $setShowMoveModal, $selectedStock }: InventoryMove
       alert(` 등록 중 오류가 발생했습니다. ${error}`);
     },
   });
+
+  //  const [errorModal, setErrorModal] = useState(false);
+  // useEffect(() => {
+  //   setErrorModal(isError);
+  // }, [isError]);
+
+  // if (isLoading)
+  //   return <ModalStatusBox $type="loading" $message="고객 상세 데이터를 불러오는 중입니다..." />;
+
+  // if (errorModal)
+  //   return (
+  //     <ModalStatusBox
+  //       $type="error"
+  //       $message="고객 상세 데이터를 불러오는 중 오류가 발생했습니다."
+  //       $onClose={() => setErrorModal(false)}
+  //     />
+  //   );
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">

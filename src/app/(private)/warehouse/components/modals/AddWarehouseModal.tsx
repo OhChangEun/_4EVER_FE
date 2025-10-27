@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import {
   AddWarehouseModalProps,
   AddWarehouseRequest,
@@ -9,6 +9,7 @@ import {
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { getWarehouseManagerInfo, postAddWarehouse } from '../../warehouse.api';
 import { ApiResponseNoData } from '@/app/types/api';
+import ModalStatusBox from '@/app/components/common/ModalStatusBox';
 
 const AddWarehouseModal = ({ $setShowAddModal }: AddWarehouseModalProps) => {
   const [formData, setFormData] = useState<AddWarehouseRequest>({
@@ -40,8 +41,8 @@ const AddWarehouseModal = ({ $setShowAddModal }: AddWarehouseModalProps) => {
 
   const {
     data: ManagerInfoRes,
-    isLoading: isManagerInfoLoading,
-    isError: isManagerInfoError,
+    isLoading,
+    isError,
   } = useQuery<WarehouseManagerInfoResponse[]>({
     queryKey: ['getWarehouseManagerInfo'],
     queryFn: getWarehouseManagerInfo,
@@ -58,6 +59,23 @@ const AddWarehouseModal = ({ $setShowAddModal }: AddWarehouseModalProps) => {
       alert(` 자재 등록 중 오류가 발생했습니다. ${error}`);
     },
   });
+
+  const [errorModal, setErrorModal] = useState(false);
+  useEffect(() => {
+    setErrorModal(isError);
+  }, [isError]);
+
+  if (isLoading)
+    return <ModalStatusBox $type="loading" $message="담당자 정보를 불러오는 중입니다..." />;
+
+  if (errorModal)
+    return (
+      <ModalStatusBox
+        $type="error"
+        $message="담당자 정보를 불러오는 중 오류가 발생했습니다."
+        $onClose={() => setErrorModal(false)}
+      />
+    );
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">

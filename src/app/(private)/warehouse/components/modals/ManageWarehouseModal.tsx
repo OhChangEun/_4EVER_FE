@@ -72,8 +72,8 @@ const ManageWarehouseModal = ({
   };
   const {
     data: warehouseDetailRes,
-    isLoading,
-    isError,
+    isLoading: isWarehousInfoLoading,
+    isError: isWarehouseInfoError,
   } = useQuery<WarehouseDetailResponse>({
     queryKey: ['warehouseDetail', $selectedWarehouseId],
     queryFn: () => getWarehouseDetail($selectedWarehouseId),
@@ -124,18 +124,31 @@ const ManageWarehouseModal = ({
   }, [warehouseInfo, managerInfo]);
 
   const [errorModal, setErrorModal] = useState(false);
+
   useEffect(() => {
-    setErrorModal(isError);
-  }, [isError]);
+    setErrorModal(isWarehousInfoLoading || isManagerInfoLoading);
+  }, [isWarehousInfoLoading, isManagerInfoLoading]);
 
-  if (isLoading)
-    return <ModalStatusBox $type="loading" $message="창고 상세 데이터를 불러오는 중입니다..." />;
+  if (isWarehousInfoLoading)
+    return <ModalStatusBox $type="loading" $message="창고 정보를 불러오는 중입니다..." />;
 
-  if (errorModal)
+  if (isManagerInfoLoading)
+    return <ModalStatusBox $type="loading" $message="담당자 정보를 불러오는 중입니다..." />;
+
+  if (isManagerInfoError)
     return (
       <ModalStatusBox
         $type="error"
-        $message="창고 상세 데이터를 불러오는 중 오류가 발생했습니다."
+        $message="담당자 정보를 불러오는 중 오류가 발생했습니다."
+        $onClose={() => setErrorModal(false)}
+      />
+    );
+
+  if (isWarehouseInfoError)
+    return (
+      <ModalStatusBox
+        $type="error"
+        $message="창고 정보를 불러오는 중 오류가 발생했습니다."
         $onClose={() => setErrorModal(false)}
       />
     );

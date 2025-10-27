@@ -9,6 +9,7 @@ import {
 } from '../../types/AddInventoryModalType';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { getItemInfo, getWarehouseInfo, postAddMaterial } from '../../inventory.api';
+import ModalStatusBox from '@/app/components/common/ModalStatusBox';
 
 const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
   const [selectedItem, setSelectedItem] = useState<AddInventoryItemsToggleResponse | null>(null);
@@ -78,6 +79,36 @@ const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
       alert(` 자재 등록 중 오류가 발생했습니다. ${error}`);
     },
   });
+
+  const [errorModal, setErrorModal] = useState(false);
+
+  useEffect(() => {
+    setErrorModal(isItemInfoLoading || isWarehouseInfoLoading);
+  }, [isItemInfoLoading, isWarehouseInfoLoading]);
+
+  if (isItemInfoLoading)
+    return <ModalStatusBox $type="loading" $message="자재 정보를 불러오는 중입니다..." />;
+
+  if (isWarehouseInfoLoading)
+    return <ModalStatusBox $type="loading" $message="창고 정보를 불러오는 중입니다..." />;
+
+  if (isItemInfoError)
+    return (
+      <ModalStatusBox
+        $type="error"
+        $message="자재 정보를 불러오는 중 오류가 발생했습니다."
+        $onClose={() => setErrorModal(false)}
+      />
+    );
+
+  if (isWarehouseInfoError)
+    return (
+      <ModalStatusBox
+        $type="error"
+        $message="창고 정보를 불러오는 중 오류가 발생했습니다."
+        $onClose={() => setErrorModal(false)}
+      />
+    );
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
