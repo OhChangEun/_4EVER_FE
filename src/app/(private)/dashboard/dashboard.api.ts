@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { DashboardStatRes } from './types/DashboardStatsType';
-import { ApiResponse, DASHBOARD_ENDPOINTS } from '@/app/api';
+import { ApiResponse, DASHBOARD_ENDPOINTS } from '@/types/api';
 import { DashboardWorkflowRes } from './types/DashboardWorkflowType';
 
 // ----------------------- 통계 지표 -----------------------

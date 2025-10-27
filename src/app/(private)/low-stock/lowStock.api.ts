@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { LowStockStatResponse } from './types/LowStockStatsType';
-import { ApiResponse, LOWSTOCK_ENDPOINTS } from '@/app/api';
+import { ApiResponse, LOWSTOCK_ENDPOINTS } from '@/types/api';
 import { LowStockListQueryParams, LowStockListResponse } from './types/LowStockListType';
 import { Page } from '@/types/Page';
 

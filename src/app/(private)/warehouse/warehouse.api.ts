@@ -1,4 +1,4 @@
-import { ApiResponse, ApiResponseNoData, WAREHOUSE_ENDPOINTS } from '@/app/api';
+import { ApiResponse, ApiResponseNoData, WAREHOUSE_ENDPOINTS } from '@/types/api';
 import { WarehouseStatResponse } from './types/WarehouseStatsType';
 import axios from 'axios';
 import { WarehouseListQueryParams, WarehouseListResponse } from './types/WarehouseListType';

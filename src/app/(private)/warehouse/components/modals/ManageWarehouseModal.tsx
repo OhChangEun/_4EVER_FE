@@ -12,7 +12,7 @@ import {
 import { useEffect, useState } from 'react';
 import { getStatusText } from '@/lib/status.constants';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
-import { ApiResponseNoData } from '@/app/api';
+import { ApiResponseNoData } from '@/types/api';
 import { WarehouseManagerInfoResponse } from '../../types/AddWarehouseType';
 
 interface ManageWarehouseRequest {

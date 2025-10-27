@@ -8,7 +8,7 @@ import {
 } from '../../types/AddWarehouseType';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { getWarehouseManagerInfo, postAddWarehouse } from '../../warehouse.api';
-import { ApiResponseNoData } from '@/app/api';
+import { ApiResponseNoData } from '@/types/api';
 
 const AddWarehouseModal = ({ $setShowAddModal }: AddWarehouseModalProps) => {
   const [formData, setFormData] = useState<AddWarehouseRequest>({

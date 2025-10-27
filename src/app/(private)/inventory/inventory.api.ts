@@ -1,4 +1,4 @@
-import { ApiResponse, ApiResponseNoData, INVENTORY_ENDPOINTS } from '@/app/api';
+import { ApiResponse, ApiResponseNoData, INVENTORY_ENDPOINTS } from '@/types/api';
 import { InventoryStatResponse } from './types/InventoryStatsType';
 import axios from 'axios';
 import { InventoryQueryParams, InventoryResponse } from './types/InventoryListType';
