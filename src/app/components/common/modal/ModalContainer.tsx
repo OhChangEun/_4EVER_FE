@@ -20,7 +20,7 @@ const ModalContainer = ({ children, title, onClose }: ModalContainerProps) => {
         // onClick={onClose}
       >
         <motion.div
-          className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-6 w-full max-w-lg relative pointer-events-auto"
+          className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-6 max-h-[720px] max-w-6xl relative pointer-events-auto"
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}

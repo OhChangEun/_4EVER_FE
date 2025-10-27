@@ -20,6 +20,7 @@ interface ModalContextValue {
     props: Omit<ModalProps, 'id' | 'onClose'>, // id와 onClose는 자동 주입
   ) => string; // 모달 고유 ID 반환
   removeModal: (id: string) => void; // 모달 닫기
+  removeAllModals: () => void;
 }
 
 // Context 생성
@@ -54,6 +55,10 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     setModals((prev) => prev.filter((m) => m.id !== id));
   }, []);
 
+  const removeAllModals = useCallback(() => {
+    setModals([]);
+  }, []);
+
   // 모달 추가 함수
   const addModal = useCallback(
     (Component: ComponentType<ModalProps>, props: Omit<ModalProps, 'id' | 'onClose'>): string => {
@@ -74,7 +79,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
   );
 
   return (
-    <ModalContext.Provider value={{ addModal, removeModal }}>
+    <ModalContext.Provider value={{ addModal, removeModal, removeAllModals }}>
       {children}
       {modals.length > 0 && (
         <FloatingPortal>
