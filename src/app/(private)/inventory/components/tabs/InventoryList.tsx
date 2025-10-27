@@ -18,6 +18,7 @@ import StockMovement from '../StockMovement';
 import AddInventoryModal from '../modals/AddInventoryModal';
 import Link from 'next/link';
 import { Page } from '@/app/types/Page';
+import TableStatusBox from '@/app/components/common/TableStatusBox';
 
 const InventoryList = () => {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -157,87 +158,97 @@ const InventoryList = () => {
           </div>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  <input
-                    type="checkbox"
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    // onChange={}
-                  />
-                </th>
-                {INVENTORY_TABLE_HEADERS.map((header) => (
-                  <th
-                    key={header}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {inventories.map((inventory) => (
-                <tr key={inventory.itemId} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
+          {isLoading ? (
+            <TableStatusBox $type="loading" $message="재고 목록을 불러오는 중입니다..." />
+          ) : isError ? (
+            <TableStatusBox $type="error" $message="재고 목록을 불러오는 중 오류가 발생했습니다." />
+          ) : !inventories || inventories.length === 0 ? (
+            <TableStatusBox $type="empty" $message="등록된 재고가 없습니다." />
+          ) : (
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <input
                       type="checkbox"
                       className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      // checked={selectedItems.includes(item.id)}
-                      // onChange={() => toggleSelectItem(item.id)}
+                      // onChange={}
                     />
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div>
-                      <div className="text-sm font-medium text-gray-900">{inventory.itemName}</div>
-                      <div className="text-sm text-gray-500">{inventory.itemNumber}</div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
-                      {inventory.category}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      {inventory.currentStock.toLocaleString()} {inventory.uomName}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">
-                      {inventory.safetyStock.toLocaleString()} {inventory.uomName}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      ₩{inventory.unitPrice.toLocaleString()}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">
-                      ₩{inventory.totalAmount.toLocaleString()}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{inventory.warehouseName}</div>
-                    <div className="text-sm text-gray-500">{inventory.warehouseType}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <StatusLabel $statusCode={inventory.statusCode} />
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button
-                      onClick={() => handleItemDetail(inventory.itemId)}
-                      className="text-blue-600 hover:text-blue-900 cursor-pointer"
+                  </th>
+                  {INVENTORY_TABLE_HEADERS.map((header) => (
+                    <th
+                      key={header}
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      <i className="ri-eye-line"></i>
-                    </button>
-                  </td>
+                      {header}
+                    </th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {inventories.map((inventory) => (
+                  <tr key={inventory.itemId} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <input
+                        type="checkbox"
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        // checked={selectedItems.includes(item.id)}
+                        // onChange={() => toggleSelectItem(item.id)}
+                      />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {inventory.itemName}
+                        </div>
+                        <div className="text-sm text-gray-500">{inventory.itemNumber}</div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
+                        {inventory.category}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">
+                        {inventory.currentStock.toLocaleString()} {inventory.uomName}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-500">
+                        {inventory.safetyStock.toLocaleString()} {inventory.uomName}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">
+                        ₩{inventory.unitPrice.toLocaleString()}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">
+                        ₩{inventory.totalAmount.toLocaleString()}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">{inventory.warehouseName}</div>
+                      <div className="text-sm text-gray-500">{inventory.warehouseType}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <StatusLabel $statusCode={inventory.statusCode} />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <button
+                        onClick={() => handleItemDetail(inventory.itemId)}
+                        className="text-blue-600 hover:text-blue-900 cursor-pointer"
+                      >
+                        <i className="ri-eye-line"></i>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
         {/* 페이지네이션 */}
         {isError || isLoading ? null : (

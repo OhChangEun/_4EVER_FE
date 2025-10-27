@@ -9,6 +9,7 @@ import StatusLabel from '@/app/components/common/StatusLabel';
 import AddWarehouseModal from './modals/AddWarehouseModal';
 import WarehouseDetailModal from './modals/WarehouseDetailModal';
 import ManageWarehouseModal from './modals/ManageWarehouseModal';
+import TableStatusBox from '@/app/components/common/TableStatusBox';
 
 const WarehouseList = () => {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -62,64 +63,71 @@ const WarehouseList = () => {
           </button>
         </div>
       </div>
+      {isLoading ? (
+        <TableStatusBox $type="loading" $message="재고 목록을 불러오는 중입니다..." />
+      ) : isError ? (
+        <TableStatusBox $type="error" $message="재고 목록을 불러오는 중 오류가 발생했습니다." />
+      ) : !warehouses || warehouses.length === 0 ? (
+        <TableStatusBox $type="empty" $message="등록된 재고가 없습니다." />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+          {warehouses.map((warehouse) => (
+            <div
+              key={warehouse.warehouseId}
+              className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+            >
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">{warehouse.warehouseName}</h3>
+                  <p className="text-sm text-gray-500">{warehouse.warehouseNumber}</p>
+                </div>
+                {<StatusLabel $statusCode={warehouse.statusCode} />}
+              </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-        {warehouses.map((warehouse) => (
-          <div
-            key={warehouse.warehouseId}
-            className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-          >
-            <div className="flex items-start justify-between mb-3">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">{warehouse.warehouseName}</h3>
-                <p className="text-sm text-gray-500">{warehouse.warehouseNumber}</p>
+              <div className="space-y-2 mb-4">
+                <div className="flex items-center text-sm text-gray-600">
+                  <i className="ri-building-line mr-2"></i>
+                  {warehouse.warehouseType}
+                </div>
+                <div className="flex items-center text-sm text-gray-600">
+                  <i className="ri-map-pin-line mr-2"></i>
+                  {warehouse.location}
+                </div>
+                <div className="flex items-center text-sm text-gray-600">
+                  <i className="ri-user-line mr-2"></i>
+                  {warehouse.manager}
+                </div>
+                <div className="flex items-center text-sm text-gray-600">
+                  <i className="ri-phone-line mr-2"></i>
+                  <a
+                    href={`tel:${warehouse.managerPhone}`}
+                    className="hover:text-blue-600 cursor-pointer"
+                  >
+                    {warehouse.managerPhone}
+                  </a>
+                </div>
               </div>
-              {<StatusLabel $statusCode={warehouse.statusCode} />}
-            </div>
 
-            <div className="space-y-2 mb-4">
-              <div className="flex items-center text-sm text-gray-600">
-                <i className="ri-building-line mr-2"></i>
-                {warehouse.warehouseType}
-              </div>
-              <div className="flex items-center text-sm text-gray-600">
-                <i className="ri-map-pin-line mr-2"></i>
-                {warehouse.location}
-              </div>
-              <div className="flex items-center text-sm text-gray-600">
-                <i className="ri-user-line mr-2"></i>
-                {warehouse.manager}
-              </div>
-              <div className="flex items-center text-sm text-gray-600">
-                <i className="ri-phone-line mr-2"></i>
-                <a
-                  href={`tel:${warehouse.managerPhone}`}
-                  className="hover:text-blue-600 cursor-pointer"
+              <div className="flex gap-2 pt-3 border-t border-gray-200">
+                <button
+                  onClick={() => handleWarehouseDetail(warehouse.warehouseId)}
+                  className="flex-1 px-3 py-2 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
                 >
-                  {warehouse.managerPhone}
-                </a>
+                  <i className="ri-eye-line mr-1"></i>
+                  상세보기
+                </button>
+                <button
+                  onClick={() => handleWarehouseManage(warehouse.warehouseId)}
+                  className="flex-1 px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
+                >
+                  <i className="ri-edit-line mr-1"></i>
+                  관리
+                </button>
               </div>
             </div>
-
-            <div className="flex gap-2 pt-3 border-t border-gray-200">
-              <button
-                onClick={() => handleWarehouseDetail(warehouse.warehouseId)}
-                className="flex-1 px-3 py-2 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
-              >
-                <i className="ri-eye-line mr-1"></i>
-                상세보기
-              </button>
-              <button
-                onClick={() => handleWarehouseManage(warehouse.warehouseId)}
-                className="flex-1 px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
-              >
-                <i className="ri-edit-line mr-1"></i>
-                관리
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
       {isError || isLoading ? null : (
         <Pagination
           currentPage={currentPage}

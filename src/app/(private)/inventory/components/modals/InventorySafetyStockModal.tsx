@@ -21,6 +21,7 @@ const InventorySafetyStockModal = ({
     onSuccess: (data) => {
       alert(`${data.status} : ${data.message}
       `);
+      $setShowSafetyStockModal(false);
     },
     onError: (error) => {
       alert(` 등록 중 오류가 발생했습니다. ${error}`);
