@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   INVENTORY_SEARCH_KEYWORD_OPTIONS,
   INVENTORY_STATUS_OPTIONS,
@@ -13,8 +13,6 @@ import { InventoryQueryParams, InventoryResponse } from '../../types/InventoryLi
 import { getInventoryList } from '../../inventory.api';
 import StatusLabel from '@/app/components/common/StatusLabel';
 import InventoryDetailModal from '../modals/InventoryDetailModal';
-import InventoryMoveModal from '../modals/InventoryMoveModal';
-import InventorySafetyModal from '../modals/InventorySafetyStockModal';
 import LowStockAlert from '../LowStockAlert';
 import StockMovement from '../StockMovement';
 import AddInventoryModal from '../modals/AddInventoryModal';
