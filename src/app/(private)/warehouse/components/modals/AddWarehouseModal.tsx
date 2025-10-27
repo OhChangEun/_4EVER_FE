@@ -1,20 +1,23 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { AddWarehouseModalProps } from '../../types/AddWarehouseType';
+import { useState } from 'react';
+import {
+  AddWarehouseModalProps,
+  AddWarehouseRequest,
+  WarehouseManagerInfoResponse,
+} from '../../types/AddWarehouseType';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { getWarehouseManagerInfo, postAddWarehouse } from '../../warehouse.api';
+import { ApiResponseNoData } from '@/app/api';
 
 const AddWarehouseModal = ({ $setShowAddModal }: AddWarehouseModalProps) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<AddWarehouseRequest>({
     warehouseName: '',
     warehouseType: '',
     location: '',
-    manager: '',
+    managerId: '',
     managerPhone: '',
   });
-
-  useEffect(() => {
-    console.log(formData);
-  }, [formData]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -23,6 +26,35 @@ const AddWarehouseModal = ({ $setShowAddModal }: AddWarehouseModalProps) => {
       [name]: value,
     }));
   };
+
+  const handleSubmit = () => {
+    const { managerPhone, ...requestData } = formData;
+    addWarehouse(requestData);
+  };
+
+  // ---------------------
+
+  const {
+    data: ManagerInfoRes,
+    isLoading: isManagerInfoLoading,
+    isError: isManagerInfoError,
+  } = useQuery<WarehouseManagerInfoResponse[]>({
+    queryKey: ['getWarehouseManagerInfo'],
+    queryFn: getWarehouseManagerInfo,
+  });
+
+  const { mutate: addWarehouse } = useMutation<ApiResponseNoData, Error, AddWarehouseRequest>({
+    mutationFn: postAddWarehouse,
+    onSuccess: (data) => {
+      alert(`${data.status} : ${data.message}
+      `);
+      $setShowAddModal(false);
+    },
+    onError: (error) => {
+      alert(` 자재 등록 중 오류가 발생했습니다. ${error}`);
+    },
+  });
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
@@ -57,11 +89,9 @@ const AddWarehouseModal = ({ $setShowAddModal }: AddWarehouseModalProps) => {
               value={formData.warehouseType}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm pr-8"
             >
-              <option>원자재</option>
-              <option>완제품</option>
-              <option>부품</option>
-              <option>특수보관</option>
-              <option>임시보관</option>
+              <option value="MATERIAL">원자재</option>
+              <option value="ITEM">부품</option>
+              <option value="ETC">기타 </option>
             </select>
           </div>
 
@@ -79,14 +109,28 @@ const AddWarehouseModal = ({ $setShowAddModal }: AddWarehouseModalProps) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">담당자</label>
-            <input
-              type="text"
+            <select
+              onChange={(e) => {
+                const managerId = e.target.value;
+                const selectedManager = ManagerInfoRes?.find((m) => m.managerId === managerId);
+
+                setFormData((prev) => ({
+                  ...prev,
+                  managerId,
+                  managerPhone: selectedManager?.managerPhone ?? '',
+                }));
+              }}
               name="manager"
-              value={formData.manager}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-              placeholder="담당자명을 입력하세요"
-            />
+              value={formData.managerId}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm pr-8"
+            >
+              <option value="">창고 담당자를 선택하세요</option>
+              {ManagerInfoRes?.map((manager) => (
+                <option key={manager.managerId} value={manager.managerId}>
+                  {manager.managerName}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>
@@ -96,6 +140,7 @@ const AddWarehouseModal = ({ $setShowAddModal }: AddWarehouseModalProps) => {
               name="managerPhone"
               value={formData.managerPhone}
               type="tel"
+              readOnly
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               placeholder="연락처를 입력하세요"
             />
@@ -111,6 +156,7 @@ const AddWarehouseModal = ({ $setShowAddModal }: AddWarehouseModalProps) => {
             </button>
             <button
               type="submit"
+              onClick={handleSubmit}
               className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium cursor-pointer"
             >
               추가

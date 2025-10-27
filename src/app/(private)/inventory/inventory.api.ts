@@ -1,10 +1,4 @@
-import {
-  ApiResponse,
-  ApiResponseNoData,
-  INVENTORY_ENDPOINTS,
-  LOWSTOCK_ENDPOINTS,
-  WAREHOUSE_ENDPOINTS,
-} from '@/app/api';
+import { ApiResponse, ApiResponseNoData, INVENTORY_ENDPOINTS } from '@/app/api';
 import { InventoryStatResponse } from './types/InventoryStatsType';
 import axios from 'axios';
 import { InventoryQueryParams, InventoryResponse } from './types/InventoryListType';
@@ -19,8 +13,6 @@ import {
 } from './types/InventoryShippingListType';
 import { ReceivedListResponse } from './types/InventoryReceivingListType';
 import { markAsReadyToShipResponse, ShippingDetailResponse } from './types/ShippingDetailType';
-import { LowStockStatResponse } from '../low-stock/types/LowStockStatsType';
-import { LowStockListQueryParams, LowStockListResponse } from '../low-stock/types/LowStockListType';
 import {
   AddInventoryItemsRequest,
   AddInventoryItemsToggleResponse,
