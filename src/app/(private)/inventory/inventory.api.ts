@@ -84,6 +84,20 @@ export const postStockMovement = async (
   return res.data;
 };
 
+export const PatchSafetyStock = async ({
+  itemId,
+  safetyStock,
+}: {
+  itemId: string;
+  safetyStock: number;
+}): Promise<ApiResponseNoData> => {
+  const res = await axios.patch<ApiResponseNoData>(
+    INVENTORY_ENDPOINTS.EDIT_SAFETY_STOCK(itemId, safetyStock),
+  );
+
+  return res.data;
+};
+
 // ----------------------- 입고 관리 -----------------------
 export const getProductionList = async (
   params?: ManageMentCommonQueryParams,

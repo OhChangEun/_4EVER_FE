@@ -1,25 +1,30 @@
 'use client';
 
 import { useState } from 'react';
-
-interface InventorySafetyStockModalProps {
-  $setShowSafetyStockModal: (show: boolean) => void;
-  $selectedStock: {
-    itemName: string;
-    itemNumber: string;
-    warehouseName: string;
-    warehouseNumber: string;
-    safetyStock: number;
-    currentStock: number;
-    uomName: string;
-  };
-}
+import { InventorySafetyStockModalProps } from '../../types/EditSafetyStockType';
+import { useMutation } from '@tanstack/react-query';
+import { PatchSafetyStock } from '../../inventory.api';
 
 const InventorySafetyStockModal = ({
   $setShowSafetyStockModal,
   $selectedStock,
 }: InventorySafetyStockModalProps) => {
   const [newSafetyStock, setNewSafetyStock] = useState<number>(0);
+
+  const { mutate: editSafetyStock } = useMutation({
+    mutationFn: PatchSafetyStock,
+    onSuccess: (data) => {
+      alert(`${data.status} : ${data.message}
+      `);
+    },
+    onError: (error) => {
+      alert(` 등록 중 오류가 발생했습니다. ${error}`);
+    },
+  });
+
+  const handleSubmit = () => {
+    editSafetyStock({ itemId: $selectedStock?.itemId as string, safetyStock: newSafetyStock });
+  };
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
@@ -66,6 +71,7 @@ const InventorySafetyStockModal = ({
             </button>
             <button
               type="submit"
+              onClick={handleSubmit}
               className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium cursor-pointer"
             >
               수정

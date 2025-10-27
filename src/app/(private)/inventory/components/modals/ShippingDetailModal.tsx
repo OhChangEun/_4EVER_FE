@@ -54,7 +54,7 @@ const ShippingDetailModal = ({
     mutationFn: ({ id }) => patchMarkAsReadyToShip(id),
     onSuccess: (data) => {
       //   console.log(data);
-      //   alert('출고 준비 완료로 상태가 변경되었습니다.');
+      alert('출고 준비 완료로 상태가 변경되었습니다.');
       $setShowShipDetailModal(false);
     },
     onError: (error) => {

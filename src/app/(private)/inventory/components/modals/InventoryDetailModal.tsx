@@ -21,6 +21,7 @@ const InventoryDetailModal = ({
   const [showMoveModal, setShowMoveModal] = useState(false);
   const [showSafetyStockModal, setShowSafetyStockModal] = useState(false);
   const [selectedStock, setSelectedStock] = useState({
+    itemId: '',
     itemName: '',
     itemNumber: '',
     warehouseName: '',
@@ -33,6 +34,7 @@ const InventoryDetailModal = ({
   const handleStockMove = (itemId: string) => {
     $setSelectedItemId(itemId);
     setSelectedStock({
+      itemId: inventoryDetailRes?.itemId || '',
       itemName: inventoryDetailRes?.itemName || '',
       itemNumber: inventoryDetailRes?.itemNumber || '',
       warehouseName: inventoryDetailRes?.warehouseName || '',
@@ -72,6 +74,7 @@ const InventoryDetailModal = ({
 
   const handleSafetyStockEdit = () => {
     setSelectedStock({
+      itemId: inventoryDetailRes?.itemId || '',
       itemName: inventoryDetailRes?.itemName || '',
       itemNumber: inventoryDetailRes?.itemNumber || '',
       warehouseName: inventoryDetailRes?.warehouseName || '',

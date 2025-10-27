@@ -72,6 +72,8 @@ export const INVENTORY_ENDPOINTS = {
   MARKAS_READY_TO_SHIP_DETAIL: (itemId: string) =>
     `${INVENTORY_BASE_PATH}/sales-orders/${itemId}/status`,
   ADD_MATERIALS: `${INVENTORY_BASE_PATH}/iv/items`,
+  EDIT_SAFETY_STOCK: (itemId: string, safetyStock: number) =>
+    `${INVENTORY_BASE_PATH}/iv/items/${itemId}/safety-stock?safetyStock=${safetyStock}`,
   // ---------- 메뉴 조회 ----------
   ITEM_TOGGLE: `${INVENTORY_BASE_PATH}/iv/items/toggle`,
   WAREHOUSE_TOGGLE: (itemId: string) => `${INVENTORY_BASE_PATH}/iv/warehouses/dropdown/${itemId}`,
