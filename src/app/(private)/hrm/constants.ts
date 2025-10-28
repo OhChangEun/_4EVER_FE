@@ -3,9 +3,9 @@ import EmployeeManagement from '@/app/(private)/hrm/components/tabs/mainTab/Empl
 import PayrollManagement from '@/app/(private)/hrm/components/tabs/mainTab/PayrollManagement';
 import AttendanceManagement from '@/app/(private)/hrm/components/tabs/mainTab/AttendanceManagement';
 import TrainingManagement from '@/app/(private)/hrm/components/tabs/mainTab/TrainingManagement';
-import EmployeesTab from '@/app/(private)/hrm/components/tabs/subTab/employeeTab/PositionsTab';
+import EmployeesTab from '@/app/(private)/hrm/components/tabs/subTab/employeeTab/EmployeesTab';
 import OrganizationTab from '@/app/(private)/hrm/components/tabs/subTab/employeeTab/OrganizationTab';
-import PositionsTab from '@/app/(private)/hrm/components/tabs/subTab/employeeTab/EmployeesTab';
+import PositionsTab from '@/app/(private)/hrm/components/tabs/subTab/employeeTab/PositionsTab';
 import AttendanceTab from '@/app/(private)/hrm/components/tabs/subTab/attendanceTab/AttendanceTab';
 import LeaveTab from '@/app/(private)/hrm/components/tabs/subTab/attendanceTab/LeaveTab';
 import AvailableTrainingTab from '@/app/(private)/hrm/components/tabs/subTab/trainingTab/AvailableTrainingTab';

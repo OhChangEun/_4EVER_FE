@@ -427,15 +427,7 @@ export default function EmployeeManagement() {
   return (
     <>
       <SubNavigation tabs={HR_TABS} />
-      <div className="flex items-center space-x-3">
-        <button
-          // onClick={() => setIsEmployeeRegisterModalOpen(true)}
-          className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 cursor-pointer whitespace-nowrap flex items-center space-x-2"
-        >
-          <i className="ri-user-add-line"></i>
-          <span>신규 직원 등록</span>
-        </button>
-      </div>
+
       {/* 모달들 */}
       {showEmployeeDetailModal && selectedEmployee && (
         <EmployeeDetailModal
