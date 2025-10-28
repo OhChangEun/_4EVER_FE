@@ -12,9 +12,10 @@ export default function PrivateGuard({ children }: { children: ReactNode }) {
       const token = localStorage.getItem('access_token');
       const exp = Number(localStorage.getItem('access_token_expires_at'));
 
+      // 토큰이 없거나 만료되었을때
       if (!token || Date.now() > exp) {
         try {
-          // await trySilentRefresh();
+          await trySilentRefresh();
         } catch {
           startAuthorization(window.location.pathname);
           return;

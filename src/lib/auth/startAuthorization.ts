@@ -1,13 +1,13 @@
 import { generateRandomBase64Url, createCodeChallenge } from './pkce';
 
 export async function startAuthorization(returnTo?: string) {
-  const CLIENT_ID = 'everp';
   const AUTH_URL = 'https://auth.everp.co.kr';
   const REDIRECT_URI = 'http://localhost:3000/callback';
 
   const codeVerifier = generateRandomBase64Url(32);
   const codeChallenge = await createCodeChallenge(codeVerifier);
   const state = generateRandomBase64Url(16);
+  console.log('state 생성', state);
 
   localStorage.setItem('pkce_verifier', codeVerifier);
   localStorage.setItem('oauth_state', state);
@@ -15,7 +15,7 @@ export async function startAuthorization(returnTo?: string) {
 
   const params = new URLSearchParams({
     response_type: 'code',
-    client_id: CLIENT_ID,
+    client_id: 'everp-spa',
     redirect_uri: REDIRECT_URI,
     scope: 'erp.user.profile offline_access',
     state,

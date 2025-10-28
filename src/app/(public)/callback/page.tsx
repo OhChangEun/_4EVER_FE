@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 import axios from 'axios';
 import { startAuthorization } from '@/lib/auth/startAuthorization';
 
-const CLIENT_ID = 'everp';
 const REDIRECT_URI = 'http://localhost:3000/callback';
 // const REDIRECT_URI = 'https://everp.co.kr/callback';
 const TOKEN_URL = 'https://auth.everp.co.kr/oauth2/token';
@@ -29,10 +28,10 @@ export default function CallbackPage() {
         const state = q.get('state');
         const expected = localStorage.getItem('oauth_state');
 
-        console.log('dasdas', localStorage.getItem('oauth_state'));
+        console.log('state', state);
+        console.log('expected', expected);
+        console.log(localStorage.getItem('oauth_state'));
 
-        console.log('dsad', state);
-        console.log('dsaad', expected);
         if (!code || !state || !expected || state !== expected) {
           cleanupPkce();
           throw new Error('Invalid state or code');
@@ -44,44 +43,33 @@ export default function CallbackPage() {
 
         const body = new URLSearchParams({
           grant_type: 'authorization_code',
-          client_id: CLIENT_ID,
+          client_id: 'everp-spa',
           redirect_uri: REDIRECT_URI,
           code,
           code_verifier: verifier,
         });
 
-        // const res = await axios.post(TOKEN_URL, body.toString(), {
-        //   headers: {
-        //     'Content-Type': 'application/x-www-form-urlencoded',
-        //     // Authorization: 'Basic ZXZIcnA6c3VwZXItc2VjcmV0',
-        //   },
-        // });
-
-        // const { access_token, expires_in } = res.data;
-
-        // saveAccessToken(access_token, expires_in);
-        // cleanupPkce();
-
         const res = await axios.post(TOKEN_URL, body.toString(), {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
+            // Authorization: 'Basic ZXZIcnA6c3VwZXItc2VjcmV0',
           },
         });
 
-        console.log('🔍 TOKEN RESPONSE:', res.data);
-
         const { access_token, expires_in } = res.data;
+
         saveAccessToken(access_token, expires_in);
+        // cleanupPkce();
 
         const returnTo = localStorage.getItem('oauth_return_to') || '/';
         localStorage.removeItem('oauth_return_to');
-        localStorage.removeItem('oauth_state');
+        // localStorage.removeItem('oauth_state');
 
         window.history.replaceState({}, '', new URL(returnTo, window.location.origin).toString());
         window.location.replace(returnTo);
       } catch (error: unknown) {
         let errMessage = 'token_exchange_failed';
-
+        alert(error);
         if (axios.isAxiosError(error)) {
           errMessage =
             error.response?.data?.error ||
@@ -92,10 +80,10 @@ export default function CallbackPage() {
           errMessage = error.message;
         }
 
-        cleanupPkce();
+        // cleanupPkce();
 
         if (errMessage === 'invalid_grant') {
-          startAuthorization('/');
+          // startAuthorization('/');
           return;
         }
 

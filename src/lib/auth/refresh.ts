@@ -1,10 +1,11 @@
 import axios from 'axios';
+import { startAuthorization } from './startAuthorization';
 
 export async function trySilentRefresh() {
   try {
     const body = new URLSearchParams({
       grant_type: 'refresh_token',
-      client_id: process.env.NEXT_PUBLIC_CLIENT_ID!,
+      client_id: 'everp-spa',
     });
 
     const res = await axios.post('https://auth.everp.co.kr/oauth2/token', body.toString(), {
@@ -16,9 +17,12 @@ export async function trySilentRefresh() {
 
     const { access_token, expires_in } = res.data;
 
+    alert(res.data.accessToken);
+
     localStorage.setItem('access_token', access_token);
     localStorage.setItem('access_token_expires_at', String(Date.now() + expires_in * 1000));
   } catch (error) {
+    startAuthorization('/');
     if (axios.isAxiosError(error)) {
       console.error('Silent refresh failed:', error.response?.data || error.message);
     } else {
