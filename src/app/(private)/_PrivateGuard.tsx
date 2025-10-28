@@ -14,7 +14,7 @@ export default function PrivateGuard({ children }: { children: ReactNode }) {
 
       if (!token || Date.now() > exp) {
         try {
-          await trySilentRefresh();
+          // await trySilentRefresh();
         } catch {
           startAuthorization(window.location.pathname);
           return;

@@ -7,7 +7,7 @@ export async function trySilentRefresh() {
       client_id: process.env.NEXT_PUBLIC_CLIENT_ID!,
     });
 
-    const res = await axios.post('/oauth2/token', body.toString(), {
+    const res = await axios.post('https://auth.everp.co.kr/oauth2/token', body.toString(), {
       withCredentials: true,
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',

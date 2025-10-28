@@ -50,17 +50,28 @@ export default function CallbackPage() {
           code_verifier: verifier,
         });
 
+        // const res = await axios.post(TOKEN_URL, body.toString(), {
+        //   headers: {
+        //     'Content-Type': 'application/x-www-form-urlencoded',
+        //     // Authorization: 'Basic ZXZIcnA6c3VwZXItc2VjcmV0',
+        //   },
+        // });
+
+        // const { access_token, expires_in } = res.data;
+
+        // saveAccessToken(access_token, expires_in);
+        // cleanupPkce();
+
         const res = await axios.post(TOKEN_URL, body.toString(), {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            Authorization: 'Basic ZXZIcnA6c3VwZXItc2VjcmV0',
           },
         });
 
-        const data = res.data;
-        console.log(res);
-        saveAccessToken(data.access_token, data.expires_in);
-        cleanupPkce();
+        console.log('🔍 TOKEN RESPONSE:', res.data);
+
+        const { access_token, expires_in } = res.data;
+        saveAccessToken(access_token, expires_in);
 
         const returnTo = localStorage.getItem('oauth_return_to') || '/';
         localStorage.removeItem('oauth_return_to');
