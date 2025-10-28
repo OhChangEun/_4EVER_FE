@@ -83,6 +83,10 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       {children}
       {modals.length > 0 && (
         <FloatingPortal>
+          {/* 배경 오버레이 */}
+          <div className="fixed inset-0 z-[999] bg-black/50" />
+
+          {/* 각 모달 */}
           {modals.map(({ id, Component, props }) => (
             <ModalContainer key={id} title={props.title} onClose={props.onClose}>
               <Component {...props} />

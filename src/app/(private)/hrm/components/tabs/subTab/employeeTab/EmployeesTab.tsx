@@ -5,16 +5,24 @@ import {
   fetchEmployeesList,
   fetchPositionsList,
 } from '@/app/(private)/hrm/api/hrm.api';
-import { EmployeeListRequestParams } from '@/app/(private)/hrm/types/HrmEmployeesApiType';
+import {
+  EmployeeData,
+  EmployeeListRequestParams,
+} from '@/app/(private)/hrm/types/HrmEmployeesApiType';
 import Dropdown from '@/app/components/common/Dropdown';
 import IconButton from '@/app/components/common/IconButton';
+import { useModal } from '@/app/components/common/modal/useModal';
 import Pagination from '@/app/components/common/Pagination';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
 import { KeyValueItem } from '@/app/types/CommonType';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
+import { EmployeeDetailModal } from '@/app/(private)/hrm/components/modals/EmployeeDetailModal';
+import { EmployeeEditModal } from '../../../modals/EmployeeEditModal';
 
 export default function EmployeesTab() {
+  const { openModal, removeAllModals } = useModal();
+
   const [selectedPosition, setSelectedPosition] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -94,8 +102,16 @@ export default function EmployeesTab() {
     setCurrentPage(1);
   };
 
-  const handleViewEmployee = (emp) => {
-    alert(`${emp.name} 상세보기 클릭됨`);
+  const handleEditEmployeeDetail = (emp: EmployeeData) => {
+    openModal(EmployeeEditModal, { title: '직원정보 수정', employee: emp });
+  };
+
+  const handleViewEmployeeDetail = (emp: EmployeeData) => {
+    openModal(EmployeeDetailModal, {
+      title: '직원 상세보기',
+      employee: emp,
+      onEdit: () => handleEditEmployeeDetail(emp),
+    });
   };
 
   return (
@@ -134,21 +150,6 @@ export default function EmployeesTab() {
           />
         )}
 
-        {/* <select
-          value={positionFilter}
-          onChange={(e) => {
-            setPositionFilter(e.target.value);
-            handleFilterChange();
-          }}
-          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-8"
-        >
-          <option value="">전체 직급</option>
-          {/* {positions.map((position) => (
-            <option key={position} value={position}>
-              {position}
-            </option>
-          ))} 
-        </select> */}
         <div className="relative flex-1 max-w-xs">
           <input
             type="text"
@@ -218,7 +219,7 @@ export default function EmployeesTab() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button
-                      onClick={() => handleViewEmployee(employee)}
+                      onClick={() => handleViewEmployeeDetail(employee)}
                       className="text-blue-600 hover:text-blue-900 cursor-pointer"
                     >
                       상세보기
