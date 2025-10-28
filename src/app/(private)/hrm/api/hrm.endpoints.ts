@@ -31,7 +31,7 @@ export const HRM_ENDPOINTS = {
 
   // 직책
   POSITIONS: `${HRM_BASE_PATH}/positions`, // 직책 목록 조회
-  POSITION_DETAIL: (positionId: number) => `${HRM_BASE_PATH}/positions/${positionId}`, // 직책 상세 조회
+  POSITION_DETAIL: (positionId: string) => `${HRM_BASE_PATH}/positions/${positionId}`, // 직책 상세 조회
 
   // 교육
   PROGRAM: `${HRM_BASE_PATH}/program`, // 교육 프로그램 목록 조회

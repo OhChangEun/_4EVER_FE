@@ -6,8 +6,11 @@ import {
   EmployeeListRequestParams,
   EmployeeListResponse,
 } from '@/app/(private)/hrm/types/HrmEmployeesApiType';
-import { PositionDataResponse } from '@/app/(private)/hrm/types/HrmPositionsApiType';
-import { DepartmentsListResponse } from '../types/HrmDepartmentsApiType';
+import {
+  PositionDataResponse,
+  PositionDetailResponse,
+} from '@/app/(private)/hrm/types/HrmPositionsApiType';
+import { DepartmentsListResponse } from '@/app/(private)/hrm/types/HrmDepartmentsApiType';
 
 // 인적자원관리 지표
 export const fetchHrmStats = async (): Promise<HrmStatResponse | null> => {
@@ -34,6 +37,14 @@ export const fetchEmployeesList = async (
 // 직급 목록
 export const fetchPositionsList = async (): Promise<PositionDataResponse> => {
   const res = await axios.get<ApiResponse<PositionDataResponse>>(`${HRM_ENDPOINTS.POSITIONS}`);
+  return res.data.data;
+};
+
+// 직급 상세 목록
+export const fetchPositionsDetail = async (positionId: string): Promise<PositionDetailResponse> => {
+  const res = await axios.get<ApiResponse<PositionDetailResponse>>(
+    `${HRM_ENDPOINTS.POSITION_DETAIL(positionId)}`,
+  );
   return res.data.data;
 };
 

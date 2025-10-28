@@ -7,3 +7,18 @@ export interface PositionData {
 }
 
 export type PositionDataResponse = PositionData[];
+
+export interface EmployeeSummary {
+  employeeId: string;
+  employeeCode: string;
+  employeeName: string;
+  positionId: string;
+  position: string;
+  departmentId: string;
+  department: string;
+  hireDate: string;
+}
+
+export interface PositionDetailResponse extends PositionData {
+  employees: EmployeeSummary[];
+}
