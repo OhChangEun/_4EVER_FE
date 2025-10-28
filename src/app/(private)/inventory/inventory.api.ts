@@ -14,6 +14,7 @@ import { markAsReadyToShipResponse, ShippingDetailResponse } from './types/Shipp
 import {
   AddInventoryItemsRequest,
   AddInventoryItemsToggleResponse,
+  WarehouseToggleQueryParams,
   WarehouseToggleResponse,
 } from './types/AddInventoryModalType';
 import { ApiResponse, ApiResponseNoData, INVENTORY_ENDPOINTS } from '@/app/types/api';
@@ -193,9 +194,14 @@ export const getItemInfo = async (): Promise<AddInventoryItemsToggleResponse[]> 
   return res.data.data;
 };
 
-export const getWarehouseInfo = async (itemId: string): Promise<WarehouseToggleResponse[]> => {
+export const getWarehouseInfo = async (
+  params?: WarehouseToggleQueryParams,
+): Promise<WarehouseToggleResponse[]> => {
+  const query = new URLSearchParams({
+    ...(params?.warehouseId && { warehouseId: String(params.warehouseId) }),
+  }).toString();
   const res = await axios.get<ApiResponse<{ warehouses: WarehouseToggleResponse[] }>>(
-    INVENTORY_ENDPOINTS.WAREHOUSE_TOGGLE(itemId),
+    `${INVENTORY_ENDPOINTS.WAREHOUSE_TOGGLE}?${query}`,
   );
   return res.data.data.warehouses;
 };

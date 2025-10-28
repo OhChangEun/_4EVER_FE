@@ -24,3 +24,7 @@ export interface AddInventoryItemsRequest {
   currentStock: number;
   warehouseId: string;
 }
+
+export interface WarehouseToggleQueryParams {
+  warehouseId: string;
+}
