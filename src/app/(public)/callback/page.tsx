@@ -4,9 +4,10 @@ import { useEffect } from 'react';
 import axios from 'axios';
 import { startAuthorization } from '@/lib/auth/startAuthorization';
 
-const TOKEN_URL = process.env.NEXT_PUBLIC_TOKEN_URL!;
-const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID!;
-const REDIRECT_URI = process.env.NEXT_PUBLIC_REDIRECT_URI!;
+const CLIENT_ID = 'everp';
+const REDIRECT_URI = 'http://localhost:3000/callback';
+// const REDIRECT_URI = 'https://everp.co.kr/callback';
+const TOKEN_URL = 'https://auth.everp.co.kr/oauth2/token';
 
 function saveAccessToken(at: string, expiresIn: number) {
   const expiresAt = Date.now() + expiresIn * 1000;
@@ -15,8 +16,8 @@ function saveAccessToken(at: string, expiresIn: number) {
 }
 
 function cleanupPkce() {
-  sessionStorage.removeItem('pkce_verifier');
-  sessionStorage.removeItem('oauth_state');
+  localStorage.removeItem('pkce_verifier');
+  localStorage.removeItem('oauth_state');
 }
 
 export default function CallbackPage() {
@@ -26,34 +27,44 @@ export default function CallbackPage() {
         const q = new URLSearchParams(window.location.search);
         const code = q.get('code');
         const state = q.get('state');
-        const expected = sessionStorage.getItem('oauth_state');
+        const expected = localStorage.getItem('oauth_state');
 
+        console.log('dasdas', localStorage.getItem('oauth_state'));
+
+        console.log('dsad', state);
+        console.log('dsaad', expected);
         if (!code || !state || !expected || state !== expected) {
           cleanupPkce();
           throw new Error('Invalid state or code');
         }
 
-        const verifier = sessionStorage.getItem('pkce_verifier');
+        const verifier = localStorage.getItem('pkce_verifier');
+        console.log('verify', verifier);
         if (!verifier) throw new Error('Missing PKCE verifier');
 
         const body = new URLSearchParams({
           grant_type: 'authorization_code',
-          code,
-          redirect_uri: REDIRECT_URI,
           client_id: CLIENT_ID,
+          redirect_uri: REDIRECT_URI,
+          code,
           code_verifier: verifier,
         });
 
         const res = await axios.post(TOKEN_URL, body.toString(), {
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Authorization: 'Basic ZXZIcnA6c3VwZXItc2VjcmV0',
+          },
         });
 
         const data = res.data;
+        console.log(res);
         saveAccessToken(data.access_token, data.expires_in);
         cleanupPkce();
 
-        const returnTo = sessionStorage.getItem('oauth_return_to') || '/';
-        sessionStorage.removeItem('oauth_return_to');
+        const returnTo = localStorage.getItem('oauth_return_to') || '/';
+        localStorage.removeItem('oauth_return_to');
+        localStorage.removeItem('oauth_state');
 
         window.history.replaceState({}, '', new URL(returnTo, window.location.origin).toString());
         window.location.replace(returnTo);
