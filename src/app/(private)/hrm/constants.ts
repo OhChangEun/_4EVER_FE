@@ -4,7 +4,7 @@ import PayrollManagement from '@/app/(private)/hrm/components/tabs/mainTab/Payro
 import AttendanceManagement from '@/app/(private)/hrm/components/tabs/mainTab/AttendanceManagement';
 import TrainingManagement from '@/app/(private)/hrm/components/tabs/mainTab/TrainingManagement';
 import EmployeesTab from '@/app/(private)/hrm/components/tabs/subTab/employeeTab/EmployeesTab';
-import OrganizationTab from '@/app/(private)/hrm/components/tabs/subTab/employeeTab/OrganizationTab';
+import DepartmentsTab from '@/app/(private)/hrm/components/tabs/subTab/employeeTab/DepartmentsTab';
 import PositionsTab from '@/app/(private)/hrm/components/tabs/subTab/employeeTab/PositionsTab';
 import AttendanceTab from '@/app/(private)/hrm/components/tabs/subTab/attendanceTab/AttendanceTab';
 import LeaveTab from '@/app/(private)/hrm/components/tabs/subTab/attendanceTab/LeaveTab';
@@ -51,7 +51,7 @@ export const HR_TABS: Tab[] = [
     id: 'organization',
     name: '부서관리',
     icon: 'ri-building-line',
-    component: OrganizationTab,
+    component: DepartmentsTab,
   },
   {
     id: 'positions',

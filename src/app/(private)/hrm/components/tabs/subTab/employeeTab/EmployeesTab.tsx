@@ -18,7 +18,7 @@ import { KeyValueItem } from '@/app/types/CommonType';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { EmployeeDetailModal } from '@/app/(private)/hrm/components/modals/EmployeeDetailModal';
-import { EmployeeEditModal } from '../../../modals/EmployeeEditModal';
+import { EmployeeEditModal } from '@/app/(private)/hrm/components/modals/EmployeeEditModal';
 
 export default function EmployeesTab() {
   const { openModal } = useModal();
@@ -42,7 +42,7 @@ export default function EmployeesTab() {
 
   // 부서 드롭다운
   const {
-    data: departmentData,
+    data: departmentsData,
     isLoading: isDeptLoading,
     isError: isDeptError,
   } = useQuery({
@@ -64,7 +64,7 @@ export default function EmployeesTab() {
 
   // key-value 형태로 변환
   const departmentsOptions: KeyValueItem[] = useMemo(() => {
-    const departmentList = departmentData?.departments ?? [];
+    const departmentList = departmentsData?.departments ?? [];
 
     return [
       { key: '', value: '전체 부서' },
@@ -73,7 +73,7 @@ export default function EmployeesTab() {
         value: item.departmentName,
       })),
     ];
-  }, [departmentData]);
+  }, [departmentsData]);
 
   const employeesQueryParams = useMemo<EmployeeListRequestParams>(
     () => ({
