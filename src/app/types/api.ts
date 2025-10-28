@@ -76,7 +76,7 @@ export const INVENTORY_ENDPOINTS = {
     `${INVENTORY_BASE_PATH}/iv/items/${itemId}/safety-stock?safetyStock=${safetyStock}`,
   // ---------- 메뉴 조회 ----------
   ITEM_TOGGLE: `${INVENTORY_BASE_PATH}/iv/items/toggle`,
-  WAREHOUSE_TOGGLE: (itemId: string) => `${INVENTORY_BASE_PATH}/iv/warehouses/dropdown/${itemId}`,
+  WAREHOUSE_TOGGLE: `${INVENTORY_BASE_PATH}/iv/warehouses/dropdown`,
 } as const;
 
 // ----------------------- LOWSTOCK -----------------------

@@ -2,9 +2,12 @@
 
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { getWarehouseInfo, postStockMovement } from '../../inventory.api';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { InventoryMoveModalProps } from '../../types/InventoryMoveModalType';
-import { WarehouseToggleResponse } from '../../types/AddInventoryModalType';
+import {
+  WarehouseToggleQueryParams,
+  WarehouseToggleResponse,
+} from '../../types/AddInventoryModalType';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
 
 const InventoryMoveModal = ({ $setShowMoveModal, $selectedStock }: InventoryMoveModalProps) => {
@@ -28,13 +31,20 @@ const InventoryMoveModal = ({ $setShowMoveModal, $selectedStock }: InventoryMove
 
   // -----------------------------
 
+  const queryParams = useMemo(() => {
+    const params: WarehouseToggleQueryParams = {
+      warehouseId: $selectedStock.warehouseId,
+    };
+    return params;
+  }, [$selectedStock.warehouseId]);
+
   const {
     data: warehouseInfoRes,
     isLoading,
     isError,
   } = useQuery<WarehouseToggleResponse[]>({
-    queryKey: ['getWarehouseInfo', $selectedStock.itemId],
-    queryFn: () => getWarehouseInfo($selectedStock.itemId),
+    queryKey: ['getWarehouseInfo', queryParams],
+    queryFn: ({ queryKey }) => getWarehouseInfo(queryKey[1] as WarehouseToggleQueryParams),
     enabled: !!$selectedStock.itemId,
   });
 

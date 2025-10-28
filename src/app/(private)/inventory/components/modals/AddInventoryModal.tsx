@@ -5,6 +5,7 @@ import {
   AddInventoryItemsRequest,
   AddInventoryItemsToggleResponse,
   AddInventoryModalProps,
+  WarehouseToggleQueryParams,
   WarehouseToggleResponse,
 } from '../../types/AddInventoryModalType';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -63,8 +64,8 @@ const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
     isLoading: isWarehouseInfoLoading,
     isError: isWarehouseInfoError,
   } = useQuery<WarehouseToggleResponse[]>({
-    queryKey: ['getWarehouseInfo', formData.itemId],
-    queryFn: () => getWarehouseInfo(formData.itemId),
+    queryKey: ['getWarehouseInfo'],
+    queryFn: () => getWarehouseInfo(),
     enabled: !!formData.itemId,
   });
 
