@@ -72,7 +72,7 @@ export default function Dropdown<T extends string = string>({
           <ul
             ref={refs.setFloating}
             style={floatingStyles}
-            className="z-[9999] max-h-50 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-lg max-w-[120px] min-w-[96px] animate-fadeIn"
+            className="z-[9999] max-h-50 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-lg max-w-[120px] min-w-[96px] animate-fadeIn overscroll-contain"
           >
             {items.map((item, index) => {
               const isSelected = item.key === selectedItem?.key;

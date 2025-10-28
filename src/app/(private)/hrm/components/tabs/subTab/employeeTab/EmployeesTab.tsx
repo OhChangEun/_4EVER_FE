@@ -21,7 +21,7 @@ import { EmployeeDetailModal } from '@/app/(private)/hrm/components/modals/Emplo
 import { EmployeeEditModal } from '../../../modals/EmployeeEditModal';
 
 export default function EmployeesTab() {
-  const { openModal, removeAllModals } = useModal();
+  const { openModal } = useModal();
 
   const [selectedPosition, setSelectedPosition] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState('');
@@ -29,6 +29,7 @@ export default function EmployeesTab() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
+  // 직급 드롭다운
   const {
     data: positionsData = [],
     isLoading: isPosLoading,
@@ -39,6 +40,7 @@ export default function EmployeesTab() {
     staleTime: Infinity,
   });
 
+  // 부서 드롭다운
   const {
     data: departmentData,
     isLoading: isDeptLoading,
@@ -116,37 +118,36 @@ export default function EmployeesTab() {
 
   return (
     <>
-      {/* 필터링 및 검색 */}
       <div className="flex justify-end items-center gap-4 mb-6 p-2 rounded-lg">
-        {isPosLoading ? (
-          <div className="w-24 px-4 py-2 rounded-sm bg-gray-100 text-gray-500">
-            제품 목록 로딩 중...
-          </div>
-        ) : isPosError ? (
-          <div className="w-64 px-4 py-2 border border-red-300 rounded-lg bg-red-50 text-red-600">
-            제품 목록 로드 실패
-          </div>
-        ) : (
-          <Dropdown
-            items={positionOptions}
-            value={selectedPosition}
-            onChange={(position: string) => setSelectedPosition(position)}
-          />
-        )}
-
+        {/* 필터링 및 검색 */}
         {isDeptLoading ? (
           <div className="w-24 px-4 py-2 rounded-sm bg-gray-100 text-gray-500">
-            제품 목록 로딩 중...
+            부서 목록 로딩 중...
           </div>
         ) : isDeptError ? (
           <div className="w-64 px-4 py-2 border border-red-300 rounded-lg bg-red-50 text-red-600">
-            제품 목록 로드 실패
+            부서 목록 로드 실패
           </div>
         ) : (
           <Dropdown
             items={departmentsOptions}
             value={selectedDepartment}
             onChange={(dept: string) => setSelectedDepartment(dept)}
+          />
+        )}
+        {isPosLoading ? (
+          <div className="w-24 px-4 py-2 rounded-sm bg-gray-100 text-gray-500">
+            직급 목록 로딩 중...
+          </div>
+        ) : isPosError ? (
+          <div className="w-64 px-4 py-2 border border-red-300 rounded-lg bg-red-50 text-red-600">
+            직급 목록 로드 실패
+          </div>
+        ) : (
+          <Dropdown
+            items={positionOptions}
+            value={selectedPosition}
+            onChange={(position: string) => setSelectedPosition(position)}
           />
         )}
 
