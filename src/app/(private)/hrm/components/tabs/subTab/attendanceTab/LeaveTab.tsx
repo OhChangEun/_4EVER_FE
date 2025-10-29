@@ -4,13 +4,16 @@ import {
   fetchDepartmentsList,
   fetchLeaveList,
   fetchPositionsList,
+  postLeaveReject,
+  postLeaveRelease,
 } from '@/app/(private)/hrm/api/hrm.api';
 import { LeaveRequestParams } from '@/app/(private)/hrm/types/HrmLeaveApiType';
 import Dropdown from '@/app/components/common/Dropdown';
 import { useModal } from '@/app/components/common/modal/useModal';
 import Pagination from '@/app/components/common/Pagination';
 import { KeyValueItem } from '@/app/types/CommonType';
-import { useQuery } from '@tanstack/react-query';
+import { getQueryClient } from '@/lib/queryClient';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 export default function LeaveTab() {
@@ -79,6 +82,7 @@ export default function LeaveTab() {
     [selectedDepartment, selectedPosition, currentPage, pageSize],
   );
 
+  const queryClient = getQueryClient();
   const {
     data: leaveData,
     isLoading,
@@ -90,6 +94,40 @@ export default function LeaveTab() {
 
   const leaveList = leaveData?.content ?? [];
   const pageInfo = leaveData?.page;
+
+  const { mutate: approveLeave } = useMutation({
+    mutationFn: (requestId: string) => postLeaveRelease(requestId),
+    onSuccess: () => {
+      alert('승인이 완료되었습니다.');
+      queryClient.invalidateQueries({ queryKey: ['leaveList'] });
+    },
+    onError: (error) => {
+      alert(`휴가 승인 중 오류가 발생했습니다. ${error}`);
+    },
+  });
+
+  const { mutate: rejectLeave } = useMutation({
+    mutationFn: (reuqestId: string) => postLeaveReject(reuqestId),
+    onSuccess: () => {
+      alert('반료되었습니다.');
+      queryClient.invalidateQueries({ queryKey: ['leaveList'] });
+    },
+    onError: (error) => {
+      alert(`휴가 반려 중 오류가 발생했습니다. ${error}`);
+    },
+  });
+
+  const handleApprove = (requestId: string) => {
+    if (confirm('해당 요청을 승인하시겠습니까?')) {
+      approveLeave(requestId);
+    }
+  };
+
+  const handleReject = (requestId: string) => {
+    if (confirm('해당 요청을 반려하시겠습니까?')) {
+      rejectLeave(requestId);
+    }
+  };
 
   return (
     <div className="mt-8">
@@ -184,14 +222,14 @@ export default function LeaveTab() {
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div className="flex space-x-2">
                     <button
-                      // onClick={() => onApproveLeave(leave)}
+                      onClick={() => handleApprove(leave.leaveRequestId)}
                       className="text-green-600 hover:text-green-900 cursor-pointer"
                       title="승인"
                     >
                       <i className="ri-check-line"></i>
                     </button>
                     <button
-                      // onClick={() => onRejectLeave(leave)}
+                      onClick={() => handleReject(leave.leaveRequestId)}
                       className="text-red-600 hover:text-red-900 cursor-pointer"
                       title="반려"
                     >

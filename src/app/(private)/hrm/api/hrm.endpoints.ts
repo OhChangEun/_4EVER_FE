@@ -21,8 +21,8 @@ export const HRM_ENDPOINTS = {
   // 휴가
   LEAVE_REQUESTS: `${HRM_BASE_PATH}/leave-request`, // 휴가 신청 목록 조회
   LEAVE_REQUEST: `${HRM_BASE_PATH}/leave/request`, // 휴가 신청 생성
-  LEAVE_REQUEST_REJECT: (requestId: number) => `${HRM_BASE_PATH}/leave/request/${requestId}/reject`, // 휴가 신청 반려
-  LEAVE_REQUEST_RELEASE: (requestId: number) =>
+  LEAVE_REQUEST_REJECT: (requestId: string) => `${HRM_BASE_PATH}/leave/request/${requestId}/reject`, // 휴가 신청 반려
+  LEAVE_REQUEST_RELEASE: (requestId: string) =>
     `${HRM_BASE_PATH}/leave/request/${requestId}/release`, // 휴가 신청 승인
 
   // 급여

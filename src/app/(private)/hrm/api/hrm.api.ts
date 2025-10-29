@@ -23,9 +23,11 @@ import {
   TrainingRequestParams,
 } from '@/app/(private)/hrm/types/HrmTrainingApiType';
 import {
+  CreateProgramRequest,
   ProgramDetailResponse,
   ProgramListResponse,
   ProgramRequestParams,
+  UpdateProgramRequest,
 } from '@/app/(private)/hrm/types/HrmProgramApiType';
 import {
   AttendanceListResponse,
@@ -158,6 +160,37 @@ export const putEmployee = async (
 ): Promise<ApiResponseNoData> => {
   const res = await axios.put<ApiResponseNoData>(
     `${HRM_ENDPOINTS.EMPLOYEE_DETAIL(employeeId)}`,
+    data,
+  );
+  return res.data;
+};
+
+// 휴가 신청 승인
+export const postLeaveRelease = async (requestId: string) => {
+  const res = await axios.patch<ApiResponse<null>>(
+    `${HRM_ENDPOINTS.LEAVE_REQUEST_RELEASE(requestId)}`,
+  );
+  return res.data;
+};
+
+// 휴가 신청 반려
+export const postLeaveReject = async (requestId: string) => {
+  const res = await axios.patch<ApiResponse<null>>(
+    `${HRM_ENDPOINTS.LEAVE_REQUEST_REJECT(requestId)}`,
+  );
+  return res.data;
+};
+
+// 교육 프로그램 추가
+export const postProgram = async (data: CreateProgramRequest) => {
+  const res = await axios.post<ApiResponse<null>>(`${HRM_ENDPOINTS.PROGRAM}`, data);
+  return res.data;
+};
+
+// 교육 프로그램 수정
+export const patchProgram = async (programId: string, data: UpdateProgramRequest) => {
+  const res = await axios.patch<ApiResponse<null>>(
+    `${HRM_ENDPOINTS.PROGRAM_DETAIL(programId)}`,
     data,
   );
   return res.data;

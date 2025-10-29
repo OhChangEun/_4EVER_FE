@@ -333,22 +333,6 @@ export default function AttendanceManagement() {
           onSubmit={handleUpdateAttendance}
         />
       )}
-
-      {showLeaveApprovalModal && selectedLeave && (
-        <LeaveApprovalModal
-          leave={selectedLeave}
-          onClose={() => setShowLeaveApprovalModal(false)}
-          onSubmit={handleLeaveApproval}
-        />
-      )}
-
-      {showRejectModal && selectedLeave && (
-        <LeaveRejectModal
-          leave={selectedLeave}
-          onClose={() => setShowRejectModal(false)}
-          onSubmit={handleLeaveApproval}
-        />
-      )}
     </>
   );
 }

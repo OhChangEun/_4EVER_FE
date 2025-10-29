@@ -8,6 +8,7 @@ import Pagination from '@/app/components/common/Pagination';
 import { useQuery } from '@tanstack/react-query';
 import React, { useState, useMemo } from 'react';
 import ProgramDetailModal from '@/app/(private)/hrm/components/modals/ProgramDetailModal';
+import AddTrainingModal from '@/app/(private)/hrm/components/modals/AddProgramModal';
 
 export default function AvailableProgramTab() {
   // --- 모달 출력 ---
@@ -43,10 +44,16 @@ export default function AvailableProgramTab() {
       programId: programId.programId,
     });
   };
+
+  const handleViewProgramRegister = () => {
+    openModal(AddTrainingModal, {
+      title: '프로그램 추가',
+    });
+  };
   return (
     <div>
       <div className="flex items-center justify-end mb-4">
-        <IconButton icon="ri-add-line" label="프로그램 추가" />
+        <IconButton icon="ri-add-line" label="프로그램 추가" onClick={handleViewProgramRegister} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

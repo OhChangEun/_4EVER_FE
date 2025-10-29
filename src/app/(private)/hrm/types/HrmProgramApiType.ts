@@ -34,3 +34,20 @@ export interface ProgramDetailResponse extends Page, Omit<ProgramListData, 'capa
   startDate: string;
   designatedEmployee: designatedEmployeeSummary[];
 }
+
+export interface CreateProgramRequest {
+  programName: string;
+  category: string;
+  trainingHour: number;
+  isOnline: boolean;
+  startDate: string;
+  capacity: number;
+  requiredDepartments: string[];
+  requiredPositions: string[];
+  description: string;
+}
+
+export interface UpdateProgramRequest {
+  programName: string;
+  statusCode: string;
+}
