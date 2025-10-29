@@ -9,6 +9,7 @@ import { useQuery } from '@tanstack/react-query';
 import React, { useState, useMemo } from 'react';
 import ProgramDetailModal from '@/app/(private)/hrm/components/modals/ProgramDetailModal';
 import AddTrainingModal from '@/app/(private)/hrm/components/modals/AddProgramModal';
+import EditProgramModal from '../../../modals/ProgramEditModal';
 
 export default function AvailableProgramTab() {
   // --- 모달 출력 ---
@@ -38,16 +39,24 @@ export default function AvailableProgramTab() {
   const programList = programData?.content ?? [];
   const pageInfo = programData?.page;
 
-  const handleViewProgramDetail = (programId: ProgramListData) => {
+  const handleViewProgramDetail = (program: ProgramListData) => {
     openModal(ProgramDetailModal, {
       title: '프로그램 상세 조회',
-      programId: programId.programId,
+      programId: program.programId,
     });
   };
 
   const handleViewProgramRegister = () => {
     openModal(AddTrainingModal, {
       title: '프로그램 추가',
+    });
+  };
+
+  const handleEditProgram = (program: ProgramListData) => {
+    openModal(EditProgramModal, {
+      title: '프로그램 수정',
+      programId: program.programId,
+      programName: program.programName,
     });
   };
   return (
@@ -91,7 +100,11 @@ export default function AvailableProgramTab() {
                 variant="whiteOutline"
                 onClick={() => handleViewProgramDetail(program)}
               />
-              <IconButton icon="ri-edit-line mr-1" label="프로그램 관리" />
+              <IconButton
+                icon="ri-edit-line mr-1"
+                label="프로그램 관리"
+                onClick={() => handleEditProgram(program)}
+              />
             </div>
           </div>
         ))}

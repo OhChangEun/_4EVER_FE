@@ -48,6 +48,12 @@ export interface CreateProgramRequest {
 }
 
 export interface UpdateProgramRequest {
+  programId: string;
   programName: string;
   statusCode: string;
+}
+
+export interface UpdateProgramToEmployeeRequest {
+  employeeId: string;
+  programId: string;
 }

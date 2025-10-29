@@ -16,6 +16,7 @@ import { KeyValueItem } from '@/app/types/CommonType';
 import { useQuery } from '@tanstack/react-query';
 import React, { useState, useMemo } from 'react';
 import TrainingDetailModal from '@/app/(private)/hrm/components/modals/TrainingDetailModal';
+import AddEmployeeTrainingModal from '@/app/(private)/hrm/components/modals/AddEmployeeTrainingModal';
 
 export default function EmployeeTrainingTab() {
   // --- 모달 출력 ---
@@ -99,6 +100,19 @@ export default function EmployeeTrainingTab() {
     openModal(TrainingDetailModal, {
       title: `${training.name}의 교육현황`,
       employeeId: training.employeeId,
+    });
+  };
+
+  const handleViewAddEmployeeTraining = ({
+    employeeId,
+    employeeName,
+  }: {
+    employeeId: string;
+    employeeName: string;
+  }) => {
+    openModal(AddEmployeeTrainingModal, {
+      title: `${employeeName}에게 교육 추가`,
+      employeeId: employeeId,
     });
   };
 
@@ -202,7 +216,12 @@ export default function EmployeeTrainingTab() {
                       <i className="ri-eye-line"></i>
                     </button>
                     <button
-                      // onClick={() => handleAddEmployeeTraining(employee)}
+                      onClick={() =>
+                        handleViewAddEmployeeTraining({
+                          employeeId: training.employeeId,
+                          employeeName: training.name,
+                        })
+                      }
                       className="text-green-600 hover:text-green-900 cursor-pointer"
                       title="교육 추가"
                     >

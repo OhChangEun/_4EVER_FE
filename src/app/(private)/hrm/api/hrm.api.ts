@@ -28,6 +28,7 @@ import {
   ProgramListResponse,
   ProgramRequestParams,
   UpdateProgramRequest,
+  UpdateProgramToEmployeeRequest,
 } from '@/app/(private)/hrm/types/HrmProgramApiType';
 import {
   AttendanceListResponse,
@@ -188,10 +189,20 @@ export const postProgram = async (data: CreateProgramRequest) => {
 };
 
 // 교육 프로그램 수정
-export const patchProgram = async (programId: string, data: UpdateProgramRequest) => {
-  const res = await axios.patch<ApiResponse<null>>(
-    `${HRM_ENDPOINTS.PROGRAM_DETAIL(programId)}`,
-    data,
-  );
+export const patchProgram = async (params: UpdateProgramRequest) => {
+  const { programId, programName, statusCode } = params;
+  const res = await axios.patch<ApiResponse<null>>(`${HRM_ENDPOINTS.PROGRAM_DETAIL(programId)}`, {
+    programName,
+    statusCode,
+  });
+  return res.data;
+};
+
+// 교육 대상자에게 교육 프로그램 지정
+export const postProgramToEmployee = async (params: UpdateProgramToEmployeeRequest) => {
+  const { employeeId, programId } = params;
+  const res = await axios.post<ApiResponse<null>>(`${HRM_ENDPOINTS.PROGRAM_DETAIL(employeeId)}`, {
+    programId,
+  });
   return res.data;
 };
