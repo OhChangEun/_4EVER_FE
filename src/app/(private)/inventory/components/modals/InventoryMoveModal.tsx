@@ -12,9 +12,9 @@ import ModalStatusBox from '@/app/components/common/ModalStatusBox';
 
 const InventoryMoveModal = ({ $setShowMoveModal, $selectedStock }: InventoryMoveModalProps) => {
   const [formData, setFormData] = useState({
-    fromWarehouseId: Number($selectedStock.warehouseId),
-    toWarehouseId: 0,
-    stockId: Number($selectedStock.itemId),
+    fromWarehouseId: $selectedStock.warehouseId,
+    toWarehouseId: '',
+    itemId: $selectedStock.itemId,
     stockQuantity: 0,
     uomName: $selectedStock.uomName,
   });
@@ -128,7 +128,7 @@ const InventoryMoveModal = ({ $setShowMoveModal, $selectedStock }: InventoryMove
               value={
                 warehouseInfoRes?.find(
                   (w) => String(w.warehouseId) === String(formData.toWarehouseId),
-                )?.warehouseCode ?? ''
+                )?.warehouseNumber ?? ''
               }
             />
           </div>
