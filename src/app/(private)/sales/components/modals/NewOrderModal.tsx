@@ -3,30 +3,24 @@
 import { useState } from 'react';
 import {
   NewOrderModalProps,
-  OrderItem,
-  FormData,
   Product,
-  Dealer,
+  NewOrderRequest,
+  NewOrderItem,
 } from '@/app/(private)/sales/types/NewOrderModalType';
+import { useMutation } from '@tanstack/react-query';
+import { postNewQuote } from '../../sales.api';
 
 const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderModalProps) => {
-  const [selectedDealer, setSelectedDealer] = useState('');
-  const [orderItems, setOrderItems] = useState<OrderItem[]>([
-    {
-      id: 1,
-      productName: '',
-      quantity: 1,
-      unitPrice: 0,
-      totalPrice: 0,
-      deliveryDate: '',
-    },
-  ]);
-  const [formData, setFormData] = useState<FormData>({
-    dealerId: '',
-    customerName: '',
-    phone: '',
-    email: '',
-    notes: '',
+  const [newOrderItems, setNewOrderItems] = useState<NewOrderRequest>({
+    items: [
+      {
+        itemId: '',
+        quantity: 1,
+        unitPrice: 0,
+        dueDate: '',
+      },
+    ],
+    note: '',
   });
 
   // 제품 목업 데이터
@@ -38,154 +32,82 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
     { id: 'prod5', name: 'Roof Panel', price: 300000 },
   ];
 
-  // 대리점 목업 데이터
-  const dealers: Dealer[] = [
-    {
-      id: 'dealer1',
-      name: '서울 강남 대리점',
-      customerName: '김대리',
-      phone: '02-1234-5678',
-      email: 'gangnam@dealer.com',
-    },
-    {
-      id: 'dealer2',
-      name: '부산 해운대 대리점',
-      customerName: '이부장',
-      phone: '051-9876-5432',
-      email: 'haeundae@dealer.com',
-    },
-    {
-      id: 'dealer3',
-      name: '대구 수성 대리점',
-      customerName: '박과장',
-      phone: '053-5555-7777',
-      email: 'suseong@dealer.com',
-    },
-    {
-      id: 'dealer4',
-      name: '광주 서구 대리점',
-      customerName: '최팀장',
-      phone: '062-3333-9999',
-      email: 'seogu@dealer.com',
-    },
-  ];
-
-  const handleDealerChange = (dealerId: string) => {
-    setSelectedDealer(dealerId);
-    const dealer = dealers.find((d) => d.id === dealerId);
-    if (dealer) {
-      setFormData({
-        ...formData,
-        dealerId,
-        customerName: dealer.customerName,
-        phone: dealer.phone,
-        email: dealer.email,
-      });
-    } else {
-      setFormData({
-        ...formData,
-        dealerId: '',
-        customerName: '',
-        phone: '',
-        email: '',
-      });
-    }
-  };
-  const handleProductChange = (itemIndex: number, productId: string) => {
-    const product = products.find((p) => p.id === productId);
-    if (product) {
-      const updatedItems = [...orderItems];
-      updatedItems[itemIndex] = {
-        ...updatedItems[itemIndex],
-        productName: product.name,
-        unitPrice: product.price,
-        totalPrice: updatedItems[itemIndex].quantity * product.price,
-      };
-      setOrderItems(updatedItems);
-    }
-  };
-
-  const handleQuantityChange = (itemIndex: number, quantity: number) => {
-    const updatedItems = [...orderItems];
-    updatedItems[itemIndex] = {
-      ...updatedItems[itemIndex],
-      quantity,
-      totalPrice: quantity * updatedItems[itemIndex].unitPrice,
-    };
-    setOrderItems(updatedItems);
-  };
-
-  const handleDeliveryDateChange = (itemIndex: number, deliveryDate: string) => {
-    const updatedItems = [...orderItems];
-    updatedItems[itemIndex] = {
-      ...updatedItems[itemIndex],
-      deliveryDate,
-    };
-    setOrderItems(updatedItems);
-  };
-
   const addOrderItem = () => {
-    setOrderItems((prev) => [
+    setNewOrderItems((prev) => ({
       ...prev,
-      {
-        id: Date.now(),
-        productName: '',
-        quantity: 1,
-        unitPrice: 0,
-        totalPrice: 0,
-        deliveryDate: '',
-      },
-    ]);
+      items: [
+        ...prev.items,
+        {
+          itemId: '',
+          quantity: 1,
+          unitPrice: 0,
+          dueDate: '',
+        },
+      ],
+    }));
   };
 
   const removeOrderItem = (itemIndex: number) => {
-    if (orderItems.length > 1) {
-      setOrderItems(orderItems.filter((_, index) => index !== itemIndex));
+    if (newOrderItems.items.length > 1) {
+      setNewOrderItems((prev) => ({
+        ...prev,
+        items: prev.items.filter((_, index) => index !== itemIndex),
+      }));
     }
   };
 
+  const getItemTotalPrice = (item: NewOrderItem) => {
+    const totalPrice = item.quantity * item.unitPrice;
+    return `₩${totalPrice.toLocaleString()}`;
+  };
+
   const getTotalAmount = () => {
-    return orderItems.reduce((sum, item) => sum + item.totalPrice, 0);
+    return newOrderItems.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     alert('신규 견적 요청이 등록되었습니다.');
     $setShowNewOrderModal(false);
-    // 폼 초기화
-    setFormData({
-      dealerId: '',
-      customerName: '',
-      phone: '',
-      email: '',
-      notes: '',
+
+    setNewOrderItems({
+      items: [
+        {
+          itemId: '',
+          quantity: 1,
+          unitPrice: 0,
+          dueDate: '',
+        },
+      ],
+      note: '',
     });
-    setOrderItems([
-      {
-        id: 1,
-        productName: '',
-        quantity: 1,
-        unitPrice: 0,
-        totalPrice: 0,
-        deliveryDate: '',
-      },
-    ]);
   };
 
   const handleClose = (e: React.FormEvent) => {
     e.preventDefault();
     $setShowNewOrderModal(false);
-    setOrderItems([
-      {
-        id: 1,
-        productName: '',
-        quantity: 1,
-        unitPrice: 0,
-        totalPrice: 0,
-        deliveryDate: '',
-      },
-    ]);
+    setNewOrderItems({
+      items: [
+        {
+          itemId: '',
+          quantity: 1,
+          unitPrice: 0,
+          dueDate: '',
+        },
+      ],
+      note: '',
+    });
   };
+
+  const { mutate: addOrder } = useMutation({
+    mutationFn: postNewQuote,
+    onSuccess: (data) => {
+      $setShowNewOrderModal(false);
+    },
+    onError: (error) => {
+      alert(` 견적 요청 중 오류가 발생했습니다. ${error}`);
+    },
+  });
   return (
     <>
       {/* 신규 견적 요청 모달 */}
@@ -218,17 +140,21 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
                 </div>
 
                 <div className="space-y-4">
-                  {orderItems.map((item, index) => (
-                    <div key={item.id} className="bg-white p-4 rounded-lg border border-gray-200">
+                  {newOrderItems.items.map((item, index) => (
+                    <div
+                      key={item.itemId}
+                      className="bg-white p-4 rounded-lg border border-gray-200"
+                    >
                       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
                             제품명 *
                           </label>
                           <select
-                            value={products.find((p) => p.name === item.productName)?.id || ''}
+                            value=""
                             onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                              handleProductChange(index, e.target.value)
+                              // handleProductChange(index, e.target.value)
+                              console.log()
                             }
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm pr-8"
                             required
@@ -248,9 +174,9 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
                           <input
                             type="number"
                             value={item.quantity}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                              handleQuantityChange(index, parseInt(e.target.value) || 1)
-                            }
+                            // onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+
+                            // }
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                             min="1"
                             required
@@ -273,10 +199,9 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
                           </label>
                           <input
                             type="date"
-                            value={item.deliveryDate}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                              handleDeliveryDateChange(index, e.target.value)
-                            }
+                            value={item.dueDate}
+                            // onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            // }
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                             required
                           />
@@ -288,12 +213,12 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
                             </label>
                             <input
                               type="text"
-                              value={`₩${item.totalPrice.toLocaleString()}`}
+                              value={getItemTotalPrice(item)}
                               className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm font-medium"
                               readOnly
                             />
                           </div>
-                          {orderItems.length > 1 && (
+                          {newOrderItems.items.length > 1 && (
                             <button
                               type="button"
                               onClick={() => removeOrderItem(index)}
@@ -322,10 +247,10 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">비고</label>
                 <textarea
-                  value={formData.notes}
-                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                    setFormData({ ...formData, notes: e.target.value })
-                  }
+                  value={newOrderItems.note}
+                  // onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+
+                  // }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                   rows={3}
                   placeholder="추가 요청사항이나 특이사항을 입력하세요"

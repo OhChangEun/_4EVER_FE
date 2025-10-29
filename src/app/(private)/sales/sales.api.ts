@@ -15,6 +15,7 @@ import { OrderDetail } from '@/app/(private)/sales/types/SalesOrderDetailType';
 import { InventoryCheckRes } from './types/QuoteReviewModalType';
 import { CustomerEditData, CustomerResponse } from './types/CustomerEditModalType';
 import { Page } from '@/app/types/Page';
+import { NewOrderRequest } from './types/NewOrderModalType';
 
 // ----------------------- 통계 지표 -----------------------
 export const getSalesStats = async (): Promise<SalesStatResponse> => {
@@ -47,6 +48,16 @@ export const getQuoteList = async (
 export const getQuoteDetail = async (quotationId: string): Promise<QuoteDetail> => {
   const res = await axios.get<ApiResponse<QuoteDetail>>(SALES_ENDPOINTS.QUOTE_DETAIL(quotationId));
   return res.data.data;
+};
+
+export const postNewQuote = async (items: NewOrderRequest[]): Promise<NewOrderRequest[]> => {
+  const res = await axios.post<ApiResponse<{ items: NewOrderRequest[] }>>(
+    SALES_ENDPOINTS.NEW_ORDER,
+    {
+      items,
+    },
+  );
+  return res.data.data.items;
 };
 
 // ----------------------- 주문 관리 -----------------------
