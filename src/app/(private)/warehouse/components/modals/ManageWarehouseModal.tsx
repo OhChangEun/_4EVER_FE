@@ -132,8 +132,8 @@ const ManageWarehouseModal = ({
   const [errorModal, setErrorModal] = useState(false);
 
   useEffect(() => {
-    setErrorModal(isWarehouseInfoLoading || isManagerInfoLoading);
-  }, [isWarehouseInfoLoading, isManagerInfoLoading]);
+    setErrorModal(isWarehouseInfoError || isManagerInfoError);
+  }, [isWarehouseInfoError, isManagerInfoError]);
 
   if (isWarehouseInfoLoading)
     return <ModalStatusBox $type="loading" $message="창고 정보를 불러오는 중입니다..." />;
@@ -141,7 +141,7 @@ const ManageWarehouseModal = ({
   if (isManagerInfoLoading)
     return <ModalStatusBox $type="loading" $message="담당자 정보를 불러오는 중입니다..." />;
 
-  if (isManagerInfoError)
+  if (errorModal)
     return (
       <ModalStatusBox
         $type="error"
@@ -150,7 +150,7 @@ const ManageWarehouseModal = ({
       />
     );
 
-  if (isWarehouseInfoError)
+  if (errorModal)
     return (
       <ModalStatusBox
         $type="error"

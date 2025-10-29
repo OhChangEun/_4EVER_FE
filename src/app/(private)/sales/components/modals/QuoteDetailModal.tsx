@@ -104,17 +104,19 @@ const QuoteDetailModal = ({ $onClose, $selectedQuotationId }: QuoteDetailModalPr
                     </tr>
                   </thead>
                   <tbody>
-                    <tr className="border-b">
-                      <td className="px-4 py-3 text-sm">{data!.items[0].itemName}</td>
-                      <td className="px-4 py-3 text-sm text-center">{data!.items[0].quantity}</td>
-                      <td className="px-4 py-3 text-sm text-center">{data!.items[0].uomName}</td>
-                      <td className="px-4 py-3 text-sm text-right">
-                        ₩{data!.items[0].unitPrice.toLocaleString()}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-right">
-                        ₩{data!.items[0].amount.toLocaleString()}
-                      </td>
-                    </tr>
+                    {data?.items.map((item, index) => (
+                      <tr key={index} className="border-b">
+                        <td className="px-4 py-3 text-sm">{item.itemName}</td>
+                        <td className="px-4 py-3 text-sm text-center">{item.quantity}</td>
+                        <td className="px-4 py-3 text-sm text-center">{item.uomName}</td>
+                        <td className="px-4 py-3 text-sm text-right">
+                          ₩{item.unitPrice.toLocaleString()}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-right">
+                          ₩{item.amount.toLocaleString()}
+                        </td>
+                      </tr>
+                    ))}
                     {/* <tr className="border-b">
                         <td className="px-4 py-3 text-sm">제품 B</td>
                         <td className="px-4 py-3 text-sm text-center">5</td>
