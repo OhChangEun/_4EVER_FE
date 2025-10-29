@@ -124,6 +124,20 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
     setOrderItems(updatedItems);
   };
 
+  const addOrderItem = () => {
+    setOrderItems((prev) => [
+      ...prev,
+      {
+        id: Date.now(),
+        productName: '',
+        quantity: 1,
+        unitPrice: 0,
+        totalPrice: 0,
+        deliveryDate: '',
+      },
+    ]);
+  };
+
   const removeOrderItem = (itemIndex: number) => {
     if (orderItems.length > 1) {
       setOrderItems(orderItems.filter((_, index) => index !== itemIndex));
@@ -146,7 +160,21 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
       email: '',
       notes: '',
     });
-    setSelectedDealer('');
+    setOrderItems([
+      {
+        id: 1,
+        productName: '',
+        quantity: 1,
+        unitPrice: 0,
+        totalPrice: 0,
+        deliveryDate: '',
+      },
+    ]);
+  };
+
+  const handleClose = (e: React.FormEvent) => {
+    e.preventDefault();
+    $setShowNewOrderModal(false);
     setOrderItems([
       {
         id: 1,
@@ -167,7 +195,7 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-semibold text-gray-900">신규 견적 요청</h3>
               <button
-                onClick={() => $setShowNewOrderModal(false)}
+                onClick={handleClose}
                 className="text-gray-400 hover:text-gray-600 cursor-pointer"
               >
                 <i className="ri-close-line text-xl"></i>
@@ -179,6 +207,14 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
               <div className="bg-gray-50 p-4 rounded-lg">
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="text-lg font-semibold text-gray-900">주문 품목</h4>
+                  <button
+                    type="button"
+                    onClick={addOrderItem}
+                    className="mt-4 inline-flex items-center px-4 py-2 bg-white border border-dashed border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-blue-400 hover:text-blue-600 transition-colors duration-200 cursor-pointer"
+                  >
+                    <i className="ri-add-line mr-2 text-base"></i>
+                    제품 추가
+                  </button>
                 </div>
 
                 <div className="space-y-4">
@@ -300,7 +336,7 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
               <div className="flex justify-end space-x-4 pt-4">
                 <button
                   type="button"
-                  onClick={() => $setShowNewOrderModal(false)}
+                  onClick={handleClose}
                   className="px-6 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors duration-200 cursor-pointer whitespace-nowrap"
                 >
                   취소
