@@ -19,9 +19,10 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { EmployeeDetailModal } from '@/app/(private)/hrm/components/modals/EmployeeDetailModal';
 import { EmployeeEditModal } from '@/app/(private)/hrm/components/modals/EmployeeEditModal';
+import EmployeeRegisterModal from '@/app/(private)/hrm/components/modals/EmployeeRegisterModal';
 
 export default function EmployeesTab() {
-  const { openModal } = useModal();
+  const { openModal, removeAllModals } = useModal();
 
   const [selectedPosition, setSelectedPosition] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState('');
@@ -116,6 +117,12 @@ export default function EmployeesTab() {
     });
   };
 
+  const handleViewEmployeeRegister = () => {
+    openModal(EmployeeRegisterModal, {
+      title: '신규 직원 등록',
+    });
+  };
+
   return (
     <>
       <div className="flex justify-end items-center gap-4 mb-6 p-2 rounded-lg">
@@ -164,7 +171,11 @@ export default function EmployeesTab() {
           />
           <i className="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
         </div>
-        <IconButton icon="ri-user-add-line" label="신규 직원 등록" />
+        <IconButton
+          icon="ri-user-add-line"
+          label="신규 직원 등록"
+          onClick={handleViewEmployeeRegister}
+        />
       </div>
 
       <div className="overflow-x-auto">

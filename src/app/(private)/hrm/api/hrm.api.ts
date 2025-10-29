@@ -1,10 +1,11 @@
-import { ApiResponse } from '@/app/types/api';
+import { ApiResponse, ApiResponseNoData } from '@/app/types/api';
 import { HRM_ENDPOINTS } from '@/app/(private)/hrm/api/hrm.endpoints';
 import axios from 'axios';
 import { HrmStatResponse } from '@/app/(private)/hrm/types/HrmStatsApiType';
 import {
   EmployeeListRequestParams,
   EmployeeListResponse,
+  EmployeeUpdateRequest,
 } from '@/app/(private)/hrm/types/HrmEmployeesApiType';
 import {
   PositionDataResponse,
@@ -145,4 +146,19 @@ export const fetchLeaveList = async (params: LeaveRequestParams): Promise<LeaveL
     params,
   });
   return res.data.data;
+};
+
+// 신규 직원 등록
+// 추후 생성
+
+// 직원 정보 수정
+export const putEmployee = async (
+  employeeId: string,
+  data: EmployeeUpdateRequest,
+): Promise<ApiResponseNoData> => {
+  const res = await axios.put<ApiResponseNoData>(
+    `${HRM_ENDPOINTS.EMPLOYEE_DETAIL(employeeId)}`,
+    data,
+  );
+  return res.data;
 };

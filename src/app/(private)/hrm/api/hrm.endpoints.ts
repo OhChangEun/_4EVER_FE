@@ -13,7 +13,7 @@ export const HRM_ENDPOINTS = {
 
   // 직원
   EMPLOYEE: `${HRM_BASE_PATH}/employee`, // 직원 목록 조회
-  EMPLOYEE_DETAIL: (employeeId: number) => `${HRM_BASE_PATH}/employee/${employeeId}`, // 직원 상세 조회, 수정
+  EMPLOYEE_DETAIL: (employeeId: string) => `${HRM_BASE_PATH}/employee/${employeeId}`, // 직원 상세 조회, 수정
 
   // 직원 가입
   EMPLOYEE_SIGNUP: `${HRM_BASE_PATH}/signup`, // 신규 직원 등록

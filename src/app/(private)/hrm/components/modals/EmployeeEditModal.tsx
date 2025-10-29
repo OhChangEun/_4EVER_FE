@@ -1,8 +1,10 @@
-import { EmployeeData } from '@/app/(private)/hrm/types/HrmEmployeesApiType';
+import { EmployeeData, EmployeeUpdateRequest } from '@/app/(private)/hrm/types/HrmEmployeesApiType';
 import IconButton from '@/app/components/common/IconButton';
 import { ModalProps } from '@/app/components/common/modal/types';
 import { useModal } from '@/app/components/common/modal/useModal';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
+import { putEmployee } from '../../api/hrm.api';
 
 interface EmployeeEditModalProps extends ModalProps {
   employee: EmployeeData;
@@ -10,13 +12,30 @@ interface EmployeeEditModalProps extends ModalProps {
 
 export function EmployeeEditModal({ employee }: EmployeeEditModalProps) {
   const { removeAllModals } = useModal();
+  const queryClient = useQueryClient();
 
-  const [formData, setFormData] = useState({
-    department: employee.department,
-    position: employee.position,
+  const [formData, setFormData] = useState<EmployeeUpdateRequest>({
+    employeeName: employee.name,
+    departmentId: employee.department,
+    positionId: employee.position,
   });
 
-  const handleInputChange = (field: string, value: string) => {
+  // mutation 설정
+  const mutation = useMutation({
+    mutationFn: (data: EmployeeUpdateRequest) => putEmployee(employee.employeeId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['employeesList'] });
+
+      removeAllModals();
+      alert('고객정보가 수정되었습니다.');
+    },
+    onError: (error) => {
+      console.error('직원 정보 수정 실패: ', error);
+      alert('직원 정보 수정에 실패했습니다. 다시 시도해주세요.');
+    },
+  });
+
+  const handleInputChange = (field: keyof EmployeeUpdateRequest, value: string) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -24,14 +43,12 @@ export function EmployeeEditModal({ employee }: EmployeeEditModalProps) {
   };
 
   const handleSave = () => {
-    // TODO: API 호출하여 수정 내용 저장
-    console.log('저장할 데이터:', {
-      employeeId: employee.employeeId,
-      ...formData,
-    });
-
-    removeAllModals(); // 모든 모달창 닫기
-    alert('고객정보가 수정되었습니다.');
+    if (!formData.departmentId.trim() || !formData.positionId.trim()) {
+      alert('부서와 직급을 모두 입력해주세요.');
+      return;
+    }
+    // mutation 호출
+    mutation.mutate(formData);
   };
 
   return (
@@ -51,8 +68,8 @@ export function EmployeeEditModal({ employee }: EmployeeEditModalProps) {
             </label>
             <input
               type="text"
-              value={formData.department}
-              onChange={(e) => handleInputChange('department', e.target.value)}
+              value={formData.departmentId}
+              onChange={(e) => handleInputChange('departmentId', e.target.value)}
               className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -62,8 +79,8 @@ export function EmployeeEditModal({ employee }: EmployeeEditModalProps) {
             </label>
             <input
               type="text"
-              value={formData.position}
-              onChange={(e) => handleInputChange('position', e.target.value)}
+              value={formData.positionId}
+              onChange={(e) => handleInputChange('positionId', e.target.value)}
               className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
