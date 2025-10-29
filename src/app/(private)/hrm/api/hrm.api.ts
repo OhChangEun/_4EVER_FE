@@ -12,10 +12,20 @@ import {
 } from '@/app/(private)/hrm/types/HrmPositionsApiType';
 import { DepartmentsListResponse } from '@/app/(private)/hrm/types/HrmDepartmentsApiType';
 import {
-  FetchPayrollRequestParams,
+  PayrollRequestParams,
   PayRollDetailResponse,
   PayRollListResponse,
 } from '@/app/(private)/hrm/types/HrmPayrollApiType';
+import {
+  TrainingDetailResponse,
+  TrainingListResponse,
+  TrainingRequestParams,
+} from '@/app/(private)/hrm/types/HrmTrainingApiType';
+import {
+  ProgramDetailResponse,
+  ProgramListResponse,
+  ProgramRequestParams,
+} from '../types/HrmProgramApiType';
 
 // 인적자원관리 지표 조회
 export const fetchHrmStats = async (): Promise<HrmStatResponse | null> => {
@@ -61,7 +71,7 @@ export const fetchDepartmentsList = async (): Promise<DepartmentsListResponse> =
 
 // 월별 급여 목록 조회
 export const fetchPayRollList = async (
-  params: FetchPayrollRequestParams,
+  params: PayrollRequestParams,
 ): Promise<PayRollListResponse> => {
   const res = await axios.get<ApiResponse<PayRollListResponse>>(`${HRM_ENDPOINTS.PAYROLL}`, {
     params,
@@ -73,6 +83,43 @@ export const fetchPayRollList = async (
 export const fetchPayRollDetail = async (payrollId: string): Promise<PayRollDetailResponse> => {
   const res = await axios.get<ApiResponse<PayRollDetailResponse>>(
     `${HRM_ENDPOINTS.PAYROLL_DETAIL(payrollId)}`,
+  );
+  return res.data.data;
+};
+
+// 직원 교육 목록 조회
+export const fetchTrainingList = async (
+  params: TrainingRequestParams,
+): Promise<TrainingListResponse> => {
+  const res = await axios.get<ApiResponse<TrainingListResponse>>(
+    `${HRM_ENDPOINTS.TRAINING_STATUS}`,
+    { params },
+  );
+  return res.data.data;
+};
+
+// 직원 교육 상세 조회
+export const fetchTrainingDetail = async (payrollId: string): Promise<TrainingDetailResponse> => {
+  const res = await axios.get<ApiResponse<TrainingDetailResponse>>(
+    `${HRM_ENDPOINTS.TRAINING_EMPLOYEE_DETAIL(payrollId)}`,
+  );
+  return res.data.data;
+};
+
+// 교육 프로그램 목록 조회
+export const fetchProgramList = async (
+  params: ProgramRequestParams,
+): Promise<ProgramListResponse> => {
+  const res = await axios.get<ApiResponse<ProgramListResponse>>(`${HRM_ENDPOINTS.PROGRAM}`, {
+    params,
+  });
+  return res.data.data;
+};
+
+// 교육 프로그램 상세 조회
+export const fetchProgramDetail = async (programId: string): Promise<ProgramDetailResponse> => {
+  const res = await axios.get<ApiResponse<ProgramDetailResponse>>(
+    `${HRM_ENDPOINTS.PROGRAM_DETAIL(programId)}`,
   );
   return res.data.data;
 };

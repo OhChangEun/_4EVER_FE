@@ -8,7 +8,7 @@ import DepartmentsTab from '@/app/(private)/hrm/components/tabs/subTab/employeeT
 import PositionsTab from '@/app/(private)/hrm/components/tabs/subTab/employeeTab/PositionsTab';
 import AttendanceTab from '@/app/(private)/hrm/components/tabs/subTab/attendanceTab/AttendanceTab';
 import LeaveTab from '@/app/(private)/hrm/components/tabs/subTab/attendanceTab/LeaveTab';
-import AvailableTrainingTab from '@/app/(private)/hrm/components/tabs/subTab/trainingTab/AvailableTrainingTab';
+import AvailableProgramTab from '@/app/(private)/hrm/components/tabs/subTab/trainingTab/AvailableProgramTab';
 import EmployeeTrainingTab from '@/app/(private)/hrm/components/tabs/subTab/trainingTab/EmployeeTrainingTab';
 
 // main tab - hrm 탭 전환
@@ -89,6 +89,6 @@ export const TRAINING_TABS: Tab[] = [
     id: 'leave',
     name: '교육 프로그램 목록',
     icon: 'ri-calendar-line',
-    component: AvailableTrainingTab,
+    component: AvailableProgramTab,
   },
 ];

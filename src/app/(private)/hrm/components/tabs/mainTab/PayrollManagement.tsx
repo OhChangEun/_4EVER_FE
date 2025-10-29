@@ -12,7 +12,7 @@ import Dropdown from '@/app/components/common/Dropdown';
 import { PayrollDetailModal } from '@/app/(private)/hrm/components/modals/PayrollDetailModal';
 import { PayrollActionModal } from '@/app/(private)/hrm/components/modals/PayrollActionModal';
 import Pagination from '@/app/components/common/Pagination';
-import { FetchPayrollRequestParams } from '@/app/(private)/hrm/types/HrmPayrollApiType';
+import { PayrollRequestParams } from '@/app/(private)/hrm/types/HrmPayrollApiType';
 import { useModal } from '@/app/components/common/modal/useModal';
 
 export default function PayrollManagement() {
@@ -20,10 +20,9 @@ export default function PayrollManagement() {
   const { openModal } = useModal();
 
   // --- 드롭다운 ---
-  // 부서
-  const [selectedDepartment, setSelectedDepartment] = useState('');
-  // 직급
-  const [selectedPosition, setSelectedPosition] = useState('');
+  const [selectedDepartment, setSelectedDepartment] = useState(''); // 부서
+  const [selectedPosition, setSelectedPosition] = useState(''); // 직급
+
   // 년도와 월
   const now = new Date();
   const currentYear = String(now.getFullYear());
@@ -79,7 +78,29 @@ export default function PayrollManagement() {
     staleTime: Infinity,
   });
 
-  const payrollQueryParams = useMemo<FetchPayrollRequestParams>(
+  const positionOptions: KeyValueItem[] = useMemo(() => {
+    return [
+      { key: '', value: '전체 직급' },
+      ...positionsData.map((item) => ({
+        key: item.positionId,
+        value: item.positionName,
+      })),
+    ];
+  }, [positionsData]);
+
+  const departmentsOptions: KeyValueItem[] = useMemo(() => {
+    const departmentList = departmentsData?.departments ?? [];
+
+    return [
+      { key: '', value: '전체 부서' },
+      ...departmentList.map((item) => ({
+        key: item.departmentId,
+        value: item.departmentName,
+      })),
+    ];
+  }, [departmentsData]);
+
+  const payrollQueryParams = useMemo<PayrollRequestParams>(
     () => ({
       year: Number(selectedYear),
       month: Number(selectedMonth),
@@ -103,28 +124,6 @@ export default function PayrollManagement() {
   const payrollList = payrollData?.content ?? [];
   const pageInfo = payrollData?.page;
 
-  const positionOptions: KeyValueItem[] = useMemo(() => {
-    return [
-      { key: '', value: '전체 직급' },
-      ...positionsData.map((item) => ({
-        key: item.positionId,
-        value: item.positionName,
-      })),
-    ];
-  }, [positionsData]);
-
-  const departmentsOptions: KeyValueItem[] = useMemo(() => {
-    const departmentList = departmentsData?.departments ?? [];
-
-    return [
-      { key: '', value: '전체 부서' },
-      ...departmentList.map((item) => ({
-        key: item.departmentId,
-        value: item.departmentName,
-      })),
-    ];
-  }, [departmentsData]);
-
   const handleViewPayrollDetail = (payrollId: string) => {
     openModal(PayrollDetailModal, { title: '급여 상세정보', payrollId: payrollId });
   };
@@ -132,10 +131,6 @@ export default function PayrollManagement() {
   const handlePaymentComplete = () => {
     setSelectedPayroll({ ...selectedPayroll, status: '지급완료' });
     setShowPayrollDetail(false);
-  };
-
-  const handleFilterChange = () => {
-    setCurrentPage(1);
   };
 
   return (
@@ -148,7 +143,7 @@ export default function PayrollManagement() {
 
       <div>
         {/* 필터링 및 검색 */}
-        <div className="flex justify-between items-center space-x-2 mb-4">
+        <div className="flex justify-between items-center gap-2 mb-4">
           <div className="flex pl-1 gap-2">
             <Dropdown
               items={yearOptions}
@@ -168,7 +163,7 @@ export default function PayrollManagement() {
               value={selectedDepartment}
               onChange={(dept: string) => {
                 setSelectedDepartment(dept);
-                handleFilterChange();
+                setCurrentPage(1);
               }}
             />
             <Dropdown
@@ -176,7 +171,7 @@ export default function PayrollManagement() {
               value={selectedPosition}
               onChange={(position: string) => {
                 setSelectedPosition(position);
-                handleFilterChange();
+                setCurrentPage(1);
               }}
             />
             <div className="relative flex-1 max-w-xs">
@@ -186,7 +181,7 @@ export default function PayrollManagement() {
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
-                  handleFilterChange();
+                  setCurrentPage(1);
                 }}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />

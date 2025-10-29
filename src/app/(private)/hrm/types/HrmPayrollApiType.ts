@@ -1,6 +1,6 @@
 import { Page, PageRequest } from '@/app/types/Page';
 
-export interface FetchPayrollRequestParams extends PageRequest {
+export interface PayrollRequestParams extends PageRequest {
   year: number;
   month: number;
   name?: string;

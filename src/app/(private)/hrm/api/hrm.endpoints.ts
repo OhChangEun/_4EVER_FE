@@ -35,10 +35,10 @@ export const HRM_ENDPOINTS = {
 
   // 교육
   PROGRAM: `${HRM_BASE_PATH}/program`, // 교육 프로그램 목록 조회
-  PROGRAM_DETAIL: (programId: number) => `${HRM_BASE_PATH}/program/${programId}`, // 교육 프로그램 상세 조회
+  PROGRAM_DETAIL: (programId: string) => `${HRM_BASE_PATH}/program/${programId}`, // 교육 프로그램 상세 조회
 
   TRAINING_STATUS: `${HRM_BASE_PATH}/training-status`, // 직원 교육 현황 조회
-  TRAINING_EMPLOYEE_DETAIL: (employeeId: number) =>
+  TRAINING_EMPLOYEE_DETAIL: (employeeId: string) =>
     `${HRM_BASE_PATH}/training/employee/${employeeId}`, // 직원 교육 현황 상세 조회
 
   // 통계
