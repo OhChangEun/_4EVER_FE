@@ -14,12 +14,12 @@ import ModalStatusBox from '@/app/components/common/ModalStatusBox';
 
 const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderModalProps) => {
   const [newOrderItems, setNewOrderItems] = useState<NewOrderRequest>({
+    dueDate: '',
     items: [
       {
         itemId: '',
         quantity: 1,
         unitPrice: 0,
-        dueDate: '',
       },
     ],
     note: '',
@@ -34,7 +34,6 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
           itemId: '',
           quantity: 1,
           unitPrice: 0,
-          dueDate: '',
         },
       ],
     }));
@@ -88,16 +87,17 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    addOrder(newOrderItems);
     alert('신규 견적 요청이 등록되었습니다.');
     $setShowNewOrderModal(false);
 
     setNewOrderItems({
+      dueDate: '',
       items: [
         {
           itemId: '',
           quantity: 1,
           unitPrice: 0,
-          dueDate: '',
         },
       ],
       note: '',
@@ -108,12 +108,12 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
     e.preventDefault();
     $setShowNewOrderModal(false);
     setNewOrderItems({
+      dueDate: '',
       items: [
         {
           itemId: '',
           quantity: 1,
           unitPrice: 0,
-          dueDate: '',
         },
       ],
       note: '',
@@ -258,7 +258,7 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
                             readOnly
                           />
                         </div>
-                        <div>
+                        {/* <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
                             납기일 *
                           </label>
@@ -270,7 +270,7 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                             required
                           />
-                        </div>
+                        </div> */}
                         <div className="flex items-end">
                           <div className="flex-1">
                             <label className="block text-sm font-medium text-gray-700 mb-2">

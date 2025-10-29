@@ -50,13 +50,10 @@ export const getQuoteDetail = async (quotationId: string): Promise<QuoteDetail> 
   return res.data.data;
 };
 
-export const postNewQuote = async (items: NewOrderRequest[]): Promise<NewOrderRequest[]> => {
-  const res = await axios.post<ApiResponse<{ items: NewOrderRequest[] }>>(
-    SALES_ENDPOINTS.NEW_ORDER,
-    {
-      items,
-    },
-  );
+export const postNewQuote = async (items: NewOrderRequest): Promise<NewOrderRequest> => {
+  const res = await axios.post<ApiResponse<{ items: NewOrderRequest }>>(SALES_ENDPOINTS.NEW_ORDER, {
+    items,
+  });
   return res.data.data.items;
 };
 
