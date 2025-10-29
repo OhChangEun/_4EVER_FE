@@ -20,3 +20,11 @@ export interface NewOrderItem {
   unitPrice: number;
   dueDate: string;
 }
+
+export interface ItemResponse {
+  itemId: string;
+  itemNumber: string;
+  itemName: string;
+  uomName: string;
+  unitPrice: number;
+}

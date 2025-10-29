@@ -1,14 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   NewOrderModalProps,
   Product,
   NewOrderRequest,
   NewOrderItem,
+  ItemResponse,
 } from '@/app/(private)/sales/types/NewOrderModalType';
-import { useMutation } from '@tanstack/react-query';
-import { postNewQuote } from '../../sales.api';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { getItemInfoForNewQuote, postNewQuote } from '../../sales.api';
+import ModalStatusBox from '@/app/components/common/ModalStatusBox';
 
 const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderModalProps) => {
   const [newOrderItems, setNewOrderItems] = useState<NewOrderRequest>({
@@ -23,15 +25,6 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
     note: '',
   });
 
-  // 제품 목업 데이터
-  const products: Product[] = [
-    { id: 'prod1', name: '도어패널', price: 150000 },
-    { id: 'prod2', name: 'Hood Panel', price: 200000 },
-    { id: 'prod3', name: 'Fender Panel', price: 180000 },
-    { id: 'prod4', name: 'Trunk Lid', price: 220000 },
-    { id: 'prod5', name: 'Roof Panel', price: 300000 },
-  ];
-
   const addOrderItem = () => {
     setNewOrderItems((prev) => ({
       ...prev,
@@ -45,6 +38,34 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
         },
       ],
     }));
+  };
+
+  const handleFormChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
+    index?: number,
+  ) => {
+    const { name, value } = e.target;
+
+    setNewOrderItems((prev) => {
+      if (typeof index === 'number') {
+        return {
+          ...prev,
+          items: prev.items.map((item, i) =>
+            i === index
+              ? {
+                  ...item,
+                  [name]: name === 'quantity' ? Number(value) : value,
+                }
+              : item,
+          ),
+        };
+      }
+
+      return {
+        ...prev,
+        [name]: value,
+      };
+    });
   };
 
   const removeOrderItem = (itemIndex: number) => {
@@ -99,6 +120,15 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
     });
   };
 
+  const {
+    data: ItemInfoRes,
+    isLoading: isItemInfoLoading,
+    isError: isItemInfoError,
+  } = useQuery<ItemResponse[]>({
+    queryKey: ['getItemInfoForNewQuote'],
+    queryFn: getItemInfoForNewQuote,
+  });
+
   const { mutate: addOrder } = useMutation({
     mutationFn: postNewQuote,
     onSuccess: (data) => {
@@ -108,6 +138,25 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
       alert(` 견적 요청 중 오류가 발생했습니다. ${error}`);
     },
   });
+
+  const [errorModal, setErrorModal] = useState(false);
+
+  useEffect(() => {
+    setErrorModal(isItemInfoLoading);
+  }, [isItemInfoLoading]);
+
+  if (isItemInfoLoading)
+    return <ModalStatusBox $type="loading" $message="자재 정보를 불러오는 중입니다..." />;
+
+  if (isItemInfoError)
+    return (
+      <ModalStatusBox
+        $type="error"
+        $message="자재 정보를 불러오는 중 오류가 발생했습니다."
+        $onClose={() => setErrorModal(false)}
+      />
+    );
+
   return (
     <>
       {/* 신규 견적 요청 모달 */}
@@ -151,18 +200,34 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
                             제품명 *
                           </label>
                           <select
-                            value=""
-                            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                              // handleProductChange(index, e.target.value)
-                              console.log()
-                            }
+                            value={item.itemId}
+                            name="itemId"
+                            onChange={(e) => {
+                              const selectedId = e.target.value;
+                              const selectedProduct = ItemInfoRes?.find(
+                                (p) => p.itemId === selectedId,
+                              );
+
+                              setNewOrderItems((prev) => ({
+                                ...prev,
+                                items: prev.items.map((it, i) =>
+                                  i === index
+                                    ? {
+                                        ...it,
+                                        itemId: selectedProduct?.itemId ?? '',
+                                        unitPrice: selectedProduct?.unitPrice ?? 0,
+                                      }
+                                    : it,
+                                ),
+                              }));
+                            }}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm pr-8"
                             required
                           >
                             <option value="">제품을 선택하세요</option>
-                            {products.map((product) => (
-                              <option key={product.id} value={product.id}>
-                                {product.name}
+                            {ItemInfoRes?.map((item) => (
+                              <option key={item.itemId} value={item.itemId}>
+                                {item.itemName}
                               </option>
                             ))}
                           </select>
@@ -173,10 +238,9 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
                           </label>
                           <input
                             type="number"
+                            name="quantity"
                             value={item.quantity}
-                            // onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-
-                            // }
+                            onChange={(e) => handleFormChange(e, index)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                             min="1"
                             required
@@ -188,6 +252,7 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
                           </label>
                           <input
                             type="text"
+                            name="unitPrice"
                             value={`₩${item.unitPrice.toLocaleString()}`}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm"
                             readOnly
@@ -199,9 +264,9 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
                           </label>
                           <input
                             type="date"
+                            name="dueDate"
                             value={item.dueDate}
-                            // onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                            // }
+                            onChange={(e) => handleFormChange(e, index)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                             required
                           />
@@ -248,9 +313,8 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
                 <label className="block text-sm font-medium text-gray-700 mb-2">비고</label>
                 <textarea
                   value={newOrderItems.note}
-                  // onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-
-                  // }
+                  name="note"
+                  onChange={handleFormChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                   rows={3}
                   placeholder="추가 요청사항이나 특이사항을 입력하세요"
