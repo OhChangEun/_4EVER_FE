@@ -17,6 +17,7 @@ const InventoryMoveModal = ({ $setShowMoveModal, $selectedStock }: InventoryMove
     itemId: $selectedStock.itemId,
     stockQuantity: 0,
     uomName: $selectedStock.uomName,
+    reason: '',
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -55,8 +56,8 @@ const InventoryMoveModal = ({ $setShowMoveModal, $selectedStock }: InventoryMove
       `);
       $setShowMoveModal(false);
     },
-    onError: (error) => {
-      alert(` 등록 중 오류가 발생했습니다. ${error}`);
+    onError: () => {
+      alert(` 등록 중 오류가 발생했습니다.`);
     },
   });
 
@@ -143,6 +144,19 @@ const InventoryMoveModal = ({ $setShowMoveModal, $selectedStock }: InventoryMove
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               placeholder="이동할 수량을 입력하세요"
               max={$selectedStock.currentStock}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">이동 사유</label>
+            <input
+              type="text"
+              name="reason"
+              value={formData.reason}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+              placeholder="이동 사유를 입력하세요"
+              maxLength={18}
             />
           </div>
 

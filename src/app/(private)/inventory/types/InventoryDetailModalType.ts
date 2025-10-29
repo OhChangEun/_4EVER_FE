@@ -43,4 +43,5 @@ export interface StockMovementRequest {
   itemId: string;
   stockQuantity: number;
   uomName: string;
+  reason: string;
 }
