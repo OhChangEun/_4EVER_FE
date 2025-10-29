@@ -20,7 +20,7 @@ const ModalContainer = ({ children, title, onClose }: ModalContainerProps) => {
         // onClick={onClose}
       >
         <motion.div
-          className="border border-gray-100 bg-white rounded-2xl shadow-xl p-6 max-h-[720px] min-w-[400px] min-h-[380px] relative pointer-events-auto"
+          className="border border-gray-100 bg-white rounded-2xl shadow-xl p-6 max-h-[720px] min-w-[400px] min-h-[380px] overflow-scroll relative pointer-events-auto"
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
