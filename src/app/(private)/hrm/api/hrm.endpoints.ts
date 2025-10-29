@@ -46,6 +46,6 @@ export const HRM_ENDPOINTS = {
 
   // 근무 기록
   TIME_RECORD: `${HRM_BASE_PATH}/time-record`, // 출퇴근 기록 목록 조회
-  TIME_RECORD_DETAIL: (timeRecordId: number) => `${HRM_BASE_PATH}/time-record/${timeRecordId}`, // 출퇴근 기록 상세 조회
-  TIME_RECORD_UPDATE: (timeRecordId: number) => `${HRM_BASE_PATH}/time-record/${timeRecordId}`, // 출퇴근 기록 수정 (PUT)
+  TIME_RECORD_DETAIL: (timeRecordId: string) => `${HRM_BASE_PATH}/time-record/${timeRecordId}`, // 출퇴근 기록 상세 조회
+  TIME_RECORD_UPDATE: (timeRecordId: string) => `${HRM_BASE_PATH}/time-record/${timeRecordId}`, // 출퇴근 기록 수정 (PUT)
 };

@@ -1,28 +1,23 @@
 import { Page, PageRequest } from '@/app/types/Page';
 
-export interface AttendanceListData {
-  attendanceId: string;
+export interface EmployeeInfo {
   employeeId: string;
   employeeName: string;
-  employeeNumber: string;
-  attendanceDate: string;
-  checkInTime: string;
-  checkOutTime: string;
-  statusCode: string;
-  workType: string;
-  location: string;
-  notes: string;
-  workingHours: number;
-  overtimeHours: number;
-  approvalStatus: string;
-  approverName: string;
-  approverId: string;
-  createdAt: string;
-  updatedAt: string;
+  departmentId: string;
   department: string;
+  positionId: string;
   position: string;
-  isLate: boolean;
-  isEarlyLeave: boolean;
+}
+
+export interface AttendanceListData {
+  timerecordId: string;
+  employee: EmployeeInfo;
+  workDate: string; // YYYY-MM-DD
+  checkInTime: string; // ISO 8601: YYYY-MM-DDTHH:mm:ss
+  checkOutTime: string; // ISO 8601
+  totalWorkMinutes: number;
+  overtimeMinutes: number;
+  statusCode: string; // "ON_TIME" 등
 }
 
 export interface AttendanceListResponse {
@@ -35,4 +30,10 @@ export interface AttendanceRequestParams extends PageRequest {
   department?: string;
   position?: string;
   name?: string;
+}
+
+export interface UpdateTimeRecord {
+  timerecordId: string;
+  checkInTime: string;
+  checkOutTime: string;
 }

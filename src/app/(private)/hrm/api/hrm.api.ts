@@ -33,6 +33,7 @@ import {
 import {
   AttendanceListResponse,
   AttendanceRequestParams,
+  UpdateTimeRecord,
 } from '@/app/(private)/hrm/types/HrmAttendanceApiType';
 import { LeaveListResponse, LeaveRequestParams } from '@/app/(private)/hrm/types/HrmLeaveApiType';
 
@@ -137,7 +138,7 @@ export const fetchProgramDetail = async (programId: string): Promise<ProgramDeta
 export const fetchAttendanceList = async (
   params: AttendanceRequestParams,
 ): Promise<AttendanceListResponse> => {
-  const res = await axios.get<ApiResponse<AttendanceListResponse>>(`${HRM_ENDPOINTS.ATTENDANCE}`, {
+  const res = await axios.get<ApiResponse<AttendanceListResponse>>(`${HRM_ENDPOINTS.TIME_RECORD}`, {
     params,
   });
   return res.data.data;
@@ -204,5 +205,18 @@ export const postProgramToEmployee = async (params: UpdateProgramToEmployeeReque
   const res = await axios.post<ApiResponse<null>>(`${HRM_ENDPOINTS.PROGRAM_DETAIL(employeeId)}`, {
     programId,
   });
+  return res.data;
+};
+
+// 출퇴근 기록 수정
+export const putTimeRecord = async (params: UpdateTimeRecord) => {
+  const { timerecordId, checkInTime, checkOutTime } = params;
+  const res = await axios.put<ApiResponse<null>>(
+    `${HRM_ENDPOINTS.TIME_RECORD_UPDATE(timerecordId)}`,
+    {
+      checkInTime,
+      checkOutTime,
+    },
+  );
   return res.data;
 };

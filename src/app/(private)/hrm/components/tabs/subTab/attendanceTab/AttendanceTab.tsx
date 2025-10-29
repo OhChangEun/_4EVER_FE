@@ -5,14 +5,18 @@ import {
   fetchDepartmentsList,
   fetchPositionsList,
 } from '@/app/(private)/hrm/api/hrm.api';
-import { AttendanceRequestParams } from '@/app/(private)/hrm/types/HrmAttendanceApiType';
-import { ProgramRequestParams } from '@/app/(private)/hrm/types/HrmProgramApiType';
+import {
+  AttendanceListData,
+  AttendanceRequestParams,
+} from '@/app/(private)/hrm/types/HrmAttendanceApiType';
 import Dropdown from '@/app/components/common/Dropdown';
 import { useModal } from '@/app/components/common/modal/useModal';
 import Pagination from '@/app/components/common/Pagination';
 import { KeyValueItem } from '@/app/types/CommonType';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
+import { AttendanceEditModal } from '@/app/(private)/hrm/components/modals/AttendanceEditModal';
+import { formatMinutesToHourMin, formatTime } from '@/app/utils/date';
 
 export default function AttendanceTab() {
   // --- 모달 출력 ---
@@ -97,6 +101,13 @@ export default function AttendanceTab() {
   const attendanceList = attendanceData?.content ?? [];
   const pageInfo = attendanceData?.page;
 
+  const handleEditAttendance = (attendance: AttendanceListData) => {
+    openModal(AttendanceEditModal, {
+      title: '출퇴근 정보 수정',
+      attendance: attendance,
+    });
+  };
+
   return (
     <div className="mt-8">
       <div className="flex items-center justify-between mb-4">
@@ -172,43 +183,45 @@ export default function AttendanceTab() {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {attendanceList.map((attend) => (
-              <tr key={attend.employeeId} className="hover:bg-gray-50">
+              <tr key={attend.timerecordId} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div>
-                    <div className="text-sm font-medium text-gray-900">{attend.employeeName}</div>
-                    <div className="text-sm text-gray-500">{attend.position}</div>
+                    <div className="text-sm font-medium text-gray-900">
+                      {attend.employee?.employeeName || '-'}
+                    </div>
+                    <div className="text-sm text-gray-500">{attend.employee?.position || '-'}</div>
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {attend.checkInTime}
+                  {formatTime(attend.checkInTime)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {attend.checkOutTime}
+                  {formatTime(attend.checkOutTime)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {attend.workingHours}
+                  {formatMinutesToHourMin(attend.totalWorkMinutes)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {attend.overtimeHours}
+                  {formatMinutesToHourMin(attend.overtimeMinutes)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span
                     className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      attend.approvalStatus === '정상'
+                      attend.statusCode === '정상'
                         ? 'bg-green-100 text-green-800'
-                        : attend.approvalStatus === '지각'
+                        : attend.statusCode === '지각'
                           ? 'bg-yellow-100 text-yellow-800'
-                          : attend.approvalStatus === '휴가'
+                          : attend.statusCode === '휴가'
                             ? 'bg-blue-100 text-blue-800'
                             : 'bg-red-100 text-red-800'
                     }`}
                   >
-                    {attend.approvalStatus}
+                    {attend.statusCode}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button
-                    // onClick={() => onEditAttendance(attend)}
+                    onClick={() => handleEditAttendance(attend)}
                     className="text-green-600 hover:text-green-900 cursor-pointer"
                   >
                     <i className="ri-edit-line"></i>
