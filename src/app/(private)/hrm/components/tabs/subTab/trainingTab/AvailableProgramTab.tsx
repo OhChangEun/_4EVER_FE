@@ -1,83 +1,28 @@
 'use client';
 
-import {
-  fetchDepartmentsList,
-  fetchPositionsList,
-  fetchProgramList,
-} from '@/app/(private)/hrm/api/hrm.api';
+import { fetchProgramList } from '@/app/(private)/hrm/api/hrm.api';
 import { ProgramListData, ProgramRequestParams } from '@/app/(private)/hrm/types/HrmProgramApiType';
 import IconButton from '@/app/components/common/IconButton';
 import { useModal } from '@/app/components/common/modal/useModal';
 import Pagination from '@/app/components/common/Pagination';
-import { KeyValueItem } from '@/app/types/CommonType';
 import { useQuery } from '@tanstack/react-query';
 import React, { useState, useMemo } from 'react';
-import ProgramDetailModal from '../../../modals/ProgramDetailModal';
+import ProgramDetailModal from '@/app/(private)/hrm/components/modals/ProgramDetailModal';
 
 export default function AvailableProgramTab() {
   // --- 모달 출력 ---
   const { openModal } = useModal();
 
-  // --- 드롭다운 ---
-  const [selectedDepartment, setSelectedDepartment] = useState(''); // 부서
-  const [selectedPosition, setSelectedPosition] = useState(''); // 직급
-
   // --- 페이지 네이션 ---
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  const [employeeSearchTerm, setEmployeeSearchTerm] = useState('');
-
-  const {
-    data: positionsData = [],
-    isLoading: isPosLoading,
-    isError: isPosError,
-  } = useQuery({
-    queryKey: ['positionsList'],
-    queryFn: fetchPositionsList,
-    staleTime: Infinity,
-  });
-
-  const {
-    data: departmentsData,
-    isLoading: isDeptLoading,
-    isError: isDeptError,
-  } = useQuery({
-    queryKey: ['departmentsList'],
-    queryFn: fetchDepartmentsList,
-    staleTime: Infinity,
-  });
-
-  const positionOptions: KeyValueItem[] = useMemo(() => {
-    return [
-      { key: '', value: '전체 직급' },
-      ...positionsData.map((item) => ({
-        key: item.positionId,
-        value: item.positionName,
-      })),
-    ];
-  }, [positionsData]);
-
-  const departmentsOptions: KeyValueItem[] = useMemo(() => {
-    const departmentList = departmentsData?.departments ?? [];
-
-    return [
-      { key: '', value: '전체 부서' },
-      ...departmentList.map((item) => ({
-        key: item.departmentId,
-        value: item.departmentName,
-      })),
-    ];
-  }, [departmentsData]);
-
-  const programQueryParams = useMemo<ProgramRequestParams>(
-    () => ({
-      department: selectedDepartment || undefined,
-      position: selectedPosition || undefined,
+  const programQueryParams = useMemo(
+    (): ProgramRequestParams => ({
       page: currentPage - 1,
       size: pageSize,
     }),
-    [selectedDepartment, selectedPosition, currentPage],
+    [currentPage],
   );
 
   const {

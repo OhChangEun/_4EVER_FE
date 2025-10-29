@@ -100,8 +100,8 @@ export default function PayrollManagement() {
     ];
   }, [departmentsData]);
 
-  const payrollQueryParams = useMemo<PayrollRequestParams>(
-    () => ({
+  const payrollQueryParams = useMemo(
+    (): PayrollRequestParams => ({
       year: Number(selectedYear),
       month: Number(selectedMonth),
       department: selectedDepartment || undefined,

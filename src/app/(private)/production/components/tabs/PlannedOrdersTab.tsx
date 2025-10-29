@@ -30,8 +30,8 @@ export default function PlannedOrdersTab() {
   const pageSize = 10;
 
   // 쿼리 파라미터 객체 생성
-  const queryParams = useMemo<FetchMrpPlannedOrdersListParams>(
-    () => ({
+  const queryParams = useMemo(
+    (): FetchMrpPlannedOrdersListParams => ({
       statusCode: selectedStatus,
       page: currentPage - 1,
       size: pageSize,

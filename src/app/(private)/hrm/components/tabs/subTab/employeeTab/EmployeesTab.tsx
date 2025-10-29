@@ -75,8 +75,8 @@ export default function EmployeesTab() {
     ];
   }, [departmentsData]);
 
-  const employeesQueryParams = useMemo<EmployeeListRequestParams>(
-    () => ({
+  const employeesQueryParams = useMemo(
+    (): EmployeeListRequestParams => ({
       department: selectedDepartment || undefined,
       position: selectedPosition || undefined,
       page: currentPage - 1,

@@ -25,7 +25,12 @@ import {
   ProgramDetailResponse,
   ProgramListResponse,
   ProgramRequestParams,
-} from '../types/HrmProgramApiType';
+} from '@/app/(private)/hrm/types/HrmProgramApiType';
+import {
+  AttendanceListResponse,
+  AttendanceRequestParams,
+} from '@/app/(private)/hrm/types/HrmAttendanceApiType';
+import { LeaveListResponse, LeaveRequestParams } from '@/app/(private)/hrm/types/HrmLeaveApiType';
 
 // 인적자원관리 지표 조회
 export const fetchHrmStats = async (): Promise<HrmStatResponse | null> => {
@@ -121,5 +126,23 @@ export const fetchProgramDetail = async (programId: string): Promise<ProgramDeta
   const res = await axios.get<ApiResponse<ProgramDetailResponse>>(
     `${HRM_ENDPOINTS.PROGRAM_DETAIL(programId)}`,
   );
+  return res.data.data;
+};
+
+// 출퇴근기록 목록 조회
+export const fetchAttendanceList = async (
+  params: AttendanceRequestParams,
+): Promise<AttendanceListResponse> => {
+  const res = await axios.get<ApiResponse<AttendanceListResponse>>(`${HRM_ENDPOINTS.ATTENDANCE}`, {
+    params,
+  });
+  return res.data.data;
+};
+
+// 휴가 목록 조회
+export const fetchLeaveList = async (params: LeaveRequestParams): Promise<LeaveListResponse> => {
+  const res = await axios.get<ApiResponse<LeaveListResponse>>(`${HRM_ENDPOINTS.LEAVE_REQUESTS}`, {
+    params,
+  });
   return res.data.data;
 };

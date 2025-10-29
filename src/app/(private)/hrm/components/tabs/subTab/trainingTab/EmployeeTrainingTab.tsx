@@ -15,7 +15,7 @@ import Pagination from '@/app/components/common/Pagination';
 import { KeyValueItem } from '@/app/types/CommonType';
 import { useQuery } from '@tanstack/react-query';
 import React, { useState, useMemo } from 'react';
-import TrainingDetailModal from '../../../modals/TrainingDetailModal';
+import TrainingDetailModal from '@/app/(private)/hrm/components/modals/TrainingDetailModal';
 
 export default function EmployeeTrainingTab() {
   // --- 모달 출력 ---
@@ -73,8 +73,8 @@ export default function EmployeeTrainingTab() {
     ];
   }, [departmentsData]);
 
-  const trainingQueryParams = useMemo<TrainingRequestParams>(
-    () => ({
+  const trainingQueryParams = useMemo(
+    (): TrainingRequestParams => ({
       department: selectedDepartment || undefined,
       position: selectedPosition || undefined,
       page: currentPage - 1,
