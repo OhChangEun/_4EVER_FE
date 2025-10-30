@@ -17,7 +17,6 @@ const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
 
   const [formData, setFormData] = useState<AddInventoryItemsRequest>({
     itemId: '',
-    supplierCompanyId: '',
     safetyStock: 0,
     currentStock: 0,
     warehouseId: '',
@@ -36,7 +35,6 @@ const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
     setFormData((prev) => ({
       ...prev,
       itemId: found?.itemId ?? '',
-      supplierCompanyId: found?.supplierCompanyId ?? '',
     }));
   };
 
@@ -140,7 +138,7 @@ const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
                 <option value="">자재를 선택하세요</option>
                 {ItemInfoRes?.map((item) => (
                   <option key={item.itemId} value={item.itemId}>
-                    {item.itemIdName}
+                    {item.itemName}
                   </option>
                 ))}
               </select>

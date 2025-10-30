@@ -80,7 +80,7 @@ const ReceivingManagementList = () => {
     <div className="bg-white rounded-lg border border-gray-200 mt-6">
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">출고 관리</h2>
+          <h2 className="text-lg font-semibold text-gray-900">입고 관리</h2>
 
           {/* 필터링 */}
           {selectedSubTab === 'received' && (

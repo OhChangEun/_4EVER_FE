@@ -181,7 +181,7 @@ const InventoryDetailModal = ({
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">위치:</span>
                   <span className="text-sm font-medium text-gray-900">
-                    {inventoryDetailRes?.warehouseNumber}
+                    {inventoryDetailRes?.location}
                   </span>
                 </div>
                 <div className="flex justify-between">

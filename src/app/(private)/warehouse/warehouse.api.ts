@@ -59,7 +59,7 @@ export const patchManageWarehouse = async ({
   warehouseId: string;
   payload: EditWarehouseRequest;
 }): Promise<ApiResponseNoData> => {
-  const res = await axios.patch<ApiResponseNoData>(
+  const res = await axios.put<ApiResponseNoData>(
     WAREHOUSE_ENDPOINTS.WAREHOUSE_MANAGE(warehouseId),
     payload,
   );
