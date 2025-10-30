@@ -96,9 +96,9 @@ const InvoiceList = () => {
     }
   };
 
-  useEffect(() => {
-    console.log(selectedInvoiceId);
-  }, [selectedInvoiceId]);
+  // useEffect(() => {
+  //   console.log(selectedInvoiceId);
+  // }, [selectedInvoiceId]);
 
   const handleReceivableComplete = () => {
     sendReq();
@@ -200,7 +200,7 @@ const InvoiceList = () => {
                     <StatusLabel $statusCode={invoice.statusCode} />
                   </td>
                   <td className="py-3 px-4 text-sm text-blue-600 hover:text-blue-500 cursor-pointer">
-                    {invoice.reference.referenceCode}
+                    {invoice.referenceNumber}
                   </td>
                   <td className="py-3 px-4 text-center">
                     <div className="flex items-center justify-center space-x-2">

@@ -3,6 +3,7 @@ export const API_BASE_URL = 'https://api.everp.co.kr/api';
 export const SALES_BASE_PATH = `${API_BASE_URL}/business/sd`;
 export const FINANCE_BASE_PATH = `${API_BASE_URL}/business/fcm`;
 export const DASHBOARD_BASE_PATH = `${API_BASE_URL}/dashboard`;
+export const INVENTORY_BASE_PATH = `${API_BASE_URL}/scm-pp`;
 
 // 공통 응답 타입
 export interface ApiResponse<T> {
@@ -11,7 +12,6 @@ export interface ApiResponse<T> {
   message: string;
   data: T;
 }
-
 export interface ApiResponseNoData {
   status: number;
   success: boolean;
@@ -32,6 +32,8 @@ export const SALES_ENDPOINTS = {
   CUSTOMER_DETAIL: (id: string) => `${SALES_BASE_PATH}/customers/${id}`,
   EDIT_CUSTOMER: (id: string) => `${SALES_BASE_PATH}/customers/${id}`,
   ANALYTICS: `${SALES_BASE_PATH}/analytics/sales`,
+  NEW_ORDER: `${SALES_BASE_PATH}/quotations`,
+  NEW_QUOTE_ITEM_TOGGLE: `${INVENTORY_BASE_PATH}/product/item/toggle`,
 } as const;
 
 // ----------------------- FINANCE -----------------------
@@ -54,3 +56,43 @@ export const DASHBOARD_ENDPOINTS = {
   STATS: `${DASHBOARD_BASE_PATH}/statistics`,
   WORKFLOW_STATUS: (role: string) => `${DASHBOARD_BASE_PATH}/workflows?role=${role}`,
 } as const;
+
+// ----------------------- INVENTORY -----------------------
+export const INVENTORY_ENDPOINTS = {
+  STATS: `${INVENTORY_BASE_PATH}/iv/statistic`,
+  INVENTORY_LIST: `${INVENTORY_BASE_PATH}/inventory-items`,
+  INVENTORY_DETAIL: (itemId: string) => `${INVENTORY_BASE_PATH}/iv/items/${itemId}`,
+  LOW_STOCK: `${INVENTORY_BASE_PATH}/iv/shortage/preview`,
+  RECENT_STOCK_MOVEMENT: `${INVENTORY_BASE_PATH}/iv/stock-transfers`,
+  PRODUCTION_LIST: `${INVENTORY_BASE_PATH}/sales-orders/production`,
+  READY_TO_SHIP_LIST: `${INVENTORY_BASE_PATH}/sales-orders/ready-to-ship`,
+  PENDING_LIST: `${INVENTORY_BASE_PATH}/purchase-orders/pending`,
+  RECEIVED_LIST: `${INVENTORY_BASE_PATH}/purchase-orders/received`,
+  PRODUCTIONDETAIL: (itemId: string) => `${INVENTORY_BASE_PATH}/sales-orders/production/${itemId}`,
+  READY_TO_SHIP_DETAIL: (itemId: string) =>
+    `${INVENTORY_BASE_PATH}/sales-orders/ready-to-ship/${itemId}`,
+  MARKAS_READY_TO_SHIP_DETAIL: (itemId: string) =>
+    `${INVENTORY_BASE_PATH}/sales-orders/${itemId}/status`,
+  ADD_MATERIALS: `${INVENTORY_BASE_PATH}/iv/items`,
+  EDIT_SAFETY_STOCK: (itemId: string, safetyStock: number) =>
+    `${INVENTORY_BASE_PATH}/iv/items/${itemId}/safety-stock?safetyStock=${safetyStock}`,
+  // ---------- 메뉴 조회 ----------
+  ITEM_TOGGLE: `${INVENTORY_BASE_PATH}/iv/items/toggle`,
+  WAREHOUSE_TOGGLE: `${INVENTORY_BASE_PATH}/iv/warehouses/dropdown`,
+} as const;
+
+// ----------------------- LOWSTOCK -----------------------
+export const LOWSTOCK_ENDPOINTS = {
+  STATS: `${INVENTORY_BASE_PATH}/iv/shortage/count/critical/statistic`,
+  LOW_STOCK_LIST: `${INVENTORY_BASE_PATH}/iv/shortage`,
+};
+
+// ----------------------- WAREHOUSE -----------------------
+export const WAREHOUSE_ENDPOINTS = {
+  STATS: `${INVENTORY_BASE_PATH}/iv/warehouses/statistic`,
+  WAREHOUSE_LIST: `${INVENTORY_BASE_PATH}/iv/warehouses`,
+  WAREHOUSE_DETAIL: (warehouseId: string) => `${INVENTORY_BASE_PATH}/iv/warehouses/${warehouseId}`,
+  WAREHOUSE_MANAGE: (warehouseId: string) => `${INVENTORY_BASE_PATH}/iv/warehouses/${warehouseId}`,
+  ADD_WAREHOUSE: `${INVENTORY_BASE_PATH}/iv/warehouses`,
+  WAREHOUSE_MANAGER_INFO: `${INVENTORY_BASE_PATH}/iv/warehouses/managers/toggle`,
+};

@@ -7,6 +7,9 @@ import SalesQuoteList from '@/app/(private)/sales/components/tabs/SalesQuoteList
 import SalesOrderList from '@/app/(private)/sales/components/tabs/SalesOrderList';
 import SalesCustomerList from '@/app/(private)/sales/components/tabs/SalesCustomerList';
 import SalesChart from '@/app/(private)/sales/components/tabs/SalesChart';
+import ShippingManagementList from '@/app/(private)/inventory/components/tabs/ShippingManagementList';
+import InventoryList from '@/app/(private)/inventory/components/tabs/InventoryList';
+import ReceivingManagementList from '@/app/(private)/inventory/components/tabs/ReceivingManagementList';
 
 // 재무 관리 탭 전환
 export const FINANCE_TABS: Tab[] = [
@@ -41,9 +44,22 @@ export const PURCHASE_TABS: Tab[] = [
   },
 ];
 
+// 영업 관리 탭 전환
 export const SALES_TABS: Tab[] = [
   { id: 'quotes', name: '견적 관리', icon: 'ri-file-text-line', component: SalesQuoteList },
   { id: 'orders', name: '주문 관리', icon: 'ri-shopping-cart-line', component: SalesOrderList },
   { id: 'customers', name: '고객 관리', icon: 'ri-user-3-line', component: SalesCustomerList },
   { id: 'analytics', name: '매출 분석', icon: 'ri-bar-chart-line', component: SalesChart },
+];
+
+// 재고 관리 탭 전환
+export const INVENTORY_TABS: Tab[] = [
+  { id: 'inventory', name: '재고 목록', icon: 'ri-list-check-3', component: InventoryList },
+  { id: 'shipping', name: '출고 관리', icon: 'ri-truck-line', component: ShippingManagementList },
+  {
+    id: 'receiving',
+    name: '입고 관리',
+    icon: 'ri-inbox-archive-line',
+    component: ReceivingManagementList,
+  },
 ];

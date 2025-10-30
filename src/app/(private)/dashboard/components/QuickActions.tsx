@@ -95,10 +95,12 @@ export default function QuickActions() {
           );
         })}
       </div>
-      <NewOrderModal
-        $showNewOrderModal={showNewOrderModal}
-        $setShowNewOrderModal={setShowNewOrderModal}
-      />
+      {showNewOrderModal && (
+        <NewOrderModal
+          $showNewOrderModal={showNewOrderModal}
+          $setShowNewOrderModal={setShowNewOrderModal}
+        />
+      )}
     </div>
   );
 }
