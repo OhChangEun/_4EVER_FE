@@ -1,20 +1,17 @@
 'use client';
 
 import IconButton from '@/app/components/common/IconButton';
-import { useState } from 'react';
-import { BomListData, BomListResponse } from '@/app/(private)/production/types/BomListApiType';
+import { BomListResponse } from '@/app/(private)/production/types/BomListApiType';
 import BomDetailModal from '@/app/(private)/production/components/modals/BomDetailModal';
 // import BomInputFormModal from '@/app/(private)/production/components/modals/BomInputFormModal';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { deletBomItem, fetchBomList } from '../../api/production.api';
 import { getQueryClient } from '@/lib/queryClient';
 import { useModal } from '@/app/components/common/modal/useModal';
+import BomInputFormModal from '../modals/BomInputFormModal';
 
 export default function BomTab() {
   const { openModal } = useModal();
-
-  const [selectedBom, setSelectedBom] = useState<BomListData | null>(null);
-  const [editingBom, setEditingBom] = useState<BomListData | null>(null);
 
   const queryClient = getQueryClient();
 
@@ -44,42 +41,22 @@ export default function BomTab() {
   // content 배열 추출
   const bomList = bomResponse?.content || [];
 
-  const handleViewDetail = (bomId: string) => {
-    openModal(BomDetailModal, { title: 'BOM 상세 정보', bomId: bomId });
-    // BomDetailModal bomId={selectedBom.bomId}
+  const handleCreate = () => {
+    openModal(BomInputFormModal, { title: 'BOM 생성' });
   };
 
-  const handleEdit = (bom: BomListData) => {
-    setEditingBom(bom);
+  const handleViewDetail = (bomId: string) => {
+    openModal(BomDetailModal, { title: 'BOM 상세 정보', bomId: bomId });
+  };
+
+  const handleEdit = () => {
+    openModal(BomInputFormModal, { title: 'BOM 수정', editMode: true });
   };
 
   const handleDelete = (bomId: string) => {
     if (confirm('정말로 이 BOM을 삭제하시겠습니까?')) {
       deleteMutation.mutate(bomId);
     }
-  };
-
-  const handleCreate = () => {
-    setEditingBom(null);
-  };
-
-  const handleSubmit = (data: Partial<BomListData>) => {
-    console.log('BOM 데이터:', data);
-    alert(editingBom ? 'BOM이 수정되었습니다.' : 'BOM이 생성되었습니다.');
-  };
-
-  const getStatusBadge = (status: string) => {
-    const statusConfig: Record<string, { label: string; class: string }> = {
-      ACTIVE: { label: '활성', class: 'bg-green-100 text-green-800' },
-      INACTIVE: { label: '비활성', class: 'bg-gray-100 text-gray-800' },
-      DRAFT: { label: '초안', class: 'bg-yellow-100 text-yellow-800' },
-    };
-    const config = statusConfig[status] || { label: status, class: 'bg-gray-100 text-gray-800' };
-    return (
-      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${config.class}`}>
-        {config.label}
-      </span>
-    );
   };
 
   return (
@@ -140,7 +117,7 @@ export default function BomTab() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {bom.version}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(bom.status)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{bom.status}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {bom.lastModifiedAt}
                     </td>
@@ -153,7 +130,7 @@ export default function BomTab() {
                         상세보기
                       </button>
                       <button
-                        onClick={() => handleEdit(bom)}
+                        onClick={() => handleEdit()}
                         className="text-green-600 hover:text-green-900 cursor-pointer"
                         disabled={deleteMutation.isPending}
                       >
@@ -180,15 +157,6 @@ export default function BomTab() {
           </table>
         </div>
       )}
-
-      {/* BOM 생성/수정 모달 */}
-      {/* {showBomCreateModal && (
-          <BomInputFormModal
-            editingBom={editingBom}
-            onClose={() => setShowBomCreateModal(false)}
-            onSubmit={handleSubmit}
-          />
-        )} */}
     </>
   );
 }
