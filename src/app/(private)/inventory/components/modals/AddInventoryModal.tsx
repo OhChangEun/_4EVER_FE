@@ -93,7 +93,7 @@ const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
   if (isWarehouseInfoLoading)
     return <ModalStatusBox $type="loading" $message="창고 정보를 불러오는 중입니다..." />;
 
-  if (isItemInfoError)
+  if (errorModal)
     return (
       <ModalStatusBox
         $type="error"
@@ -102,7 +102,7 @@ const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
       />
     );
 
-  if (isWarehouseInfoError)
+  if (errorModal)
     return (
       <ModalStatusBox
         $type="error"
