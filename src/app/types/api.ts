@@ -32,6 +32,8 @@ export const SALES_ENDPOINTS = {
   CUSTOMER_DETAIL: (id: string) => `${SALES_BASE_PATH}/customers/${id}`,
   EDIT_CUSTOMER: (id: string) => `${SALES_BASE_PATH}/customers/${id}`,
   ANALYTICS: `${SALES_BASE_PATH}/analytics/sales`,
+  NEW_ORDER: `${SALES_BASE_PATH}/quotations`,
+  NEW_QUOTE_ITEM_TOGGLE: `${INVENTORY_BASE_PATH}/product/item/toggle`,
 } as const;
 
 // ----------------------- FINANCE -----------------------
