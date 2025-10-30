@@ -32,6 +32,8 @@ export const SALES_ENDPOINTS = {
   CUSTOMER_DETAIL: (id: string) => `${SALES_BASE_PATH}/customers/${id}`,
   EDIT_CUSTOMER: (id: string) => `${SALES_BASE_PATH}/customers/${id}`,
   ANALYTICS: `${SALES_BASE_PATH}/analytics/sales`,
+  NEW_ORDER: `${SALES_BASE_PATH}/quotations`,
+  NEW_QUOTE_ITEM_TOGGLE: `${INVENTORY_BASE_PATH}/product/item/toggle`,
 } as const;
 
 // ----------------------- FINANCE -----------------------
@@ -58,13 +60,13 @@ export const DASHBOARD_ENDPOINTS = {
 // ----------------------- INVENTORY -----------------------
 export const INVENTORY_ENDPOINTS = {
   STATS: `${INVENTORY_BASE_PATH}/iv/statistic`,
-  INVENTORY_LIST: `${INVENTORY_BASE_PATH}/inventory-items`,
+  INVENTORY_LIST: `${INVENTORY_BASE_PATH}/iv/inventory-items`,
   INVENTORY_DETAIL: (itemId: string) => `${INVENTORY_BASE_PATH}/iv/items/${itemId}`,
   LOW_STOCK: `${INVENTORY_BASE_PATH}/iv/shortage/preview`,
   RECENT_STOCK_MOVEMENT: `${INVENTORY_BASE_PATH}/iv/stock-transfers`,
   PRODUCTION_LIST: `${INVENTORY_BASE_PATH}/sales-orders/production`,
   READY_TO_SHIP_LIST: `${INVENTORY_BASE_PATH}/sales-orders/ready-to-ship`,
-  PENDING_LIST: `${INVENTORY_BASE_PATH}/purchase-orders/pending`,
+  PENDING_LIST: `${INVENTORY_BASE_PATH}/purchase-orders/receiving`,
   RECEIVED_LIST: `${INVENTORY_BASE_PATH}/purchase-orders/received`,
   PRODUCTIONDETAIL: (itemId: string) => `${INVENTORY_BASE_PATH}/sales-orders/production/${itemId}`,
   READY_TO_SHIP_DETAIL: (itemId: string) =>
@@ -76,7 +78,7 @@ export const INVENTORY_ENDPOINTS = {
     `${INVENTORY_BASE_PATH}/iv/items/${itemId}/safety-stock?safetyStock=${safetyStock}`,
   // ---------- 메뉴 조회 ----------
   ITEM_TOGGLE: `${INVENTORY_BASE_PATH}/iv/items/toggle`,
-  WAREHOUSE_TOGGLE: (itemId: string) => `${INVENTORY_BASE_PATH}/iv/warehouses/dropdown/${itemId}`,
+  WAREHOUSE_TOGGLE: `${INVENTORY_BASE_PATH}/iv/warehouses/dropdown`,
 } as const;
 
 // ----------------------- LOWSTOCK -----------------------

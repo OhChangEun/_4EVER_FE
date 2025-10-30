@@ -8,19 +8,22 @@ export interface AddInventoryItemsToggleResponse {
   supplierCompanyName: string;
   uomName: string;
   supplierCompanyId: string;
-  itemIdName: string;
+  itemName: string;
 }
 
 export interface WarehouseToggleResponse {
   warehouseId: string;
   warehouseName: string;
-  warehouseCode: string;
+  warehouseNumber: string;
 }
 
 export interface AddInventoryItemsRequest {
   itemId: string;
-  supplierCompanyId: string;
   safetyStock: number;
   currentStock: number;
+  warehouseId: string;
+}
+
+export interface WarehouseToggleQueryParams {
   warehouseId: string;
 }

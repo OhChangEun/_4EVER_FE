@@ -23,7 +23,8 @@ export default function Dropdown<T extends string = string>({
     whileElementsMounted: autoUpdate,
   });
 
-  const selectedItem = items.find((item) => item.key === value);
+  const selectedKey = value || items[0]?.key || '';
+  const selectedItem = items.find((item) => item.key === selectedKey);
   const displayLabel = selectedItem?.value ?? items[0].value;
 
   useEffect(() => {
@@ -52,7 +53,7 @@ export default function Dropdown<T extends string = string>({
           onClick={() => setOpen((prev) => !prev)}
           className={`pl-4 pr-1.5 py-1.5 text-sm rounded-lg font-medium focus:outline-none transition cursor-pointer whitespace-nowrap
                     ${
-                      selectedItem?.key === 'ALL'
+                      selectedItem?.key === '' || selectedItem?.key === 'ALL'
                         ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         : 'bg-blue-100 text-blue-500 hover:bg-blue-200/70'
                     }
@@ -71,7 +72,7 @@ export default function Dropdown<T extends string = string>({
           <ul
             ref={refs.setFloating}
             style={floatingStyles}
-            className="z-[9999] max-h-56 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-lg min-w-[120px] animate-fadeIn"
+            className="z-[9999] max-h-64 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-lg max-w-[120px] min-w-[96px] animate-fadeIn overscroll-contain"
           >
             {items.map((item, index) => {
               const isSelected = item.key === selectedItem?.key;

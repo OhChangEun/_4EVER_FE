@@ -31,15 +31,17 @@ export interface InventoryDetailResponse {
   warehouseId: string;
   warehouseName: string;
   warehouseNumber: string;
+  location: string;
   lastModified: string;
   description: string;
   stockMovements: StockMovement[];
 }
 
 export interface StockMovementRequest {
-  fromWarehouseId: number;
-  toWarehouseId: number;
-  stockId: number;
+  fromWarehouseId: string;
+  toWarehouseId: string;
+  itemId: string;
   stockQuantity: number;
   uomName: string;
+  reason: string;
 }

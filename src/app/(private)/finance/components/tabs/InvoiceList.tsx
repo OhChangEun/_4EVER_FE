@@ -96,9 +96,9 @@ const InvoiceList = () => {
     }
   };
 
-  useEffect(() => {
-    console.log(selectedInvoiceId);
-  }, [selectedInvoiceId]);
+  // useEffect(() => {
+  //   console.log(selectedInvoiceId);
+  // }, [selectedInvoiceId]);
 
   const handleReceivableComplete = () => {
     sendReq();

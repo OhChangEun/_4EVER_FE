@@ -2,18 +2,22 @@
 
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { getWarehouseInfo, postStockMovement } from '../../inventory.api';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { InventoryMoveModalProps } from '../../types/InventoryMoveModalType';
-import { WarehouseToggleResponse } from '../../types/AddInventoryModalType';
+import {
+  WarehouseToggleQueryParams,
+  WarehouseToggleResponse,
+} from '../../types/AddInventoryModalType';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
 
 const InventoryMoveModal = ({ $setShowMoveModal, $selectedStock }: InventoryMoveModalProps) => {
   const [formData, setFormData] = useState({
-    fromWarehouseId: Number($selectedStock.warehouseId),
-    toWarehouseId: 0,
-    stockId: Number($selectedStock.itemId),
+    fromWarehouseId: $selectedStock.warehouseId,
+    toWarehouseId: '',
+    itemId: $selectedStock.itemId,
     stockQuantity: 0,
     uomName: $selectedStock.uomName,
+    reason: '',
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -28,13 +32,20 @@ const InventoryMoveModal = ({ $setShowMoveModal, $selectedStock }: InventoryMove
 
   // -----------------------------
 
+  const queryParams = useMemo(() => {
+    const params: WarehouseToggleQueryParams = {
+      warehouseId: $selectedStock.warehouseId,
+    };
+    return params;
+  }, [$selectedStock.warehouseId]);
+
   const {
     data: warehouseInfoRes,
     isLoading,
     isError,
   } = useQuery<WarehouseToggleResponse[]>({
-    queryKey: ['getWarehouseInfo', $selectedStock.itemId],
-    queryFn: () => getWarehouseInfo($selectedStock.itemId),
+    queryKey: ['getWarehouseInfo', queryParams],
+    queryFn: ({ queryKey }) => getWarehouseInfo(queryKey[1] as WarehouseToggleQueryParams),
     enabled: !!$selectedStock.itemId,
   });
 
@@ -45,8 +56,8 @@ const InventoryMoveModal = ({ $setShowMoveModal, $selectedStock }: InventoryMove
       `);
       $setShowMoveModal(false);
     },
-    onError: (error) => {
-      alert(` 등록 중 오류가 발생했습니다. ${error}`);
+    onError: () => {
+      alert(` 등록 중 오류가 발생했습니다.`);
     },
   });
 
@@ -118,7 +129,7 @@ const InventoryMoveModal = ({ $setShowMoveModal, $selectedStock }: InventoryMove
               value={
                 warehouseInfoRes?.find(
                   (w) => String(w.warehouseId) === String(formData.toWarehouseId),
-                )?.warehouseCode ?? ''
+                )?.warehouseNumber ?? ''
               }
             />
           </div>
@@ -133,6 +144,19 @@ const InventoryMoveModal = ({ $setShowMoveModal, $selectedStock }: InventoryMove
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               placeholder="이동할 수량을 입력하세요"
               max={$selectedStock.currentStock}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">이동 사유</label>
+            <input
+              type="text"
+              name="reason"
+              value={formData.reason}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+              placeholder="이동 사유를 입력하세요"
+              maxLength={18}
             />
           </div>
 

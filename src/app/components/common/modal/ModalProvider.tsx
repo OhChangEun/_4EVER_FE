@@ -1,3 +1,5 @@
+'use client';
+
 import {
   ComponentType,
   createContext,
@@ -20,6 +22,7 @@ interface ModalContextValue {
     props: Omit<ModalProps, 'id' | 'onClose'>, // id와 onClose는 자동 주입
   ) => string; // 모달 고유 ID 반환
   removeModal: (id: string) => void; // 모달 닫기
+  removeAllModals: () => void;
 }
 
 // Context 생성
@@ -54,6 +57,10 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     setModals((prev) => prev.filter((m) => m.id !== id));
   }, []);
 
+  const removeAllModals = useCallback(() => {
+    setModals([]);
+  }, []);
+
   // 모달 추가 함수
   const addModal = useCallback(
     (Component: ComponentType<ModalProps>, props: Omit<ModalProps, 'id' | 'onClose'>): string => {
@@ -74,10 +81,14 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
   );
 
   return (
-    <ModalContext.Provider value={{ addModal, removeModal }}>
+    <ModalContext.Provider value={{ addModal, removeModal, removeAllModals }}>
       {children}
       {modals.length > 0 && (
         <FloatingPortal>
+          {/* 배경 오버레이 */}
+          <div className="fixed inset-0 z-[999] bg-black/50" />
+
+          {/* 각 모달 */}
           {modals.map(({ id, Component, props }) => (
             <ModalContainer key={id} title={props.title} onClose={props.onClose}>
               <Component {...props} />

@@ -5,6 +5,7 @@ import {
   AddInventoryItemsRequest,
   AddInventoryItemsToggleResponse,
   AddInventoryModalProps,
+  WarehouseToggleQueryParams,
   WarehouseToggleResponse,
 } from '../../types/AddInventoryModalType';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -16,7 +17,6 @@ const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
 
   const [formData, setFormData] = useState<AddInventoryItemsRequest>({
     itemId: '',
-    supplierCompanyId: '',
     safetyStock: 0,
     currentStock: 0,
     warehouseId: '',
@@ -35,7 +35,6 @@ const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
     setFormData((prev) => ({
       ...prev,
       itemId: found?.itemId ?? '',
-      supplierCompanyId: found?.supplierCompanyId ?? '',
     }));
   };
 
@@ -63,8 +62,8 @@ const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
     isLoading: isWarehouseInfoLoading,
     isError: isWarehouseInfoError,
   } = useQuery<WarehouseToggleResponse[]>({
-    queryKey: ['getWarehouseInfo', formData.itemId],
-    queryFn: () => getWarehouseInfo(formData.itemId),
+    queryKey: ['getWarehouseInfo'],
+    queryFn: () => getWarehouseInfo(),
     enabled: !!formData.itemId,
   });
 
@@ -92,7 +91,7 @@ const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
   if (isWarehouseInfoLoading)
     return <ModalStatusBox $type="loading" $message="창고 정보를 불러오는 중입니다..." />;
 
-  if (isItemInfoError)
+  if (errorModal)
     return (
       <ModalStatusBox
         $type="error"
@@ -101,7 +100,7 @@ const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
       />
     );
 
-  if (isWarehouseInfoError)
+  if (errorModal)
     return (
       <ModalStatusBox
         $type="error"
@@ -139,7 +138,7 @@ const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
                 <option value="">자재를 선택하세요</option>
                 {ItemInfoRes?.map((item) => (
                   <option key={item.itemId} value={item.itemId}>
-                    {item.itemIdName}
+                    {item.itemName}
                   </option>
                 ))}
               </select>
