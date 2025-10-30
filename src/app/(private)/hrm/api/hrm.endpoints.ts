@@ -28,6 +28,7 @@ export const HRM_ENDPOINTS = {
   // 급여
   PAYROLL: `${HRM_BASE_PATH}/payroll`, // 급여 목록 조회
   PAYROLL_DETAIL: (payrollId: string) => `${HRM_BASE_PATH}/payroll/${payrollId}`, // 급여 상세 조회
+  PAYROLL_COMPLETE: `${HRM_BASE_PATH}/payroll/complete`, // 급여 지급 완료 처리
 
   // 직책
   POSITIONS: `${HRM_BASE_PATH}/positions`, // 직책 목록 조회

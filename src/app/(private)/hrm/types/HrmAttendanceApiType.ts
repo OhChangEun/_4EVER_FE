@@ -28,7 +28,6 @@ export interface AttendanceListResponse {
 export interface AttendanceRequestParams extends PageRequest {
   date: string;
   department?: string;
-  position?: string;
   name?: string;
 }
 

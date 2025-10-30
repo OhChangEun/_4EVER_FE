@@ -24,22 +24,10 @@ import EmployeeRegisterModal from '@/app/(private)/hrm/components/modals/Employe
 export default function EmployeesTab() {
   const { openModal, removeAllModals } = useModal();
 
-  const [selectedPosition, setSelectedPosition] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
-
-  // 직급 드롭다운
-  const {
-    data: positionsData = [],
-    isLoading: isPosLoading,
-    isError: isPosError,
-  } = useQuery({
-    queryKey: ['positionsList'],
-    queryFn: fetchPositionsList,
-    staleTime: Infinity,
-  });
 
   // 부서 드롭다운
   const {
@@ -51,17 +39,6 @@ export default function EmployeesTab() {
     queryFn: fetchDepartmentsList,
     staleTime: Infinity,
   });
-
-  // key-value 형태로 변환
-  const positionOptions: KeyValueItem[] = useMemo(() => {
-    return [
-      { key: '', value: '전체 직급' },
-      ...positionsData.map((item) => ({
-        key: item.positionId,
-        value: item.positionName,
-      })),
-    ];
-  }, [positionsData]);
 
   // key-value 형태로 변환
   const departmentsOptions: KeyValueItem[] = useMemo(() => {
@@ -79,11 +56,10 @@ export default function EmployeesTab() {
   const employeesQueryParams = useMemo(
     (): EmployeeListRequestParams => ({
       department: selectedDepartment || undefined,
-      position: selectedPosition || undefined,
       page: currentPage - 1,
       size: pageSize,
     }),
-    [selectedDepartment, selectedPosition, currentPage, pageSize],
+    [selectedDepartment, currentPage, pageSize],
   );
 
   const {
@@ -140,21 +116,6 @@ export default function EmployeesTab() {
             items={departmentsOptions}
             value={selectedDepartment}
             onChange={(dept: string) => setSelectedDepartment(dept)}
-          />
-        )}
-        {isPosLoading ? (
-          <div className="w-24 px-4 py-2 rounded-sm bg-gray-100 text-gray-500">
-            직급 목록 로딩 중...
-          </div>
-        ) : isPosError ? (
-          <div className="w-64 px-4 py-2 border border-red-300 rounded-lg bg-red-50 text-red-600">
-            직급 목록 로드 실패
-          </div>
-        ) : (
-          <Dropdown
-            items={positionOptions}
-            value={selectedPosition}
-            onChange={(position: string) => setSelectedPosition(position)}
           />
         )}
 

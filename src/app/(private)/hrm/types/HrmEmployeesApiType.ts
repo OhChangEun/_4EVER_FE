@@ -24,7 +24,6 @@ export interface EmployeeListResponse {
 // 응답 요청시 request params
 export interface EmployeeListRequestParams extends PageRequest {
   department?: string;
-  position?: string;
   name?: string;
 }
 

@@ -18,7 +18,6 @@ export interface TrainingListResponse {
 
 export interface TrainingRequestParams extends PageRequest {
   department?: string;
-  position?: string;
   name?: string;
 }
 

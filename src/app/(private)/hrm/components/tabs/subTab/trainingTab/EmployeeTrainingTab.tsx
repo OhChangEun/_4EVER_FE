@@ -24,23 +24,12 @@ export default function EmployeeTrainingTab() {
 
   // --- 드롭다운 ---
   const [selectedDepartment, setSelectedDepartment] = useState(''); // 부서
-  const [selectedPosition, setSelectedPosition] = useState(''); // 직급
 
   // --- 페이지 네이션 ---
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
   const [employeeSearchTerm, setEmployeeSearchTerm] = useState('');
-
-  const {
-    data: positionsData = [],
-    isLoading: isPosLoading,
-    isError: isPosError,
-  } = useQuery({
-    queryKey: ['positionsList'],
-    queryFn: fetchPositionsList,
-    staleTime: Infinity,
-  });
 
   const {
     data: departmentsData,
@@ -51,16 +40,6 @@ export default function EmployeeTrainingTab() {
     queryFn: fetchDepartmentsList,
     staleTime: Infinity,
   });
-
-  const positionOptions: KeyValueItem[] = useMemo(() => {
-    return [
-      { key: '', value: '전체 직급' },
-      ...positionsData.map((item) => ({
-        key: item.positionId,
-        value: item.positionName,
-      })),
-    ];
-  }, [positionsData]);
 
   const departmentsOptions: KeyValueItem[] = useMemo(() => {
     const departmentList = departmentsData?.departments ?? [];
@@ -77,11 +56,10 @@ export default function EmployeeTrainingTab() {
   const trainingQueryParams = useMemo(
     (): TrainingRequestParams => ({
       department: selectedDepartment || undefined,
-      position: selectedPosition || undefined,
       page: currentPage - 1,
       size: pageSize,
     }),
-    [selectedDepartment, selectedPosition, currentPage],
+    [selectedDepartment, currentPage],
   );
 
   const {
@@ -126,14 +104,6 @@ export default function EmployeeTrainingTab() {
             value={selectedDepartment}
             onChange={(dept: string) => {
               setSelectedDepartment(dept);
-              setCurrentPage(1);
-            }}
-          />
-          <Dropdown
-            items={positionOptions}
-            value={selectedPosition}
-            onChange={(position: string) => {
-              setSelectedPosition(position);
               setCurrentPage(1);
             }}
           />

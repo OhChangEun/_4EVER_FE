@@ -1,18 +1,12 @@
-// PayrollManagement.tsx
 'use client';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
-import {
-  fetchDepartmentsList,
-  fetchPayRollList,
-  fetchPositionsList,
-} from '@/app/(private)/hrm/api/hrm.api';
+import { fetchDepartmentsList, fetchPayRollList } from '@/app/(private)/hrm/api/hrm.api';
 import { KeyValueItem } from '@/app/types/CommonType';
 import Dropdown from '@/app/components/common/Dropdown';
 import { PayrollDetailModal } from '@/app/(private)/hrm/components/modals/PayrollDetailModal';
-import { PayrollActionModal } from '@/app/(private)/hrm/components/modals/PayrollActionModal';
 import Pagination from '@/app/components/common/Pagination';
-import { PayrollRequestParams } from '@/app/(private)/hrm/types/HrmPayrollApiType';
+import { PayRollList, PayrollRequestParams } from '@/app/(private)/hrm/types/HrmPayrollApiType';
 import { useModal } from '@/app/components/common/modal/useModal';
 
 export default function PayrollManagement() {
@@ -21,7 +15,6 @@ export default function PayrollManagement() {
 
   // --- 드롭다운 ---
   const [selectedDepartment, setSelectedDepartment] = useState(''); // 부서
-  const [selectedPosition, setSelectedPosition] = useState(''); // 직급
 
   // 년도와 월
   const now = new Date();
@@ -33,9 +26,6 @@ export default function PayrollManagement() {
   // --- 페이지 네이션 ---
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
-
-  const [showPayrollDetail, setShowPayrollDetail] = useState(false);
-  const [selectedPayroll, setSelectedPayroll] = useState<any>(null);
 
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -59,16 +49,6 @@ export default function PayrollManagement() {
   }, []);
 
   const {
-    data: positionsData = [],
-    isLoading: isPosLoading,
-    isError: isPosError,
-  } = useQuery({
-    queryKey: ['positionsList'],
-    queryFn: fetchPositionsList,
-    staleTime: Infinity,
-  });
-
-  const {
     data: departmentsData,
     isLoading: isDeptLoading,
     isError: isDeptError,
@@ -77,16 +57,6 @@ export default function PayrollManagement() {
     queryFn: fetchDepartmentsList,
     staleTime: Infinity,
   });
-
-  const positionOptions: KeyValueItem[] = useMemo(() => {
-    return [
-      { key: '', value: '전체 직급' },
-      ...positionsData.map((item) => ({
-        key: item.positionId,
-        value: item.positionName,
-      })),
-    ];
-  }, [positionsData]);
 
   const departmentsOptions: KeyValueItem[] = useMemo(() => {
     const departmentList = departmentsData?.departments ?? [];
@@ -105,11 +75,10 @@ export default function PayrollManagement() {
       year: Number(selectedYear),
       month: Number(selectedMonth),
       department: selectedDepartment || undefined,
-      position: selectedPosition || undefined,
       page: currentPage - 1,
       size: pageSize,
     }),
-    [selectedYear, selectedMonth, selectedDepartment, selectedPosition, currentPage],
+    [selectedYear, selectedMonth, selectedDepartment, currentPage],
   );
 
   const {
@@ -124,13 +93,12 @@ export default function PayrollManagement() {
   const payrollList = payrollData?.content ?? [];
   const pageInfo = payrollData?.page;
 
-  const handleViewPayrollDetail = (payrollId: string) => {
-    openModal(PayrollDetailModal, { title: '급여 상세정보', payrollId: payrollId });
-  };
-
-  const handlePaymentComplete = () => {
-    setSelectedPayroll({ ...selectedPayroll, status: '지급완료' });
-    setShowPayrollDetail(false);
+  const handleViewPayrollDetail = (payroll: PayRollList) => {
+    openModal(PayrollDetailModal, {
+      title: '급여 상세정보',
+      payrollId: payroll.payrollId,
+      payStatus: payroll.pay.statusCode,
+    });
   };
 
   return (
@@ -163,14 +131,6 @@ export default function PayrollManagement() {
               value={selectedDepartment}
               onChange={(dept: string) => {
                 setSelectedDepartment(dept);
-                setCurrentPage(1);
-              }}
-            />
-            <Dropdown
-              items={positionOptions}
-              value={selectedPosition}
-              onChange={(position: string) => {
-                setSelectedPosition(position);
                 setCurrentPage(1);
               }}
             />
@@ -260,8 +220,8 @@ export default function PayrollManagement() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button
-                      onClick={() => handleViewPayrollDetail(payroll.payrollId)}
-                      className="text-blue-600 hover:text-blue-900"
+                      onClick={() => handleViewPayrollDetail(payroll)}
+                      className="text-blue-600 hover:text-blue-900 cursor-pointer"
                     >
                       상세보기
                     </button>
@@ -280,25 +240,6 @@ export default function PayrollManagement() {
           />
         )}
       </div>
-
-      {/* 읽기 전용 모달 */}
-      {/* {showPayrollDetailModal && selectedEmployee && (
-        <PayrollDetailModal
-          payroll={selectedEmployee}
-          selectedMonth={selectedYearMonth}
-          onClose={() => handleViewPayrollDetail(false)}
-        />
-      )} */}
-
-      {/* 액션 가능 모달 */}
-      {showPayrollDetail && selectedPayroll && (
-        <PayrollActionModal
-          payroll={selectedPayroll}
-          selectedMonth={selectedYearMonth}
-          onClose={() => setShowPayrollDetail(false)}
-          onPaymentComplete={handlePaymentComplete}
-        />
-      )}
     </>
   );
 }

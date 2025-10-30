@@ -1,13 +1,38 @@
-// PayrollDetailModal.tsx
 import { ModalProps } from '@/app/components/common/modal/types';
-import { useQuery } from '@tanstack/react-query';
-import { fetchPayRollDetail } from '@/app/(private)/hrm/api/hrm.api';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { fetchPayRollDetail, postPayrollComplete } from '@/app/(private)/hrm/api/hrm.api';
+import Button from '@/app/components/common/Button';
+import { PayRollCompleteRequestParams } from '../../types/HrmPayrollApiType';
 
 interface PayrollDetailModalProps extends ModalProps {
   payrollId: string;
+  payStatus: string;
 }
 
-export function PayrollDetailModal({ payrollId }: PayrollDetailModalProps) {
+export function PayrollDetailModal({ payrollId, payStatus, onClose }: PayrollDetailModalProps) {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: (params: PayRollCompleteRequestParams) => postPayrollComplete(params),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['payrollList'] });
+      onClose();
+      alert('급여 지급 완료 처리되었습니다.');
+    },
+    onError: (error) => {
+      console.log('급여 지급 처리 실패: ', error);
+      alert('급여 지급 처리에 실패했습니다.');
+    },
+  });
+
+  const handlePayrollComplete = () => {
+    if (!payrollId) return;
+
+    if (confirm('해당 급여를 지급 완료 처리하시겠습니까?')) {
+      mutation.mutate({ payrollId });
+    }
+  };
+
   const {
     data: payrollData,
     isLoading,
@@ -147,6 +172,12 @@ export function PayrollDetailModal({ payrollId }: PayrollDetailModalProps) {
           <strong>조회일:</strong> {new Date().toLocaleDateString('ko-KR')}
         </div>
       </div>
+
+      {payStatus === 'PENDING' ? (
+        <div className="flex justify-end">
+          <Button label="지급완료 처리" onClick={handlePayrollComplete}></Button>
+        </div>
+      ) : null}
     </div>
   );
 }

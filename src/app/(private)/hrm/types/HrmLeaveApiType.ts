@@ -24,7 +24,6 @@ export interface LeaveListResponse {
 
 export interface LeaveRequestParams extends PageRequest {
   department?: string;
-  position?: string;
   name?: string;
   type?: string;
 }

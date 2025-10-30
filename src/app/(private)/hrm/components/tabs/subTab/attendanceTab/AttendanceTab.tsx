@@ -24,7 +24,6 @@ export default function AttendanceTab() {
 
   // --- 드롭다운 ---
   const [selectedDepartment, setSelectedDepartment] = useState(''); // 부서
-  const [selectedPosition, setSelectedPosition] = useState(''); // 직급
 
   // --- 페이지 네이션 ---
   const [currentPage, setCurrentPage] = useState(1);
@@ -37,16 +36,6 @@ export default function AttendanceTab() {
   const [employeeSearchTerm, setEmployeeSearchTerm] = useState('');
 
   const {
-    data: positionsData = [],
-    isLoading: isPosLoading,
-    isError: isPosError,
-  } = useQuery({
-    queryKey: ['positionsList'],
-    queryFn: fetchPositionsList,
-    staleTime: Infinity,
-  });
-
-  const {
     data: departmentsData,
     isLoading: isDeptLoading,
     isError: isDeptError,
@@ -55,16 +44,6 @@ export default function AttendanceTab() {
     queryFn: fetchDepartmentsList,
     staleTime: Infinity,
   });
-
-  const positionOptions: KeyValueItem[] = useMemo(() => {
-    return [
-      { key: '', value: '전체 직급' },
-      ...positionsData.map((item) => ({
-        key: item.positionId,
-        value: item.positionName,
-      })),
-    ];
-  }, [positionsData]);
 
   const departmentsOptions: KeyValueItem[] = useMemo(() => {
     const departmentList = departmentsData?.departments ?? [];
@@ -82,11 +61,10 @@ export default function AttendanceTab() {
     (): AttendanceRequestParams => ({
       date: selectedDate,
       department: selectedDepartment || undefined,
-      position: selectedPosition || undefined,
       page: currentPage - 1,
       size: pageSize,
     }),
-    [selectedDate, selectedDepartment, selectedPosition, currentPage],
+    [selectedDate, selectedDepartment, currentPage],
   );
 
   const {
@@ -125,14 +103,6 @@ export default function AttendanceTab() {
             value={selectedDepartment}
             onChange={(dept: string) => {
               setSelectedDepartment(dept);
-              setCurrentPage(1);
-            }}
-          />
-          <Dropdown
-            items={positionOptions}
-            value={selectedPosition}
-            onChange={(position: string) => {
-              setSelectedPosition(position);
               setCurrentPage(1);
             }}
           />

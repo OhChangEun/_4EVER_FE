@@ -72,7 +72,7 @@ export default function EmployeeRegisterModal({ onClose }: ModalProps) {
           <label className="block text-sm font-medium text-gray-700 mb-1">부서</label>
           <select
             name="department"
-            value={formData.department}
+            value={formData.departmentId}
             onChange={handleChange}
             required
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-8"
@@ -91,7 +91,7 @@ export default function EmployeeRegisterModal({ onClose }: ModalProps) {
         <label className="block text-sm font-medium text-gray-700 mb-1">직급</label>
         <select
           name="position"
-          value={formData.position}
+          value={formData.positionId}
           onChange={handleChange}
           required
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-8"
@@ -123,7 +123,7 @@ export default function EmployeeRegisterModal({ onClose }: ModalProps) {
           <input
             type="tel"
             name="phone"
-            value={formData.phone}
+            value={formData.phoneNumber}
             onChange={handleChange}
             required
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -138,7 +138,7 @@ export default function EmployeeRegisterModal({ onClose }: ModalProps) {
           <input
             type="date"
             name="joinDate"
-            value={formData.joinDate}
+            value={formData.hireDate}
             onChange={handleChange}
             required
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"

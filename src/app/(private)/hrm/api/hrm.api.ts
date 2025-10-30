@@ -16,6 +16,7 @@ import {
   PayrollRequestParams,
   PayRollDetailResponse,
   PayRollListResponse,
+  PayRollCompleteRequestParams,
 } from '@/app/(private)/hrm/types/HrmPayrollApiType';
 import {
   TrainingDetailResponse,
@@ -218,5 +219,11 @@ export const putTimeRecord = async (params: UpdateTimeRecord) => {
       checkOutTime,
     },
   );
+  return res.data;
+};
+
+// 급여 지급 완료 처리
+export const postPayrollComplete = async (params: PayRollCompleteRequestParams) => {
+  const res = await axios.post<ApiResponse<null>>(`${HRM_ENDPOINTS.PAYROLL_COMPLETE}`, params);
   return res.data;
 };
