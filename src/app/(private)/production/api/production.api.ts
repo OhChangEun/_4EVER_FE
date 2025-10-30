@@ -30,7 +30,7 @@ export const fetchProductionStats = async (): Promise<ProductionStatResponse | n
     const res = await axios.get<ApiResponse<ProductionStatResponse>>(
       `${PRODUCTION_ENDPOINTS.STATISTICS}`,
     );
-    console.log(res);
+    // console.log(res);
     return res.data.data;
   } catch (error) {
     console.log(error);

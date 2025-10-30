@@ -133,6 +133,7 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
     mutationFn: postNewQuote,
     onSuccess: (data) => {
       $setShowNewOrderModal(false);
+      console.log(data);
     },
     onError: (error) => {
       alert(` 견적 요청 중 오류가 발생했습니다. ${error}`);

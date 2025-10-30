@@ -6,7 +6,7 @@ import { DashboardWorkflowRes } from './types/DashboardWorkflowType';
 // ----------------------- 통계 지표 -----------------------
 export const getDashboardStats = async (): Promise<DashboardStatRes> => {
   const res = await axios.get<ApiResponse<DashboardStatRes>>(DASHBOARD_ENDPOINTS.STATS);
-  console.log(res.data.data);
+  // console.log(res.data.data);
   return res.data.data;
 };
 
