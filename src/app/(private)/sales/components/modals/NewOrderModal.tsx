@@ -194,7 +194,7 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
 
               <div className="space-y-4">
                 {newOrderItems.items.map((item, index) => (
-                  <div key={item.itemId} className="bg-white p-4 rounded-lg border border-gray-200">
+                  <div key={index} className="bg-white p-4 rounded-lg border border-gray-200">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
