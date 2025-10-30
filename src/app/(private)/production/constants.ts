@@ -5,8 +5,8 @@ import BomTab from '@/app/(private)/production/components/tabs/BomTab';
 import { KeyValueItem } from '@/app/types/CommonType';
 import MpsTab from '@/app/(private)/production/components/tabs/MpsTab';
 import MesTab from '@/app/(private)/production/components/tabs/MesTab';
-import OrdersTab from './components/tabs/OrdersTab';
-import PlannedOrdersTab from './components/tabs/PlannedOrdersTab';
+import OrdersTab from '@/app/(private)/production/components/tabs/OrdersTab';
+import PlannedOrdersTab from '@/app/(private)/production/components/tabs/PlannedOrdersTab';
 
 // 생산 관리 탭 전환
 export const PRODUCTION_TABS: Tab[] = [

@@ -20,8 +20,8 @@ export default function OrdersTab() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  const queryParams = useMemo<FetchMrpOrdersListParams>(
-    () => ({
+  const queryParams = useMemo(
+    (): FetchMrpOrdersListParams => ({
       quotationId: selectedProduct,
       productId: selectedQuote,
       availableStatusCode: selectedStockStatus,
