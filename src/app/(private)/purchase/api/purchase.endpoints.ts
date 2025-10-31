@@ -10,8 +10,8 @@ export const PURCHASE_ENDPOINTS = {
   PURCHASE_REQUISITIONS: `${PURCHASE_BASE_PATH}/purchase-requisitions`, // 구매 요청 목록 조회, 비재고성 자재 구매 요청서 생성
   PURCHASE_REQUISITION_DETAIL: (prId: string) =>
     `${PURCHASE_BASE_PATH}/purchase-requisitions/${prId}`, // 구매 요청서 상세조회, 수정, 삭제
-  PURCHASE_REQUISITION_RELEASE: (prId: string) =>
-    `${PURCHASE_BASE_PATH}/purchase-requisitions/${prId}/release`, // 구매요청서 승인
+  PURCHASE_REQUISITION_APPROVE: (prId: string) =>
+    `${PURCHASE_BASE_PATH}/purchase-requisitions/${prId}/approve`, // 구매요청서 승인
   PURCHASE_REQUISITION_REJECT: (prId: string) =>
     `${PURCHASE_BASE_PATH}/purchase-requisitions/${prId}/reject`, // 구매요청서 반려
   // PURCHASE_REQUISITION_BY_PURCHASE: (purchaseId: number) =>

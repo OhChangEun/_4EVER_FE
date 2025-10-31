@@ -61,15 +61,16 @@ export const fetchPurchaseReqList = async (
 // 구매 요청 승인
 export const postApporvePurchaseReq = async (prId: string) => {
   const res = await axios.post<ApiResponse<null>>(
-    `${PURCHASE_ENDPOINTS.PURCHASE_REQUISITION_RELEASE(prId)}`,
+    `${PURCHASE_ENDPOINTS.PURCHASE_REQUISITION_APPROVE(prId)}`,
   );
   return res.data;
 };
 
 // 구매 요청 반려
-export const postRejectPurchaseReq = async (prId: string) => {
+export const postRejectPurchaseReq = async (prId: string, comment: string) => {
   const res = await axios.post<ApiResponse<null>>(
     `${PURCHASE_ENDPOINTS.PURCHASE_REQUISITION_REJECT(prId)}`,
+    { comment },
   );
   return res.data;
 };

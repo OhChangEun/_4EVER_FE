@@ -70,19 +70,21 @@ export default function PurchaseRequestListTab() {
       queryClient.invalidateQueries({ queryKey: ['purchaseRequests'] }); // 목록 새로고침
     },
     onError: (error) => {
-      alert(`구매 요청 승인 중 오류가 발생했습니다. ${error}`);
+      console.log(`구매 승인 처리 중 오류 발생: ${error}`);
+      alert('구매 요청 승인 중 오류가 발생했습니다.');
     },
   });
 
   // 반려 mutation
   const { mutate: rejectpurchaseRequest } = useMutation({
-    mutationFn: (prId: string) => postRejectPurchaseReq(prId),
+    mutationFn: (prId: string) => postRejectPurchaseReq(prId, ''),
     onSuccess: () => {
       alert('반려 처리되었습니다.');
       queryClient.invalidateQueries({ queryKey: ['purchaseRequests'] });
     },
     onError: (error) => {
-      alert(`반려 처리 중 오류가 발생했습니다. ${error}`);
+      console.log(`구매 반려 처리 중 오류 발생: ${error}`);
+      alert('반려 처리 중 오류가 발생했습니다.');
     },
   });
 
@@ -170,7 +172,7 @@ export default function PurchaseRequestListTab() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {requests.map((request) => (
-                <tr key={request.purchaseRequisitionId} className="hover:bg-gray-50 text-center">
+                <tr key={request.purchaseRequisitionId} className="text-center">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     <div className="flex flex-col">
                       <span>{request.purchaseRequisitionNumber}</span>
@@ -186,30 +188,28 @@ export default function PurchaseRequestListTab() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">
-                    <div className="flex items-center justify-center space-x-2">
+                    <div className="flex items-center justify-center">
                       <button
                         onClick={() => handleViewDetail(request)}
-                        className="w-8 h-8 flex items-center justify-center text-blue-500 hover:bg-blue-50 rounded cursor-pointer"
+                        className="w-8 h-8 flex items-center justify-center text-blue-500 hover:bg-blue-100 rounded-lg cursor-pointer"
                         title="상세보기"
                       >
                         <i className="ri-eye-line"></i>
                       </button>
-                      <>
-                        <button
-                          onClick={() => handleApprove(request.purchaseRequisitionId)}
-                          className="text-green-600 hover:text-green-900 cursor-pointer"
-                          title="승인"
-                        >
-                          <i className="ri-check-line"></i>
-                        </button>
-                        <button
-                          onClick={() => handleReject(request.purchaseRequisitionId)}
-                          className="text-red-600 hover:text-red-900 cursor-pointer"
-                          title="반려"
-                        >
-                          <i className="ri-close-line"></i>
-                        </button>
-                      </>
+                      <button
+                        onClick={() => handleApprove(request.purchaseRequisitionId)}
+                        className=" w-8 h-8 flex items-center justify-center text-green-600 hover:bg-blue-100 rounded-lg cursor-pointer"
+                        title="승인"
+                      >
+                        <i className="ri-check-line"></i>
+                      </button>
+                      <button
+                        onClick={() => handleReject(request.purchaseRequisitionId)}
+                        className="w-8 h-8 flex items-center justify-center text-red-600 hover:bg-blue-100 rounded-lg01 cursor-pointer"
+                        title="반려"
+                      >
+                        <i className="ri-close-line"></i>
+                      </button>
                     </div>
                   </td>
                 </tr>
