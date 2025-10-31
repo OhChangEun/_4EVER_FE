@@ -96,3 +96,9 @@ export const WAREHOUSE_ENDPOINTS = {
   ADD_WAREHOUSE: `${INVENTORY_BASE_PATH}/iv/warehouses`,
   WAREHOUSE_MANAGER_INFO: `${INVENTORY_BASE_PATH}/iv/warehouses/managers/toggle`,
 };
+
+// ----------------------- USER -----------------------
+export const USER_ENDPOINTS = {
+  LOGIN: 'https://auth.everp.co.kr/oauth2/token',
+  USER_INFO: `${API_BASE_URL}/user/info`,
+};

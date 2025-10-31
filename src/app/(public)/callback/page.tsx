@@ -1,17 +1,33 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import { startAuthorization } from '@/lib/auth/startAuthorization';
+import { USER_ENDPOINTS } from '@/app/types/api';
+import { useQuery } from '@tanstack/react-query';
+import { getUserInfo } from './callback.api';
+import { useAuthStore } from '@/store/authStore';
 
 const REDIRECT_URI = 'http://localhost:3000/callback';
 // const REDIRECT_URI = 'https://everp.co.kr/callback';
-const TOKEN_URL = 'https://auth.everp.co.kr/oauth2/token';
 
 function saveAccessToken(at: string, expiresIn: number) {
-  const expiresAt = Date.now() + expiresIn * 1000;
-  localStorage.setItem('access_token', at);
-  localStorage.setItem('access_token_expires_at', String(expiresAt));
+  const expiresAtMs = Date.now() + expiresIn * 1000; // 밀리초 타임스탬프
+  const expiresDays = expiresIn / (60 * 60 * 24);
+  console.log(at);
+  Cookies.set('access_token', at, {
+    expires: expiresDays,
+    secure: true,
+    sameSite: 'strict',
+    path: '/',
+  });
+  Cookies.set('access_token_expires_at', String(expiresAtMs), {
+    expires: expiresDays,
+    secure: true,
+    sameSite: 'strict',
+    path: '/',
+  });
 }
 
 function cleanupPkce() {
@@ -20,6 +36,24 @@ function cleanupPkce() {
 }
 
 export default function CallbackPage() {
+  const [isTokenReady, setIsTokenReady] = useState(false);
+  const { setUserInfo } = useAuthStore();
+  const {
+    data: userInfoRes,
+    isLoading,
+    isError,
+    isSuccess,
+  } = useQuery({
+    queryKey: ['userInfo'],
+    queryFn: getUserInfo,
+    enabled: isTokenReady,
+  });
+
+  useEffect(() => {
+    if (isSuccess && userInfoRes) {
+      setUserInfo(userInfoRes);
+    }
+  }, [isSuccess, userInfoRes, setUserInfo]);
   useEffect(() => {
     (async () => {
       try {
@@ -49,7 +83,7 @@ export default function CallbackPage() {
           code_verifier: verifier,
         });
 
-        const res = await axios.post(TOKEN_URL, body.toString(), {
+        const res = await axios.post(USER_ENDPOINTS.LOGIN, body.toString(), {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             // Authorization: 'Basic ZXZIcnA6c3VwZXItc2VjcmV0',
@@ -59,11 +93,12 @@ export default function CallbackPage() {
         const { access_token, expires_in } = res.data;
 
         saveAccessToken(access_token, expires_in);
+        setIsTokenReady(true);
         // cleanupPkce();
 
         const returnTo = localStorage.getItem('oauth_return_to') || '/';
         localStorage.removeItem('oauth_return_to');
-        // localStorage.removeItem('oauth_state');
+        localStorage.removeItem('oauth_state');
 
         window.history.replaceState({}, '', new URL(returnTo, window.location.origin).toString());
         window.location.replace(returnTo);
