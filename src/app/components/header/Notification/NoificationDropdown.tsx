@@ -15,6 +15,12 @@ import NotificationPagination from './NotificationPagination';
 import { useState } from 'react';
 import { NotificationData } from '../types/NotificatioApiType';
 import NotificationList from './NotificationList';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  fetchNotifications,
+  readAllNotifications,
+  readNotification,
+} from '@/lib/api/notification.api';
 
 const MOCK_NOTIFICATIONS: NotificationData[] = [
   {
@@ -114,6 +120,31 @@ export default function NotificationDropdown() {
     placement: 'bottom-end',
   });
 
+  const {
+    data: notificationData,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['notificationList'],
+    queryFn: fetchNotifications,
+  });
+
+  const queryClient = useQueryClient();
+  // 알림 전체 읽기
+  const { mutate: readAll } = useMutation({
+    mutationFn: readAllNotifications,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notificationList'] });
+    },
+  });
+  // 알림 하나 읽기
+  const { mutate: readOne } = useMutation({
+    mutationFn: (id: string) => readNotification(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifiactionList'] });
+    },
+  });
+
   const click = useClick(context);
   const dismiss = useDismiss(context);
   const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss]);
@@ -123,14 +154,20 @@ export default function NotificationDropdown() {
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const currentNotifications = notifications.slice(startIndex, endIndex);
 
-  const handleClearAll = () => {
-    setNotifications([]);
+  const handleReadAll = () => {
+    readAll();
+    // setNotifications([]);
     setCurrentPage(0);
   };
 
+  const handleNotificationClick = (notificationId: string) => {
+    readOne(notificationId);
+  };
+
+  const 
+
   const handlePrevPage = () => setCurrentPage((p) => Math.max(0, p - 1));
   const handleNextPage = () => setCurrentPage((p) => Math.min(totalPages - 1, p + 1));
-  const handleNotificationClick = (n: NotificationData) => console.log('알림 클릭:', n);
 
   return (
     <>
@@ -141,8 +178,9 @@ export default function NotificationDropdown() {
         aria-label="알림"
       >
         <i className="ri-notification-3-line text-xl"></i>
-        <span className="absolute w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></span>
-
+        {notifications.length > 0 && (
+          <span className="absolute top-0.5 right-0.5 w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></span>
+        )}
         {/* {notifications.length > 0 && (
           <span className="absolute -top-1 -right-1 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center font-semibold">
             <span className="pt-0.5 text-white text-xs">{notifications.length}</span>
@@ -161,7 +199,7 @@ export default function NotificationDropdown() {
             >
               <NotificationHeader
                 notificationCount={notifications.length}
-                onClearAll={handleClearAll}
+                onReadAll={handleReadAll}
               />
 
               <NotificationList
@@ -171,10 +209,7 @@ export default function NotificationDropdown() {
 
               {notifications.length > ITEMS_PER_PAGE && (
                 <NotificationPagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPrevPage={handlePrevPage}
-                  onNextPage={handleNextPage}
+                  page = 
                 />
               )}
             </div>

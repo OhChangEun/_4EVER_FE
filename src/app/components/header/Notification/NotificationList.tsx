@@ -2,7 +2,7 @@ import { NotificationData } from '../types/NotificatioApiType';
 
 interface NotificationListProps {
   notifications: NotificationData[];
-  onNotificationClick: (notification: NotificationData) => void;
+  onNotificationClick: (notificationId: string) => void;
 }
 
 const getSourceConfig = (source: NotificationData['source']) => {
@@ -33,10 +33,11 @@ export default function NotificationList({
   notifications,
   onNotificationClick,
 }: NotificationListProps) {
+  // 알람 없을 때
   if (notifications.length === 0) {
     return (
       <div className="p-12 text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+        <div className="inline-flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full mb-4">
           <i className="ri-notification-off-line text-3xl text-gray-400"></i>
         </div>
         <p className="text-sm font-medium text-gray-500">알림이 없습니다</p>
@@ -45,6 +46,7 @@ export default function NotificationList({
     );
   }
 
+  // 알람 있을 때
   return (
     <div className="max-h-96 overflow-y-auto">
       {notifications.map((notfication) => {
@@ -52,8 +54,8 @@ export default function NotificationList({
         return (
           <div
             key={notfication.notificationId}
-            onClick={() => onNotificationClick(notfication)}
-            className={`p-5 border-b border-gray-100 bg-gray-100 cursor-pointer transition-all duration-200 group ${
+            onClick={() => onNotificationClick(notfication.notificationId)}
+            className={`h-20 overflow-hidden p-5 border-b border-gray-100 bg-gray-100 cursor-pointer transition-all duration-200 group ${
               !notfication.isRead ? 'bg-blue-100' : 'bg-white'
             }`}
           >
@@ -81,7 +83,7 @@ export default function NotificationList({
                   </div>
                 </div>
                 <p
-                  className={`text-xs line-clamp-2 mb ${
+                  className={`text-xs whitespace-nowrap mb ${
                     !notfication.isRead ? 'text-gray-700 font-medium' : 'text-gray-600'
                   }`}
                 >
