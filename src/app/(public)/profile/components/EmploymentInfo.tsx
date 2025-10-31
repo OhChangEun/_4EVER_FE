@@ -4,19 +4,25 @@ import { FormEvent, useEffect, useState } from 'react';
 
 export type EmploymentData = {
   employeeId: string;
+  employeeNumber: string;
   name: string;
-  department: string;
-  position: string;
-  rank: string;
-  hireDate: string;
-  workYears: string;
-  employmentType: string;
-  workLocation: string;
-  directManager: string;
   email: string;
   phone: string;
+  position: string;
+  department: string;
+  statusCode: string;
+  hireDate: string;
+  birthDate: string;
   address: string;
-  emergencyContact: string;
+  createdAt: string;
+  updatedAt: string;
+  trainings: {
+    trainingId: string;
+    trainingName: string;
+    category: string;
+    durationHours: number;
+    completionStatus: string;
+  }[];
 };
 
 type EmploymentInfoProps = {
@@ -26,8 +32,36 @@ type EmploymentInfoProps = {
   onCancel: () => void;
 };
 
+interface EditUserRequest {
+  email: string;
+  phone: string;
+  address: string;
+}
+
 const EmploymentInfo = ({ isEditing, employmentData, onSave, onCancel }: EmploymentInfoProps) => {
-  const [formData, setFormData] = useState<EmploymentData>(employmentData);
+  const [formData, setFormData] = useState<EditUserRequest>({
+    email: employmentData.email,
+    phone: employmentData.phone,
+    address: employmentData.address,
+  });
+
+  function formatWorkYears(hireDate: string): string {
+    const hire = new Date(hireDate);
+    const today = new Date();
+
+    let years = today.getFullYear() - hire.getFullYear();
+    let months = today.getMonth() - hire.getMonth();
+
+    if (months < 0) {
+      years--;
+      months += 12;
+    }
+
+    if (years === 0 && months === 0) return '1개월 미만';
+    if (years === 0) return `${months}개월`;
+    if (months === 0) return `${years}년`;
+    return `${years}년 ${months}개월`;
+  }
 
   useEffect(() => {
     if (isEditing) {
@@ -35,7 +69,8 @@ const EmploymentInfo = ({ isEditing, employmentData, onSave, onCancel }: Employm
     }
   }, [employmentData, isEditing]);
 
-  const displayData = isEditing ? formData : employmentData;
+  const displayData = employmentData;
+  // const displayData = isEditing ? formData : employmentData;
 
   const summaryItems = [
     {
@@ -44,7 +79,7 @@ const EmploymentInfo = ({ isEditing, employmentData, onSave, onCancel }: Employm
     },
     {
       label: '직책',
-      value: `${displayData.position} (${displayData.rank})`,
+      value: displayData.position,
     },
     {
       label: '입사일',
@@ -52,16 +87,13 @@ const EmploymentInfo = ({ isEditing, employmentData, onSave, onCancel }: Employm
     },
     {
       label: '근속기간',
-      value: displayData.workYears,
+      // value: displayData.workYears,
+      value: formatWorkYears(displayData.hireDate),
       highlight: true,
     },
   ];
 
   const detailItems = [
-    {
-      label: '근무지',
-      value: displayData.workLocation,
-    },
     {
       label: '이메일',
       value: displayData.email,
@@ -70,24 +102,22 @@ const EmploymentInfo = ({ isEditing, employmentData, onSave, onCancel }: Employm
       label: '연락처',
       value: displayData.phone,
     },
-
     {
       label: '주소',
       value: displayData.address,
-      colSpan: 'sm:col-span-2 lg:col-span-3',
     },
   ];
 
   const formFields: Array<{
-    key: keyof EmploymentData;
+    key: keyof EditUserRequest;
     label: string;
     type?: string;
     readOnly?: boolean;
   }> = [
-    { key: 'name', label: '성명' },
+    // { key: 'name', label: '성명' },
+    { key: 'address', label: '주소' },
     { key: 'email', label: '이메일', type: 'email' },
     { key: 'phone', label: '연락처' },
-    { key: 'address', label: '주소' },
   ];
 
   const handleChange = (key: keyof EmploymentData, value: string) => {
@@ -99,7 +129,7 @@ const EmploymentInfo = ({ isEditing, employmentData, onSave, onCancel }: Employm
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onSave(formData);
+    // onSave(formData);
   };
 
   return (
@@ -111,10 +141,10 @@ const EmploymentInfo = ({ isEditing, employmentData, onSave, onCancel }: Employm
               <i className="ri-user-3-line text-2xl"></i>
             </div>
             <div>
-              <p className="text-sm text-white/80">{displayData.employeeId}</p>
+              <p className="text-sm text-white/80">{displayData.employeeNumber}</p>
               <h2 className="text-2xl font-semibold">{displayData.name}</h2>
               <p className="text-sm text-white/80">
-                {displayData.department} · {displayData.position} ({displayData.rank})
+                {displayData.department} · {displayData.position}
               </p>
             </div>
           </div>
@@ -158,9 +188,8 @@ const EmploymentInfo = ({ isEditing, employmentData, onSave, onCancel }: Employm
                 return (
                   <div
                     key={field.key}
-                    className={`rounded-xl border border-gray-100 bg-gray-50 px-4 py-4 ${
-                      field.key === 'address' ? 'sm:col-span-2 lg:col-span-3' : ''
-                    }`}
+                    className={`rounded-xl border border-gray-100 bg-gray-50 px-4 py-4  
+                    `}
                   >
                     <label
                       htmlFor={field.key}
@@ -168,32 +197,18 @@ const EmploymentInfo = ({ isEditing, employmentData, onSave, onCancel }: Employm
                     >
                       {field.label}
                     </label>
-                    {field.key === 'address' ? (
-                      <textarea
-                        id={field.key}
-                        value={formData[field.key]}
-                        onChange={
-                          isReadOnly
-                            ? undefined
-                            : (event) => handleChange(field.key, event.target.value)
-                        }
-                        readOnly={isReadOnly}
-                        className={`${inputClasses} min-h-[80px] resize-none`}
-                      />
-                    ) : (
-                      <input
-                        id={field.key}
-                        type={field.type ?? 'text'}
-                        value={formData[field.key]}
-                        onChange={
-                          isReadOnly
-                            ? undefined
-                            : (event) => handleChange(field.key, event.target.value)
-                        }
-                        readOnly={isReadOnly}
-                        className={inputClasses}
-                      />
-                    )}
+                    <input
+                      id={field.key}
+                      type={field.type ?? 'text'}
+                      value={formData[field.key]}
+                      onChange={
+                        isReadOnly
+                          ? undefined
+                          : (event) => handleChange(field.key, event.target.value)
+                      }
+                      readOnly={isReadOnly}
+                      className={inputClasses}
+                    />
                   </div>
                 );
               })}
@@ -220,7 +235,7 @@ const EmploymentInfo = ({ isEditing, employmentData, onSave, onCancel }: Employm
             {detailItems.map((item) => (
               <div
                 key={item.label}
-                className={`rounded-xl border border-gray-100 bg-gray-50 px-4 py-4 ${item.colSpan ?? ''}`}
+                className={`rounded-xl border border-gray-100 bg-gray-50 px-4 py-4`}
               >
                 <span className="text-xs font-medium text-gray-500">{item.label}</span>
                 <p className="mt-1 text-sm font-medium text-gray-900">{item.value}</p>

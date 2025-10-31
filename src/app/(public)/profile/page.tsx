@@ -10,20 +10,49 @@ import EmploymentInfo, { EmploymentData } from './components/EmploymentInfo';
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [employmentData, setEmploymentData] = useState<EmploymentData>({
-    employeeId: 'EMP-2021-001',
-    name: '홍길동',
-    department: '개발팀',
-    position: '선임연구원',
-    rank: '대리',
-    hireDate: '2021-03-15',
-    workYears: '3년 9개월',
-    employmentType: '정규직',
-    workLocation: '서울 본사',
-    directManager: '김팀장',
-    email: 'hong@company.com',
-    phone: '010-1234-5678',
-    address: '서울시 강남구 테헤란로 123',
-    emergencyContact: '010-9876-5432 (배우자)',
+    employeeId: '019a3811-bc69-7124-bdf7-db8cb311f48a',
+    employeeNumber: 'EMP-001',
+    name: '김철수',
+    email: 'chulsoo.kim@example.com',
+    phone: '010-1111-1111',
+    position: '사원',
+    department: '구매',
+    statusCode: 'ACTIVE',
+    hireDate: '2023-01-01',
+    birthDate: '1995-03-15',
+    address: '서울특별시 강남구',
+    createdAt: '2025-10-31',
+    updatedAt: '2025-10-31',
+    trainings: [
+      {
+        trainingId: 'TRN-001',
+        trainingName: '신입사원 기본 교육',
+        category: '입문',
+        durationHours: 16,
+        completionStatus: '완료',
+      },
+      {
+        trainingId: 'TRN-002',
+        trainingName: '구매 프로세스 이해',
+        category: '업무',
+        durationHours: 8,
+        completionStatus: '진행 중',
+      },
+      {
+        trainingId: 'TRN-003',
+        trainingName: '엑셀 데이터 분석 실무',
+        category: '기술',
+        durationHours: 12,
+        completionStatus: '대기',
+      },
+      {
+        trainingId: 'TRN-004',
+        trainingName: '협상력 향상 워크숍',
+        category: '리더십',
+        durationHours: 6,
+        completionStatus: '완료',
+      },
+    ],
   });
 
   const handleToggleEdit = () => {
