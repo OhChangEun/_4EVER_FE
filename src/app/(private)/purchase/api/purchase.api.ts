@@ -121,7 +121,7 @@ export const fetchPurchaseOrderList = async (
 };
 
 // 발주서 승인
-export const postApprovePurchaseOrder = async (poId: number) => {
+export const postApprovePurchaseOrder = async (poId: string) => {
   const res = await axios.post<ApiResponse<null>>(
     `${PURCHASE_ENDPOINTS.PURCHASE_ORDER_APPROVE(poId)}`,
   );
@@ -129,16 +129,17 @@ export const postApprovePurchaseOrder = async (poId: number) => {
 };
 
 // 발주서 반려
-export const postRejectPurchaseOrder = async (poId: number) => {
+export const postRejectPurchaseOrder = async (poId: string, reason: string) => {
   const res = await axios.post<ApiResponse<null>>(
     `${PURCHASE_ENDPOINTS.PURCHASE_ORDER_REJECT(poId)}`,
+    { reason },
   );
   return res.data;
 };
 
 // 발주서 상세정보
 export const fetchPurchaseOrderDetail = async (
-  purchaseId: number,
+  purchaseId: string,
 ): Promise<PurchaseOrderDetailResponse> => {
   const res = await axios.get<ApiResponse<PurchaseOrderDetailResponse>>(
     `${PURCHASE_ENDPOINTS.PURCHASE_ORDER_DETAIL(purchaseId)}`,
@@ -167,7 +168,7 @@ export const fetchSupplierList = async (
 };
 
 // 공급업체 상세정보
-export const fetchSupplierDetail = async (supplierId: number): Promise<SupplierDetailResponse> => {
+export const fetchSupplierDetail = async (supplierId: string): Promise<SupplierDetailResponse> => {
   const res = await axios.get<ApiResponse<SupplierDetailResponse>>(
     `${PURCHASE_ENDPOINTS.SUPPLIER_DETAIL(supplierId)}`,
   );

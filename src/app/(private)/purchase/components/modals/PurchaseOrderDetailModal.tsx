@@ -1,11 +1,15 @@
 'use client';
 
-import { PurchaseOrderDetailModalProps } from '@/app/(private)/purchase/types/PurchaseOrderDetailModalProps';
 import { useQuery } from '@tanstack/react-query';
 import { fetchPurchaseOrderDetail } from '@/app/(private)/purchase/api/purchase.api';
 import { PurchaseOrderDetailResponse } from '@/app/(private)/purchase/types/PurchaseOrderType';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
 import { useEffect, useState } from 'react';
+
+export interface PurchaseOrderDetailModalProps {
+  purchaseId: string;
+  onClose: () => void;
+}
 
 export default function PurchaseOrderDetailModal({
   purchaseId,
@@ -16,7 +20,7 @@ export default function PurchaseOrderDetailModal({
     isLoading,
     isError,
   } = useQuery<PurchaseOrderDetailResponse>({
-    queryKey: ['purchase-order-detail'],
+    queryKey: ['purchaseOrderDetail'],
     queryFn: () => fetchPurchaseOrderDetail(purchaseId),
   });
 

@@ -22,12 +22,12 @@ export const PURCHASE_ENDPOINTS = {
 
   // --- 발주서 ---
   PURCHASE_ORDERS: `${PURCHASE_BASE_PATH}/purchase-orders`, // 발주서 목록 조회
-  PURCHASE_ORDER_APPROVE: (poId: number) => `${PURCHASE_BASE_PATH}/purchase-orders/${poId}/approve`, // 발주서 승인
-  PURCHASE_ORDER_REJECT: (poId: number) => `${PURCHASE_BASE_PATH}/purchase-orders/${poId}/reject`, // 발주서 반려
-  PURCHASE_ORDER_DETAIL: (purchaseId: number) =>
+  PURCHASE_ORDER_APPROVE: (poId: string) => `${PURCHASE_BASE_PATH}/purchase-orders/${poId}/approve`, // 발주서 승인
+  PURCHASE_ORDER_REJECT: (poId: string) => `${PURCHASE_BASE_PATH}/purchase-orders/${poId}/reject`, // 발주서 반려
+  PURCHASE_ORDER_DETAIL: (purchaseId: string) =>
     `${PURCHASE_BASE_PATH}/purchase-orders/${purchaseId}`, // 발주서 상세 조회
 
   // --- 공급업체 ---
   SUPPLIER: `${PURCHASE_BASE_PATH}/supplier`, // 공급업체 목록 조회, 등록
-  SUPPLIER_DETAIL: (vendorId: number) => `${PURCHASE_BASE_PATH}/supplier/${vendorId}`, // 공급업체 상세 조회, 수정
+  SUPPLIER_DETAIL: (supplierId: string) => `${PURCHASE_BASE_PATH}/supplier/${supplierId}`, // 공급업체 상세 조회, 수정
 };

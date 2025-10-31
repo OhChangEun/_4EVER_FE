@@ -33,14 +33,14 @@ export interface PurchaseOrderDetailResponse {
 // 발주서 목록
 // 개별 발주(Purchase Order) 항목
 export interface PurchaseOrder {
-  id: number;
-  poNumber: string; // 발주 번호
-  vendorName: string; // 공급업체명
+  purchaseOrderId: string;
+  purchaseOrderNumber: string; // 발주 번호
+  supplierName: string; // 공급업체명
   itemsSummary: string; // 품목 요약
   orderDate: string; // 발주일 (YYYY-MM-DD)
-  deliveryDate: string; // 납기일 (YYYY-MM-DD)
+  dueDate: string; // 납기일 (YYYY-MM-DD)
   totalAmount: number; // 총 금액
-  status: PurchaseOrderStatus; // 상태
+  statusCode: PurchaseOrderStatus; // 상태
 }
 
 // 최종 응답 타입
