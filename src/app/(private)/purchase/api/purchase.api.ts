@@ -59,7 +59,7 @@ export const fetchPurchaseReqList = async (
 };
 
 // 구매 요청 승인
-export const postApporvePurchaseReq = async (prId: number) => {
+export const postApporvePurchaseReq = async (prId: string) => {
   const res = await axios.post<ApiResponse<null>>(
     `${PURCHASE_ENDPOINTS.PURCHASE_REQUISITION_RELEASE(prId)}`,
   );
@@ -67,7 +67,7 @@ export const postApporvePurchaseReq = async (prId: number) => {
 };
 
 // 구매 요청 반려
-export const postRejectPurchaseReq = async (prId: number) => {
+export const postRejectPurchaseReq = async (prId: string) => {
   const res = await axios.post<ApiResponse<null>>(
     `${PURCHASE_ENDPOINTS.PURCHASE_REQUISITION_REJECT(prId)}`,
   );
@@ -76,7 +76,7 @@ export const postRejectPurchaseReq = async (prId: number) => {
 
 // 구매 요청 상세정보
 export const fetchPurchaseReqDetail = async (
-  purchaseId: number,
+  purchaseId: string,
 ): Promise<PurchaseReqDetailResponse> => {
   const res = await axios.get<ApiResponse<PurchaseReqDetailResponse>>(
     `${PURCHASE_ENDPOINTS.PURCHASE_REQUISITION_DETAIL(purchaseId)}`,

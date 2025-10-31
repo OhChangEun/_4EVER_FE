@@ -26,32 +26,6 @@ import Pagination from '@/app/components/common/Pagination';
 import { FetchPurchaseReqParams } from '@/app/(private)/purchase/types/PurchaseApiRequestType';
 import { useModal } from '@/app/components/common/modal/useModal';
 
-const getStatusColor = (status: string): string => {
-  switch (status) {
-    case 'APPROVED':
-      return 'bg-green-100 text-green-700';
-    case 'waiting':
-      return 'bg-blue-100 text-blue-700';
-    case 'rejected':
-      return 'bg-red-100 text-red-700';
-    default:
-      return 'bg-gray-100 text-gray-700';
-  }
-};
-
-const getStatusText = (status: string): string => {
-  switch (status) {
-    case 'APPROVED':
-      return '승인';
-    case 'waiting':
-      return '대기';
-    case 'rejected':
-      return '반려';
-    default:
-      return status;
-  }
-};
-
 export default function PurchaseRequestListTab() {
   const { openModal } = useModal();
 
@@ -90,7 +64,7 @@ export default function PurchaseRequestListTab() {
 
   // 승인 mutation
   const { mutate: approvePurchaseRequest } = useMutation({
-    mutationFn: (prId: number) => postApporvePurchaseReq(prId),
+    mutationFn: (prId: string) => postApporvePurchaseReq(prId),
     onSuccess: () => {
       alert('구매 요청 승인 완료되었습니다.');
       queryClient.invalidateQueries({ queryKey: ['purchaseRequests'] }); // 목록 새로고침
@@ -102,7 +76,7 @@ export default function PurchaseRequestListTab() {
 
   // 반려 mutation
   const { mutate: rejectpurchaseRequest } = useMutation({
-    mutationFn: (prId: number) => postRejectPurchaseReq(prId),
+    mutationFn: (prId: string) => postRejectPurchaseReq(prId),
     onSuccess: () => {
       alert('반려 처리되었습니다.');
       queryClient.invalidateQueries({ queryKey: ['purchaseRequests'] });
@@ -123,16 +97,19 @@ export default function PurchaseRequestListTab() {
   };
 
   const handleViewDetail = (request: PurchaseReqResponse): void => {
-    openModal(PurchaseRequestDetailModal, { title: '구매 요청 상세 정보', purchaseId: request.id });
+    openModal(PurchaseRequestDetailModal, {
+      title: '구매 요청 상세 정보',
+      purchaseId: request.purchaseRequisitionId,
+    });
   };
 
-  const handleApprove = (prId: number) => {
+  const handleApprove = (prId: string) => {
     if (confirm('해당 요청을 승인하시겠습니까?')) {
       approvePurchaseRequest(prId);
     }
   };
 
-  const handleReject = (prId: number) => {
+  const handleReject = (prId: string) => {
     if (confirm('해당 요청을 반려하시겠습니까?')) {
       rejectpurchaseRequest(prId);
     }
@@ -193,22 +170,19 @@ export default function PurchaseRequestListTab() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {requests.map((request) => (
-                <tr key={request.id} className="hover:bg-gray-50 text-center">
+                <tr key={request.purchaseRequisitionId} className="hover:bg-gray-50 text-center">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     <div className="flex flex-col">
-                      <span>{request.prNumber}</span>
-                      <span>{request.departmentName}</span>
+                      <span>{request.purchaseRequisitionNumber}</span>
+                      <span>{request.departmentName}팀</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">{request.requesterName}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{request.requestDate}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{request.desiredDeliveryDate}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{request.totalAmount}원</td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor('APPROVED')}`}
-                    >
-                      {getStatusText('APPROVED')}
+                    <span className="px-2 py-1 rounded-full text-xs font-medium">
+                      {request.statusCode}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">
@@ -222,14 +196,14 @@ export default function PurchaseRequestListTab() {
                       </button>
                       <>
                         <button
-                          onClick={() => handleApprove(request.id)}
+                          onClick={() => handleApprove(request.purchaseRequisitionId)}
                           className="text-green-600 hover:text-green-900 cursor-pointer"
                           title="승인"
                         >
                           <i className="ri-check-line"></i>
                         </button>
                         <button
-                          onClick={() => handleReject(request.id)}
+                          onClick={() => handleReject(request.purchaseRequisitionId)}
                           className="text-red-600 hover:text-red-900 cursor-pointer"
                           title="반려"
                         >

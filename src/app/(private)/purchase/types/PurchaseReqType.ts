@@ -28,19 +28,14 @@ export interface PurchaseReqDetailResponse {
 }
 
 export interface PurchaseReqResponse {
-  id: number;
-  prNumber: string; // 구매요청번호
-  requesterId: number;
+  purchaseRequisitionId: string;
+  purchaseRequisitionNumber: string;
+  requesterId: string;
   requesterName: string;
-  departmentId: number;
+  departmentId: string;
   departmentName: string;
-  origin: string; // 예: 'MRP'
-  originRefId: string; // 원본 참조 ID
-  requestDate: string; // 요청일 (yyyy-MM-dd)
-  desiredDeliveryDate: string; // 납기요청일 (yyyy-MM-dd)
-  createdBy: number;
-  itemCount: number;
-  hasPreferredVendor: boolean;
+  statusCode: string;
+  requestDate: string;
   totalAmount: number;
 }
 

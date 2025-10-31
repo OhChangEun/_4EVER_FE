@@ -41,7 +41,7 @@ const getStatusText = (status: string): string => {
 };
 
 export interface PurchaseRequestDetailModalProps extends ModalProps {
-  purchaseId: number;
+  purchaseId: string;
 }
 
 export default function PurchaseRequestDetailModal({

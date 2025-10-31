@@ -89,7 +89,6 @@ export const PURCHASE_LIST_TABLE_HEADERS = [
   '요청번호',
   '요청자',
   '요청일',
-  '납기일',
   '총 금액',
   '상태',
   '작업',
