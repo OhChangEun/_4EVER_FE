@@ -15,6 +15,7 @@ export interface FetchPurchaseOrderParams extends PageRequest {
   orderDateTo?: string;
 }
 
+// 화면에서 관리용 (id 포함)
 export interface PurchaseRequestItem {
   id: string;
   itemName: string;
@@ -27,15 +28,6 @@ export interface PurchaseRequestItem {
   note?: string;
 }
 
-// dueDate: '2025-11-08';
-// expectedUnitPrice: 2;
-// itemName: 'dd';
-// note: 'zz';
-// preferredSupplierName: '대한철강';
-// purpose: 'gg';
-// quantity: 1;
-// uomName: 'da';
-// 화면에서 관리용 (id 포함)
 // 서버 전송용 (id 제외)
 export type PurchaseRequestItemBody = Omit<PurchaseRequestItem, 'id'>;
 
