@@ -6,6 +6,7 @@ import { STAT_PERIODS } from '@/app/(private)/purchase/constants';
 import PageTitle from '@/app/components/common/PageTitle';
 import StatCardList from '@/app/components/statCard/StatCardList';
 import SlidingNavBar from './SlidingNavBar';
+import { useAuthStore } from '@/store/authStore';
 
 interface StatSectionProps {
   title: string;
@@ -18,7 +19,8 @@ export default function StatSection({ title, subTitle, statsData }: StatSectionP
   const [selectedPeriod, setSelectedPeriod] = useState<Period>(DEFAULT_PERIOD);
 
   const stats = statsData[selectedPeriod];
-
+  const userInfo = useAuthStore((state) => state.userInfo);
+  console.log(userInfo);
   const handlePeriodSelect = (key: string) => {
     setSelectedPeriod(key as Period);
   };
