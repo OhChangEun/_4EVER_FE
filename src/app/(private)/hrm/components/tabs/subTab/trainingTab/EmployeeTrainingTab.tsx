@@ -12,15 +12,21 @@ import {
 import Dropdown from '@/app/components/common/Dropdown';
 import { useModal } from '@/app/components/common/modal/useModal';
 import Pagination from '@/app/components/common/Pagination';
-import { KeyValueItem } from '@/app/types/CommonType';
 import { useQuery } from '@tanstack/react-query';
 import React, { useState, useMemo } from 'react';
 import TrainingDetailModal from '@/app/(private)/hrm/components/modals/TrainingDetailModal';
 import AddEmployeeTrainingModal from '@/app/(private)/hrm/components/modals/AddEmployeeTrainingModal';
+import { useDepartmentsDropdown } from '@/app/hooks/useDepartmentsDropdown';
 
 export default function EmployeeTrainingTab() {
   // --- 모달 출력 ---
   const { openModal } = useModal();
+
+  const {
+    options: departmentsOptions,
+    isLoading: dropdownLoading,
+    isError: dropdownError,
+  } = useDepartmentsDropdown();
 
   // --- 드롭다운 ---
   const [selectedDepartment, setSelectedDepartment] = useState(''); // 부서
@@ -30,28 +36,6 @@ export default function EmployeeTrainingTab() {
   const pageSize = 10;
 
   const [employeeSearchTerm, setEmployeeSearchTerm] = useState('');
-
-  const {
-    data: departmentsData,
-    isLoading: isDeptLoading,
-    isError: isDeptError,
-  } = useQuery({
-    queryKey: ['departmentsList'],
-    queryFn: fetchDepartmentsList,
-    staleTime: Infinity,
-  });
-
-  const departmentsOptions: KeyValueItem[] = useMemo(() => {
-    const departmentList = departmentsData?.departments ?? [];
-
-    return [
-      { key: '', value: '전체 부서' },
-      ...departmentList.map((item) => ({
-        key: item.departmentId,
-        value: item.departmentName,
-      })),
-    ];
-  }, [departmentsData]);
 
   const trainingQueryParams = useMemo(
     (): TrainingRequestParams => ({

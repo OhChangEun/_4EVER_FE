@@ -17,10 +17,17 @@ import { useQuery } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
 import { AttendanceEditModal } from '@/app/(private)/hrm/components/modals/AttendanceEditModal';
 import { formatMinutesToHourMin, formatTime } from '@/app/utils/date';
+import { useDepartmentsDropdown } from '@/app/hooks/useDepartmentsDropdown';
 
 export default function AttendanceTab() {
   // --- 모달 출력 ---
   const { openModal } = useModal();
+
+  const {
+    options: departmentsOptions,
+    isLoading: dropdownLoading,
+    isError: dropdownError,
+  } = useDepartmentsDropdown();
 
   // --- 드롭다운 ---
   const [selectedDepartment, setSelectedDepartment] = useState(''); // 부서
@@ -34,28 +41,6 @@ export default function AttendanceTab() {
   const [selectedDate, setSelectedDate] = useState(today);
 
   const [employeeSearchTerm, setEmployeeSearchTerm] = useState('');
-
-  const {
-    data: departmentsData,
-    isLoading: isDeptLoading,
-    isError: isDeptError,
-  } = useQuery({
-    queryKey: ['departmentsList'],
-    queryFn: fetchDepartmentsList,
-    staleTime: Infinity,
-  });
-
-  const departmentsOptions: KeyValueItem[] = useMemo(() => {
-    const departmentList = departmentsData?.departments ?? [];
-
-    return [
-      { key: '', value: '전체 부서' },
-      ...departmentList.map((item) => ({
-        key: item.departmentId,
-        value: item.departmentName,
-      })),
-    ];
-  }, [departmentsData]);
 
   const attendanceQueryParams = useMemo(
     (): AttendanceRequestParams => ({

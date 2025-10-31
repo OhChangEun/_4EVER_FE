@@ -1,17 +1,24 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
-import { fetchDepartmentsList, fetchPayRollList } from '@/app/(private)/hrm/api/hrm.api';
+import { fetchPayRollList } from '@/app/(private)/hrm/api/hrm.api';
 import { KeyValueItem } from '@/app/types/CommonType';
 import Dropdown from '@/app/components/common/Dropdown';
 import { PayrollDetailModal } from '@/app/(private)/hrm/components/modals/PayrollDetailModal';
 import Pagination from '@/app/components/common/Pagination';
 import { PayRollList, PayrollRequestParams } from '@/app/(private)/hrm/types/HrmPayrollApiType';
 import { useModal } from '@/app/components/common/modal/useModal';
+import { useDepartmentsDropdown } from '@/app/hooks/useDepartmentsDropdown';
 
 export default function PayrollManagement() {
   // --- 모달 출력 ---
   const { openModal } = useModal();
+
+  const {
+    options: departmentsOptions,
+    isLoading: dropdownLoading,
+    isError: dropdownError,
+  } = useDepartmentsDropdown();
 
   // --- 드롭다운 ---
   const [selectedDepartment, setSelectedDepartment] = useState(''); // 부서
@@ -47,28 +54,6 @@ export default function PayrollManagement() {
       return { key: month, value: `${i + 1}월` };
     });
   }, []);
-
-  const {
-    data: departmentsData,
-    isLoading: isDeptLoading,
-    isError: isDeptError,
-  } = useQuery({
-    queryKey: ['departmentsList'],
-    queryFn: fetchDepartmentsList,
-    staleTime: Infinity,
-  });
-
-  const departmentsOptions: KeyValueItem[] = useMemo(() => {
-    const departmentList = departmentsData?.departments ?? [];
-
-    return [
-      { key: '', value: '전체 부서' },
-      ...departmentList.map((item) => ({
-        key: item.departmentId,
-        value: item.departmentName,
-      })),
-    ];
-  }, [departmentsData]);
 
   const payrollQueryParams = useMemo(
     (): PayrollRequestParams => ({

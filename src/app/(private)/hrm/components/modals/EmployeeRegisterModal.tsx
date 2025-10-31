@@ -4,12 +4,20 @@ import Button from '@/app/components/common/Button';
 import { ModalProps } from '@/app/components/common/modal/types';
 import { useState } from 'react';
 import { EmployeeRegistRequest } from '@/app/(private)/hrm/types/HrmEmployeesApiType';
-
-const DEPARTMENTS = ['개발팀', '마케팅팀', '영업팀', '인사팀', '재무팀', '기획팀'];
+import { useDepartmentsDropdown } from '@/app/hooks/useDepartmentsDropdown';
+import Dropdown from '@/app/components/common/Dropdown';
 
 const POSITIONS = ['사원', '대리', '과장', '차장', '부장'];
 
 export default function EmployeeRegisterModal({ onClose }: ModalProps) {
+  const [selectedDepartment, setSelectedDepartment] = useState('');
+  // 부서 드롭다운(전체 제외)
+  const {
+    options: departmentsOptions,
+    isLoading: dropdownLoading,
+    isError: dropdownError,
+  } = useDepartmentsDropdown(false);
+
   const [formData, setFormData] = useState<EmployeeRegistRequest>({
     name: '',
     departmentId: '',
@@ -56,56 +64,7 @@ export default function EmployeeRegisterModal({ onClose }: ModalProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">이름</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="홍길동"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">부서</label>
-          <select
-            name="department"
-            value={formData.departmentId}
-            onChange={handleChange}
-            required
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-8"
-          >
-            <option value="">부서 선택</option>
-            {DEPARTMENTS.map((dept) => (
-              <option key={dept} value={dept}>
-                {dept}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">직급</label>
-        <select
-          name="position"
-          value={formData.positionId}
-          onChange={handleChange}
-          required
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-8"
-        >
-          <option value="">직급 선택</option>
-          {POSITIONS.map((pos) => (
-            <option key={pos} value={pos}>
-              {pos}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
+        {/* 이메일 */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">이메일</label>
           <input
@@ -118,6 +77,50 @@ export default function EmployeeRegisterModal({ onClose }: ModalProps) {
             placeholder="hong@company.com"
           />
         </div>
+        {/* 이름 */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">이름</label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="홍길동"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">부서</label>
+          <Dropdown
+            className="w-full"
+            items={departmentsOptions}
+            value={selectedDepartment}
+            onChange={setSelectedDepartment}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">직급</label>
+          <select
+            name="position"
+            value={formData.positionId}
+            onChange={handleChange}
+            required
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-8"
+          >
+            <option value="">직급 선택</option>
+            {POSITIONS.map((pos) => (
+              <option key={pos} value={pos}>
+                {pos}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">전화번호</label>
           <input

@@ -11,6 +11,7 @@ import { LeaveRequestParams } from '@/app/(private)/hrm/types/HrmLeaveApiType';
 import Dropdown from '@/app/components/common/Dropdown';
 import { useModal } from '@/app/components/common/modal/useModal';
 import Pagination from '@/app/components/common/Pagination';
+import { useDepartmentsDropdown } from '@/app/hooks/useDepartmentsDropdown';
 import { KeyValueItem } from '@/app/types/CommonType';
 import { getQueryClient } from '@/lib/queryClient';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -20,6 +21,12 @@ export default function LeaveTab() {
   // --- 모달 출력 ---
   const { openModal } = useModal();
 
+  const {
+    options: departmentsOptions,
+    isLoading: dropdownLoading,
+    isError: dropdownError,
+  } = useDepartmentsDropdown();
+
   // --- 드롭다운 ---
   const [selectedDepartment, setSelectedDepartment] = useState(''); // 부서
 
@@ -28,28 +35,6 @@ export default function LeaveTab() {
   const pageSize = 10;
 
   const [employeeSearchTerm, setEmployeeSearchTerm] = useState('');
-
-  const {
-    data: departmentsData,
-    isLoading: isDeptLoading,
-    isError: isDeptError,
-  } = useQuery({
-    queryKey: ['departmentsList'],
-    queryFn: fetchDepartmentsList,
-    staleTime: Infinity,
-  });
-
-  const departmentsOptions: KeyValueItem[] = useMemo(() => {
-    const departmentList = departmentsData?.departments ?? [];
-
-    return [
-      { key: '', value: '전체 부서' },
-      ...departmentList.map((item) => ({
-        key: item.departmentId,
-        value: item.departmentName,
-      })),
-    ];
-  }, [departmentsData]);
 
   const leaveQueryParams = useMemo(
     (): LeaveRequestParams => ({

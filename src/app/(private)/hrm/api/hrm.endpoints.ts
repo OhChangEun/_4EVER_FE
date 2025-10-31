@@ -3,6 +3,10 @@ import { API_BASE_URL } from '@/app/types/api';
 export const HRM_BASE_PATH = `${API_BASE_URL}/business/hrm`;
 
 export const HRM_ENDPOINTS = {
+  // 드롭다운
+  DEPARTMENTS_DROPDOWN: `${HRM_BASE_PATH}/departments/all`, // 부서 드롭다운
+  POSITIONS_DROPDOWN: (departmentId: string) => `${HRM_BASE_PATH}/${departmentId}/departments/all`, // 부서에 따른 직급 드롭다운
+
   // 근태
   ATTENDANCE: `${HRM_BASE_PATH}/attendance`, // 출퇴근 기록 조회
   ATTENDANCE_CHECK_IN: `${HRM_BASE_PATH}/attendance/check-in`, // 출근 상태 변경

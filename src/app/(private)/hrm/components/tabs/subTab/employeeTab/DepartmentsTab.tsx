@@ -6,16 +6,8 @@ import React from 'react';
 import { DepartmentDetailModal } from '../../../modals/DepartmentDetailModal';
 import { DepartmentEditModal } from '../../../modals/DepartmentEditModal';
 
-// Mock 부서 데이터
-// const MOCK_DEPARTMENTS = [
-//   { id: 1, name: '경영지원팀', headCount: 15, manager: '김철수 부장' },
-//   { id: 2, name: '개발 1팀', headCount: 25, manager: '이영희 차장' },
-//   { id: 3, name: '마케팅팀', headCount: 12, manager: '박민준 과장' },
-//   { id: 4, name: '영업 2팀', headCount: 18, manager: '최지아 이사' },
-// ];
-
 export default function DepartmentsTab() {
-  const { openModal, removeAllModals } = useModal();
+  const { openModal } = useModal();
 
   // 부서 데이터
   const {

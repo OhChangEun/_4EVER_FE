@@ -3,7 +3,7 @@ import { getQueryClient } from '@/lib/queryClient';
 import { dehydrate } from '@tanstack/react-query';
 import StatSection from '@/app/components/common/StatSection';
 import {
-  fetchDepartmentsList,
+  fetchDepartmentsDropdown,
   fetchEmployeesList,
   fetchHrmStats,
   fetchPositionsList,
@@ -36,9 +36,10 @@ export default async function HrmPage() {
       queryFn: fetchPositionsList,
     }),
 
+    // 부서 드롭다운
     queryClient.prefetchQuery({
-      queryKey: ['departmentsList'],
-      queryFn: fetchDepartmentsList,
+      queryKey: ['departmentsDropdown'],
+      queryFn: fetchDepartmentsDropdown,
     }),
   ]);
   const dehydratedState = dehydrate(queryClient);

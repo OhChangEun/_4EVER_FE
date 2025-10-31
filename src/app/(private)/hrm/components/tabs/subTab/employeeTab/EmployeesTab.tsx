@@ -1,10 +1,6 @@
 'use client';
 
-import {
-  fetchDepartmentsList,
-  fetchEmployeesList,
-  fetchPositionsList,
-} from '@/app/(private)/hrm/api/hrm.api';
+import { fetchEmployeesList } from '@/app/(private)/hrm/api/hrm.api';
 import {
   EmployeeData,
   EmployeeListRequestParams,
@@ -14,44 +10,27 @@ import IconButton from '@/app/components/common/IconButton';
 import { useModal } from '@/app/components/common/modal/useModal';
 import Pagination from '@/app/components/common/Pagination';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
-import { KeyValueItem } from '@/app/types/CommonType';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { EmployeeDetailModal } from '@/app/(private)/hrm/components/modals/EmployeeDetailModal';
 import { EmployeeEditModal } from '@/app/(private)/hrm/components/modals/EmployeeEditModal';
 import EmployeeRegisterModal from '@/app/(private)/hrm/components/modals/EmployeeRegisterModal';
+import { useDepartmentsDropdown } from '@/app/hooks/useDepartmentsDropdown';
 
 export default function EmployeesTab() {
-  const { openModal, removeAllModals } = useModal();
-
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
+  // 모달창
+  const { openModal } = useModal();
   // 부서 드롭다운
   const {
-    data: departmentsData,
-    isLoading: isDeptLoading,
-    isError: isDeptError,
-  } = useQuery({
-    queryKey: ['departmentsList'],
-    queryFn: fetchDepartmentsList,
-    staleTime: Infinity,
-  });
-
-  // key-value 형태로 변환
-  const departmentsOptions: KeyValueItem[] = useMemo(() => {
-    const departmentList = departmentsData?.departments ?? [];
-
-    return [
-      { key: '', value: '전체 부서' },
-      ...departmentList.map((item) => ({
-        key: item.departmentId,
-        value: item.departmentName,
-      })),
-    ];
-  }, [departmentsData]);
+    options: departmentsOptions,
+    isLoading: dropdownLoading,
+    isError: dropdownError,
+  } = useDepartmentsDropdown();
 
   const employeesQueryParams = useMemo(
     (): EmployeeListRequestParams => ({
@@ -103,11 +82,11 @@ export default function EmployeesTab() {
     <>
       <div className="flex justify-end items-center gap-4 mb-6 p-2 rounded-lg">
         {/* 필터링 및 검색 */}
-        {isDeptLoading ? (
+        {dropdownLoading ? (
           <div className="w-24 px-4 py-2 rounded-sm bg-gray-100 text-gray-500">
             부서 목록 로딩 중...
           </div>
-        ) : isDeptError ? (
+        ) : dropdownError ? (
           <div className="w-64 px-4 py-2 border border-red-300 rounded-lg bg-red-50 text-red-600">
             부서 목록 로드 실패
           </div>

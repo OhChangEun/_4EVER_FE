@@ -37,6 +37,10 @@ import {
   UpdateTimeRecord,
 } from '@/app/(private)/hrm/types/HrmAttendanceApiType';
 import { LeaveListResponse, LeaveRequestParams } from '@/app/(private)/hrm/types/HrmLeaveApiType';
+import {
+  DepartmentsDropdown,
+  PositionsDropdown,
+} from '@/app/(private)/hrm/types/HrmDropdownApiType';
 
 // 인적자원관리 지표 조회
 export const fetchHrmStats = async (): Promise<HrmStatResponse | null> => {
@@ -48,6 +52,24 @@ export const fetchHrmStats = async (): Promise<HrmStatResponse | null> => {
     console.log(error);
     return null;
   }
+};
+
+// 부서 드롭다운 조회
+export const fetchDepartmentsDropdown = async (): Promise<DepartmentsDropdown[]> => {
+  const res = await axios.get<ApiResponse<DepartmentsDropdown[]>>(
+    `${HRM_ENDPOINTS.DEPARTMENTS_DROPDOWN}`,
+  );
+  return res.data.data;
+};
+
+// 직급 드롭다운 조회
+export const fetchPositionsDropdown = async (
+  departmentId: string,
+): Promise<PositionsDropdown[]> => {
+  const res = await axios.get<ApiResponse<PositionsDropdown[]>>(
+    `${HRM_ENDPOINTS.POSITIONS_DROPDOWN(departmentId)}`,
+  );
+  return res.data.data;
 };
 
 // 직원 목록 조회
