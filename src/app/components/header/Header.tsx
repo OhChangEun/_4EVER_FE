@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 import Logo from '@/app/components/header/Logo';
 import Navigation from '@/app/components/header/Navigation';
-import NotificationDropdown from '@/app/components/header/NoificationDropdown';
 import ProfileDropdown from '@/app/components/header/ProfileDropdown';
 import { UserProps } from '@/app/components/header/types/UserType';
+import NotificationDropdown from './Notification/NoificationDropdown';
 
 export default function Header({
   userRole = '관리자',
