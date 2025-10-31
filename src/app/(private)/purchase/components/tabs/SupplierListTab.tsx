@@ -15,12 +15,11 @@ import {
   SupplierCategory,
 } from '@/app/(private)/purchase/constants';
 import Pagination from '@/app/components/common/Pagination';
+import { useModal } from '@/app/components/common/modal/useModal';
 
 export default function SupplierListTab() {
-  const [showAddSupplierModal, setShowAddSupplierModal] = useState(false);
-  const [showSupplierDetailModal, setShowSupplierDetailModal] = useState(false);
+  const { openModal } = useModal();
 
-  const [selectedSupplierId, setSelectedSupplierId] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<SupplierCategory>('ALL');
   const [selectedSupplierStatus, setSelectedSupplierStatus] = useState<SupplierStatus>('ALL');
 
@@ -33,10 +32,10 @@ export default function SupplierListTab() {
     isLoading,
     isError,
   } = useQuery<SupplierListResponse>({
-    queryKey: ['suppliers', currentPage, pageSize, selectedCategory, selectedSupplierStatus],
+    queryKey: ['supplierList', currentPage, pageSize, selectedCategory, selectedSupplierStatus],
     queryFn: () =>
       fetchSupplierList({
-        page: currentPage,
+        page: currentPage - 1,
         size: pageSize,
         category: selectedCategory || undefined,
         status: selectedSupplierStatus || undefined,
@@ -50,34 +49,12 @@ export default function SupplierListTab() {
   const pageInfo = supplierData.page;
   const totalPages = pageInfo?.totalPages ?? 1;
 
-  const handleSupplierStatusChange = (status: SupplierStatus) => {
-    setSelectedSupplierStatus(status);
-    setCurrentPage(1);
+  const handleViewAddSupplier = () => {
+    openModal(SupplierAddModal, { title: '공급업체 등록' });
   };
 
   const handleViewDetail = (supplierId: string) => {
-    setSelectedSupplierId(supplierId);
-    setShowSupplierDetailModal(true); // 모달창 생성
-  };
-
-  const handleCloseDetailModal = () => {
-    setShowSupplierDetailModal(false);
-    setSelectedSupplierId('');
-  };
-
-  const getStatusBadge = (status: string) => {
-    const baseClasses = 'px-2 py-1 rounded-full text-xs font-medium';
-    if (status === 'ACTIVE') {
-      return `${baseClasses} bg-green-100 text-green-800`;
-    }
-    return `${baseClasses} bg-red-100 text-red-800`;
-  };
-  const getStatusText = (status: string) => (status === 'ACTIVE' ? '활성' : '비활성');
-
-  const getCategoryValue = (category?: string): string => {
-    const key = category ?? selectedCategory;
-    const item = SUPPLIER_CATEGORY_ITEMS.find((s) => s.key === key);
-    return item?.value || '전체';
+    openModal(SupplierDetailModal, { title: '공급업체 상세', supplierId: supplierId });
   };
 
   return (
@@ -97,11 +74,7 @@ export default function SupplierListTab() {
             value={selectedSupplierStatus}
             onChange={(status: SupplierStatus) => setSelectedSupplierStatus(status)}
           />
-          <IconButton
-            label="공급업체 등록"
-            icon="ri-add-line"
-            onClick={() => setShowAddSupplierModal(true)}
-          />
+          <IconButton label="공급업체 등록" icon="ri-add-line" onClick={handleViewAddSupplier} />
         </div>
       </div>
 
@@ -119,7 +92,7 @@ export default function SupplierListTab() {
                 카테고리
               </th>
               <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                언락처
+                연락처
               </th>
               <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                 주소
@@ -137,17 +110,17 @@ export default function SupplierListTab() {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {suppliers.map((supplier) => {
-              const { statusCode, supplierInfo } = supplier;
+              const { supplierInfo } = supplier;
               return (
                 <tr key={supplierInfo.supplierId} className="hover:bg-gray-50 text-center">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {supplierInfo.supplierCode}
+                    {supplierInfo.supplierNumber}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {supplierInfo.supplierName}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {getCategoryValue(supplierInfo.category)}
+                    {supplierInfo.category}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     <div className="flex flex-col">
@@ -165,9 +138,7 @@ export default function SupplierListTab() {
                     {supplierInfo.deliveryLeadTime}일
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={getStatusBadge(supplierInfo.supplierStatus)}>
-                      {getStatusText(supplierInfo.supplierStatus)}
-                    </span>
+                    <span>{supplierInfo.supplierStatusCode}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     <div className="flex space-x-2">
@@ -201,15 +172,6 @@ export default function SupplierListTab() {
           totalPages={totalPages}
           totalElements={pageInfo?.totalElements}
           onPageChange={(page) => setCurrentPage(page)}
-        />
-      )}
-
-      {showAddSupplierModal && <SupplierAddModal onClose={() => setShowAddSupplierModal(false)} />}
-
-      {showSupplierDetailModal && (
-        <SupplierDetailModal
-          supplierId={Number(selectedSupplierId)}
-          onClose={handleCloseDetailModal}
         />
       )}
     </>

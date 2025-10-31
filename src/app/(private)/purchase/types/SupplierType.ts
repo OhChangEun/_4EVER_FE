@@ -26,12 +26,12 @@ export interface CreateSupplierRequest {
 export interface SupplierInfo {
   supplierId: string;
   supplierName: string;
-  supplierCode: string;
+  supplierNumber: string;
   supplierEmail: string;
   supplierPhone: string;
   supplierBaseAddress: string;
   supplierDetailAddress: string | null;
-  supplierStatus: SupplierStatus; // 상태값이 정해져 있으면 enum으로도 가능
+  supplierStatusCode: SupplierStatus; // 상태값이 정해져 있으면 enum으로도 가능
   category: string; // 예: 'MATERIAL', 'SERVICE' 등
   deliveryLeadTime: number; // 납기일 (단위: 일)
 }

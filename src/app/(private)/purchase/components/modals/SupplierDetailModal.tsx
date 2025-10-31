@@ -3,14 +3,13 @@
 import { useState, useEffect } from 'react';
 import { SupplierDetailResponse } from '@/app/(private)/purchase/types/SupplierType';
 import ReadSupplierFormSection from '@/app/(private)/purchase/components/sections/SupplierTableSection';
-import EditSupplierFormSection from '@/app/(private)/purchase/components/sections/EditSupplierFormSection';
 import { useQuery } from '@tanstack/react-query';
 import { fetchSupplierDetail } from '../../api/purchase.api';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
+import { ModalProps } from '@/app/components/common/modal/types';
 
-interface DetailSupplierModalProps {
-  supplierId: number;
-  onClose: () => void;
+interface DetailSupplierModalProps extends ModalProps {
+  supplierId: string;
 }
 
 export default function SupplierDetailModal({ supplierId, onClose }: DetailSupplierModalProps) {
@@ -50,9 +49,8 @@ export default function SupplierDetailModal({ supplierId, onClose }: DetailSuppl
     );
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-        {/* {isEditMode && (
+    <>
+      {/* {isEditMode && (
           <EditSupplierFormSection
             supplier={editForm}
             setEditForm={setEditForm}
@@ -60,14 +58,13 @@ export default function SupplierDetailModal({ supplierId, onClose }: DetailSuppl
             onSave={() => setIsEditMode(false)}
           />
         )} */}
-        {supplier && !isEditMode && (
-          <ReadSupplierFormSection
-            supplier={supplier}
-            onEdit={() => setIsEditMode(true)}
-            onClose={onClose}
-          />
-        )}
-      </div>
-    </div>
+      {supplier && !isEditMode && (
+        <ReadSupplierFormSection
+          supplier={supplier}
+          onEdit={() => setIsEditMode(true)}
+          onClose={onClose}
+        />
+      )}
+    </>
   );
 }
