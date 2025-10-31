@@ -14,6 +14,7 @@ interface Alarm {
 
 export default function AlarmList() {
   const [alarms, setAlarms] = useState<Alarm[]>([]);
+  const [unreadCount, setUnreadCount] = useState<number>(0);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const reconnectAttemptsRef = useRef(0);
   const eventSourceRef = useRef<EventSource | null>(null);
@@ -93,7 +94,13 @@ export default function AlarmList() {
         reconnectAttemptsRef.current = 0; // reset on successful connection
       };
 
-      // 백엔드에서 .name("alarm")으로 보낸 이벤트 수신
+      // 1. keepalive 이벤트: 연결 유지 및 초기 연결 확인
+      eventSource.addEventListener('keepalive', (event) => {
+        console.log('[AlarmList] ✅ keepalive event received:', event.data);
+        // keepalive는 연결 확인용이므로 별도 처리 불필요
+      });
+
+      // 2. alarm 이벤트: 실제 알림 메시지 수신
       eventSource.addEventListener('alarm', (event) => {
         try {
           console.log('[AlarmList] alarm event received:', event.data);
@@ -109,9 +116,20 @@ export default function AlarmList() {
         }
       });
 
-      // 백엔드에서 name 없이 보낸 기본 메시지 수신 (필요시)
+      // 3. unreadCount 이벤트: 읽지 않은 알림 개수 업데이트
+      eventSource.addEventListener('unreadCount', (event) => {
+        try {
+          const count = parseInt(event.data, 10);
+          console.log('[AlarmList] unreadCount event received:', count);
+          setUnreadCount(count);
+        } catch (e) {
+          console.error('[AlarmList] failed to parse unreadCount event', e, event.data);
+        }
+      });
+
+      // 백엔드에서 name 없이 보낸 기본 메시지 수신 (디버깅용)
       eventSource.onmessage = (event) => {
-        console.log('[AlarmList] default message received:', event.data);
+        console.log('[AlarmList] default message received (no event name):', event.data);
       };
 
       eventSource.onerror = (err) => {
@@ -181,13 +199,25 @@ export default function AlarmList() {
   }, []);
 
   return (
-    <div>
-      <h2>알람</h2>
-      <ul>
+    <div className="p-4">
+      <div className="mb-4">
+        <h2 className="text-xl font-bold">알람</h2>
+        {unreadCount > 0 && (
+          <span className="ml-2 px-2 py-1 bg-red-500 text-white text-sm rounded-full">
+            {unreadCount}
+          </span>
+        )}
+      </div>
+      <ul className="space-y-2">
         {alarms.map((alarm) => (
-          <li key={alarm.alarmId}>{alarm.message}</li>
+          <li key={alarm.alarmId} className="p-3 bg-gray-100 rounded-lg">
+            <div className="font-semibold">{alarm.title}</div>
+            <div className="text-sm text-gray-600">{alarm.message}</div>
+            <div className="text-xs text-gray-400 mt-1">{alarm.alarmType}</div>
+          </li>
         ))}
       </ul>
+      {alarms.length === 0 && <div className="text-center text-gray-500 py-8">알림이 없습니다</div>}
     </div>
   );
 }
