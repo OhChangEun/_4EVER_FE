@@ -98,10 +98,18 @@ export default function PurchaseRequestListTab() {
     setCurrentPage(1);
   };
 
+  // 구매 요청 상세 모달
   const handleViewDetail = (request: PurchaseReqResponse): void => {
     openModal(PurchaseRequestDetailModal, {
       title: '구매 요청 상세 정보',
       purchaseId: request.purchaseRequisitionId,
+    });
+  };
+
+  // 구매 요청 작성 모달
+  const handleViewPurchaseRequest = () => {
+    openModal(PurchaseRequestModal, {
+      title: '구매요청 작성',
     });
   };
 
@@ -140,7 +148,7 @@ export default function PurchaseRequestListTab() {
           <IconButton
             label="구매 요청 작성"
             icon="ri-add-line"
-            onClick={() => setShowRequestModal(true)}
+            onClick={handleViewPurchaseRequest}
           />
         </div>
       </div>
@@ -232,16 +240,6 @@ export default function PurchaseRequestListTab() {
           totalPages={totalPages}
           totalElements={pageInfo?.totalElements}
           onPageChange={(page) => setCurrentPage(page)}
-        />
-      )}
-      {/* 구매 요청 작성 모달 */}
-      {showRequestModal && (
-        <PurchaseRequestModal
-          onClose={() => setShowRequestModal(false)}
-          // onSubmit={() => {
-          //   setShowRequestModal(false);
-          //   refetch();
-          // }}
         />
       )}
     </>

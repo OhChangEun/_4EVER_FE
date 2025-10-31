@@ -2,19 +2,10 @@ import { SupplierDetailResponse } from '@/app/(private)/purchase/types/SupplierT
 
 interface ReadSupplierProps {
   supplier: SupplierDetailResponse;
-  onClose: () => void;
   onEdit: () => void;
 }
 
-export default function SupplierTableSection({ supplier, onClose, onEdit }: ReadSupplierProps) {
-  const getStatusText = (status: string) => (status === 'active' ? '활성' : '비활성');
-  const getStatusBadge = (status: string) => {
-    const baseClasses = 'px-3 py-1 rounded-full text-sm font-medium';
-    return status === 'active'
-      ? `${baseClasses} bg-green-100 text-green-800`
-      : `${baseClasses} bg-red-100 text-red-800`;
-  };
-
+export default function SupplierTableSection({ supplier, onEdit }: ReadSupplierProps) {
   const { supplierInfo, managerInfo } = supplier;
   return (
     <>
@@ -25,7 +16,7 @@ export default function SupplierTableSection({ supplier, onClose, onEdit }: Read
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <p className="text-sm text-gray-600 mb-1">업체 ID</p>
-              <p className="text-base font-medium text-gray-900">{supplierInfo.supplierCode}</p>
+              <p className="text-base font-medium text-gray-900">{supplierInfo.supplierNumber}</p>
             </div>
             <div>
               <p className="text-sm text-gray-600 mb-1">업체명</p>
@@ -37,9 +28,7 @@ export default function SupplierTableSection({ supplier, onClose, onEdit }: Read
             </div>
             <div>
               <p className="text-sm text-gray-600 mb-1">상태</p>
-              <span className={getStatusBadge(supplierInfo.supplierStatus)}>
-                {getStatusText(supplierInfo.supplierStatus)}
-              </span>
+              <span>{supplierInfo.supplierStatusCode}</span>
             </div>
             <div>
               <p className="text-sm text-gray-600 mb-1">이메일</p>
@@ -113,12 +102,6 @@ export default function SupplierTableSection({ supplier, onClose, onEdit }: Read
 
       {/* 버튼 */}
       <div className="flex gap-3 pt-6 border-t border-gray-200">
-        <button
-          onClick={onClose}
-          className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium cursor-pointer whitespace-nowrap"
-        >
-          닫기
-        </button>
         <button
           onClick={onEdit}
           className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium cursor-pointer flex items-center justify-center gap-2 whitespace-nowrap"

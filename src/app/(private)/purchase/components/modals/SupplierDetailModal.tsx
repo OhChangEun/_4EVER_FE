@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { SupplierDetailResponse } from '@/app/(private)/purchase/types/SupplierType';
 import ReadSupplierFormSection from '@/app/(private)/purchase/components/sections/SupplierTableSection';
 import { useQuery } from '@tanstack/react-query';
-import { fetchSupplierDetail } from '../../api/purchase.api';
+import { fetchSupplierDetail } from '@/app/(private)/purchase/api/purchase.api';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
 import { ModalProps } from '@/app/components/common/modal/types';
 
@@ -21,7 +21,7 @@ export default function SupplierDetailModal({ supplierId, onClose }: DetailSuppl
     isLoading,
     isError,
   } = useQuery<SupplierDetailResponse>({
-    queryKey: ['suppliers-detail'],
+    queryKey: ['supplierDetail'],
     queryFn: () => fetchSupplierDetail(supplierId),
   });
 
@@ -59,11 +59,7 @@ export default function SupplierDetailModal({ supplierId, onClose }: DetailSuppl
           />
         )} */}
       {supplier && !isEditMode && (
-        <ReadSupplierFormSection
-          supplier={supplier}
-          onEdit={() => setIsEditMode(true)}
-          onClose={onClose}
-        />
+        <ReadSupplierFormSection supplier={supplier} onEdit={() => setIsEditMode(true)} />
       )}
     </>
   );

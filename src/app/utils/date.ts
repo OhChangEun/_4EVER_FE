@@ -14,3 +14,12 @@ export const formatTime = (isoString: string) => {
   const minutes = date.getMinutes().toString().padStart(2, '0');
   return `${hours}:${minutes}`;
 };
+
+// YYYY-MM-DD → ISO
+export const toISOString = (dateStr: string): string => {
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) {
+    throw new Error(`Invalid date STRING: ${dateStr}`);
+  }
+  return date.toISOString();
+};

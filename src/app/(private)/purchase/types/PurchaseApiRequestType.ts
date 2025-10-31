@@ -1,16 +1,13 @@
-interface PaginationParams {
-  page?: number;
-  size?: number;
-}
+import { PageRequest } from '@/app/types/Page';
 
-export interface FetchPurchaseReqParams extends PaginationParams {
+export interface FetchPurchaseReqParams extends PageRequest {
   status?: string;
   searchKeyword?: string;
   createdFrom?: string;
   createdTo?: string;
 }
 
-export interface FetchPurchaseOrderParams extends PaginationParams {
+export interface FetchPurchaseOrderParams extends PageRequest {
   category?: string;
   status?: string;
   searchKeyword?: string;
@@ -18,23 +15,37 @@ export interface FetchPurchaseOrderParams extends PaginationParams {
   orderDateTo?: string;
 }
 
-// 구매 요청 등록
-export interface CreatePurchaseRequest {
-  requesterId: number;
-  items: {
-    itemName: string;
-    quantity: number;
-    uomName: string;
-    expectedUnitPrice: number;
-    expectedTotalPrice: number;
-    preferredVendorName: string;
-    desiredDeliveryDate: string;
-    purpose: string;
-    note?: string;
-  }[];
+export interface PurchaseRequestItem {
+  id: string;
+  itemName: string;
+  quantity: number;
+  uomName: string;
+  expectedUnitPrice: number;
+  preferredSupplierName: string;
+  dueDate: string;
+  purpose: string;
+  note?: string;
 }
 
-export interface FetchSupplierListParams extends PaginationParams {
+// dueDate: '2025-11-08';
+// expectedUnitPrice: 2;
+// itemName: 'dd';
+// note: 'zz';
+// preferredSupplierName: '대한철강';
+// purpose: 'gg';
+// quantity: 1;
+// uomName: 'da';
+// 화면에서 관리용 (id 포함)
+// 서버 전송용 (id 제외)
+export type PurchaseRequestItemBody = Omit<PurchaseRequestItem, 'id'>;
+
+// 구매 요청 바디
+export interface PurchaseRequestBody {
+  requesterId: string;
+  items: PurchaseRequestItemBody[];
+}
+
+export interface FetchSupplierListParams extends PageRequest {
   category?: string;
   status?: string;
   searchKeyword?: string;
