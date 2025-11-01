@@ -42,3 +42,10 @@ export interface ProgramListDropdown {
   programId: string;
   programName: string;
 }
+
+// 교육 프로그램 상태 드롭다운
+export type ProgramStatusType = 'IN_PROGRESS' | 'COMPLETED';
+export interface ProgramStatusDropdown {
+  status: ProgramStatusType;
+  description: string;
+}

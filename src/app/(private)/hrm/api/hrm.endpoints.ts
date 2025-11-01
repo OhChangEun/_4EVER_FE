@@ -12,6 +12,7 @@ export const HRM_ENDPOINTS = {
   PAYROLL_STATUS_DROPDOWN: `${HRM_BASE_PATH}/payroll/statuses`, // 급여 상태 드롭다운
   TRAINING_CATE_DROPDOWN: `${HRM_BASE_PATH}/trainings/categories`, //교육 카테고리 드롭다운
   PROGRAM_LIST_DROPDOWN: `${HRM_BASE_PATH}/trainings/programs`, // 교육 프로그램 드롭다운
+  PROGRAM_COMPLETION_DROPDOWN: `${HRM_BASE_PATH}/trainings/completion-statuses`, // 교육완료 상태 드롭다운
 
   // 근태
   ATTENDANCE: `${HRM_BASE_PATH}/attendance`, // 출퇴근 기록 조회

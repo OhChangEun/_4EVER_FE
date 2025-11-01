@@ -45,6 +45,7 @@ import {
   PayrollStatusDropdown,
   PositionsDropdown,
   ProgramListDropdown,
+  ProgramStatusDropdown,
   TrainingCategoryDropdown,
 } from '@/app/(private)/hrm/types/HrmDropdownApiType';
 
@@ -301,6 +302,14 @@ export const fetchTrainingCategoryDropdown = async (): Promise<TrainingCategoryD
 export const fetchProgramListDropdown = async (): Promise<ProgramListDropdown[]> => {
   const res = await axios.get<ApiResponse<ProgramListDropdown[]>>(
     HRM_ENDPOINTS.PROGRAM_LIST_DROPDOWN,
+  );
+  return res.data.data;
+};
+
+// 교육 프로그램 상태 조회
+export const fetchProgramStatusDropdown = async (): Promise<ProgramStatusDropdown[]> => {
+  const res = await axios.get<ApiResponse<ProgramStatusDropdown[]>>(
+    HRM_ENDPOINTS.PROGRAM_COMPLETION_DROPDOWN,
   );
   return res.data.data;
 };

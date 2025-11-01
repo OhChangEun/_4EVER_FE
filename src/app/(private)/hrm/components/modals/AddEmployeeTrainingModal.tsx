@@ -2,23 +2,12 @@
 
 import Button from '@/app/components/common/Button';
 import { ModalProps } from '@/app/components/common/modal/types';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import React, { FormEvent } from 'react';
-import { postProgramToEmployee } from '@/app/(private)/hrm/api/hrm.api';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import React, { FormEvent, useMemo, useState } from 'react';
+import { fetchProgramListDropdown, postProgramToEmployee } from '@/app/(private)/hrm/api/hrm.api';
 import { UpdateProgramToEmployeeRequest } from '@/app/(private)/hrm/types/HrmProgramApiType';
-
-interface Training {
-  id: string;
-  title: string;
-  status: string;
-}
-
-// 임의의 교육 프로그램 목업 데이터
-const availableTrainings: Training[] = [
-  { id: '1', title: '자동차 전장 기초 교육', status: '모집중' },
-  { id: '2', title: 'C# 네트워크 통신 실습', status: '모집중' },
-  { id: '3', title: 'React 프론트엔드 심화 과정', status: '마감' },
-];
+import Dropdown from '@/app/components/common/Dropdown';
+import { KeyValueItem } from '@/app/types/CommonType';
 
 interface AddEmployeeTrainingModalProps extends ModalProps {
   employeeId: string;
@@ -28,7 +17,29 @@ export default function AddEmployeeTrainingModal({
   employeeId,
   onClose,
 }: AddEmployeeTrainingModalProps) {
+  const [selectedProgram, setSelectedProgram] = useState('');
+
   const queryClient = useQueryClient();
+
+  // 교육 프로그램 드롭다운 조회
+  const {
+    data: programData,
+    isLoading: programLoading,
+    isError: programError,
+  } = useQuery({
+    queryKey: ['programListDropdown'],
+    queryFn: fetchProgramListDropdown,
+    staleTime: Infinity,
+  });
+
+  // Dropdown 옵션 변환
+  const programOptions: KeyValueItem[] = useMemo(() => {
+    const list = programData ?? [];
+    return list.map((p) => ({
+      key: p.programId,
+      value: p.programName,
+    }));
+  }, [programData]);
 
   // mutation 설정
   const mutation = useMutation({
@@ -48,12 +59,11 @@ export default function AddEmployeeTrainingModal({
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const formData = new FormData(e.currentTarget);
+    if (!selectedProgram) {
+      return alert('교육 프로그램을 선택해주세요.');
+    }
 
-    const programId = formData.get('programId') as string;
-    if (!programId) return alert('교육 프로그램을 선택해주세요.');
-
-    mutation.mutate({ employeeId, programId });
+    mutation.mutate({ employeeId, programId: selectedProgram });
   };
 
   return (
@@ -61,20 +71,12 @@ export default function AddEmployeeTrainingModal({
       {/* 교육 프로그램 선택 */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">교육 프로그램 선택</label>
-        <select
-          name="programId"
-          required
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-8"
-        >
-          <option value="">교육 프로그램 선택</option>
-          {availableTrainings
-            .filter((t) => t.status === '모집중')
-            .map((training) => (
-              <option key={training.id} value={training.id}>
-                {training.title}
-              </option>
-            ))}
-        </select>
+        <Dropdown
+          placeholder="프로그램 선택"
+          items={programOptions}
+          value={selectedProgram}
+          onChange={setSelectedProgram}
+        />
       </div>
 
       <div className="flex justify-end">
