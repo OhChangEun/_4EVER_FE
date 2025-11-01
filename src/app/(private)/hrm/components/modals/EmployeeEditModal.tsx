@@ -2,23 +2,50 @@ import { EmployeeData, EmployeeUpdateRequest } from '@/app/(private)/hrm/types/H
 import IconButton from '@/app/components/common/IconButton';
 import { ModalProps } from '@/app/components/common/modal/types';
 import { useModal } from '@/app/components/common/modal/useModal';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
-import { putEmployee } from '../../api/hrm.api';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
+import { fetchPositionsDropdown, putEmployee } from '../../api/hrm.api';
+import { useDepartmentsDropdown } from '@/app/hooks/useDepartmentsDropdown';
+import { KeyValueItem } from '@/app/types/CommonType';
+import Dropdown from '@/app/components/common/Dropdown';
 
 interface EmployeeEditModalProps extends ModalProps {
   employee: EmployeeData;
 }
 
 export function EmployeeEditModal({ employee }: EmployeeEditModalProps) {
+  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [selectedPosition, setSelectedPosition] = useState('');
+
   const { removeAllModals } = useModal();
   const queryClient = useQueryClient();
 
-  const [formData, setFormData] = useState<EmployeeUpdateRequest>({
-    employeeName: employee.name,
-    departmentId: employee.department,
-    positionId: employee.position,
+  // 부서 드롭다운(전체 제외)
+  const {
+    options: departmentsOptions,
+    isLoading: dropdownLoading,
+    isError: dropdownError,
+  } = useDepartmentsDropdown(false);
+
+  const {
+    data: positionData,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['positionsDropdown', selectedDepartment],
+    queryFn: () => fetchPositionsDropdown(selectedDepartment),
+    enabled: !!selectedDepartment,
   });
+
+  const positionsOptions: KeyValueItem[] = useMemo(() => {
+    const list = positionData ?? [];
+    const mapped = list.map((p) => ({
+      key: p.positionId,
+      value: p.positionName,
+    }));
+
+    return mapped;
+  }, [positionData]);
 
   // mutation 설정
   const mutation = useMutation({
@@ -35,20 +62,20 @@ export function EmployeeEditModal({ employee }: EmployeeEditModalProps) {
     },
   });
 
-  const handleInputChange = (field: keyof EmployeeUpdateRequest, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
   const handleSave = () => {
-    if (!formData.departmentId.trim() || !formData.positionId.trim()) {
+    if (!selectedDepartment || !selectedPosition) {
       alert('부서와 직급을 모두 입력해주세요.');
       return;
     }
+
+    const requestBodyData: EmployeeUpdateRequest = {
+      employeeName: employee.name,
+      departmentId: selectedDepartment,
+      positionId: selectedPosition,
+    };
+
     // mutation 호출
-    mutation.mutate(formData);
+    mutation.mutate(requestBodyData);
   };
 
   return (
@@ -61,29 +88,31 @@ export function EmployeeEditModal({ employee }: EmployeeEditModalProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="flex gap-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              부서 <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={formData.departmentId}
-              onChange={(e) => handleInputChange('departmentId', e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <label className="block pl-1 text-sm font-medium text-gray-700 mb-1">부서</label>
+            <Dropdown
+              items={departmentsOptions}
+              value={selectedDepartment}
+              onChange={(dept: string) => {
+                setSelectedDepartment(dept);
+                setSelectedPosition('');
+              }}
+              placeholder="부서 선택"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              직급 <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={formData.positionId}
-              onChange={(e) => handleInputChange('positionId', e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+
+          {selectedDepartment && (
+            <div className="fade-in">
+              <label className="block pl-1 text-sm font-medium text-gray-700 mb-1">직급</label>
+              <Dropdown
+                items={positionsOptions}
+                value={selectedPosition}
+                onChange={setSelectedPosition}
+                placeholder="직급 선택"
+              />
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-2 gap-4">

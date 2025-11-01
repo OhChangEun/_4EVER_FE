@@ -184,7 +184,7 @@ export const putEmployee = async (
   employeeId: string,
   data: EmployeeUpdateRequest,
 ): Promise<ApiResponseNoData> => {
-  const res = await axios.put<ApiResponseNoData>(
+  const res = await axios.patch<ApiResponseNoData>(
     `${HRM_ENDPOINTS.EMPLOYEE_DETAIL(employeeId)}`,
     data,
   );

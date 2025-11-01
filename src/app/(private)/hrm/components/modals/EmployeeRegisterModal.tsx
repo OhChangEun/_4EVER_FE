@@ -31,6 +31,16 @@ export default function EmployeeRegisterModal({ onClose }: ModalProps) {
     enabled: !!selectedDepartment,
   });
 
+  const positionsOptions: KeyValueItem[] = useMemo(() => {
+    const list = positionData ?? [];
+    const mapped = list.map((p) => ({
+      key: p.positionId,
+      value: p.positionName,
+    }));
+
+    return mapped;
+  }, [positionData]);
+
   const mutation = useMutation({
     mutationFn: (body: EmployeeRegisterRequest) => postEmployeeRegister(body),
     onSuccess: () => {
@@ -41,16 +51,6 @@ export default function EmployeeRegisterModal({ onClose }: ModalProps) {
       alert('회원 등록에 실패했습니다.');
     },
   });
-
-  const positionsOptions: KeyValueItem[] = useMemo(() => {
-    const list = positionData ?? [];
-    const mapped = list.map((p) => ({
-      key: p.positionId,
-      value: p.positionName,
-    }));
-
-    return mapped;
-  }, [positionData]);
 
   const [formData, setFormData] = useState<EmployeeRegisterRequest>({
     name: '',
