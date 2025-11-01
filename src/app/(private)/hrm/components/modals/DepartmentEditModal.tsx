@@ -7,7 +7,6 @@ import { useMemo, useState } from 'react';
 import { useModal } from '@/app/components/common/modal/useModal';
 import { useQuery } from '@tanstack/react-query';
 import { fetchDeptMemberDropdown } from '../../api/hrm.api';
-import { DepartmentMemberDropdown } from '../../types/HrmDropdownApiType';
 import Dropdown from '@/app/components/common/Dropdown';
 
 interface DepartmentEditModalProps extends ModalProps {

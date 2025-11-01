@@ -1,7 +1,7 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
-import { fetchPayRollList } from '@/app/(private)/hrm/api/hrm.api';
+import { fetchPayRollList, fetchPayrollStatusDropdown } from '@/app/(private)/hrm/api/hrm.api';
 import { KeyValueItem } from '@/app/types/CommonType';
 import Dropdown from '@/app/components/common/Dropdown';
 import { PayrollDetailModal } from '@/app/(private)/hrm/components/modals/PayrollDetailModal';
@@ -20,8 +20,28 @@ export default function PayrollManagement() {
     isError: dropdownError,
   } = useDepartmentsDropdown();
 
+  const {
+    data: statusData,
+    isLoading: statusLoading,
+    isError: errorLoading,
+  } = useQuery({
+    queryKey: ['payrollStatusDropdown'],
+    queryFn: fetchPayrollStatusDropdown,
+  });
+
+  const statusOptions = useMemo((): KeyValueItem[] => {
+    const list = statusData ?? [];
+    const mapped = list.map((d) => ({
+      key: d.status,
+      value: d.description,
+    }));
+
+    return [{ key: '', value: '전체 상태' }, ...mapped];
+  }, [statusData]);
+
   // --- 드롭다운 ---
   const [selectedDepartment, setSelectedDepartment] = useState(''); // 부서
+  const [selectedPayrollStatus, setSelectedPayrollStatus] = useState(''); // 부서
 
   // 년도와 월
   const now = new Date();
@@ -119,6 +139,15 @@ export default function PayrollManagement() {
               value={selectedDepartment}
               onChange={(dept: string) => {
                 setSelectedDepartment(dept);
+                setCurrentPage(1);
+              }}
+            />
+            <Dropdown
+              placeholder="전체 상태"
+              items={statusOptions}
+              value={selectedPayrollStatus}
+              onChange={(status: string) => {
+                setSelectedPayrollStatus(status);
                 setCurrentPage(1);
               }}
             />
