@@ -24,7 +24,7 @@ export interface NotificationData {
 
 // 알림 목록 조회
 export interface NotificationListResponse {
-  items: NotificationData;
+  items: NotificationData[];
   page: Page;
 }
 
