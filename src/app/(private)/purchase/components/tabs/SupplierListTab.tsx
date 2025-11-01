@@ -87,12 +87,14 @@ export default function SupplierListTab() {
         <div className="flex items-center space-x-4">
           {/* 공급업체 카테고리 드롭다운 */}
           <Dropdown
+            placeholder="전체 카테고리"
             items={SUPPLIER_CATEGORY_ITEMS}
             value={selectedCategory}
             onChange={(category: SupplierCategory) => setSelectedCategory(category)}
           />
           {/* 공급업체 상태 드롭다운 */}
           <Dropdown
+            placeholder="전체 상태"
             items={SUPPLIER_STATUS_ITEMS}
             value={selectedSupplierStatus}
             onChange={(status: SupplierStatus) => setSelectedSupplierStatus(status)}

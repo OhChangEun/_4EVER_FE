@@ -145,6 +145,7 @@ export default function PurchaseRequestListTab() {
         <h3 className="text-lg font-semibold text-gray-900">구매 요청 목록</h3>
         <div className="flex items-center space-x-4">
           <Dropdown
+            placeholder="전체 상태"
             items={PURCHASE_REQ_STATUS}
             value={selectedStatus}
             onChange={handleStatusChange}

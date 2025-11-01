@@ -3,7 +3,8 @@ import { autoUpdate, FloatingPortal, offset, shift, useFloating } from '@floatin
 import { useEffect, useState } from 'react';
 
 interface DropdownProps<T extends string = string> {
-  items: KeyValueItem[];
+  placeholder: string;
+  items: KeyValueItem[]; // options
   value: T; // 선택된 값
   onChange?: (key: T) => void;
   className?: string;
@@ -14,6 +15,7 @@ export default function Dropdown<T extends string = string>({
   value,
   onChange,
   className = '',
+  placeholder,
 }: DropdownProps<T>) {
   const [open, setOpen] = useState(false);
 
@@ -23,9 +25,8 @@ export default function Dropdown<T extends string = string>({
     whileElementsMounted: autoUpdate,
   });
 
-  const selectedKey = value || items[0]?.key || '';
-  const selectedItem = items.find((item) => item.key === selectedKey);
-  const displayLabel = selectedItem?.value ?? items[0].value;
+  const selectedItem = items.find((item) => item.key === value);
+  const displayLabel = !value || value === '' ? placeholder : (selectedItem?.value ?? placeholder);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -44,6 +45,8 @@ export default function Dropdown<T extends string = string>({
     setOpen(false); // 닫기
   };
 
+  const isSelected = value && value !== '' && value !== 'ALL';
+
   return (
     <div className={`relative inline-block ${className}`}>
       {/* 버튼 */}
@@ -53,9 +56,10 @@ export default function Dropdown<T extends string = string>({
           onClick={() => setOpen((prev) => !prev)}
           className={`pl-4 pr-1.5 py-1.5 text-sm rounded-lg font-medium focus:outline-none transition cursor-pointer whitespace-nowrap
                     ${
-                      selectedItem?.key === '' || selectedItem?.key === 'ALL'
-                        ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        : 'bg-blue-100 text-blue-500 hover:bg-blue-200/70'
+                      //
+                      isSelected
+                        ? 'bg-blue-100 text-blue-500 hover:bg-blue-200/70'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }
                   `}
         >
@@ -74,25 +78,34 @@ export default function Dropdown<T extends string = string>({
             style={floatingStyles}
             className="z-[9999] max-h-64 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-lg max-w-[120px] min-w-[96px] animate-fadeIn overscroll-contain"
           >
-            {items.map((item, index) => {
-              const isSelected = item.key === selectedItem?.key;
-              const borderRadiusClass =
-                index === 0 ? 'rounded-t-lg' : index === items.length - 1 ? 'rounded-b-lg' : '';
-              return (
-                <li
-                  key={item.key}
-                  onClick={() => {
-                    handleSelect(item.key);
-                  }}
-                  className={`px-4 py-2 text-sm truncate cursor-pointer
+            {items.length > 0 ? (
+              items.map((item, index) => {
+                const isSelected = item.key === selectedItem?.key;
+                const borderRadiusClass =
+                  index === 0 ? 'rounded-t-lg' : index === items.length - 1 ? 'rounded-b-lg' : '';
+                return (
+                  <li
+                    key={item.key}
+                    onClick={() => {
+                      handleSelect(item.key);
+                    }}
+                    className={`px-4 py-2 text-sm truncate cursor-pointer
                             ${borderRadiusClass}
                             ${isSelected ? 'text-blue-500 bg-blue-50' : 'text-gray-800 hover:bg-blue-50'}
                           `}
-                >
-                  {item.value}
-                </li>
-              );
-            })}
+                  >
+                    {item.value}
+                  </li>
+                );
+              })
+            ) : (
+              <li
+                className="w-full px-4 py-2 text-sm text-gray-400 hover:bg-gray-50 cursor-pointer"
+                onClick={() => handleSelect('')} // 선택된 값이 없음을 의미
+              >
+                항목 없음
+              </li>
+            )}
           </ul>
         </FloatingPortal>
       )}

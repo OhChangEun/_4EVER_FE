@@ -173,6 +173,7 @@ export default function PurchaseOrderListTab() {
 
         <div className="flex items-center gap-3">
           <Dropdown
+            placeholder="전체 상태"
             items={PURCHASE_ORDER_STATUS}
             value={selectedStatus}
             onChange={handleStatusChange}

@@ -92,6 +92,7 @@ export default function EmployeesTab() {
           </div>
         ) : (
           <Dropdown
+            placeholder="전체 부서"
             items={departmentsOptions}
             value={selectedDepartment}
             onChange={(dept: string) => setSelectedDepartment(dept)}

@@ -210,6 +210,7 @@ export default function SupplierAddModal({ onClose }: AddSupplierModalProps) {
                   카테고리 <span className="text-red-500">*</span>
                 </label>
                 <Dropdown
+                  placeholder="전체 카테고리"
                   items={SUPPLIER_CATEGORY_ITEMS}
                   value={supplierInfo.category}
                   onChange={(key) =>

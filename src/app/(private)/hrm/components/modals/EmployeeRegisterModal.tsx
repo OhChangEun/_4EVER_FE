@@ -2,21 +2,44 @@
 
 import Button from '@/app/components/common/Button';
 import { ModalProps } from '@/app/components/common/modal/types';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { EmployeeRegistRequest } from '@/app/(private)/hrm/types/HrmEmployeesApiType';
 import { useDepartmentsDropdown } from '@/app/hooks/useDepartmentsDropdown';
 import Dropdown from '@/app/components/common/Dropdown';
-
-const POSITIONS = ['사원', '대리', '과장', '차장', '부장'];
+import { useQuery } from '@tanstack/react-query';
+import { fetchPositionsDropdown } from '@/app/(private)/hrm/api/hrm.api';
+import { KeyValueItem } from '@/app/types/CommonType';
 
 export default function EmployeeRegisterModal({ onClose }: ModalProps) {
   const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [selectedPosition, setSelectedPosition] = useState('');
+
   // 부서 드롭다운(전체 제외)
   const {
     options: departmentsOptions,
     isLoading: dropdownLoading,
     isError: dropdownError,
   } = useDepartmentsDropdown(false);
+
+  const {
+    data: positionData,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['positionsDropdown', selectedDepartment],
+    queryFn: () => fetchPositionsDropdown(selectedDepartment),
+    enabled: !!selectedDepartment,
+  });
+
+  const positionsOptions: KeyValueItem[] = useMemo(() => {
+    const list = positionData ?? [];
+    const mapped = list.map((p) => ({
+      key: p.positionId,
+      value: p.positionName,
+    }));
+
+    return mapped;
+  }, [positionData]);
 
   const [formData, setFormData] = useState<EmployeeRegistRequest>({
     name: '',
@@ -59,6 +82,8 @@ export default function EmployeeRegisterModal({ onClose }: ModalProps) {
       academicHistory: '',
       careerHistory: '',
     });
+
+    onClose();
   };
 
   return (
@@ -90,34 +115,33 @@ export default function EmployeeRegisterModal({ onClose }: ModalProps) {
             placeholder="홍길동"
           />
         </div>
+      </div>
 
+      <div className="flex gap-3">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">부서</label>
+          <label className="block pl-1 text-sm font-medium text-gray-700 mb-1">부서</label>
           <Dropdown
-            className="w-full"
             items={departmentsOptions}
             value={selectedDepartment}
-            onChange={setSelectedDepartment}
+            onChange={(dept: string) => {
+              setSelectedDepartment(dept);
+              setSelectedPosition('');
+            }}
+            placeholder="부서 선택"
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">직급</label>
-          <select
-            name="position"
-            value={formData.positionId}
-            onChange={handleChange}
-            required
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-8"
-          >
-            <option value="">직급 선택</option>
-            {POSITIONS.map((pos) => (
-              <option key={pos} value={pos}>
-                {pos}
-              </option>
-            ))}
-          </select>
-        </div>
+        {selectedDepartment && (
+          <div className="fade-in">
+            <label className="block pl-1 text-sm font-medium text-gray-700 mb-1">직급</label>
+            <Dropdown
+              items={positionsOptions}
+              value={selectedPosition}
+              onChange={setSelectedPosition}
+              placeholder="직급 선택"
+            />
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-3">
