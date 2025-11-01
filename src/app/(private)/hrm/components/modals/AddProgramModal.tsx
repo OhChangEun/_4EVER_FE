@@ -1,14 +1,36 @@
 import Button from '@/app/components/common/Button';
 import { ModalProps } from '@/app/components/common/modal/types';
 import { CreateProgramRequest } from '../../types/HrmProgramApiType';
-import { postProgram } from '../../api/hrm.api';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { FormEvent } from 'react';
+import { fetchTrainingCategoryDropdown, postProgram } from '../../api/hrm.api';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { FormEvent, useMemo, useState } from 'react';
+import Dropdown from '@/app/components/common/Dropdown';
+import { KeyValueItem } from '@/app/types/CommonType';
 
 export default function AddTrainingModal({ onClose }: ModalProps) {
-  const queryClient = useQueryClient();
+  const [selectedCategory, setSelectedCategory] = useState(''); // 부서
 
-  // mutation 설정
+  const {
+    data: categoryData,
+    isLoading: categoryLoading,
+    isError: categoryError,
+  } = useQuery({
+    queryKey: ['trainingCategoryDropdown'],
+    queryFn: fetchTrainingCategoryDropdown,
+    staleTime: Infinity,
+  });
+
+  const categoryOptions = useMemo((): KeyValueItem[] => {
+    const list = categoryData ?? [];
+    const mapped = list.map((d) => ({
+      key: d.category,
+      value: d.description,
+    }));
+
+    return mapped;
+  }, [categoryData]);
+
+  const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (data: CreateProgramRequest) => postProgram(data),
     onSuccess: () => {
@@ -32,6 +54,12 @@ export default function AddTrainingModal({ onClose }: ModalProps) {
     const positions = formData.getAll('positions') as string[];
 
     // 필수 체크
+    if (!selectedCategory) {
+      // 추가
+      alert('카테고리를 선택해주세요.');
+      return;
+    }
+
     if (departments.length === 0) {
       alert('대상 부서를 최소 1개 이상 선택해주세요.');
       return;
@@ -44,9 +72,9 @@ export default function AddTrainingModal({ onClose }: ModalProps) {
 
     const programData: CreateProgramRequest = {
       programName: formData.get('programName') as string,
-      category: formData.get('category') as string,
+      category: selectedCategory,
       trainingHour: Number(formData.get('trainingHour')),
-      isOnline: formData.get('isOnline') === 'true',
+      isOnline: true,
       startDate: formData.get('startDate') as string,
       capacity: Number(formData.get('capacity')),
       requiredDepartments: departments,
@@ -71,20 +99,16 @@ export default function AddTrainingModal({ onClose }: ModalProps) {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">카테고리</label>
-            <select
-              name="category"
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-8"
-            >
-              <option value="">카테고리 선택</option>
-              <option value="기본 교육">기본 교육</option>
-              <option value="기술 교육">기술 교육</option>
-              <option value="마케팅">마케팅</option>
-              <option value="관리 교육">관리 교육</option>
-              <option value="서비스">서비스</option>
-            </select>
+
+            <Dropdown
+              placeholder="카테고리 선택"
+              items={categoryOptions}
+              value={selectedCategory}
+              onChange={setSelectedCategory}
+            />
           </div>
         </div>
 
@@ -98,19 +122,6 @@ export default function AddTrainingModal({ onClose }: ModalProps) {
               placeholder="예: 8시간, 2일"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">교육 방식</label>
-            <select
-              name="isOnline"
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-8"
-            >
-              <option value="">교육 방식 선택</option>
-              <option value="true">온라인</option>
-              <option value="false">오프라인</option>
-              <option value="mixed">혼합</option>
-            </select>
           </div>
         </div>
 
@@ -190,7 +201,7 @@ export default function AddTrainingModal({ onClose }: ModalProps) {
           ></textarea>
         </div>
 
-        <div className="flex justfiy-end">
+        <div className="flex justify-end">
           <Button type="submit" label="교육 프로그램 추가" />
         </div>
       </form>
