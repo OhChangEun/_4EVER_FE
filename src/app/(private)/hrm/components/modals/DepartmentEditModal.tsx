@@ -3,8 +3,12 @@
 import { ModalProps } from '@/app/components/common/modal/types';
 import { DepartmentsData } from '@/app/(private)/hrm/types/HrmDepartmentsApiType';
 import IconButton from '@/app/components/common/IconButton';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useModal } from '@/app/components/common/modal/useModal';
+import { useQuery } from '@tanstack/react-query';
+import { fetchDeptMemberDropdown } from '../../api/hrm.api';
+import { DepartmentMemberDropdown } from '../../types/HrmDropdownApiType';
+import Dropdown from '@/app/components/common/Dropdown';
 
 interface DepartmentEditModalProps extends ModalProps {
   departments: DepartmentsData;
@@ -12,6 +16,22 @@ interface DepartmentEditModalProps extends ModalProps {
 
 export function DepartmentEditModal({ departments }: DepartmentEditModalProps) {
   const { removeAllModals } = useModal();
+
+  // 선택된 부서장 상태
+  const [selectedManager, setSelectedManager] = useState<string | undefined>(departments.managerId);
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['deptMemberDropdown'],
+    queryFn: () => fetchDeptMemberDropdown(departments.departmentId),
+  });
+
+  const options = useMemo(() => {
+    const list = data ?? [];
+    return list.map((d) => ({
+      key: d.memberId,
+      value: d.memberName,
+    }));
+  }, [data]);
 
   const [formData, setFormData] = useState({
     manager: departments.managerName,
@@ -43,27 +63,23 @@ export function DepartmentEditModal({ departments }: DepartmentEditModalProps) {
         <input
           type="text"
           required
-          defaultValue={departments.managerName}
+          defaultValue={departments.departmentName + '팀'}
           disabled
           className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
         />
       </div>
-      {/* 부서장 선택 api 추후 요청 */}
-      {/* <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">부서장</label>
-          <select
-            required
-            defaultValue={departments.managerName}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-8"
-          >
-            <option value="">부서장 선택</option>
-            {departments.employees.map((emp: any, index: number) => (
-              <option key={index} value={emp.name}>
-                {emp.name} ({emp.position})
-              </option>
-            ))}
-          </select>
-        </div> */}
+      <div className="mt-3">
+        <label className="block text-sm font-medium text-gray-700 mb-1">부서장</label>
+        <Dropdown
+          items={options}
+          value={selectedManager ?? ''}
+          onChange={(value) => {
+            setSelectedManager(value);
+            handleInputChange('manager', value);
+          }}
+          placeholder={departments.managerName ?? ''}
+        />
+      </div>
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">설명</label>
         <textarea

@@ -45,7 +45,7 @@ export default function DepartmentsTab() {
         {departmentList.map((dept) => (
           <div key={dept.departmentId} className="border border-gray-200 rounded-lg p-6">
             <div className="flex items-center justify-between mb-4">
-              <h4 className="text-lg font-semibold text-gray-900">{dept.departmentName}</h4>
+              <h4 className="text-lg font-semibold text-gray-900">{dept.departmentName}팀</h4>
               <button
                 onClick={() => handleViewDepartment(dept)}
                 className="text-blue-600 hover:text-blue-900 cursor-pointer"
