@@ -5,6 +5,7 @@ import { HrmStatResponse } from '@/app/(private)/hrm/types/HrmStatsApiType';
 import {
   EmployeeListRequestParams,
   EmployeeListResponse,
+  EmployeeRegisterRequest,
   EmployeeUpdateRequest,
 } from '@/app/(private)/hrm/types/HrmEmployeesApiType';
 import {
@@ -247,5 +248,11 @@ export const putTimeRecord = async (params: UpdateTimeRecord) => {
 // 급여 지급 완료 처리
 export const postPayrollComplete = async (params: PayRollCompleteRequestParams) => {
   const res = await axios.post<ApiResponse<null>>(`${HRM_ENDPOINTS.PAYROLL_COMPLETE}`, params);
+  return res.data;
+};
+
+// 직원 등록
+export const postEmployeeRegister = async (body: EmployeeRegisterRequest) => {
+  const res = await axios.post<ApiResponse<null>>(`${HRM_ENDPOINTS.EMPLOYEE_SIGNUP}`, body);
   return res.data;
 };

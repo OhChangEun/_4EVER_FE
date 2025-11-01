@@ -3,12 +3,12 @@
 import Button from '@/app/components/common/Button';
 import { ModalProps } from '@/app/components/common/modal/types';
 import { useMemo, useState } from 'react';
-import { EmployeeRegistRequest } from '@/app/(private)/hrm/types/HrmEmployeesApiType';
 import { useDepartmentsDropdown } from '@/app/hooks/useDepartmentsDropdown';
 import Dropdown from '@/app/components/common/Dropdown';
-import { useQuery } from '@tanstack/react-query';
-import { fetchPositionsDropdown } from '@/app/(private)/hrm/api/hrm.api';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { fetchPositionsDropdown, postEmployeeRegister } from '@/app/(private)/hrm/api/hrm.api';
 import { KeyValueItem } from '@/app/types/CommonType';
+import { EmployeeRegisterRequest } from '../../types/HrmEmployeesApiType';
 
 export default function EmployeeRegisterModal({ onClose }: ModalProps) {
   const [selectedDepartment, setSelectedDepartment] = useState('');
@@ -31,6 +31,17 @@ export default function EmployeeRegisterModal({ onClose }: ModalProps) {
     enabled: !!selectedDepartment,
   });
 
+  const mutation = useMutation({
+    mutationFn: (body: EmployeeRegisterRequest) => postEmployeeRegister(body),
+    onSuccess: () => {
+      alert('회원 등록 성공');
+    },
+    onError: (error) => {
+      console.log('회원 등록 실패: ', error);
+      alert('회원 등록에 실패했습니다.');
+    },
+  });
+
   const positionsOptions: KeyValueItem[] = useMemo(() => {
     const list = positionData ?? [];
     const mapped = list.map((p) => ({
@@ -41,7 +52,7 @@ export default function EmployeeRegisterModal({ onClose }: ModalProps) {
     return mapped;
   }, [positionData]);
 
-  const [formData, setFormData] = useState<EmployeeRegistRequest>({
+  const [formData, setFormData] = useState<EmployeeRegisterRequest>({
     name: '',
     departmentId: '',
     positionId: '',
@@ -49,10 +60,8 @@ export default function EmployeeRegisterModal({ onClose }: ModalProps) {
     phoneNumber: '',
     hireDate: '',
     birthDate: '',
-    gender: '',
-    address: '',
-    academicHistory: '',
-    careerHistory: '',
+    baseAddress: '',
+    detailAddress: '',
   });
 
   const handleChange = (
@@ -68,6 +77,14 @@ export default function EmployeeRegisterModal({ onClose }: ModalProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    const requestBodyData: EmployeeRegisterRequest = {
+      ...formData,
+      departmentId: selectedDepartment,
+      positionId: selectedPosition,
+    };
+
+    mutation.mutate(requestBodyData);
+
     // 폼 초기화
     setFormData({
       name: '',
@@ -77,13 +94,11 @@ export default function EmployeeRegisterModal({ onClose }: ModalProps) {
       phoneNumber: '',
       hireDate: '',
       birthDate: '',
-      gender: '',
-      address: '',
-      academicHistory: '',
-      careerHistory: '',
+      baseAddress: '',
+      detailAddress: '',
     });
 
-    onClose();
+    //onClose();
   };
 
   return (
@@ -149,7 +164,7 @@ export default function EmployeeRegisterModal({ onClose }: ModalProps) {
           <label className="block text-sm font-medium text-gray-700 mb-1">전화번호</label>
           <input
             type="tel"
-            name="phone"
+            name="phoneNumber"
             value={formData.phoneNumber}
             onChange={handleChange}
             required
@@ -164,7 +179,7 @@ export default function EmployeeRegisterModal({ onClose }: ModalProps) {
           <label className="block text-sm font-medium text-gray-700 mb-1">입사일</label>
           <input
             type="date"
-            name="joinDate"
+            name="hireDate"
             value={formData.hireDate}
             onChange={handleChange}
             required
@@ -183,17 +198,31 @@ export default function EmployeeRegisterModal({ onClose }: ModalProps) {
           />
         </div>
       </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">주소</label>
+          <input
+            type="text"
+            name="baseAddress"
+            value={formData.baseAddress}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="서울시 강남구 테헤란로 123"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">상세 주소</label>
+          <input
+            type="text"
+            name="detailAddress"
+            value={formData.detailAddress}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="3층 301호 (역삼동, 강남빌딩)
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">주소</label>
-        <input
-          type="text"
-          name="address"
-          value={formData.address}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          placeholder="서울시 강남구 테헤란로 123"
-        />
+"
+          />
+        </div>
       </div>
 
       <div className="flex justify-end">

@@ -26,19 +26,7 @@ export interface EmployeeListRequestParams extends PageRequest {
   department?: string;
   name?: string;
 }
-
 export interface EmployeeRegisterRequest {
-  name: string;
-  departmentId: number;
-  positionId: number;
-  email: string;
-  phoneNumber: string;
-  hireDate: string;
-  birthDate: string;
-  address: string;
-}
-
-export interface EmployeeRegistRequest {
   name: string;
   departmentId: string;
   positionId: string;
@@ -46,10 +34,8 @@ export interface EmployeeRegistRequest {
   phoneNumber: string;
   hireDate: string;
   birthDate: string;
-  gender: string;
-  address: string;
-  academicHistory: string;
-  careerHistory: string;
+  baseAddress: string;
+  detailAddress: string;
 }
 
 export interface EmployeeUpdateRequest {
