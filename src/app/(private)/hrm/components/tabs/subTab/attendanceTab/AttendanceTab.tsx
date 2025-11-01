@@ -2,8 +2,7 @@
 'use client';
 import {
   fetchAttendanceList,
-  fetchDepartmentsList,
-  fetchPositionsList,
+  fetchAttendanceStatusDropdown,
 } from '@/app/(private)/hrm/api/hrm.api';
 import {
   AttendanceListData,
@@ -23,14 +22,36 @@ export default function AttendanceTab() {
   // --- 모달 출력 ---
   const { openModal } = useModal();
 
+  // --- 드롭다운 ---
   const {
     options: departmentsOptions,
     isLoading: dropdownLoading,
     isError: dropdownError,
   } = useDepartmentsDropdown();
 
-  // --- 드롭다운 ---
+  const {
+    data: statusData,
+    isLoading: statusLoading,
+    isError: errorLoading,
+  } = useQuery({
+    queryKey: ['attendanceStatusDropdown'],
+    queryFn: fetchAttendanceStatusDropdown,
+    staleTime: Infinity,
+  });
+
+  const statusOptions = useMemo((): KeyValueItem[] => {
+    const list = statusData ?? [];
+    const mapped = list.map((d) => ({
+      key: d.status,
+      value: d.description,
+    }));
+
+    return [{ key: '', value: '전체 상태' }, ...mapped];
+  }, [statusData]);
+
+  // --- 선택된 드롭다운 상태 ---
   const [selectedDepartment, setSelectedDepartment] = useState(''); // 부서
+  const [selectedPayrollStatus, setSelectedPayrollStatus] = useState(''); // 부서
 
   // --- 페이지 네이션 ---
   const [currentPage, setCurrentPage] = useState(1);
@@ -89,6 +110,16 @@ export default function AttendanceTab() {
             value={selectedDepartment}
             onChange={(dept: string) => {
               setSelectedDepartment(dept);
+              setCurrentPage(1);
+            }}
+          />
+
+          <Dropdown
+            placeholder="전체 상태"
+            items={statusOptions}
+            value={selectedPayrollStatus}
+            onChange={(status: string) => {
+              setSelectedPayrollStatus(status);
               setCurrentPage(1);
             }}
           />

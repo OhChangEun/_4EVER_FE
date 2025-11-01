@@ -14,6 +14,7 @@ export default function PayrollManagement() {
   // --- 모달 출력 ---
   const { openModal } = useModal();
 
+  // --- 드롭다운 ---
   const {
     options: departmentsOptions,
     isLoading: dropdownLoading,
@@ -27,6 +28,7 @@ export default function PayrollManagement() {
   } = useQuery({
     queryKey: ['payrollStatusDropdown'],
     queryFn: fetchPayrollStatusDropdown,
+    staleTime: Infinity,
   });
 
   const statusOptions = useMemo((): KeyValueItem[] => {
@@ -39,7 +41,7 @@ export default function PayrollManagement() {
     return [{ key: '', value: '전체 상태' }, ...mapped];
   }, [statusData]);
 
-  // --- 드롭다운 ---
+  // --- 선택된 드롭다운 상태 ---
   const [selectedDepartment, setSelectedDepartment] = useState(''); // 부서
   const [selectedPayrollStatus, setSelectedPayrollStatus] = useState(''); // 부서
 
