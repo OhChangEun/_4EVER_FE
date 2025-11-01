@@ -6,6 +6,12 @@ export const HRM_ENDPOINTS = {
   // 드롭다운
   DEPARTMENTS_DROPDOWN: `${HRM_BASE_PATH}/departments/all`, // 부서 드롭다운
   POSITIONS_DROPDOWN: (departmentId: string) => `${HRM_BASE_PATH}/${departmentId}/positions/all`, // 부서에 따른 직급 드롭다운
+  ATTENDANCE_STATUS_DROPDOWN: `${HRM_BASE_PATH}/attendance/statuses`, // 출결 상태 드롭다운
+  DEPT_MEMBER_DROPDOWN: (departmentId: string) =>
+    `${HRM_BASE_PATH}/departments/${departmentId}/members`, // 부서 구성원 목록 드롭다운
+  PAYROLL_STATUS_DROPDOWN: `${HRM_BASE_PATH}/payroll/statuses`, // 급여 상태 드롭다운
+  TRAINING_CATE_DROPDOWN: `${HRM_BASE_PATH}/trainings/categories`, //교육 카테고리 드롭다운
+  PROGRAM_LIST_DROPDOWN: `${HRM_BASE_PATH}/trainings/programs`, // 교육 프로그램 드롭다운
 
   // 근태
   ATTENDANCE: `${HRM_BASE_PATH}/attendance`, // 출퇴근 기록 조회
@@ -34,7 +40,6 @@ export const HRM_ENDPOINTS = {
   PAYROLL_DETAIL: (payrollId: string) => `${HRM_BASE_PATH}/payroll/${payrollId}`, // 급여 상세 조회
   PAYROLL_COMPLETE: `${HRM_BASE_PATH}/payroll/complete`, // 급여 지급 완료 처리
   PAYROLL_GENERATE: `${HRM_BASE_PATH}/payroll/generate`, // 모든 직원 당월 급여 생성
-  PAYROLL_STATUSES: `${HRM_BASE_PATH}/payroll/statuses`, // 급여 상태 목록 조회 (enum 전체)
 
   // 직책
   POSITIONS: `${HRM_BASE_PATH}/positions`, // 직책 목록 조회

@@ -39,8 +39,13 @@ import {
 } from '@/app/(private)/hrm/types/HrmAttendanceApiType';
 import { LeaveListResponse, LeaveRequestParams } from '@/app/(private)/hrm/types/HrmLeaveApiType';
 import {
+  AttendanceStatusDropdown,
+  DepartmentMemberDropdown,
   DepartmentsDropdown,
+  PayrollStatusDropdown,
   PositionsDropdown,
+  ProgramListDropdown,
+  TrainingCategoryDropdown,
 } from '@/app/(private)/hrm/types/HrmDropdownApiType';
 
 // 인적자원관리 지표 조회
@@ -53,24 +58,6 @@ export const fetchHrmStats = async (): Promise<HrmStatResponse | null> => {
     console.log(error);
     return null;
   }
-};
-
-// 부서 드롭다운 조회
-export const fetchDepartmentsDropdown = async (): Promise<DepartmentsDropdown[]> => {
-  const res = await axios.get<ApiResponse<DepartmentsDropdown[]>>(
-    `${HRM_ENDPOINTS.DEPARTMENTS_DROPDOWN}`,
-  );
-  return res.data.data;
-};
-
-// 직급 드롭다운 조회
-export const fetchPositionsDropdown = async (
-  departmentId: string,
-): Promise<PositionsDropdown[]> => {
-  const res = await axios.get<ApiResponse<PositionsDropdown[]>>(
-    `${HRM_ENDPOINTS.POSITIONS_DROPDOWN(departmentId)}`,
-  );
-  return res.data.data;
 };
 
 // 직원 목록 조회
@@ -255,4 +242,65 @@ export const postPayrollComplete = async (params: PayRollCompleteRequestParams) 
 export const postEmployeeRegister = async (body: EmployeeRegisterRequest) => {
   const res = await axios.post<ApiResponse<null>>(`${HRM_ENDPOINTS.EMPLOYEE_SIGNUP}`, body);
   return res.data;
+};
+
+// --- 드롭다운 API ---
+// 부서 드롭다운 조회
+export const fetchDepartmentsDropdown = async (): Promise<DepartmentsDropdown[]> => {
+  const res = await axios.get<ApiResponse<DepartmentsDropdown[]>>(
+    HRM_ENDPOINTS.DEPARTMENTS_DROPDOWN,
+  );
+  return res.data.data;
+};
+
+// 직급 드롭다운 조회
+export const fetchPositionsDropdown = async (
+  departmentId: string,
+): Promise<PositionsDropdown[]> => {
+  const res = await axios.get<ApiResponse<PositionsDropdown[]>>(
+    HRM_ENDPOINTS.POSITIONS_DROPDOWN(departmentId),
+  );
+  return res.data.data;
+};
+
+// 출결 상태 드롭다운 조회
+export const fetchAttendanceStatusDropdown = async (): Promise<AttendanceStatusDropdown[]> => {
+  const res = await axios.get<ApiResponse<AttendanceStatusDropdown[]>>(
+    HRM_ENDPOINTS.ATTENDANCE_STATUS_DROPDOWN,
+  );
+  return res.data.data;
+};
+
+// 부서 구성원 목록 드롭다운 조회
+export const fetchDeptMemberDropdown = async (
+  departmentId: string,
+): Promise<DepartmentMemberDropdown[]> => {
+  const res = await axios.get<ApiResponse<DepartmentMemberDropdown[]>>(
+    HRM_ENDPOINTS.DEPT_MEMBER_DROPDOWN(departmentId),
+  );
+  return res.data.data;
+};
+
+// 급여 상태 드롭다운 조회
+export const fetchPayrollStatusDropdown = async (): Promise<PayrollStatusDropdown[]> => {
+  const res = await axios.get<ApiResponse<PayrollStatusDropdown[]>>(
+    HRM_ENDPOINTS.PAYROLL_STATUS_DROPDOWN,
+  );
+  return res.data.data;
+};
+
+// 교육 카테고리 드롭다운 조회
+export const fetchTrainingCategoryDropdown = async (): Promise<TrainingCategoryDropdown[]> => {
+  const res = await axios.get<ApiResponse<TrainingCategoryDropdown[]>>(
+    HRM_ENDPOINTS.TRAINING_CATE_DROPDOWN,
+  );
+  return res.data.data;
+};
+
+// 교육 프로그램 드롭다운 조회
+export const fetchProgramListDropdown = async (): Promise<ProgramListDropdown[]> => {
+  const res = await axios.get<ApiResponse<ProgramListDropdown[]>>(
+    HRM_ENDPOINTS.PROGRAM_LIST_DROPDOWN,
+  );
+  return res.data.data;
 };

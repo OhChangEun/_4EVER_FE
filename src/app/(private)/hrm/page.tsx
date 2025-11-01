@@ -3,10 +3,13 @@ import { getQueryClient } from '@/lib/queryClient';
 import { dehydrate } from '@tanstack/react-query';
 import StatSection from '@/app/components/common/StatSection';
 import {
+  fetchAttendanceStatusDropdown,
   fetchDepartmentsDropdown,
   fetchEmployeesList,
   fetchHrmStats,
+  fetchPayrollStatusDropdown,
   fetchPositionsList,
+  fetchTrainingCategoryDropdown,
 } from '@/app/(private)/hrm/api/hrm.api';
 import { mapHrmStatsToCards } from '@/app/(private)/hrm/services/hrm.service';
 import ErrorMessage from '@/app/components/common/ErrorMessage';
@@ -36,11 +39,48 @@ export default async function HrmPage() {
       queryFn: fetchPositionsList,
     }),
 
+    // --- 드롭다운 prefetch ---
     // 부서 드롭다운
     queryClient.prefetchQuery({
       queryKey: ['departmentsDropdown'],
       queryFn: fetchDepartmentsDropdown,
     }),
+
+    // // 직급 드롭다운 (부서 ID 필요 시 기본값 전달)
+    // queryClient.prefetchQuery({
+    //   queryKey: ['positionsDropdown', defaultDepartmentId],
+    //   queryFn: () => fetchPositionsDropdown(defaultDepartmentId),
+    // }),
+
+    // 출결 상태 드롭다운
+    queryClient.prefetchQuery({
+      queryKey: ['attendanceStatusDropdown'],
+      queryFn: fetchAttendanceStatusDropdown,
+    }),
+
+    // 부서 구성원 드롭다운 (부서 ID 필요 시 기본값 전달)
+    // queryClient.prefetchQuery({
+    //   queryKey: ['deptMemberDropdown', defaultDepartmentId],
+    //   queryFn: () => fetchDeptMemberDropdown(defaultDepartmentId),
+    // }),
+
+    // 급여 상태 드롭다운
+    queryClient.prefetchQuery({
+      queryKey: ['payrollStatusDropdown'],
+      queryFn: fetchPayrollStatusDropdown,
+    }),
+
+    // 교육 카테고리 드롭다운
+    queryClient.prefetchQuery({
+      queryKey: ['trainingCategoryDropdown'],
+      queryFn: fetchTrainingCategoryDropdown,
+    }),
+
+    // 교육 프로그램 드롭다운
+    // queryClient.prefetchQuery({
+    //   queryKey: ['programListDropdown'],
+    //   queryFn: fetchProgramListDropdown,
+    // }),
   ]);
   const dehydratedState = dehydrate(queryClient);
 
