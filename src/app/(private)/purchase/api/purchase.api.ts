@@ -15,7 +15,6 @@ import {
   SupplierListResponse,
 } from '@/app/(private)/purchase/types/SupplierType';
 import {
-  CreatePurchaseRequest,
   FetchPurchaseOrderParams,
   FetchPurchaseReqParams,
   FetchSupplierListParams,
@@ -174,7 +173,7 @@ export const fetchSupplierDetail = async (supplierId: string): Promise<SupplierD
     `${PURCHASE_ENDPOINTS.SUPPLIER_DETAIL(supplierId)}`,
   );
 
-  // console.log(res.data.data);
+  console.log(res.data.data);
   return res.data.data;
 };
 
