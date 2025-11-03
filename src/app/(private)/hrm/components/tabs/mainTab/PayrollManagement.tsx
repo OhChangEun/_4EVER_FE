@@ -121,7 +121,7 @@ export default function PayrollManagement() {
         <div className="flex justify-between items-center gap-2 mb-4">
           <div className="flex pl-1 gap-2">
             <Dropdown
-              placeholder="전체 년"
+              placeholder="전체 년도"
               items={yearOptions}
               value={selectedYear}
               onChange={(year: string) => setSelectedYear(year)}
