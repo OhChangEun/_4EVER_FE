@@ -25,32 +25,7 @@ import Pagination from '@/app/components/common/Pagination';
 import { PurchaseReqParams } from '@/app/(private)/purchase/types/PurchaseApiRequestType';
 import { useModal } from '@/app/components/common/modal/useModal';
 import { useDropdown } from '@/app/hooks/useDropdown';
-
-const getStatusColor = (status: string): string => {
-  switch (status) {
-    case 'APPROVED':
-      return 'bg-green-100 text-green-700';
-    case 'waiting':
-      return 'bg-blue-100 text-blue-700';
-    case 'rejected':
-      return 'bg-red-100 text-red-700';
-    default:
-      return 'bg-gray-100 text-gray-700';
-  }
-};
-
-const getStatusText = (status: string): string => {
-  switch (status) {
-    case 'APPROVED':
-      return '승인';
-    case 'waiting':
-      return '대기';
-    case 'rejected':
-      return '반려';
-    default:
-      return status;
-  }
-};
+import { formatDateTime } from '@/app/utils/date';
 
 export default function PurchaseRequestListTab() {
   const { openModal } = useModal();
@@ -228,11 +203,13 @@ export default function PurchaseRequestListTab() {
                     </div>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">{request.requesterName}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{request.requestDate}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">
+                    {formatDateTime(request.requestDate)}
+                  </td>
                   <td className="px-6 py-4 text-sm text-gray-500">{request.totalAmount}원</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="px-2 py-1 rounded-full text-xs font-medium">
-                      {getStatusText(request.statusCode)}
+                      {request.statusCode}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">
