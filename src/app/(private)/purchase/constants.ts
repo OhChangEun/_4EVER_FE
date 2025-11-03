@@ -19,14 +19,6 @@ export const STAT_PERIODS: KeyValueItem<Period>[] = [
   { key: 'year', value: '연도별' },
 ];
 
-// 구매 상태 필터링
-export const PURCHASE_REQ_STATUS: KeyValueItem<PurchaseReqStatus>[] = [
-  { key: 'ALL', value: '전체' },
-  { key: 'APPROVED', value: '승인' },
-  { key: 'PENDING', value: '대기' },
-  { key: 'REJECTED', value: '반려' },
-];
-
 // 발주 상태 필터링
 export const PURCHASE_ORDER_STATUS: KeyValueItem<PurchaseOrderStatus>[] = [
   { key: 'ALL', value: '전체' },

@@ -18,9 +18,10 @@ import {
   FetchPurchaseOrderParams,
   FetchPurchaseReqParams,
   FetchSupplierListParams,
-  PurchaseRequestBody,
+  PurchaseRequestItemBody,
 } from '@/app/(private)/purchase/types/PurchaseApiRequestType';
 import { PURCHASE_ENDPOINTS } from '@/app/(private)/purchase/api/purchase.endpoints';
+import { KeyValueItem } from '@/app/types/CommonType';
 
 // 구매 관리 지표
 export const fetchPurchaseStats = async (): Promise<PurchaseStatResponse | null> => {
@@ -61,16 +62,15 @@ export const fetchPurchaseReqList = async (
 // 구매 요청 승인
 export const postApporvePurchaseReq = async (prId: string) => {
   const res = await axios.post<ApiResponse<null>>(
-    `${PURCHASE_ENDPOINTS.PURCHASE_REQUISITION_APPROVE(prId)}`,
+    `${PURCHASE_ENDPOINTS.PURCHASE_REQUISITION_RELEASE(prId)}`,
   );
   return res.data;
 };
 
 // 구매 요청 반려
-export const postRejectPurchaseReq = async (prId: string, comment: string) => {
+export const postRejectPurchaseReq = async (prId: string) => {
   const res = await axios.post<ApiResponse<null>>(
     `${PURCHASE_ENDPOINTS.PURCHASE_REQUISITION_REJECT(prId)}`,
-    { comment },
   );
   return res.data;
 };
@@ -89,7 +89,7 @@ export const fetchPurchaseReqDetail = async (
 
 // 구매 요청 등록
 export const createPurchaseRequest = async (
-  data: PurchaseRequestBody,
+  data: PurchaseRequestItemBody,
 ): Promise<ApiResponse<null>> => {
   const res = await axios.post<ApiResponse<null>>(
     `${PURCHASE_ENDPOINTS.PURCHASE_REQUISITIONS}`,
@@ -129,10 +129,9 @@ export const postApprovePurchaseOrder = async (poId: string) => {
 };
 
 // 발주서 반려
-export const postRejectPurchaseOrder = async (poId: string, reason: string) => {
+export const postRejectPurchaseOrder = async (poId: string) => {
   const res = await axios.post<ApiResponse<null>>(
     `${PURCHASE_ENDPOINTS.PURCHASE_ORDER_REJECT(poId)}`,
-    { reason },
   );
   return res.data;
 };
@@ -173,7 +172,7 @@ export const fetchSupplierDetail = async (supplierId: string): Promise<SupplierD
     `${PURCHASE_ENDPOINTS.SUPPLIER_DETAIL(supplierId)}`,
   );
 
-  console.log(res.data.data);
+  // console.log(res.data.data);
   return res.data.data;
 };
 
@@ -183,4 +182,61 @@ export const createSupplyRequest = async (
 ): Promise<ApiResponse<null>> => {
   const res = await axios.post<ApiResponse<null>>(`${PURCHASE_ENDPOINTS.SUPPLIER}`, data);
   return res.data;
+};
+
+// --- 드롭다운 ---
+// 구매요청서 상태
+export const fetchPurchaseRequisitionStatusDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await axios.get<ApiResponse<KeyValueItem[]>>(
+    PURCHASE_ENDPOINTS.PURCHASE_REQUISITION_STATUS_TOGGLE,
+  );
+  return res.data.data;
+};
+
+// 구매요청서 검색 타입
+export const fetchPurchaseRequisitionSearchTypeDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await axios.get<ApiResponse<KeyValueItem[]>>(
+    PURCHASE_ENDPOINTS.PURCHASE_REQUISITION_SEARCH_TYPE_TOGGLE,
+  );
+  return res.data.data;
+};
+
+// 발주서 상태
+export const fetchPurchaseOrderStatusDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await axios.get<ApiResponse<KeyValueItem[]>>(
+    PURCHASE_ENDPOINTS.PURCHASE_ORDER_STATUS_TOGGLE,
+  );
+  return res.data.data;
+};
+
+// 발주서 검색 타입
+export const fetchPurchaseOrderSearchTypeDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await axios.get<ApiResponse<KeyValueItem[]>>(
+    PURCHASE_ENDPOINTS.PURCHASE_ORDER_SEARCH_TYPE_TOGGLE,
+  );
+  return res.data.data;
+};
+
+// 공급업체 카테고리
+export const fetchSupplierCategoryDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await axios.get<ApiResponse<KeyValueItem[]>>(
+    PURCHASE_ENDPOINTS.SUPPLIER_CATEGORY_TOGGLE,
+  );
+  return res.data.data;
+};
+
+// 공급업체 검색 타입
+export const fetchSupplierSearchTypeDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await axios.get<ApiResponse<KeyValueItem[]>>(
+    PURCHASE_ENDPOINTS.SUPPLIER_SEARCH_TYPE_TOGGLE,
+  );
+  return res.data.data;
+};
+
+// 공급업체 상태
+export const fetchSupplierStatusDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await axios.get<ApiResponse<KeyValueItem[]>>(
+    PURCHASE_ENDPOINTS.SUPPLIER_STATUS_TOGGLE,
+  );
+  return res.data.data;
 };
