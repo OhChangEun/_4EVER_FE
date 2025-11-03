@@ -144,16 +144,8 @@ export const fetchPurchaseOrderDetail = async (
 export const fetchSupplierList = async (
   params: FetchSupplierListParams = {},
 ): Promise<SupplierListResponse> => {
-  const { page = 0, size = 10, category, status, searchKeyword } = params;
-
   const res = await axios.get<ApiResponse<SupplierListResponse>>(`${PURCHASE_ENDPOINTS.SUPPLIER}`, {
-    params: {
-      page,
-      size,
-      ...(category && { category }),
-      ...(status && { status }),
-      ...(searchKeyword && { searchKeyword }),
-    },
+    params,
   });
   return res.data.data;
 };

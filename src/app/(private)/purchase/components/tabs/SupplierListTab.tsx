@@ -1,30 +1,68 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import SupplierAddModal from '@/app/(private)/purchase/components/modals/SupplierAddModal';
 import SupplierDetailModal from '@/app/(private)/purchase/components/modals/SupplierDetailModal';
-import { SupplierListResponse } from '@/app/(private)/purchase/types/SupplierType';
-import IconButton from '@/app/components/common/IconButton';
-import { fetchSupplierList } from '@/app/(private)/purchase/api/purchase.api';
-import Dropdown from '@/app/components/common/Dropdown';
 import {
-  SupplierStatus,
-  SUPPLIER_CATEGORY_ITEMS,
-  SUPPLIER_STATUS_ITEMS,
-  SupplierCategory,
-} from '@/app/(private)/purchase/constants';
+  SupplierListRequestParams,
+  SupplierListResponse,
+} from '@/app/(private)/purchase/types/SupplierType';
+import IconButton from '@/app/components/common/IconButton';
+import {
+  fetchSupplierCategoryDropdown,
+  fetchSupplierList,
+  fetchSupplierSearchTypeDropdown,
+  fetchSupplierStatusDropdown,
+} from '@/app/(private)/purchase/api/purchase.api';
+import Dropdown from '@/app/components/common/Dropdown';
 import Pagination from '@/app/components/common/Pagination';
 import { useModal } from '@/app/components/common/modal/useModal';
+import { useDropdown } from '@/app/hooks/useDropdown';
+import { getQueryClient } from '@/lib/queryClient';
+import { select } from 'framer-motion/client';
 
 export default function SupplierListTab() {
   const { openModal } = useModal();
 
-  const [selectedCategory, setSelectedCategory] = useState<SupplierCategory>('ALL');
-  const [selectedSupplierStatus, setSelectedSupplierStatus] = useState<SupplierStatus>('ALL');
+  // 공급업체 카테고리 드롭다운
+  const { options: supplierCategoryOptions } = useDropdown(
+    'supplierCategoryDropdown',
+    fetchSupplierCategoryDropdown,
+  );
+  // 공급업체 상태 드롭다운
+  const { options: supplierStatusOptions } = useDropdown(
+    'supplierStatusDropdown',
+    fetchSupplierStatusDropdown,
+  );
+
+  // 공급업체 검색타입 드롭다운
+  const { options: supplierSearchTypeOptions } = useDropdown(
+    'supplierSearchTypeDropdown',
+    fetchSupplierSearchTypeDropdown,
+  );
+
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedStatus, setSelectedStatus] = useState<string>('');
+  const [selectedSearchType, setSelectedSearchType] = useState<string>('');
+  const [keyword, setKeyword] = useState<string>('');
 
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
+
+  const queryClient = getQueryClient();
+
+  const queryParams = useMemo(
+    (): SupplierListRequestParams => ({
+      category: selectedCategory,
+      statusCode: selectedStatus,
+      type: selectedSearchType,
+      keyword: keyword,
+      page: currentPage - 1,
+      size: pageSize,
+    }),
+    [selectedCategory, selectedStatus, selectedSearchType, keyword, currentPage],
+  );
 
   // React Query로 데이터 가져오기 - 쿼리 파라미터 전달
   const {
@@ -32,14 +70,8 @@ export default function SupplierListTab() {
     isLoading,
     isError,
   } = useQuery<SupplierListResponse>({
-    queryKey: ['supplierList', currentPage, pageSize, selectedCategory, selectedSupplierStatus],
-    queryFn: () =>
-      fetchSupplierList({
-        page: currentPage - 1,
-        size: pageSize,
-        category: selectedCategory || undefined,
-        status: selectedSupplierStatus || undefined,
-      }),
+    queryKey: ['supplierList', queryParams],
+    queryFn: () => fetchSupplierList(queryParams),
   });
 
   if (isLoading) return <p>불러오는 중...</p>;
@@ -64,15 +96,31 @@ export default function SupplierListTab() {
         <div className="flex items-center space-x-4">
           {/* 공급업체 카테고리 드롭다운 */}
           <Dropdown
-            items={SUPPLIER_CATEGORY_ITEMS}
+            placeholder="전체 카테고리"
+            items={supplierCategoryOptions}
             value={selectedCategory}
-            onChange={(category: SupplierCategory) => setSelectedCategory(category)}
+            onChange={(category: string): void => {
+              setSelectedCategory(category);
+              setCurrentPage(1);
+            }}
           />
-          {/* 공급업체 상태 드롭다운 */}
           <Dropdown
-            items={SUPPLIER_STATUS_ITEMS}
-            value={selectedSupplierStatus}
-            onChange={(status: SupplierStatus) => setSelectedSupplierStatus(status)}
+            placeholder="전체 상태"
+            items={supplierStatusOptions}
+            value={selectedStatus}
+            onChange={(status: string): void => {
+              setSelectedStatus(status);
+              setCurrentPage(1);
+            }}
+          />
+          <Dropdown
+            placeholder="검색 타입"
+            items={supplierSearchTypeOptions}
+            value={selectedSearchType}
+            onChange={(type: string): void => {
+              setSelectedSearchType(type);
+              setCurrentPage(1);
+            }}
           />
           <IconButton label="공급업체 등록" icon="ri-add-line" onClick={handleViewAddSupplier} />
         </div>

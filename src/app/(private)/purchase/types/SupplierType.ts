@@ -1,5 +1,6 @@
-import { Page } from '@/app/types/Page';
+import { Page, PageRequest } from '@/app/types/Page';
 import { SupplierStatus } from '@/app/(private)/purchase/constants';
+import { KeywordRequest } from '@/app/types/KeywordType';
 
 // 자재 정보
 export interface Material {
@@ -59,4 +60,9 @@ export interface SupplierDetailResponse {
 export interface SupplierListResponse {
   content: SupplierResponse[];
   page: Page;
+}
+
+export interface SupplierListRequestParams extends PageRequest, KeywordRequest {
+  statusCode?: string;
+  category?: string;
 }
