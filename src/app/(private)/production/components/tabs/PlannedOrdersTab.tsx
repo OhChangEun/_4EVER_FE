@@ -110,6 +110,7 @@ export default function PlannedOrdersTab() {
         </h4>
         <div className="flex items-center gap-3">
           <Dropdown
+            placeholder="전체 부서"
             items={MRP_PLANNED_ORDER_STATUS_OPTIONS}
             value={selectedStatus}
             onChange={(status: MrpPlannedOrderStatus) => {

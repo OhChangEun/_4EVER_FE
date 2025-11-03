@@ -20,6 +20,7 @@ import {
   PurchaseReqParams,
   FetchSupplierListParams,
   PurchaseRequestItemBody,
+  PurchaseRequestBody,
 } from '@/app/(private)/purchase/types/PurchaseApiRequestType';
 import { PURCHASE_ENDPOINTS } from '@/app/(private)/purchase/api/purchase.endpoints';
 import { KeyValueItem } from '@/app/types/CommonType';
@@ -81,7 +82,7 @@ export const fetchPurchaseReqDetail = async (
 
 // 구매 요청 등록
 export const createPurchaseRequest = async (
-  data: PurchaseRequestItemBody,
+  data: PurchaseRequestBody,
 ): Promise<ApiResponse<null>> => {
   const res = await axios.post<ApiResponse<null>>(
     `${PURCHASE_ENDPOINTS.PURCHASE_REQUISITIONS}`,

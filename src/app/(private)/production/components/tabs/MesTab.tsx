@@ -70,6 +70,7 @@ export default function MesTab() {
         <h2 className="text-lg font-semibold text-gray-900">제조실행시스템 (MES)</h2>
         <div className="flex gap-4 justify-end">
           <Dropdown
+            placeholder="전체 견적"
             items={MES_QUOTE_OPTIONS}
             value={selectedMesQuote}
             onChange={(quote: string) => {
@@ -77,6 +78,7 @@ export default function MesTab() {
             }}
           />
           <Dropdown
+            placeholder="전체 상태"
             items={MES_STATUS_OPTIONS}
             value={selectedMesStatus}
             onChange={(status: MesStatusCode) => {
