@@ -1,10 +1,9 @@
 import { Period, Stat, StatResponse } from '@/app/types/StatType';
 
 interface FinanceStat {
-  totalPurchases: Stat;
-  netProfit: Stat;
-  accountsReceivable: Stat;
-  totalSales: Stat;
+  total_purchases: Stat;
+  net_profit: Stat;
+  total_sales: Stat;
 }
 
 export type FinanceStatResponse = StatResponse<FinanceStat>;
