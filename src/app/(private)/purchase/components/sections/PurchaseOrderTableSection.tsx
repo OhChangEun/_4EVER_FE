@@ -4,7 +4,7 @@ import { PurchaseOrder } from '@/app/(private)/purchase/types/PurchaseOrderType'
 
 export interface PurchaseOrderTableProps {
   currentOrders: PurchaseOrder[];
-  handleViewDetail: (order: PurchaseOrder) => void;
+  handleViewDetail: (orderId: string) => void;
   handleApprove: (orderId: string) => void;
   handleReject: (orderId: string) => void;
 }
@@ -72,7 +72,7 @@ export default function PurchaseOrderTable({
               <td className="py-3 px-4 text-center">
                 <div className="flex items-center justify-center space-x-2">
                   <button
-                    onClick={() => handleViewDetail(order)}
+                    onClick={() => handleViewDetail(order.purchaseOrderId)}
                     className="text-blue-600 hover:text-blue-500 cursor-pointer"
                     title="상세보기"
                   >

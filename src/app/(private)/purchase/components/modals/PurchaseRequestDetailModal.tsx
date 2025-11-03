@@ -107,7 +107,6 @@ export default function PurchaseRequestDetailModal({
                     <td className="px-4 py-3 text-sm text-gray-900">{item.quantity}</td>
                     <td className="px-4 py-3 text-sm text-gray-900">₩{item.unitPrice}</td>
                     <td className="px-4 py-3 text-sm text-gray-900">₩{item.amount}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.dueDate}</td>
                   </tr>
                 ))}
               </tbody>

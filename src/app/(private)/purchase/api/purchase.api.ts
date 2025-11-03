@@ -41,19 +41,9 @@ export const fetchPurchaseStats = async (): Promise<PurchaseStatResponse | null>
 export const fetchPurchaseReqList = async (
   params: FetchPurchaseReqParams,
 ): Promise<PurchaseReqListResponse> => {
-  const { page = 0, size = 10, status = 'ALL', createdFrom, createdTo } = params;
-
   const res = await axios.get<ApiResponse<PurchaseReqListResponse>>(
     `${PURCHASE_ENDPOINTS.PURCHASE_REQUISITIONS}`,
-    {
-      params: {
-        page,
-        size,
-        ...(status && { status }),
-        ...(createdFrom && { createdFrom }),
-        ...(createdTo && { createdTo }),
-      },
-    },
+    { params },
   );
   // console.log(res.data.data);
   return res.data.data;
@@ -68,9 +58,10 @@ export const postApporvePurchaseReq = async (prId: string) => {
 };
 
 // 구매 요청 반려
-export const postRejectPurchaseReq = async (prId: string) => {
+export const postRejectPurchaseReq = async (prId: string, body: string) => {
   const res = await axios.post<ApiResponse<null>>(
     `${PURCHASE_ENDPOINTS.PURCHASE_REQUISITION_REJECT(prId)}`,
+    { body },
   );
   return res.data;
 };
@@ -129,9 +120,10 @@ export const postApprovePurchaseOrder = async (poId: string) => {
 };
 
 // 발주서 반려
-export const postRejectPurchaseOrder = async (poId: string) => {
+export const postRejectPurchaseOrder = async (poId: string, body: string) => {
   const res = await axios.post<ApiResponse<null>>(
-    `${PURCHASE_ENDPOINTS.PURCHASE_ORDER_REJECT(poId)}`,
+    `${PURCHASE_ENDPOINTS.PURCHASE_ORDER_REJECT(poId)},`,
+    { body },
   );
   return res.data;
 };

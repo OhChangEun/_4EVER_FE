@@ -1,25 +1,39 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import PurchaseOrderDetailModal from '@/app/(private)/purchase/components/modals/PurchaseOrderDetailModal';
 import PurchaseOrderTable from '@/app/(private)/purchase/components/sections/PurchaseOrderTableSection';
-import { PurchaseOrder } from '@/app/(private)/purchase/types/PurchaseOrderType';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   fetchPurchaseOrderList,
+  fetchPurchaseOrderSearchTypeDropdown,
+  fetchPurchaseOrderStatusDropdown,
   postApprovePurchaseOrder,
   postRejectPurchaseOrder,
 } from '@/app/(private)/purchase/api/purchase.api';
-import { PURCHASE_ORDER_STATUS, PurchaseOrderStatus } from '@/app/(private)/purchase/constants';
 import Dropdown from '@/app/components/common/Dropdown';
 import DateRangePicker from '@/app/components/common/DateRangePicker';
 import { getQueryClient } from '@/lib/queryClient';
 import Pagination from '@/app/components/common/Pagination';
+import { useDropdown } from '@/app/hooks/useDropdown';
+import { useModal } from '@/app/components/common/modal/useModal';
 
 export default function PurchaseOrderListTab() {
-  const [selectedStatus, setSelectedStatus] = useState<PurchaseOrderStatus>('ALL');
-  const [showDetailModal, setShowDetailModal] = useState<boolean>(false);
-  const [selectedOrder, setSelectedOrder] = useState<PurchaseOrder | null>(null);
+  const { openModal } = useModal();
+
+  // 발주서 타입 드롭다운
+  const { options: purchaseOrderStatusOptions } = useDropdown(
+    'purchaseOrderStatusDropdown',
+    fetchPurchaseOrderStatusDropdown,
+  );
+  // 발주서 검색 타입 드롭다운
+  const { options: purchaseOrderSearchTypeOptions } = useDropdown(
+    'purchaseOrderSearchTypeDropdown',
+    fetchPurchaseOrderSearchTypeDropdown,
+  );
+
+  const [selectedStatus, setSelectedStatus] = useState('ALL');
+  const [selectedSearchType, setSelectedSearchType] = useState('');
 
   const [currentPage, setCurrentPage] = useState<number>(0); // 0부터 시작
   const pageSize = 10;
@@ -29,18 +43,24 @@ export default function PurchaseOrderListTab() {
 
   const queryClient = getQueryClient();
 
+  const queryParams = useMemo(
+    () => ({
+      statusCode: selectedStatus || undefined,
+      type: selectedSearchType || undefined,
+      page: currentPage,
+      size: pageSize,
+    }),
+    [currentPage, selectedStatus, selectedSearchType],
+  );
+
   const {
     data: orderData,
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ['purchaseOrders', currentPage, pageSize, selectedStatus],
-    queryFn: () =>
-      fetchPurchaseOrderList({
-        page: currentPage,
-        size: pageSize,
-        status: selectedStatus || undefined,
-      }),
+    queryKey: ['purchaseOrders', queryParams],
+    queryFn: () => fetchPurchaseOrderList(queryParams),
+    staleTime: 1000,
   });
 
   // 발주서 승인
@@ -87,14 +107,11 @@ export default function PurchaseOrderListTab() {
   };
 
   // 상세 보기 모달 핸들러
-  const handleViewDetail = (order: PurchaseOrder): void => {
-    setSelectedOrder(order);
-    setShowDetailModal(true);
-  };
-
-  const handleStatusChange = (status: string) => {
-    setSelectedStatus(status as PurchaseOrderStatus);
-    setCurrentPage(1); // 첫 페이지로
+  const handleViewDetail = (purchaseId: string): void => {
+    openModal(PurchaseOrderDetailModal, {
+      title: '발주서 상세정보',
+      purchaseId: purchaseId,
+    });
   };
 
   return (
@@ -107,10 +124,24 @@ export default function PurchaseOrderListTab() {
 
         <div className="flex items-center gap-3">
           <Dropdown
-            items={PURCHASE_ORDER_STATUS}
-            value={selectedStatus}
-            onChange={handleStatusChange}
+            placeholder="전체 상태"
+            items={purchaseOrderStatusOptions}
+            value={selectedSearchType}
+            onChange={(searchType: string) => {
+              setSelectedSearchType(searchType);
+              setCurrentPage(1); // 첫 페이지로
+            }}
           />
+          <Dropdown
+            placeholder="검색 타입"
+            items={purchaseOrderSearchTypeOptions}
+            value={selectedStatus}
+            onChange={(status: string) => {
+              setSelectedStatus(status);
+              setCurrentPage(1); // 첫 페이지로
+            }}
+          />
+
           <DateRangePicker
             startDate={startDate}
             onStartDateChange={setStartDate}
@@ -136,14 +167,6 @@ export default function PurchaseOrderListTab() {
           totalPages={totalPages}
           totalElements={pageInfo?.totalElements}
           onPageChange={(page) => setCurrentPage(page - 1)}
-        />
-      )}
-
-      {/* 발주서 상세 정보 모달 */}
-      {showDetailModal && selectedOrder && (
-        <PurchaseOrderDetailModal
-          purchaseId={selectedOrder.purchaseOrderId}
-          onClose={() => setShowDetailModal(false)}
         />
       )}
     </>

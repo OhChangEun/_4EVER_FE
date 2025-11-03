@@ -19,6 +19,14 @@ export const STAT_PERIODS: KeyValueItem<Period>[] = [
   { key: 'year', value: '연도별' },
 ];
 
+// 구매 상태 필터링
+export const PURCHASE_REQ_STATUS: KeyValueItem<PurchaseReqStatus>[] = [
+  { key: 'ALL', value: '전체' },
+  { key: 'APPROVED', value: '승인' },
+  { key: 'PENDING', value: '대기' },
+  { key: 'REJECTED', value: '반려' },
+];
+
 // 발주 상태 필터링
 export const PURCHASE_ORDER_STATUS: KeyValueItem<PurchaseOrderStatus>[] = [
   { key: 'ALL', value: '전체' },
@@ -81,6 +89,7 @@ export const PURCHASE_LIST_TABLE_HEADERS = [
   '요청번호',
   '요청자',
   '요청일',
+  '납기일',
   '총 금액',
   '상태',
   '작업',
@@ -101,14 +110,7 @@ export const PURCHASE_REQUEST_TABLE_HEADERS = [
 ] as const;
 
 // 구매 상세 정보 모달 테이블 헤더
-export const PURCHASE_ITEM_TABLE_HEADERS = [
-  '품목명',
-  '수량',
-  '단위',
-  '단가',
-  '금액',
-  '납기일',
-] as const;
+export const PURCHASE_ITEM_TABLE_HEADERS = ['품목명', '수량', '단위', '단가', '금액'] as const;
 
 // 발주서 상세 정보 주문 품목 테이블 헤더
 export const ORDER_ITEM_TABLE_HEADERS: readonly TableHeader[] = [

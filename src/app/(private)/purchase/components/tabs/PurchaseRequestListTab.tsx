@@ -22,7 +22,7 @@ import DateRangePicker from '@/app/components/common/DateRangePicker';
 import { getQueryClient } from '@/lib/queryClient';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
 import Pagination from '@/app/components/common/Pagination';
-import { FetchPurchaseReqParams } from '@/app/(private)/purchase/types/PurchaseApiRequestType';
+import { PurchaseReqParams } from '@/app/(private)/purchase/types/PurchaseApiRequestType';
 import { useModal } from '@/app/components/common/modal/useModal';
 import { useDropdown } from '@/app/hooks/useDropdown';
 
@@ -55,18 +55,21 @@ const getStatusText = (status: string): string => {
 export default function PurchaseRequestListTab() {
   const { openModal } = useModal();
 
+  // 구매 요청 상태 드롭다운
   const { options: purchaseRequisitionStatusOptions } = useDropdown(
     'purchaseRequisitionStatusDropdown',
     fetchPurchaseRequisitionStatusDropdown,
   );
+
+  // 구매 요청 검색 타입 드롭다운
   const { options: purchaseRequisitionSearchTypeOptions } = useDropdown(
     'purchaseRequisitionSearchTypeDropdown',
     fetchPurchaseRequisitionSearchTypeDropdown,
   );
 
-  const [selectedStatus, setSelectedStatus] = useState<string>('ALL');
+  const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [selectedSearchType, setSelectedSearchType] = useState<string>('');
-
+  const [keyword, setKeyword] = useState<string>('');
   const [showRequestModal, setShowRequestModal] = useState(false);
 
   const [startDate, setStartDate] = useState('');
@@ -78,14 +81,16 @@ export default function PurchaseRequestListTab() {
   const queryClient = getQueryClient();
 
   const queryParams = useMemo(
-    () => ({
+    (): PurchaseReqParams => ({
+      statusCode: selectedStatus,
+      type: selectedSearchType,
+      keyword: keyword,
+      startDate: startDate,
+      endDate: endDate,
       page: currentPage - 1,
       size: pageSize,
-      status: selectedStatus,
-      createdFrom: startDate,
-      createdTo: endDate,
     }),
-    [currentPage, selectedStatus, startDate, endDate],
+    [selectedStatus, selectedSearchType, keyword, startDate, endDate, currentPage],
   );
 
   // React Query로 요청 목록 가져오기
@@ -95,7 +100,7 @@ export default function PurchaseRequestListTab() {
     isError,
   } = useQuery<PurchaseReqListResponse>({
     queryKey: ['purchaseRequests', queryParams],
-    queryFn: ({ queryKey }) => fetchPurchaseReqList(queryKey[1] as FetchPurchaseReqParams),
+    queryFn: ({ queryKey }) => fetchPurchaseReqList(queryKey[1] as PurchaseReqParams),
     staleTime: 1000,
   });
 
@@ -113,7 +118,7 @@ export default function PurchaseRequestListTab() {
 
   // 반려 mutation
   const { mutate: rejectpurchaseRequest } = useMutation({
-    mutationFn: (prId: string) => postRejectPurchaseReq(prId),
+    mutationFn: (prId: string) => postRejectPurchaseReq(prId, ''),
     onSuccess: () => {
       alert('반려 처리되었습니다.');
       queryClient.invalidateQueries({ queryKey: ['purchaseRequests'] });
@@ -129,7 +134,10 @@ export default function PurchaseRequestListTab() {
   const totalPages = pageInfo?.totalPages ?? 1;
 
   const handleViewDetail = (request: PurchaseReqResponse): void => {
-    openModal(PurchaseRequestDetailModal, { title: '구매 요청 상세 정보', purchaseId: request.id });
+    openModal(PurchaseRequestDetailModal, {
+      title: '구매 요청 상세 정보',
+      purchaseId: request.purchaseRequisitionId,
+    });
   };
 
   const handleApprove = (prId: string) => {
@@ -151,7 +159,7 @@ export default function PurchaseRequestListTab() {
         <h3 className="text-lg font-semibold text-gray-900">구매 요청 목록</h3>
         <div className="flex items-center space-x-4">
           <Dropdown
-            placeholder=""
+            placeholder="전체 상태"
             items={purchaseRequisitionStatusOptions}
             value={selectedStatus}
             onChange={(status: string): void => {
@@ -223,10 +231,8 @@ export default function PurchaseRequestListTab() {
                   <td className="px-6 py-4 text-sm text-gray-500">{request.requestDate}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{request.totalAmount}원</td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor('APPROVED')}`}
-                    >
-                      {getStatusText('APPROVED')}
+                    <span className="px-2 py-1 rounded-full text-xs font-medium">
+                      {getStatusText(request.statusCode)}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">

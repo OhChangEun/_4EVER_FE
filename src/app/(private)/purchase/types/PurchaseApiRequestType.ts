@@ -1,10 +1,9 @@
+import { DateRequest } from '@/app/types/Date';
+import { KeywordRequest } from '@/app/types/KeywordType';
 import { PageRequest } from '@/app/types/Page';
 
-export interface FetchPurchaseReqParams extends PageRequest {
-  status?: string;
-  searchKeyword?: string;
-  createdFrom?: string;
-  createdTo?: string;
+export interface PurchaseReqParams extends PageRequest, KeywordRequest, DateRequest {
+  statusCode?: string;
 }
 
 export interface FetchPurchaseOrderParams extends PageRequest {
