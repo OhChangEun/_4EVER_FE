@@ -36,12 +36,15 @@ export default async function WarehousePage() {
             subTitle="창고 현황 및 관리"
             statsData={warehouseStatsData}
           />
-          <Link
-            href="/inventory"
-            className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 cursor-pointer"
-          >
-            재고관리로 돌아가기
-          </Link>
+          <div className="w-[100%] flex justify-end ">
+            <Link
+              href="/inventory"
+              className="px-4 py-2  text-gray-600 hover:text-gray-900 cursor-pointer"
+            >
+              <i className="ri-arrow-go-back-line mr-2" />
+              재고관리로 돌아가기
+            </Link>
+          </div>
 
           <Suspense fallback={<div>Loading...</div>}>
             <WarehouseList />

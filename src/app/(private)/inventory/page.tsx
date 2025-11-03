@@ -13,6 +13,7 @@ import {
 import { mapInventoryStatsToCards } from './inventory.service';
 import { InventoryQueryParams } from './types/InventoryListType';
 import { INVENTORY_TABS } from '@/app/types/componentConstant';
+import WarehouseVisualizer from '../warehouse/components/warehouseVisualizer/components/WarehouseVisualizer';
 
 export default async function InventoryPage() {
   const queryClient = getQueryClient();
@@ -28,6 +29,22 @@ export default async function InventoryPage() {
       { page: 0, size: 10, category: '', warehouse: '', statusCode: 'ALL', itemName: '' },
     ],
     queryFn: ({ queryKey }) => getInventoryList(queryKey[1] as InventoryQueryParams),
+  });
+
+  await queryClient.prefetchQuery({
+    queryKey: [
+      'inventoryVisualizer',
+      { page: 0, size: 60, statusCode: 'ALL', category: '', warehouse: '', itemName: '' },
+    ],
+    queryFn: () =>
+      getInventoryList({
+        page: 0,
+        size: 60,
+        statusCode: 'ALL',
+        category: '',
+        warehouse: '',
+        itemName: '',
+      }),
   });
 
   await queryClient.prefetchQuery({
