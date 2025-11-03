@@ -133,6 +133,7 @@ export default function MpsTab() {
           </div>
         ) : (
           <Dropdown
+            placeholder="전체 제품"
             items={productOptions}
             value={selectedProduct}
             onChange={(product: string) => setSelectedProduct(product)}

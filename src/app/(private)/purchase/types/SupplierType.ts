@@ -1,5 +1,6 @@
-import { Page } from '@/app/types/Page';
+import { Page, PageRequest } from '@/app/types/Page';
 import { SupplierStatus } from '@/app/(private)/purchase/constants';
+import { KeywordRequest } from '@/app/types/KeywordType';
 
 // 자재 정보
 export interface Material {
@@ -8,11 +9,19 @@ export interface Material {
   unitPrice: number; // 단가
 }
 
+// 공급업체 담당자 정보
+export interface ManagerInfo {
+  managerName: string;
+  managerPhone: string;
+  managerEmail: string;
+}
+
 // 공급업체 입력
 export interface CreateSupplierRequest {
   supplierInfo: {
     supplierName: string;
     supplierEmail: string;
+    supplierPhone: string;
     supplierBaseAddress: string;
     supplierDetailAddress?: string | null;
     category: string;
@@ -22,25 +31,33 @@ export interface CreateSupplierRequest {
   materialList: Material[];
 }
 
+// 공급업체 수정
+export interface ModSupplierRequestBody {
+  supplierName: string;
+  supplierEmail: string;
+  supplierPhone: string;
+  supplierBaseAddress: string;
+  supplierDetailAddress: string;
+  category: string;
+  statusCode: string;
+  deliverLeadTime: number;
+  managerName: string;
+  managerPhone: string;
+  managerEmail: string;
+}
+
 // 공급업체 정보
 export interface SupplierInfo {
   supplierId: string;
   supplierName: string;
-  supplierCode: string;
+  supplierNumber: string;
   supplierEmail: string;
   supplierPhone: string;
   supplierBaseAddress: string;
   supplierDetailAddress: string | null;
-  supplierStatus: SupplierStatus; // 상태값이 정해져 있으면 enum으로도 가능
+  supplierStatusCode: SupplierStatus; // 상태값이 정해져 있으면 enum으로도 가능
   category: string; // 예: 'MATERIAL', 'SERVICE' 등
   deliveryLeadTime: number; // 납기일 (단위: 일)
-}
-
-// 공급업체 담당자 정보
-export interface ManagerInfo {
-  managerName: string;
-  managerPhone: string;
-  managerEmail: string;
 }
 
 // 공급업체 리스트
@@ -59,4 +76,9 @@ export interface SupplierDetailResponse {
 export interface SupplierListResponse {
   content: SupplierResponse[];
   page: Page;
+}
+
+export interface SupplierListRequestParams extends PageRequest, KeywordRequest {
+  statusCode?: string;
+  category?: string;
 }
