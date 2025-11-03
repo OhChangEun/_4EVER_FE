@@ -8,7 +8,6 @@ import { PURCHASE_TABS } from '@/app/(private)/purchase/constants';
 import TabNavigation from '@/app/components/common/TabNavigation';
 import StatSection from '@/app/components/common/StatSection';
 import ErrorMessage from '@/app/components/common/ErrorMessage';
-import { FetchPurchaseReqParams } from '@/app/(private)/purchase/types/PurchaseApiRequestType';
 import {
   fetchPurchaseOrderSearchTypeDropdown,
   fetchPurchaseOrderStatusDropdown,
@@ -20,18 +19,25 @@ import {
   fetchSupplierSearchTypeDropdown,
   fetchSupplierStatusDropdown,
 } from '@/app/(private)/purchase/api/purchase.api';
+import { PurchaseReqParams } from '@/app/(private)/purchase/types/PurchaseApiRequestType';
 
 export default async function PurchasePage() {
   const queryClient = getQueryClient();
-  // 발주서
+
+  const initialParams: PurchaseReqParams = {
+    statusCode: '',
+    type: '',
+    keyword: '',
+    startDate: '',
+    endDate: '',
+    page: 0,
+    size: 10,
+  };
   await Promise.all([
     // 구매요청 탭
     queryClient.prefetchQuery({
-      queryKey: [
-        'purchaseRequests',
-        { page: 0, size: 10, status: 'ALL', createdFrom: '', createdTo: '' },
-      ],
-      queryFn: ({ queryKey }) => fetchPurchaseReqList(queryKey[1] as FetchPurchaseReqParams),
+      queryKey: ['purchaseRequests', initialParams],
+      queryFn: () => fetchPurchaseReqList(initialParams),
     }),
 
     // --- 드롭다운 prefetch ---

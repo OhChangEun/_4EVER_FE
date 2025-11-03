@@ -7,6 +7,7 @@ import { fetchPurchaseReqDetail } from '@/app/(private)/purchase/api/purchase.ap
 import { useEffect, useState } from 'react';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
 import { ModalProps } from '@/app/components/common/modal/types';
+import { formatDateTime } from '@/app/utils/date';
 
 export interface PurchaseRequestDetailModalProps extends ModalProps {
   purchaseId: string;
@@ -71,7 +72,7 @@ export default function PurchaseRequestDetailModal({
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">요청일</label>
-              <div className="text-gray-900">{request.requestDate}</div>
+              <div className="text-gray-900">{formatDateTime(request.requestDate)}</div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">상태</label>
@@ -107,12 +108,15 @@ export default function PurchaseRequestDetailModal({
                     <td className="px-4 py-3 text-sm text-gray-900">{item.quantity}</td>
                     <td className="px-4 py-3 text-sm text-gray-900">₩{item.unitPrice}</td>
                     <td className="px-4 py-3 text-sm text-gray-900">₩{item.amount}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {formatDateTime(item.dueDate)}
+                    </td>
                   </tr>
                 ))}
               </tbody>
               <tfoot className="bg-gray-50">
                 <tr className="text-center">
-                  <td colSpan={5} className="px-4 py-3 text-right font-medium">
+                  <td colSpan={6} className="px-4 py-3 text-right font-medium">
                     <span className="text-sm text-gray-700 pr-5">총 금액</span>
                     <span className="text-xl text-green-600 pr-7">{request.totalAmount}</span>
                   </td>
