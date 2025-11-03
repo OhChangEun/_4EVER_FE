@@ -4,6 +4,7 @@ export const SALES_BASE_PATH = `${API_BASE_URL}/business/sd`;
 export const FINANCE_BASE_PATH = `${API_BASE_URL}/business/fcm`;
 export const DASHBOARD_BASE_PATH = `${API_BASE_URL}/dashboard`;
 export const INVENTORY_BASE_PATH = `${API_BASE_URL}/scm-pp`;
+export const HRM_BASE_PATH = `${API_BASE_URL}/business/hrm`;
 
 // 공통 응답 타입
 export interface ApiResponse<T> {
@@ -101,4 +102,5 @@ export const WAREHOUSE_ENDPOINTS = {
 export const USER_ENDPOINTS = {
   LOGIN: 'https://auth.everp.co.kr/oauth2/token',
   USER_INFO: `${API_BASE_URL}/user/info`,
+  USER_PROFILE_INFO: `${HRM_BASE_PATH}/employees/by-internel-user`,
 };
