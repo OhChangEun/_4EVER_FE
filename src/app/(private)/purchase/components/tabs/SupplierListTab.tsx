@@ -20,7 +20,6 @@ import Pagination from '@/app/components/common/Pagination';
 import { useModal } from '@/app/components/common/modal/useModal';
 import { useDropdown } from '@/app/hooks/useDropdown';
 import { getQueryClient } from '@/lib/queryClient';
-import { select } from 'framer-motion/client';
 
 export default function SupplierListTab() {
   const { openModal } = useModal();
@@ -49,8 +48,6 @@ export default function SupplierListTab() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
-
-  const queryClient = getQueryClient();
 
   const queryParams = useMemo(
     (): SupplierListRequestParams => ({

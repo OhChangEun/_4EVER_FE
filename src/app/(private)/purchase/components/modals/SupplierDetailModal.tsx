@@ -1,56 +1,104 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { SupplierDetailResponse } from '@/app/(private)/purchase/types/SupplierType';
-import ReadSupplierFormSection from '@/app/(private)/purchase/components/sections/SupplierTableSection';
 import { useQuery } from '@tanstack/react-query';
 import { fetchSupplierDetail } from '@/app/(private)/purchase/api/purchase.api';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
 import { ModalProps } from '@/app/components/common/modal/types';
-import { useModal } from '@/app/components/common/modal/useModal';
-import ModalStatusBox2 from '@/app/components/common/ModalStatusBox2';
 
 interface DetailSupplierModalProps extends ModalProps {
   supplierId: string;
 }
 
-export default function SupplierDetailModal({ supplierId, onClose }: DetailSupplierModalProps) {
-  const { openModal } = useModal();
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [editForm, setEditForm] = useState<SupplierDetailResponse | null>();
-
-  const { data: supplier, isLoading } = useQuery<SupplierDetailResponse>({
+export default function SupplierDetailModal({ supplierId }: DetailSupplierModalProps) {
+  const {
+    data: supplier,
+    isLoading,
+    isError,
+  } = useQuery<SupplierDetailResponse>({
     queryKey: ['supplierDetail'],
     queryFn: () => fetchSupplierDetail(supplierId),
     select: (data) => data ?? ({} as SupplierDetailResponse),
-    onError: () => {
-      openModal(ModalStatusBox2, {
-        type: 'error',
-        message: '공급업체 상세 정보 데이터를 불러오는 중 오류가 발생했습니다.',
-      });
-    },
   });
 
-  // useEffect(() => {
-  //   if (supplier) setEditForm(supplier);
-  // }, [supplier]);
+  const { supplierInfo, managerInfo } = supplier || {};
 
   if (isLoading)
     return <ModalStatusBox $type="loading" $message="공급업체 상세정보를 불러오는 중입니다..." />;
-
+  if (isError)
+    return (
+      <ModalStatusBox
+        $type="error"
+        $message="공급업체 상세정보를 불러오는 중 오류가 발생했습니다."
+      />
+    );
   return (
     <>
-      {isEditMode && (
-        <EditSupplierFormSection
-          supplier={editForm}
-          setEditForm={setEditForm}
-          onCancel={() => setIsEditMode(false)}
-          onSave={() => setIsEditMode(false)}
-        />
-      )}
-      {!isEditMode && supplier && (
-        <ReadSupplierFormSection supplier={supplier} onEdit={() => setIsEditMode(true)} />
-      )}
+      {/* 기본 정보 */}
+      <div className="space-y-6">
+        <div className="border-b border-gray-200 pb-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">기본 정보</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <p className="text-sm text-gray-600 mb-1">업체 ID</p>
+              <p className="text-base font-medium text-gray-900">{supplierInfo?.supplierNumber}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600 mb-1">업체명</p>
+              <p className="text-base font-medium text-gray-900">{supplierInfo?.supplierName}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600 mb-1">카테고리</p>
+              <p className="text-base font-medium text-gray-900">{supplierInfo?.category}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600 mb-1">상태</p>
+              <span>{supplierInfo?.supplierStatus}</span>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600 mb-1">이메일</p>
+              <p className="text-base font-medium text-gray-900">{supplierInfo?.supplierEmail}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600 mb-1">연락처</p>
+              <p className="text-base font-medium text-gray-900">{supplierInfo?.supplierPhone}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600 mb-1">주소</p>
+              <p className="text-base font-medium text-gray-900">
+                {supplierInfo?.supplierBaseAddress} {supplierInfo?.supplierDetailAddress}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600 mb-1">배송기간</p>
+              <p className="text-base font-medium text-gray-900">
+                {supplierInfo?.deliveryLeadTime}일
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* 담당자 정보 */}
+        <div className="border-b border-gray-200 pb-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">담당자 정보</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <p className="text-sm text-gray-600 mb-1">담당자명</p>
+              <p className="text-base font-medium text-gray-900">{managerInfo?.managerName}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600 mb-1">담당자 전화번호</p>
+              <p className="text-base font-medium text-gray-900">{managerInfo?.managerPhone}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600 mb-1">담당자 이메일</p>
+              <p className="text-base font-medium text-gray-900 break-all">
+                {managerInfo?.managerEmail}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   );
 }
