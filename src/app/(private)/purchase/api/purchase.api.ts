@@ -11,12 +11,13 @@ import {
 } from '@/app/(private)/purchase/types/PurchaseReqType';
 import {
   CreateSupplierRequest,
+  ModSupplierRequestBody,
   SupplierDetailResponse,
   SupplierListResponse,
 } from '@/app/(private)/purchase/types/SupplierType';
 import {
   FetchPurchaseOrderParams,
-  FetchPurchaseReqParams,
+  PurchaseReqParams,
   FetchSupplierListParams,
   PurchaseRequestItemBody,
 } from '@/app/(private)/purchase/types/PurchaseApiRequestType';
@@ -39,7 +40,7 @@ export const fetchPurchaseStats = async (): Promise<PurchaseStatResponse | null>
 
 // 구매 요청 목록
 export const fetchPurchaseReqList = async (
-  params: FetchPurchaseReqParams,
+  params: PurchaseReqParams,
 ): Promise<PurchaseReqListResponse> => {
   const res = await axios.get<ApiResponse<PurchaseReqListResponse>>(
     `${PURCHASE_ENDPOINTS.PURCHASE_REQUISITIONS}`,
@@ -165,6 +166,18 @@ export const createSupplyRequest = async (
   data: CreateSupplierRequest,
 ): Promise<ApiResponse<null>> => {
   const res = await axios.post<ApiResponse<null>>(`${PURCHASE_ENDPOINTS.SUPPLIER}`, data);
+  return res.data;
+};
+
+// 공급업체 수정
+export const patchSupplyRequest = async (
+  supplierId: string,
+  body: ModSupplierRequestBody,
+): Promise<ApiResponse<null>> => {
+  const res = await axios.patch<ApiResponse<null>>(
+    `${PURCHASE_ENDPOINTS.SUPPLIER_DETAIL(supplierId)}`,
+    body,
+  );
   return res.data;
 };
 

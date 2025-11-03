@@ -5,33 +5,49 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchSupplierDetail } from '@/app/(private)/purchase/api/purchase.api';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
 import { ModalProps } from '@/app/components/common/modal/types';
+import Button from '@/app/components/common/Button';
+import { useModal } from '@/app/components/common/modal/useModal';
+import SupplierFormModal from '@/app/(private)/purchase/components/modals/SupplierFormModal';
 
 interface DetailSupplierModalProps extends ModalProps {
   supplierId: string;
 }
 
-export default function SupplierDetailModal({ supplierId }: DetailSupplierModalProps) {
+export default function SupplierDetailModal({ supplierId, onClose }: DetailSupplierModalProps) {
+  const { openModal } = useModal();
+
   const {
     data: supplier,
     isLoading,
     isError,
   } = useQuery<SupplierDetailResponse>({
-    queryKey: ['supplierDetail'],
+    queryKey: ['supplierDetail', supplierId],
     queryFn: () => fetchSupplierDetail(supplierId),
-    select: (data) => data ?? ({} as SupplierDetailResponse),
   });
 
   const { supplierInfo, managerInfo } = supplier || {};
 
+  // 수정 버튼 클릭 핸들러
+  const handleEdit = () => {
+    if (supplier) {
+      onClose(); // 현재 상세보기 모달 닫기
+      openModal(SupplierFormModal, {
+        initialData: supplier, // 기존 데이터 전달
+      });
+    }
+  };
+
   if (isLoading)
     return <ModalStatusBox $type="loading" $message="공급업체 상세정보를 불러오는 중입니다..." />;
-  if (isError)
+
+  if (isError || !supplier)
     return (
       <ModalStatusBox
         $type="error"
         $message="공급업체 상세정보를 불러오는 중 오류가 발생했습니다."
       />
     );
+
   return (
     <>
       {/* 기본 정보 */}
@@ -53,7 +69,7 @@ export default function SupplierDetailModal({ supplierId }: DetailSupplierModalP
             </div>
             <div>
               <p className="text-sm text-gray-600 mb-1">상태</p>
-              <span>{supplierInfo?.supplierStatus}</span>
+              <span>{supplierInfo?.supplierStatusCode}</span>
             </div>
             <div>
               <p className="text-sm text-gray-600 mb-1">이메일</p>
@@ -97,6 +113,11 @@ export default function SupplierDetailModal({ supplierId }: DetailSupplierModalP
               </p>
             </div>
           </div>
+        </div>
+
+        {/* 수정 버튼 */}
+        <div className="flex justify-end pt-4">
+          <Button label="수정" onClick={handleEdit} icon="ri-edit-line" />
         </div>
       </div>
     </>

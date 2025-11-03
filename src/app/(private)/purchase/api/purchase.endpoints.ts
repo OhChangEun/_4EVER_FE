@@ -35,5 +35,5 @@ export const PURCHASE_ENDPOINTS = {
 
   // --- 공급업체 ---
   SUPPLIER: `${PURCHASE_BASE_PATH}/supplier`, // 공급업체 목록 조회, 등록
-  SUPPLIER_DETAIL: (vendorId: string) => `${PURCHASE_BASE_PATH}/supplier/${vendorId}`, // 공급업체 상세 조회, 수정
+  SUPPLIER_DETAIL: (supplierId: string) => `${PURCHASE_BASE_PATH}/supplier/${supplierId}`, // 공급업체 상세 조회, 수정
 };
