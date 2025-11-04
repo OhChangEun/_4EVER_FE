@@ -6,6 +6,7 @@ export const PRODUCTION_ENDPOINTS = {
   // BOM 관련
   BOMS: `${PRODUCTION_BASE_PATH}/boms`, // BOM 목록 조회, 생성
   BOM_DETAIL: (bomId: string) => `${PRODUCTION_BASE_PATH}/boms/${bomId}`, // BOM 상세 조회, 수정, 삭제
+  PRODUCTS_DETAIL: (productId: string) => `${PRODUCTION_BASE_PATH}/products/${productId}`, // 자재 상세 정보(입력 모달 출력용)
 
   // MES 작업 목록
   MES_WORK_ORDERS: `${PRODUCTION_BASE_PATH}/mes/work-orders`, // MES 작업 목록 조회
@@ -32,9 +33,11 @@ export const PRODUCTION_ENDPOINTS = {
 
   // 드롭다운 관련
   MPS_TOGGLE_PRODUCTS: `${PRODUCTION_BASE_PATH}/mps/toggle/products`,
+  OPERATIONS_DROPDOWN: `${PRODUCTION_BASE_PATH}/operations`,
 
   MRP_PLANNED_ORDER_STATUS_CODES: `${PRODUCTION_BASE_PATH}/mrp/toggle/planned-order-list-status-codes`, // MRP 계획 주문 상태 코드 목록
   MRP_TOGGLE_PRODUCTS: `${PRODUCTION_BASE_PATH}/mrp/toggle/products`, // MRP 제품 토글 목록
   MRP_TOGGLE_QUOTATIONS: `${PRODUCTION_BASE_PATH}/mrp/toggle/quotations`, // MRP 견적 토글 목록
   MRP_TOGGLE_STATUS_CODES: `${PRODUCTION_BASE_PATH}/mrp/toggle/status-codes`, // MRP 가능 상태 코드 목록
+  PRODUCTS: `${PRODUCTION_BASE_PATH}/products`, // 자재 드롭다운
 };

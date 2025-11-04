@@ -1,23 +1,22 @@
 // BOM 구성품 (Component)
 export interface BomComponent {
   itemId: string;
-  itemNumber: string;
-  itemName: string;
+  code: string;
+  name: string;
   quantity: number;
-  uomName: string;
+  unit: string;
   level: string; // 예: "Level 1"
-  supplierCompanyName: string;
+  supplierName: string;
   operationId: string;
   operationName: string;
+  componentType: string;
 }
 
 // BOM 레벨 구조 내 아이템
 export interface BomLevelItem {
-  itemId: string;
-  itemNumber: string;
-  itemName: string;
+  code: string;
+  name: string;
   quantity: number;
-  uomName: string;
 }
 
 // 레벨별 구조 (Level 1, Level 2 ...)
@@ -28,7 +27,6 @@ export interface BomLevelStructure {
 // 공정(Routing) 정보
 export interface BomRouting {
   sequence: number;
-  operationId: string;
   operationName: string;
   runTime: number; // 단위 시간 (예: 분)
 }

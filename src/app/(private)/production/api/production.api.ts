@@ -23,6 +23,9 @@ import {
 } from '../types/MrpPlannedOrdersListApiType';
 import { MrpPlannedOrdersDetailResponse } from '../types/MrpPlannedOrdersDetailApiType';
 import { apisssssssss } from './api';
+import { KeyValueItem } from '@/app/types/CommonType';
+import { BomRequestBody, MaterialResponse } from '../types/BomType';
+import { PageRequest } from '@/app/types/Page';
 
 // 구매 관리 지표
 export const fetchProductionStats = async (): Promise<ProductionStatResponse | null> => {
@@ -43,6 +46,13 @@ export const fetchProductionStats = async (): Promise<ProductionStatResponse | n
 export const fetchMpsProducts = async (): Promise<MpsDropdownResponse> => {
   const res = await apisssssssss.get<ApiResponse<MpsDropdownResponse>>(
     `${PRODUCTION_ENDPOINTS.MPS_TOGGLE_PRODUCTS}`,
+  );
+  return res.data.data;
+};
+
+export const fetchProductDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await apisssssssss.get<ApiResponse<KeyValueItem[]>>(
+    `${PRODUCTION_ENDPOINTS.PRODUCTS}`,
   );
   return res.data.data;
 };
@@ -137,8 +147,26 @@ export const fetchMesDetail = async (mesId: string) => {
 };
 
 // BOM 목록 조회
-export const fetchBomList = async (): Promise<BomListResponse> => {
-  const res = await apisssssssss.get<ApiResponse<BomListResponse>>(`${PRODUCTION_ENDPOINTS.BOMS}`);
+export const fetchBomList = async (params: PageRequest): Promise<BomListResponse> => {
+  const res = await apisssssssss.get<ApiResponse<BomListResponse>>(`${PRODUCTION_ENDPOINTS.BOMS}`, {
+    params,
+  });
+  return res.data.data;
+};
+
+// BOM 자재 조회
+export const fetchProduction = async (productId: string): Promise<MaterialResponse> => {
+  const res = await apisssssssss.get<ApiResponse<MaterialResponse>>(
+    `${PRODUCTION_ENDPOINTS.PRODUCTS_DETAIL(productId)}`,
+  );
+  return res.data.data;
+};
+
+// BOM 공정 조회
+export const fetchOperationDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await apisssssssss.get<ApiResponse<KeyValueItem[]>>(
+    `${PRODUCTION_ENDPOINTS.OPERATIONS_DROPDOWN}`,
+  );
   return res.data.data;
 };
 
@@ -148,6 +176,12 @@ export const fetchBomDetail = async (bomId: string): Promise<BomDetailResponse> 
     `${PRODUCTION_ENDPOINTS.BOM_DETAIL(bomId)}`,
   );
   return res.data.data;
+};
+
+// BOM 추가
+export const postBomItem = async (body: BomRequestBody) => {
+  const res = await apisssssssss.post<ApiResponse<null>>(`${PRODUCTION_ENDPOINTS.BOMS}`, body);
+  return res.data;
 };
 
 // BOM 삭제

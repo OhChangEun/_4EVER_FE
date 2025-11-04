@@ -4,7 +4,7 @@ import Button from '@/app/components/common/Button';
 import IconButton from '@/app/components/common/IconButton';
 import Dropdown from '@/app/components/common/Dropdown';
 import { ModalProps } from '@/app/components/common/modal/types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -22,6 +22,16 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { useDropdown } from '@/app/hooks/useDropdown';
+import {
+  fetchOperationDropdown,
+  fetchProductDropdown,
+  fetchProduction,
+  postBomItem,
+} from '../../api/production.api';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { getQueryClient } from '@/lib/queryClient';
+import { BomRequestBody } from '../../types/BomType';
 
 interface BomInputFormModalProps extends ModalProps {
   editMode?: boolean;
@@ -41,6 +51,17 @@ interface OperationInfo {
   id: string;
   name: string;
 }
+
+// "productName": "string",
+//   "unit": "string",
+//   "items": [
+//     {
+//       "itemId": "string",
+//       "quantity": 0,
+//       "operationId": "string",
+//       "sequence": 0
+//     }
+//   ]
 
 interface BomItem {
   id: string;
@@ -119,11 +140,32 @@ interface SortableRowProps {
 function SortableRow({
   item,
   materialOptions,
-  operationOptions,
+  // operationOptions,
   onMaterialChange,
   onItemChange,
   onRemove,
 }: SortableRowProps) {
+  const { options: productsOptions } = useDropdown('productsDropdown', fetchProductDropdown);
+  const { options: operationOptions } = useDropdown('operationsDropdown', fetchOperationDropdown);
+
+  const {
+    data: materialInfo,
+    isError,
+    isLoading,
+  } = useQuery({
+    queryKey: ['materialInfo', item.itemId],
+    queryFn: ({ queryKey }) => fetchProduction(queryKey[1]),
+    enabled: !!item.itemId, // 선택된 자재가 있을 때만 호출
+  });
+
+  const { mutate: loadMaterialData } = useMutation({
+    mutationFn: (productionId: string) => fetchProduction(productionId),
+    onError: (error) => {
+      console.log(`자재 목록 호출 중 오류 발생: ${error}`);
+      alert('자재 목록 호출 중 오류가 발생했습니다.');
+    },
+  });
+
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: item.id,
   });
@@ -149,9 +191,12 @@ function SortableRow({
       </td>
       <td className="px-3 py-2 w-40">
         <Dropdown
-          items={materialOptions}
+          items={productsOptions}
           value={item.itemId}
-          onChange={(value) => onMaterialChange(item.id, value)}
+          onChange={(selectedMaterialId) => {
+            onMaterialChange(item.id, selectedMaterialId);
+            loadMaterialData(selectedMaterialId);
+          }}
           placeholder="선택"
         />
       </td>
@@ -159,7 +204,7 @@ function SortableRow({
         <input
           type="text"
           className="w-32 px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50"
-          value={item.materialInfo?.productCode || ''}
+          value={materialInfo?.productNumber || ''}
           disabled
         />
       </td>
@@ -167,7 +212,7 @@ function SortableRow({
         <input
           type="text"
           className="w-24 px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50"
-          value={item.materialInfo?.type || ''}
+          value={materialInfo?.category || ''}
           disabled
         />
       </td>
@@ -175,7 +220,7 @@ function SortableRow({
         <input
           type="text"
           className="w-32 px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50"
-          value={item.materialInfo?.supplier || ''}
+          value={materialInfo?.supplierName || ''}
           disabled
         />
       </td>
@@ -183,7 +228,7 @@ function SortableRow({
         <input
           type="text"
           className="w-16 px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50"
-          value={item.materialInfo?.unit || ''}
+          value={materialInfo?.uomName || ''}
           disabled
         />
       </td>
@@ -191,9 +236,7 @@ function SortableRow({
         <input
           type="text"
           className="w-24 px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50 text-right"
-          value={
-            item.materialInfo?.unitPrice ? item.materialInfo.unitPrice.toLocaleString() + '원' : ''
-          }
+          value={materialInfo?.unitPrice ? materialInfo?.unitPrice.toLocaleString() + '원' : ''}
           disabled
         />
       </td>
@@ -226,10 +269,25 @@ function SortableRow({
   );
 }
 
-export default function BomInputFormModal({ editMode = false }: BomInputFormModalProps) {
+export default function BomInputFormModal({ editMode = false, onClose }: BomInputFormModalProps) {
+  const queryClient = getQueryClient();
   const [productName, setProductName] = useState('');
   const [unit, setUnit] = useState('');
   const [bomItems, setBomItems] = useState<BomItem[]>([]);
+
+  const { mutate: updateBomItem, isPending } = useMutation({
+    mutationFn: (body: BomRequestBody) => postBomItem(body),
+    onSuccess: async () => {
+      alert('BOM 생성이 완료되었습니다.');
+      // await new Promise((resolve) => setTimeout(resolve, 2000));
+      queryClient.invalidateQueries({ queryKey: ['bomList'] });
+      onClose(); // 모달 닫기
+    },
+    onError: (error) => {
+      console.log(`BOM 생성 중 오류 발생: ${error}`);
+      alert('BOM 생성 중 오류가 발생했습니다.');
+    },
+  });
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -301,12 +359,13 @@ export default function BomInputFormModal({ editMode = false }: BomInputFormModa
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const bomData = {
+    const bomData: BomRequestBody = {
       productName,
       unit,
-      items: bomItems.map(({ id, materialInfo, ...rest }) => rest),
+      items: bomItems.map(({ id, materialInfo, ...rest }) => rest), // 필요한 dto만
     };
 
+    updateBomItem(bomData);
     console.log('BOM 데이터:', bomData);
   };
 
@@ -352,38 +411,38 @@ export default function BomInputFormModal({ editMode = false }: BomInputFormModa
           </div>
 
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase whitespace-nowrap w-8">
-                    <i className="ri-draggable"></i>
-                  </th>
-                  {[
-                    '공정 순서',
-                    '자재',
-                    '제품 코드',
-                    '타입',
-                    '공급사',
-                    '단위',
-                    '단가',
-                    '수량',
-                    '작업',
-                    '삭제',
-                  ].map((h) => (
-                    <th
-                      key={h}
-                      className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase whitespace-nowrap"
-                    >
-                      {h}
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase whitespace-nowrap w-8">
+                      <i className="ri-draggable"></i>
                     </th>
-                  ))}
-                </tr>
-              </thead>
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-              >
+                    {[
+                      '공정 순서',
+                      '자재',
+                      '제품 코드',
+                      '타입',
+                      '공급사',
+                      '단위',
+                      '단가',
+                      '수량',
+                      '작업',
+                      '삭제',
+                    ].map((h) => (
+                      <th
+                        key={h}
+                        className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase whitespace-nowrap"
+                      >
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
                 <SortableContext
                   items={bomItems.map((item) => item.id)}
                   strategy={verticalListSortingStrategy}
@@ -409,8 +468,8 @@ export default function BomInputFormModal({ editMode = false }: BomInputFormModa
                     )}
                   </tbody>
                 </SortableContext>
-              </DndContext>
-            </table>
+              </table>
+            </DndContext>
           </div>
         </div>
 

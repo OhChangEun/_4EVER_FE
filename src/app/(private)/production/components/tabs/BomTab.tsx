@@ -4,16 +4,27 @@ import IconButton from '@/app/components/common/IconButton';
 import { BomListResponse } from '@/app/(private)/production/types/BomListApiType';
 import BomDetailModal from '@/app/(private)/production/components/modals/BomDetailModal';
 // import BomInputFormModal from '@/app/(private)/production/components/modals/BomInputFormModal';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { deletBomItem, fetchBomList } from '../../api/production.api';
-import { getQueryClient } from '@/lib/queryClient';
+import { useQuery } from '@tanstack/react-query';
+import { fetchBomList } from '../../api/production.api';
 import { useModal } from '@/app/components/common/modal/useModal';
 import BomInputFormModal from '../modals/BomInputFormModal';
+import Pagination from '@/app/components/common/Pagination';
+import { useMemo, useState } from 'react';
+import { PageRequest } from '@/app/types/Page';
 
 export default function BomTab() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+
   const { openModal } = useModal();
 
-  const queryClient = getQueryClient();
+  const bomQueryParams = useMemo(
+    (): PageRequest => ({
+      page: currentPage - 1,
+      size: pageSize,
+    }),
+    [currentPage, pageSize],
+  );
 
   // bom 목록 조회
   const {
@@ -21,25 +32,13 @@ export default function BomTab() {
     isLoading,
     isError,
   } = useQuery<BomListResponse>({
-    queryKey: ['bomList'],
-    queryFn: fetchBomList,
-  });
-
-  // bom 삭제
-  const deleteMutation = useMutation({
-    mutationFn: (bomId: string) => deletBomItem(bomId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bomList'] });
-      alert('BOM이 삭제되었습니다.');
-    },
-    onError: (error) => {
-      console.error('BOM 삭제 실패:', error);
-      alert('BOM 삭제에 실패했습니다.');
-    },
+    queryKey: ['bomList', bomQueryParams],
+    queryFn: () => fetchBomList(bomQueryParams),
   });
 
   // content 배열 추출
   const bomList = bomResponse?.content || [];
+  const pageInfo = bomResponse?.page;
 
   const handleCreate = () => {
     openModal(BomInputFormModal, { title: 'BOM 생성' });
@@ -51,12 +50,6 @@ export default function BomTab() {
 
   const handleEdit = () => {
     openModal(BomInputFormModal, { title: 'BOM 수정', editMode: true });
-  };
-
-  const handleDelete = (bomId: string) => {
-    if (confirm('정말로 이 BOM을 삭제하시겠습니까?')) {
-      deleteMutation.mutate(bomId);
-    }
   };
 
   return (
@@ -125,23 +118,14 @@ export default function BomTab() {
                       <button
                         onClick={() => handleViewDetail(bom.bomId)}
                         className="text-blue-600 hover:text-blue-900 cursor-pointer"
-                        disabled={deleteMutation.isPending}
                       >
                         상세보기
                       </button>
                       <button
                         onClick={() => handleEdit()}
                         className="text-green-600 hover:text-green-900 cursor-pointer"
-                        disabled={deleteMutation.isPending}
                       >
                         수정
-                      </button>
-                      <button
-                        onClick={() => handleDelete(bom.bomId)}
-                        className="text-red-600 hover:text-red-900 cursor-pointer"
-                        disabled={deleteMutation.isPending}
-                      >
-                        {deleteMutation.isPending ? '삭제 중...' : '삭제'}
                       </button>
                     </td>
                   </tr>
@@ -156,6 +140,15 @@ export default function BomTab() {
             </tbody>
           </table>
         </div>
+      )}
+
+      {isError || isLoading ? null : (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={pageInfo?.totalPages ?? 1}
+          totalElements={pageInfo?.totalElements}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
       )}
     </>
   );

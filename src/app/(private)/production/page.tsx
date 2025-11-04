@@ -6,6 +6,8 @@ import { PRODUCTION_TABS } from '@/app/(private)/production/constants';
 import StatSection from '@/app/components/common/StatSection';
 import {
   fetchMpsProducts,
+  fetchOperationDropdown,
+  fetchProductDropdown,
   fetchProductionStats,
   fetchQuotationList,
 } from '@/app/(private)/production/api/production.api';
@@ -39,6 +41,18 @@ export default async function ProductionPage() {
     queryClient.prefetchQuery({
       queryKey: ['mpsProductsDropdown'],
       queryFn: fetchMpsProducts,
+    }),
+
+    // 자재 드롭다운
+    queryClient.prefetchQuery({
+      queryKey: ['productsDropdown'],
+      queryFn: fetchProductDropdown,
+    }),
+
+    // 자재 드롭다운
+    queryClient.prefetchQuery({
+      queryKey: ['operationsDropdown'],
+      queryFn: fetchOperationDropdown,
     }),
   ]);
 
