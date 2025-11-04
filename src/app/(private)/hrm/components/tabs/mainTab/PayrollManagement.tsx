@@ -25,19 +25,16 @@ export default function PayrollManagement() {
     fetchDepartmentsDropdown,
     'include',
   );
-  const {
-    data: statusData,
-    isLoading: statusLoading,
-    isError: errorLoading,
-  } = useQuery({
-    queryKey: ['payrollStatusDropdown'],
-    queryFn: fetchPayrollStatusDropdown,
-    staleTime: Infinity,
-  });
+  // 상태 드롭다운
+  const { options: statusOptions } = useDropdown(
+    'payrollStatusDropdown',
+    fetchPayrollStatusDropdown,
+    'include',
+  );
 
   // --- 선택된 드롭다운 상태 ---
   const [selectedDepartment, setSelectedDepartment] = useState(''); // 부서
-  const [selectedPayrollStatus, setSelectedPayrollStatus] = useState(''); // 부서
+  const [selectedPayrollStatus, setSelectedPayrollStatus] = useState(''); // 상태
 
   // 년도와 월
   const now = new Date();
@@ -76,10 +73,11 @@ export default function PayrollManagement() {
       year: Number(selectedYear),
       month: Number(selectedMonth),
       department: selectedDepartment || undefined,
+      statusCode: selectedPayrollStatus || undefined,
       page: currentPage - 1,
       size: pageSize,
     }),
-    [selectedYear, selectedMonth, selectedDepartment, currentPage],
+    [selectedYear, selectedMonth, selectedDepartment, selectedPayrollStatus, currentPage],
   );
 
   const {
@@ -140,7 +138,7 @@ export default function PayrollManagement() {
             />
             <Dropdown
               placeholder="전체 상태"
-              items={statusData ?? []}
+              items={statusOptions}
               value={selectedPayrollStatus}
               onChange={(status: string) => {
                 setSelectedPayrollStatus(status);
