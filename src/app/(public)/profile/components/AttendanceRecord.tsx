@@ -1,68 +1,30 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
+import { AttendanceRecordsResponse, RequestVacation, TodayAttendResponse } from '../ProfileType';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import {
+  getAttendaceRecords,
+  getTodayAttendance,
+  patchCheckIn,
+  patchCheckout,
+  postVacation,
+} from '../profile.api';
 
 export default function AttendanceRecord() {
   const [currentStatus, setCurrentStatus] = useState('출근');
-  const [showCalendar, setShowCalendar] = useState(false);
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
-  const [leaveForm, setLeaveForm] = useState({
-    leaveType: '연차',
+  const [leaveForm, setLeaveForm] = useState<RequestVacation>({
+    leaveType: 'ANNUAL',
     startDate: '',
     endDate: '',
-    reason: '',
   });
-
-  const todayAttendance = {
-    checkIn: '09:00',
-    checkOut: currentStatus === '퇴근' ? '18:30' : null,
-    workHours: currentStatus === '퇴근' ? '8시간 30분' : '진행중',
-    status: currentStatus === '출근' ? '근무중' : '퇴근완료',
-  };
-
-  const recentAttendance = [
-    {
-      date: '2024-12-20',
-      checkIn: '09:00',
-      checkOut: '18:30',
-      workHours: '8시간 30분',
-      status: '정상',
-    },
-    {
-      date: '2024-12-19',
-      checkIn: '09:15',
-      checkOut: '18:45',
-      workHours: '8시간 30분',
-      status: '지각',
-    },
-    {
-      date: '2024-12-18',
-      checkIn: '08:55',
-      checkOut: '18:25',
-      workHours: '8시간 30분',
-      status: '정상',
-    },
-    {
-      date: '2024-12-17',
-      checkIn: '09:00',
-      checkOut: '18:30',
-      workHours: '8시간 30분',
-      status: '정상',
-    },
-    {
-      date: '2024-12-16',
-      checkIn: '09:00',
-      checkOut: '18:30',
-      workHours: '8시간 30분',
-      status: '정상',
-    },
-  ];
 
   const handleCheckInOut = () => {
     if (currentStatus === '출근') {
-      setCurrentStatus('퇴근');
+      checkOut();
     } else {
-      setCurrentStatus('출근');
+      checkIn();
     }
   };
 
@@ -73,17 +35,64 @@ export default function AttendanceRecord() {
     }));
   };
 
+  const { mutate: sendVacation } = useMutation({
+    mutationFn: postVacation,
+    onSuccess: (data) => {
+      alert(`${data.status} : ${data.message}
+        `);
+      alert('휴가 신청이 접수되었습니다.');
+    },
+    onError: (error) => {
+      alert(` 휴가 신청 중 오류가 발생했습니다. ${error}`);
+    },
+  });
+
+  const { mutate: checkIn } = useMutation({
+    mutationFn: patchCheckIn,
+    onSuccess: (data) => {
+      alert(`${data.status} : ${data.message}
+        `);
+      setCurrentStatus('출근');
+      alert('출근 처리가 완료되었습니다.');
+    },
+    onError: (error) => {
+      alert(`출근 처리 중 오류가 발생했습니다. ${error}`);
+    },
+  });
+
+  const { mutate: checkOut } = useMutation({
+    mutationFn: patchCheckout,
+    onSuccess: (data) => {
+      alert(`${data.status} : ${data.message}
+        `);
+      setCurrentStatus('퇴근');
+      alert('퇴근 처리가 완료되었습니다.');
+    },
+    onError: (error) => {
+      alert(`퇴근 처리 중 오류가 발생했습니다. ${error}`);
+    },
+  });
+
   const handleLeaveSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    alert('휴가 신청이 접수되었습니다.');
     setIsLeaveModalOpen(false);
+    sendVacation(leaveForm);
     setLeaveForm({
-      leaveType: '연차',
+      leaveType: 'ANNUAL',
       startDate: '',
       endDate: '',
-      reason: '',
     });
   };
+
+  const { data: todayAttendanceRes } = useQuery<TodayAttendResponse>({
+    queryKey: ['todayAttendance'],
+    queryFn: getTodayAttendance,
+  });
+
+  const { data: AttendanceRecordsRes } = useQuery<AttendanceRecordsResponse[]>({
+    queryKey: ['attendanceRecord'],
+    queryFn: getAttendaceRecords,
+  });
 
   return (
     <>
@@ -122,37 +131,50 @@ export default function AttendanceRecord() {
             <div className="mb-4 grid grid-cols-2 gap-4">
               <div>
                 <span className="text-xs text-gray-500">출근시간</span>
-                <p className="text-sm font-medium text-gray-900">{todayAttendance.checkIn}</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {todayAttendanceRes?.checkInTime || '-'}
+                </p>
               </div>
               <div>
                 <span className="text-xs text-gray-500">퇴근시간</span>
                 <p className="text-sm font-medium text-gray-900">
-                  {todayAttendance.checkOut || '-'}
+                  {todayAttendanceRes?.checkOutTime || '-'}
                 </p>
               </div>
               <div>
                 <span className="text-xs text-gray-500">근무시간</span>
-                <p className="text-sm font-medium text-gray-900">{todayAttendance.workHours}</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {todayAttendanceRes?.workHours || '-'}
+                </p>
               </div>
               <div>
                 <span className="text-xs text-gray-500">상태</span>
                 <p
-                  className={`text-sm font-medium ${currentStatus === '출근' ? 'text-green-600' : 'text-blue-600'}`}
+                  className={`text-sm font-medium ${todayAttendanceRes?.status === '출근전' ? 'text-green-600' : 'text-blue-600'}`}
                 >
-                  {todayAttendance.status}
+                  {todayAttendanceRes?.status}
                 </p>
               </div>
             </div>
 
             <button
               onClick={handleCheckInOut}
-              className={`w-full whitespace-nowrap rounded-lg py-3 px-4 font-medium transition-colors duration-200 ${
-                currentStatus === '출근'
-                  ? 'bg-red-600 text-white hover:bg-red-700'
-                  : 'bg-green-600 text-white hover:bg-green-700'
-              }`}
+              disabled={todayAttendanceRes?.status === '퇴근완료'}
+              className={`w-full whitespace-nowrap rounded-lg py-3 px-4 font-medium transition-colors duration-200
+    ${
+      todayAttendanceRes?.status === '퇴근완료'
+        ? 'bg-gray-400 text-white cursor-not-allowed'
+        : todayAttendanceRes?.status === '출근전'
+          ? 'bg-red-600 text-white hover:bg-red-700'
+          : 'bg-green-600 text-white hover:bg-green-700'
+    }
+  `}
             >
-              {currentStatus === '출근' ? '퇴근하기' : '출근하기'}
+              {todayAttendanceRes?.status === '퇴근완료'
+                ? '퇴근완료'
+                : todayAttendanceRes?.status === '출근전'
+                  ? '퇴근하기'
+                  : '출근하기'}
             </button>
           </div>
 
@@ -160,31 +182,35 @@ export default function AttendanceRecord() {
           <div>
             <h3 className="mb-3 text-sm font-medium text-gray-900">최근 근태 기록</h3>
             <div className="space-y-2">
-              {recentAttendance.map((record, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between rounded-lg bg-gray-50 p-3"
-                >
-                  <div className="flex items-center space-x-3">
-                    <span className="text-sm font-medium text-gray-900">{record.date}</span>
-                    <span
-                      className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                        record.status === '정상'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}
-                    >
-                      {record.status}
-                    </span>
+              {AttendanceRecordsRes && AttendanceRecordsRes.length > 0 ? (
+                AttendanceRecordsRes.map((record, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between rounded-lg bg-gray-50 p-3"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <span className="text-sm font-medium text-gray-900">{record.date}</span>
+                      <span
+                        className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+                          record.status === '정상'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-yellow-100 text-yellow-800'
+                        }`}
+                      >
+                        {record.status}
+                      </span>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-gray-500">
+                        {record.startTime} - {record.endTime}
+                      </p>
+                      <p className="text-xs text-gray-700">{record.workHours}</p>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-xs text-gray-500">
-                      {record.checkIn} - {record.checkOut}
-                    </p>
-                    <p className="text-xs text-gray-700">{record.workHours}</p>
-                  </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p className="text-sm text-gray-500 text-center py-4">근태 기록이 없습니다.</p>
+              )}
             </div>
           </div>
         </div>
@@ -221,11 +247,8 @@ export default function AttendanceRecord() {
                   onChange={(event) => handleLeaveFormChange('leaveType', event.target.value)}
                   className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
                 >
-                  <option value="연차">연차</option>
-                  <option value="반차">반차</option>
-                  <option value="병가">병가</option>
-                  <option value="경조사">경조사</option>
-                  <option value="기타">기타</option>
+                  <option value="ANNUAL">연차</option>
+                  <option value="SICK">병가</option>
                 </select>
               </div>
 
@@ -262,24 +285,6 @@ export default function AttendanceRecord() {
                     required
                   />
                 </div>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="leave-reason"
-                  className="mb-2 block text-sm font-medium text-gray-700"
-                >
-                  신청 사유
-                </label>
-                <textarea
-                  id="leave-reason"
-                  value={leaveForm.reason}
-                  onChange={(event) => handleLeaveFormChange('reason', event.target.value)}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
-                  placeholder="휴가 사유를 입력하세요."
-                  rows={4}
-                  required
-                />
               </div>
 
               <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:justify-end">

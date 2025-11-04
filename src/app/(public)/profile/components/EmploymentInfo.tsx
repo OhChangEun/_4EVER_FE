@@ -1,94 +1,37 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
 import { FormEvent, useEffect, useState } from 'react';
+import { EditUserRequest, EmploymentInfoProps, ProfileInfoResponse } from '../ProfileType';
+import { getProfile } from '../profile.api';
 
-export type EmploymentData = {
-  employeeId: string;
-  employeeNumber: string;
-  name: string;
-  email: string;
-  phone: string;
-  position: string;
-  department: string;
-  statusCode: string;
-  hireDate: string;
-  birthDate: string;
-  address: string;
-  createdAt: string;
-  updatedAt: string;
-  trainings: {
-    trainingId: string;
-    trainingName: string;
-    category: string;
-    durationHours: number;
-    completionStatus: string;
-  }[];
-};
-
-type EmploymentInfoProps = {
-  isEditing: boolean;
-  employmentData: EmploymentData;
-  onSave: (data: EmploymentData) => void;
-  onCancel: () => void;
-};
-
-interface EditUserRequest {
-  email: string;
-  phone: string;
-  address: string;
-}
-
-const EmploymentInfo = ({ isEditing, employmentData, onSave, onCancel }: EmploymentInfoProps) => {
-  const [formData, setFormData] = useState<EditUserRequest>({
-    email: employmentData.email,
-    phone: employmentData.phone,
-    address: employmentData.address,
+const EmploymentInfo = ({ $isEditing, $handleToggleEdit }: EmploymentInfoProps) => {
+  const { data: profileInfo } = useQuery<ProfileInfoResponse>({
+    queryKey: ['profileInfo'],
+    queryFn: getProfile,
   });
-
-  function formatWorkYears(hireDate: string): string {
-    const hire = new Date(hireDate);
-    const today = new Date();
-
-    let years = today.getFullYear() - hire.getFullYear();
-    let months = today.getMonth() - hire.getMonth();
-
-    if (months < 0) {
-      years--;
-      months += 12;
-    }
-
-    if (years === 0 && months === 0) return '1개월 미만';
-    if (years === 0) return `${months}개월`;
-    if (months === 0) return `${years}년`;
-    return `${years}년 ${months}개월`;
-  }
-
-  useEffect(() => {
-    if (isEditing) {
-      setFormData(employmentData);
-    }
-  }, [employmentData, isEditing]);
-
-  const displayData = employmentData;
-  // const displayData = isEditing ? formData : employmentData;
+  const [formData, setFormData] = useState<EditUserRequest>({
+    email: '',
+    phone: '',
+    address: '',
+  });
 
   const summaryItems = [
     {
       label: '부서',
-      value: displayData.department,
+      value: profileInfo?.department,
     },
     {
       label: '직책',
-      value: displayData.position,
+      value: profileInfo?.position,
     },
     {
       label: '입사일',
-      value: displayData.hireDate,
+      value: profileInfo?.hireDate,
     },
     {
       label: '근속기간',
-      // value: displayData.workYears,
-      value: formatWorkYears(displayData.hireDate),
+      value: profileInfo?.serviceYears,
       highlight: true,
     },
   ];
@@ -96,15 +39,15 @@ const EmploymentInfo = ({ isEditing, employmentData, onSave, onCancel }: Employm
   const detailItems = [
     {
       label: '이메일',
-      value: displayData.email,
+      value: profileInfo?.email,
     },
     {
       label: '연락처',
-      value: displayData.phone,
+      value: profileInfo?.phoneNumber,
     },
     {
       label: '주소',
-      value: displayData.address,
+      value: profileInfo?.address,
     },
   ];
 
@@ -114,13 +57,20 @@ const EmploymentInfo = ({ isEditing, employmentData, onSave, onCancel }: Employm
     type?: string;
     readOnly?: boolean;
   }> = [
-    // { key: 'name', label: '성명' },
+    { key: 'email', label: '이메일', type: 'email', readOnly: true },
     { key: 'address', label: '주소' },
-    { key: 'email', label: '이메일', type: 'email' },
     { key: 'phone', label: '연락처' },
   ];
 
-  const handleChange = (key: keyof EmploymentData, value: string) => {
+  useEffect(() => {
+    setFormData({
+      email: profileInfo?.email ?? '',
+      phone: profileInfo?.phoneNumber ?? '',
+      address: profileInfo?.address ?? '',
+    });
+  }, [profileInfo]);
+
+  const handleChange = (key: keyof EditUserRequest, value: string) => {
     setFormData((prev) => ({
       ...prev,
       [key]: value,
@@ -129,7 +79,6 @@ const EmploymentInfo = ({ isEditing, employmentData, onSave, onCancel }: Employm
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // onSave(formData);
   };
 
   return (
@@ -141,10 +90,10 @@ const EmploymentInfo = ({ isEditing, employmentData, onSave, onCancel }: Employm
               <i className="ri-user-3-line text-2xl"></i>
             </div>
             <div>
-              <p className="text-sm text-white/80">{displayData.employeeNumber}</p>
-              <h2 className="text-2xl font-semibold">{displayData.name}</h2>
+              <p className="text-sm text-white/80">{''}</p>
+              <h2 className="text-2xl font-semibold">{profileInfo?.name}</h2>
               <p className="text-sm text-white/80">
-                {displayData.department} · {displayData.position}
+                {profileInfo?.department} · {profileInfo?.position}
               </p>
             </div>
           </div>
@@ -172,7 +121,7 @@ const EmploymentInfo = ({ isEditing, employmentData, onSave, onCancel }: Employm
       </div>
 
       <div className="bg-white px-6 py-6">
-        {isEditing ? (
+        {$isEditing ? (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {formFields.map((field) => {
@@ -217,7 +166,7 @@ const EmploymentInfo = ({ isEditing, employmentData, onSave, onCancel }: Employm
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
               <button
                 type="button"
-                onClick={onCancel}
+                onClick={$handleToggleEdit}
                 className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100"
               >
                 취소

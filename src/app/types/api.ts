@@ -5,6 +5,7 @@ export const FINANCE_BASE_PATH = `${API_BASE_URL}/business/fcm`;
 export const DASHBOARD_BASE_PATH = `${API_BASE_URL}/dashboard`;
 export const INVENTORY_BASE_PATH = `${API_BASE_URL}/scm-pp`;
 export const HRM_BASE_PATH = `${API_BASE_URL}/business/hrm`;
+export const PROFILE_BASE_PATH = `${API_BASE_URL}/business/profile`;
 
 // 공통 응답 타입
 export interface ApiResponse<T> {
@@ -103,4 +104,19 @@ export const USER_ENDPOINTS = {
   LOGIN: 'https://auth.everp.co.kr/oauth2/token',
   USER_INFO: `${API_BASE_URL}/user/info`,
   USER_PROFILE_INFO: `${HRM_BASE_PATH}/employees/by-internel-user`,
+};
+
+// ----------------------- PROFILE -----------------------
+export const PROFILE_ENDPOINTS = {
+  VACATION: `${HRM_BASE_PATH}/leave/request`,
+  PROFILE_INFO: `${PROFILE_BASE_PATH}`,
+  ATTENDANCE_RECORDS: `${PROFILE_BASE_PATH}/attendance-records`,
+  TODAY_ATTENDANCE: `${PROFILE_BASE_PATH}/today-attendance`,
+  AVAILABLE_TRAINING: `${PROFILE_BASE_PATH}/trainings/available`,
+  COMPLETED_TRAINING: `${PROFILE_BASE_PATH}/trainings/completed`,
+  PROGRESS_TRAINING: `${PROFILE_BASE_PATH}/trainings/in-progress`,
+  REGISTER_TRAINING: (trainingId: string) =>
+    `${PROFILE_BASE_PATH}/trainings/request?trainingId=${trainingId}`,
+  CHECK_IN: `${HRM_BASE_PATH}/attendance/check-in`,
+  CHECK_OUT: `${HRM_BASE_PATH}/attendance/check-out`,
 };
