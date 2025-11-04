@@ -35,7 +35,7 @@ export default function EmployeesTab() {
 
   const employeesQueryParams = useMemo(
     (): EmployeeListRequestParams => ({
-      department: selectedDepartment || undefined,
+      departmentId: selectedDepartment || undefined,
       page: currentPage - 1,
       size: pageSize,
     }),
