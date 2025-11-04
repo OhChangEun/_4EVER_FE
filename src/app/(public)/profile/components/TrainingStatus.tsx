@@ -13,7 +13,14 @@ import StatusLabel from '@/app/components/common/StatusLabel';
 
 const TrainingStatus = () => {
   const [activeTab, setActiveTab] = useState('progress');
-
+  const getTrainingCategoryText = (status: string) => {
+    switch (status) {
+      case 'BASIC_TRAINING':
+        return '기초 교육';
+      case 'TECHNICAL_TRAINING':
+        return '기술 교육';
+    }
+  };
   const { data: trainingRes } = useQuery<TrainingResponse[]>({
     queryKey: ['training', activeTab],
     queryFn: () => {
@@ -113,7 +120,8 @@ const TrainingStatus = () => {
                         </div>
                         <p className="text-xs text-gray-500">{training.description}</p>
                         <p className="text-xs text-gray-500">
-                          {training.category} | {training.durationHours}시간
+                          {getTrainingCategoryText(training.category)} | {training.durationHours}
+                          시간
                         </p>
                       </div>
                       <StatusLabel $statusCode={training.trainingStatus} />
@@ -143,7 +151,8 @@ const TrainingStatus = () => {
                         </div>
                         <p className="text-xs font-medium text-gray-500">{training.description}</p>
                         <p className="text-xs text-gray-500 mb-2">
-                          {training.category} | {training.durationHours}시간
+                          {getTrainingCategoryText(training.category)} | {training.durationHours}
+                          시간
                         </p>
                       </div>
                     </div>
