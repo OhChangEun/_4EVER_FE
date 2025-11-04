@@ -3,6 +3,7 @@
 import {
   fetchAttendanceList,
   fetchAttendanceStatusDropdown,
+  fetchDepartmentsDropdown,
 } from '@/app/(private)/hrm/api/hrm.api';
 import {
   AttendanceListData,
@@ -11,23 +12,23 @@ import {
 import Dropdown from '@/app/components/common/Dropdown';
 import { useModal } from '@/app/components/common/modal/useModal';
 import Pagination from '@/app/components/common/Pagination';
-import { KeyValueItem } from '@/app/types/CommonType';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
 import { AttendanceEditModal } from '@/app/(private)/hrm/components/modals/AttendanceEditModal';
 import { formatMinutesToHourMin, formatTime } from '@/app/utils/date';
-import { useDepartmentsDropdown } from '@/app/hooks/useDepartmentsDropdown';
+import { useDropdown } from '@/app/hooks/useDropdown';
 
 export default function AttendanceTab() {
   // --- 모달 출력 ---
   const { openModal } = useModal();
 
   // --- 드롭다운 ---
-  const {
-    options: departmentsOptions,
-    isLoading: dropdownLoading,
-    isError: dropdownError,
-  } = useDepartmentsDropdown();
+  // 부서 드롭다운
+  const { options: departmentsOptions } = useDropdown(
+    'departmentsDropdown',
+    fetchDepartmentsDropdown,
+    'include',
+  );
 
   const {
     data: statusData,
@@ -38,16 +39,6 @@ export default function AttendanceTab() {
     queryFn: fetchAttendanceStatusDropdown,
     staleTime: Infinity,
   });
-
-  const statusOptions = useMemo((): KeyValueItem[] => {
-    const list = statusData ?? [];
-    const mapped = list.map((d) => ({
-      key: d.status,
-      value: d.description,
-    }));
-
-    return [{ key: '', value: '전체 상태' }, ...mapped];
-  }, [statusData]);
 
   // --- 선택된 드롭다운 상태 ---
   const [selectedDepartment, setSelectedDepartment] = useState(''); // 부서
@@ -116,7 +107,7 @@ export default function AttendanceTab() {
 
           <Dropdown
             placeholder="전체 상태"
-            items={statusOptions}
+            items={statusData ?? []}
             value={selectedPayrollStatus}
             onChange={(status: string) => {
               setSelectedPayrollStatus(status);

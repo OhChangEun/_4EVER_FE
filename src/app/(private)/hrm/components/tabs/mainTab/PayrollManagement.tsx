@@ -1,26 +1,30 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
-import { fetchPayRollList, fetchPayrollStatusDropdown } from '@/app/(private)/hrm/api/hrm.api';
+import {
+  fetchDepartmentsDropdown,
+  fetchPayRollList,
+  fetchPayrollStatusDropdown,
+} from '@/app/(private)/hrm/api/hrm.api';
 import { KeyValueItem } from '@/app/types/CommonType';
 import Dropdown from '@/app/components/common/Dropdown';
 import { PayrollDetailModal } from '@/app/(private)/hrm/components/modals/PayrollDetailModal';
 import Pagination from '@/app/components/common/Pagination';
 import { PayRollList, PayrollRequestParams } from '@/app/(private)/hrm/types/HrmPayrollApiType';
 import { useModal } from '@/app/components/common/modal/useModal';
-import { useDepartmentsDropdown } from '@/app/hooks/useDepartmentsDropdown';
+import { useDropdown } from '@/app/hooks/useDropdown';
 
 export default function PayrollManagement() {
   // --- 모달 출력 ---
   const { openModal } = useModal();
 
   // --- 드롭다운 ---
-  const {
-    options: departmentsOptions,
-    isLoading: dropdownLoading,
-    isError: dropdownError,
-  } = useDepartmentsDropdown();
-
+  // 부서 드롭다운
+  const { options: departmentsOptions } = useDropdown(
+    'departmentsDropdown',
+    fetchDepartmentsDropdown,
+    'include',
+  );
   const {
     data: statusData,
     isLoading: statusLoading,
@@ -30,16 +34,6 @@ export default function PayrollManagement() {
     queryFn: fetchPayrollStatusDropdown,
     staleTime: Infinity,
   });
-
-  const statusOptions = useMemo((): KeyValueItem[] => {
-    const list = statusData ?? [];
-    const mapped = list.map((d) => ({
-      key: d.status,
-      value: d.description,
-    }));
-
-    return [{ key: '', value: '전체 상태' }, ...mapped];
-  }, [statusData]);
 
   // --- 선택된 드롭다운 상태 ---
   const [selectedDepartment, setSelectedDepartment] = useState(''); // 부서
@@ -146,7 +140,7 @@ export default function PayrollManagement() {
             />
             <Dropdown
               placeholder="전체 상태"
-              items={statusOptions}
+              items={statusData ?? []}
               value={selectedPayrollStatus}
               onChange={(status: string) => {
                 setSelectedPayrollStatus(status);

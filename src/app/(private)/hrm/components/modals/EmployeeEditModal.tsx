@@ -4,10 +4,10 @@ import { ModalProps } from '@/app/components/common/modal/types';
 import { useModal } from '@/app/components/common/modal/useModal';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
-import { fetchPositionsDropdown, putEmployee } from '../../api/hrm.api';
-import { useDepartmentsDropdown } from '@/app/hooks/useDepartmentsDropdown';
+import { fetchDepartmentsDropdown, fetchPositionsDropdown, putEmployee } from '../../api/hrm.api';
 import { KeyValueItem } from '@/app/types/CommonType';
 import Dropdown from '@/app/components/common/Dropdown';
+import { useDropdown } from '@/app/hooks/useDropdown';
 
 interface EmployeeEditModalProps extends ModalProps {
   employee: EmployeeData;
@@ -20,12 +20,12 @@ export function EmployeeEditModal({ employee }: EmployeeEditModalProps) {
   const { removeAllModals } = useModal();
   const queryClient = useQueryClient();
 
-  // 부서 드롭다운(전체 제외)
-  const {
-    options: departmentsOptions,
-    isLoading: dropdownLoading,
-    isError: dropdownError,
-  } = useDepartmentsDropdown(false);
+  // 부서 드롭다운
+  const { options: departmentsOptions } = useDropdown(
+    'departmentsDropdown',
+    fetchDepartmentsDropdown,
+    'include',
+  );
 
   const {
     data: positionData,
@@ -36,16 +36,6 @@ export function EmployeeEditModal({ employee }: EmployeeEditModalProps) {
     queryFn: () => fetchPositionsDropdown(selectedDepartment),
     enabled: !!selectedDepartment,
   });
-
-  const positionsOptions: KeyValueItem[] = useMemo(() => {
-    const list = positionData ?? [];
-    const mapped = list.map((p) => ({
-      key: p.positionId,
-      value: p.positionName,
-    }));
-
-    return mapped;
-  }, [positionData]);
 
   // mutation 설정
   const mutation = useMutation({
@@ -106,7 +96,7 @@ export function EmployeeEditModal({ employee }: EmployeeEditModalProps) {
             <div className="fade-in">
               <label className="block pl-1 text-sm font-medium text-gray-700 mb-1">직급</label>
               <Dropdown
-                items={positionsOptions}
+                items={positionData ?? []}
                 value={selectedPosition}
                 onChange={setSelectedPosition}
                 placeholder="직급 선택"

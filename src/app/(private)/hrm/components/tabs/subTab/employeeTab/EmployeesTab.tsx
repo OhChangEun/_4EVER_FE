@@ -1,6 +1,6 @@
 'use client';
 
-import { fetchEmployeesList } from '@/app/(private)/hrm/api/hrm.api';
+import { fetchDepartmentsDropdown, fetchEmployeesList } from '@/app/(private)/hrm/api/hrm.api';
 import {
   EmployeeData,
   EmployeeListRequestParams,
@@ -15,7 +15,7 @@ import { useMemo, useState } from 'react';
 import { EmployeeDetailModal } from '@/app/(private)/hrm/components/modals/EmployeeDetailModal';
 import { EmployeeEditModal } from '@/app/(private)/hrm/components/modals/EmployeeEditModal';
 import EmployeeRegisterModal from '@/app/(private)/hrm/components/modals/EmployeeRegisterModal';
-import { useDepartmentsDropdown } from '@/app/hooks/useDepartmentsDropdown';
+import { useDropdown } from '@/app/hooks/useDropdown';
 
 export default function EmployeesTab() {
   const [selectedDepartment, setSelectedDepartment] = useState('');
@@ -25,12 +25,13 @@ export default function EmployeesTab() {
 
   // 모달창
   const { openModal } = useModal();
+
   // 부서 드롭다운
-  const {
-    options: departmentsOptions,
-    isLoading: dropdownLoading,
-    isError: dropdownError,
-  } = useDepartmentsDropdown();
+  const { options: departmentsOptions } = useDropdown(
+    'departmentsDropdown',
+    fetchDepartmentsDropdown,
+    'include',
+  );
 
   const employeesQueryParams = useMemo(
     (): EmployeeListRequestParams => ({
@@ -51,7 +52,7 @@ export default function EmployeesTab() {
     staleTime: 1000,
   });
 
-  console.log(employeesData);
+  // console.log(employeesData);
 
   const employees = employeesData?.content ?? [];
   const pageInfo = employeesData?.page;
@@ -81,23 +82,12 @@ export default function EmployeesTab() {
   return (
     <>
       <div className="flex justify-end items-center gap-4 mb-6 p-2 rounded-lg">
-        {/* 필터링 및 검색 */}
-        {dropdownLoading ? (
-          <div className="w-24 px-4 py-2 rounded-sm bg-gray-100 text-gray-500">
-            부서 목록 로딩 중...
-          </div>
-        ) : dropdownError ? (
-          <div className="w-64 px-4 py-2 border border-red-300 rounded-lg bg-red-50 text-red-600">
-            부서 목록 로드 실패
-          </div>
-        ) : (
-          <Dropdown
-            placeholder="전체 부서"
-            items={departmentsOptions}
-            value={selectedDepartment}
-            onChange={(dept: string) => setSelectedDepartment(dept)}
-          />
-        )}
+        <Dropdown
+          placeholder="전체 부서"
+          items={departmentsOptions}
+          value={selectedDepartment}
+          onChange={(dept: string) => setSelectedDepartment(dept)}
+        />
 
         <div className="relative flex-1 max-w-xs">
           <input

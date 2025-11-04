@@ -32,15 +32,6 @@ export default function AddEmployeeTrainingModal({
     staleTime: Infinity,
   });
 
-  // Dropdown 옵션 변환
-  const programOptions: KeyValueItem[] = useMemo(() => {
-    const list = programData ?? [];
-    return list.map((p) => ({
-      key: p.programId,
-      value: p.programName,
-    }));
-  }, [programData]);
-
   // mutation 설정
   const mutation = useMutation({
     mutationFn: ({ employeeId, programId }: UpdateProgramToEmployeeRequest) =>
@@ -73,7 +64,7 @@ export default function AddEmployeeTrainingModal({
         <label className="block text-sm font-medium text-gray-700 mb-1">교육 프로그램 선택</label>
         <Dropdown
           placeholder="프로그램 선택"
-          items={programOptions}
+          items={programData ?? []}
           value={selectedProgram}
           onChange={setSelectedProgram}
         />

@@ -31,16 +31,6 @@ export default function EditProgramModal({
     staleTime: Infinity,
   });
 
-  const statusOptions = useMemo((): KeyValueItem[] => {
-    const list = statusData ?? [];
-    const mapped = list.map((d) => ({
-      key: d.status,
-      value: d.description,
-    }));
-
-    return mapped;
-  }, [statusData]);
-
   const queryClient = useQueryClient();
 
   const [editedName, setEditedName] = useState(programName);
@@ -95,7 +85,7 @@ export default function EditProgramModal({
         <label className="block text-sm font-medium text-gray-700 mb-1">상태</label>
         <Dropdown
           placeholder="전체 상태"
-          items={statusOptions}
+          items={statusData ?? []}
           value={selectedProgramStatus}
           onChange={setSelectedProgramStatus}
         />

@@ -19,18 +19,14 @@ export function DepartmentEditModal({ departments }: DepartmentEditModalProps) {
   // 선택된 부서장 상태
   const [selectedManager, setSelectedManager] = useState<string | undefined>(departments.managerId);
 
-  const { data, isLoading, isError } = useQuery({
+  const {
+    data: memberOptions,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ['deptMemberDropdown'],
     queryFn: () => fetchDeptMemberDropdown(departments.departmentId),
   });
-
-  const options = useMemo(() => {
-    const list = data ?? [];
-    return list.map((d) => ({
-      key: d.memberId,
-      value: d.memberName,
-    }));
-  }, [data]);
 
   const [formData, setFormData] = useState({
     manager: departments.managerName,
@@ -70,7 +66,7 @@ export function DepartmentEditModal({ departments }: DepartmentEditModalProps) {
       <div className="mt-3">
         <label className="block text-sm font-medium text-gray-700 mb-1">부서장</label>
         <Dropdown
-          items={options}
+          items={memberOptions ?? []}
           value={selectedManager ?? ''}
           onChange={(value) => {
             setSelectedManager(value);

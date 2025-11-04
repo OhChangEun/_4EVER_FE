@@ -1,9 +1,8 @@
 // tabs/LeaveTab.tsx
 'use client';
 import {
-  fetchDepartmentsList,
+  fetchDepartmentsDropdown,
   fetchLeaveList,
-  fetchPositionsList,
   postLeaveReject,
   postLeaveRelease,
 } from '@/app/(private)/hrm/api/hrm.api';
@@ -11,8 +10,7 @@ import { LeaveRequestParams } from '@/app/(private)/hrm/types/HrmLeaveApiType';
 import Dropdown from '@/app/components/common/Dropdown';
 import { useModal } from '@/app/components/common/modal/useModal';
 import Pagination from '@/app/components/common/Pagination';
-import { useDepartmentsDropdown } from '@/app/hooks/useDepartmentsDropdown';
-import { KeyValueItem } from '@/app/types/CommonType';
+import { useDropdown } from '@/app/hooks/useDropdown';
 import { getQueryClient } from '@/lib/queryClient';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
@@ -21,11 +19,12 @@ export default function LeaveTab() {
   // --- 모달 출력 ---
   const { openModal } = useModal();
 
-  const {
-    options: departmentsOptions,
-    isLoading: dropdownLoading,
-    isError: dropdownError,
-  } = useDepartmentsDropdown();
+  // 부서 드롭다운
+  const { options: departmentsOptions } = useDropdown(
+    'departmentsDropdown',
+    fetchDepartmentsDropdown,
+    'include',
+  );
 
   // --- 드롭다운 ---
   const [selectedDepartment, setSelectedDepartment] = useState(''); // 부서

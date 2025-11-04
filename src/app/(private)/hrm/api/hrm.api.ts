@@ -38,16 +38,7 @@ import {
   UpdateTimeRecord,
 } from '@/app/(private)/hrm/types/HrmAttendanceApiType';
 import { LeaveListResponse, LeaveRequestParams } from '@/app/(private)/hrm/types/HrmLeaveApiType';
-import {
-  AttendanceStatusDropdown,
-  DepartmentMemberDropdown,
-  DepartmentsDropdown,
-  PayrollStatusDropdown,
-  PositionsDropdown,
-  ProgramListDropdown,
-  ProgramStatusDropdown,
-  TrainingCategoryDropdown,
-} from '@/app/(private)/hrm/types/HrmDropdownApiType';
+import { KeyValueItem } from '@/app/types/CommonType';
 
 // 인적자원관리 지표 조회
 export const fetchHrmStats = async (): Promise<HrmStatResponse | null> => {
@@ -247,68 +238,56 @@ export const postEmployeeRegister = async (body: EmployeeRegisterRequest) => {
 
 // --- 드롭다운 API ---
 // 부서 드롭다운 조회
-export const fetchDepartmentsDropdown = async (): Promise<DepartmentsDropdown[]> => {
-  const res = await axios.get<ApiResponse<DepartmentsDropdown[]>>(
-    HRM_ENDPOINTS.DEPARTMENTS_DROPDOWN,
-  );
+export const fetchDepartmentsDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await axios.get<ApiResponse<KeyValueItem[]>>(HRM_ENDPOINTS.DEPARTMENTS_DROPDOWN);
   return res.data.data;
 };
 
 // 직급 드롭다운 조회
-export const fetchPositionsDropdown = async (
-  departmentId: string,
-): Promise<PositionsDropdown[]> => {
-  const res = await axios.get<ApiResponse<PositionsDropdown[]>>(
+export const fetchPositionsDropdown = async (departmentId: string): Promise<KeyValueItem[]> => {
+  const res = await axios.get<ApiResponse<KeyValueItem[]>>(
     HRM_ENDPOINTS.POSITIONS_DROPDOWN(departmentId),
   );
   return res.data.data;
 };
 
 // 출결 상태 드롭다운 조회
-export const fetchAttendanceStatusDropdown = async (): Promise<AttendanceStatusDropdown[]> => {
-  const res = await axios.get<ApiResponse<AttendanceStatusDropdown[]>>(
+export const fetchAttendanceStatusDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await axios.get<ApiResponse<KeyValueItem[]>>(
     HRM_ENDPOINTS.ATTENDANCE_STATUS_DROPDOWN,
   );
   return res.data.data;
 };
 
 // 부서 구성원 목록 드롭다운 조회
-export const fetchDeptMemberDropdown = async (
-  departmentId: string,
-): Promise<DepartmentMemberDropdown[]> => {
-  const res = await axios.get<ApiResponse<DepartmentMemberDropdown[]>>(
+export const fetchDeptMemberDropdown = async (departmentId: string): Promise<KeyValueItem[]> => {
+  const res = await axios.get<ApiResponse<KeyValueItem[]>>(
     HRM_ENDPOINTS.DEPT_MEMBER_DROPDOWN(departmentId),
   );
   return res.data.data;
 };
 
 // 급여 상태 드롭다운 조회
-export const fetchPayrollStatusDropdown = async (): Promise<PayrollStatusDropdown[]> => {
-  const res = await axios.get<ApiResponse<PayrollStatusDropdown[]>>(
-    HRM_ENDPOINTS.PAYROLL_STATUS_DROPDOWN,
-  );
+export const fetchPayrollStatusDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await axios.get<ApiResponse<KeyValueItem[]>>(HRM_ENDPOINTS.PAYROLL_STATUS_DROPDOWN);
   return res.data.data;
 };
 
 // 교육 카테고리 드롭다운 조회
-export const fetchTrainingCategoryDropdown = async (): Promise<TrainingCategoryDropdown[]> => {
-  const res = await axios.get<ApiResponse<TrainingCategoryDropdown[]>>(
-    HRM_ENDPOINTS.TRAINING_CATE_DROPDOWN,
-  );
+export const fetchTrainingCategoryDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await axios.get<ApiResponse<KeyValueItem[]>>(HRM_ENDPOINTS.TRAINING_CATE_DROPDOWN);
   return res.data.data;
 };
 
 // 교육 프로그램 드롭다운 조회
-export const fetchProgramListDropdown = async (): Promise<ProgramListDropdown[]> => {
-  const res = await axios.get<ApiResponse<ProgramListDropdown[]>>(
-    HRM_ENDPOINTS.PROGRAM_LIST_DROPDOWN,
-  );
+export const fetchProgramListDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await axios.get<ApiResponse<KeyValueItem[]>>(HRM_ENDPOINTS.PROGRAM_LIST_DROPDOWN);
   return res.data.data;
 };
 
 // 교육 프로그램 상태 조회
-export const fetchProgramStatusDropdown = async (): Promise<ProgramStatusDropdown[]> => {
-  const res = await axios.get<ApiResponse<ProgramStatusDropdown[]>>(
+export const fetchProgramStatusDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await axios.get<ApiResponse<KeyValueItem[]>>(
     HRM_ENDPOINTS.PROGRAM_COMPLETION_DROPDOWN,
   );
   return res.data.data;

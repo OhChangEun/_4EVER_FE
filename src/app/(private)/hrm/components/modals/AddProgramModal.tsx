@@ -20,16 +20,6 @@ export default function AddTrainingModal({ onClose }: ModalProps) {
     staleTime: Infinity,
   });
 
-  const categoryOptions = useMemo((): KeyValueItem[] => {
-    const list = categoryData ?? [];
-    const mapped = list.map((d) => ({
-      key: d.category,
-      value: d.description,
-    }));
-
-    return mapped;
-  }, [categoryData]);
-
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (data: CreateProgramRequest) => postProgram(data),
@@ -105,7 +95,7 @@ export default function AddTrainingModal({ onClose }: ModalProps) {
 
             <Dropdown
               placeholder="카테고리 선택"
-              items={categoryOptions}
+              items={categoryData ?? []}
               value={selectedCategory}
               onChange={setSelectedCategory}
             />

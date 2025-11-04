@@ -3,23 +3,27 @@
 import Button from '@/app/components/common/Button';
 import { ModalProps } from '@/app/components/common/modal/types';
 import { useMemo, useState } from 'react';
-import { useDepartmentsDropdown } from '@/app/hooks/useDepartmentsDropdown';
 import Dropdown from '@/app/components/common/Dropdown';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { fetchPositionsDropdown, postEmployeeRegister } from '@/app/(private)/hrm/api/hrm.api';
+import {
+  fetchDepartmentsDropdown,
+  fetchPositionsDropdown,
+  postEmployeeRegister,
+} from '@/app/(private)/hrm/api/hrm.api';
 import { KeyValueItem } from '@/app/types/CommonType';
 import { EmployeeRegisterRequest } from '../../types/HrmEmployeesApiType';
+import { useDropdown } from '@/app/hooks/useDropdown';
 
 export default function EmployeeRegisterModal({ onClose }: ModalProps) {
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [selectedPosition, setSelectedPosition] = useState('');
 
-  // 부서 드롭다운(전체 제외)
-  const {
-    options: departmentsOptions,
-    isLoading: dropdownLoading,
-    isError: dropdownError,
-  } = useDepartmentsDropdown(false);
+  // 부서 드롭다운
+  const { options: departmentsOptions } = useDropdown(
+    'departmentsDropdown',
+    fetchDepartmentsDropdown,
+    'include',
+  );
 
   const {
     data: positionData,
@@ -30,16 +34,6 @@ export default function EmployeeRegisterModal({ onClose }: ModalProps) {
     queryFn: () => fetchPositionsDropdown(selectedDepartment),
     enabled: !!selectedDepartment,
   });
-
-  const positionsOptions: KeyValueItem[] = useMemo(() => {
-    const list = positionData ?? [];
-    const mapped = list.map((p) => ({
-      key: p.positionId,
-      value: p.positionName,
-    }));
-
-    return mapped;
-  }, [positionData]);
 
   const mutation = useMutation({
     mutationFn: (body: EmployeeRegisterRequest) => postEmployeeRegister(body),
@@ -150,7 +144,7 @@ export default function EmployeeRegisterModal({ onClose }: ModalProps) {
           <div className="fade-in">
             <label className="block pl-1 text-sm font-medium text-gray-700 mb-1">직급</label>
             <Dropdown
-              items={positionsOptions}
+              items={positionData ?? []}
               value={selectedPosition}
               onChange={setSelectedPosition}
               placeholder="직급 선택"

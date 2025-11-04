@@ -1,10 +1,6 @@
 'use client';
 
-import {
-  fetchDepartmentsList,
-  fetchPositionsList,
-  fetchTrainingList,
-} from '@/app/(private)/hrm/api/hrm.api';
+import { fetchDepartmentsDropdown, fetchTrainingList } from '@/app/(private)/hrm/api/hrm.api';
 import {
   TrainingListData,
   TrainingRequestParams,
@@ -16,17 +12,18 @@ import { useQuery } from '@tanstack/react-query';
 import React, { useState, useMemo } from 'react';
 import TrainingDetailModal from '@/app/(private)/hrm/components/modals/TrainingDetailModal';
 import AddEmployeeTrainingModal from '@/app/(private)/hrm/components/modals/AddEmployeeTrainingModal';
-import { useDepartmentsDropdown } from '@/app/hooks/useDepartmentsDropdown';
+import { useDropdown } from '@/app/hooks/useDropdown';
 
 export default function EmployeeTrainingTab() {
   // --- 모달 출력 ---
   const { openModal } = useModal();
 
-  const {
-    options: departmentsOptions,
-    isLoading: dropdownLoading,
-    isError: dropdownError,
-  } = useDepartmentsDropdown();
+  // 부서 드롭다운
+  const { options: departmentsOptions } = useDropdown(
+    'departmentsDropdown',
+    fetchDepartmentsDropdown,
+    'include',
+  );
 
   // --- 드롭다운 ---
   const [selectedDepartment, setSelectedDepartment] = useState(''); // 부서
