@@ -112,6 +112,7 @@ export default function LeaveTab() {
       <div className="flex items-center justify-end mb-4">
         <div className="flex items-center gap-3">
           <Dropdown
+            placeholder="전체 부서"
             items={departmentsOptions}
             value={selectedDepartment}
             onChange={(dept: string) => {
