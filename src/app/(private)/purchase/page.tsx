@@ -8,22 +8,74 @@ import { PURCHASE_TABS } from '@/app/(private)/purchase/constants';
 import TabNavigation from '@/app/components/common/TabNavigation';
 import StatSection from '@/app/components/common/StatSection';
 import ErrorMessage from '@/app/components/common/ErrorMessage';
-import { FetchPurchaseReqParams } from '@/app/(private)/purchase/types/PurchaseApiRequestType';
 import {
+  fetchPurchaseOrderSearchTypeDropdown,
+  fetchPurchaseOrderStatusDropdown,
   fetchPurchaseReqList,
+  fetchPurchaseRequisitionSearchTypeDropdown,
+  fetchPurchaseRequisitionStatusDropdown,
   fetchPurchaseStats,
+  fetchSupplierCategoryDropdown,
+  fetchSupplierSearchTypeDropdown,
+  fetchSupplierStatusDropdown,
 } from '@/app/(private)/purchase/api/purchase.api';
+import { PurchaseReqParams } from '@/app/(private)/purchase/types/PurchaseApiRequestType';
 
 export default async function PurchasePage() {
   const queryClient = getQueryClient();
 
-  await queryClient.prefetchQuery({
-    queryKey: [
-      'purchaseRequests',
-      { page: 0, size: 10, status: 'ALL', createdFrom: '', createdTo: '' },
-    ],
-    queryFn: ({ queryKey }) => fetchPurchaseReqList(queryKey[1] as FetchPurchaseReqParams),
-  });
+  const initialParams: PurchaseReqParams = {
+    statusCode: '',
+    type: '',
+    keyword: '',
+    startDate: '',
+    endDate: '',
+    page: 0,
+    size: 10,
+  };
+  await Promise.all([
+    // 구매요청 탭
+    queryClient.prefetchQuery({
+      queryKey: ['purchaseRequests', initialParams],
+      queryFn: () => fetchPurchaseReqList(initialParams),
+    }),
+
+    // --- 드롭다운 prefetch ---
+    // 구매요청
+    queryClient.prefetchQuery({
+      queryKey: ['purchaseRequisitionSearchTypeDropdown'],
+      queryFn: fetchPurchaseRequisitionSearchTypeDropdown,
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ['purchaseRequisitionStatusDropdown'],
+      queryFn: fetchPurchaseRequisitionStatusDropdown,
+    }),
+
+    // 발주서
+    queryClient.prefetchQuery({
+      queryKey: ['purchaseOrderSearchTypeDropdown'],
+      queryFn: fetchPurchaseOrderSearchTypeDropdown,
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ['purchaseOrderStatusDropdown'],
+      queryFn: fetchPurchaseOrderStatusDropdown,
+    }),
+
+    // 공급업체
+    queryClient.prefetchQuery({
+      queryKey: ['supplierCategoryDropdown'],
+      queryFn: fetchSupplierCategoryDropdown,
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ['supplierSearchTypeDropdown'],
+      queryFn: fetchSupplierSearchTypeDropdown,
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ['supplierStatusDropdown'],
+      queryFn: fetchSupplierStatusDropdown,
+    }),
+  ]);
+
   const dehydratedState = dehydrate(queryClient);
 
   const data = await fetchPurchaseStats();

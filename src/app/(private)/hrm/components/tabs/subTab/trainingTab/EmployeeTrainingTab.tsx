@@ -100,6 +100,7 @@ export default function EmployeeTrainingTab() {
       <div className="flex items-center justify-end gap-3 mb-4">
         <div className="flex items-center gap-3">
           <Dropdown
+            placeholder="전체 부서"
             items={departmentsOptions}
             value={selectedDepartment}
             onChange={(dept: string) => {
