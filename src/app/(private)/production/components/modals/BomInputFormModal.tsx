@@ -5,6 +5,23 @@ import IconButton from '@/app/components/common/IconButton';
 import Dropdown from '@/app/components/common/Dropdown';
 import { ModalProps } from '@/app/components/common/modal/types';
 import { useState } from 'react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface BomInputFormModalProps extends ModalProps {
   editMode?: boolean;
@@ -90,10 +107,136 @@ const MOCK_OPERATIONS: OperationInfo[] = [
   { id: 'OP004', name: '포장' },
 ];
 
+interface SortableRowProps {
+  item: BomItem;
+  materialOptions: { key: string; value: string }[];
+  operationOptions: { key: string; value: string }[];
+  onMaterialChange: (id: string, materialId: string) => void;
+  onItemChange: (id: string, field: keyof BomItem, value: string | number) => void;
+  onRemove: (id: string) => void;
+}
+
+function SortableRow({
+  item,
+  materialOptions,
+  operationOptions,
+  onMaterialChange,
+  onItemChange,
+  onRemove,
+}: SortableRowProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: item.id,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <tr ref={setNodeRef} style={style} className={isDragging ? 'bg-blue-50' : ''}>
+      <td {...attributes} {...listeners} className="px-3 py-2 cursor-move">
+        <i className="ri-draggable text-gray-400"></i>
+      </td>
+      <td className="px-3 py-2">
+        <input
+          type="number"
+          className="w-20 px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50 text-center"
+          value={item.sequence}
+          disabled
+        />
+      </td>
+      <td className="px-3 py-2 w-40">
+        <Dropdown
+          items={materialOptions}
+          value={item.itemId}
+          onChange={(value) => onMaterialChange(item.id, value)}
+          placeholder="선택"
+        />
+      </td>
+      <td className="px-3 py-2">
+        <input
+          type="text"
+          className="w-32 px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50"
+          value={item.materialInfo?.productCode || ''}
+          disabled
+        />
+      </td>
+      <td className="px-3 py-2">
+        <input
+          type="text"
+          className="w-24 px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50"
+          value={item.materialInfo?.type || ''}
+          disabled
+        />
+      </td>
+      <td className="px-3 py-2">
+        <input
+          type="text"
+          className="w-32 px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50"
+          value={item.materialInfo?.supplier || ''}
+          disabled
+        />
+      </td>
+      <td className="px-3 py-2">
+        <input
+          type="text"
+          className="w-16 px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50"
+          value={item.materialInfo?.unit || ''}
+          disabled
+        />
+      </td>
+      <td className="px-3 py-2">
+        <input
+          type="text"
+          className="w-24 px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50 text-right"
+          value={
+            item.materialInfo?.unitPrice ? item.materialInfo.unitPrice.toLocaleString() + '원' : ''
+          }
+          disabled
+        />
+      </td>
+      <td className="px-3 py-2">
+        <input
+          type="number"
+          className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
+          value={item.quantity}
+          onChange={(e) => onItemChange(item.id, 'quantity', Number(e.target.value))}
+          min="1"
+        />
+      </td>
+      <td className="px-3 py-2 w-32">
+        <Dropdown
+          items={operationOptions}
+          value={item.operationId}
+          onChange={(value) => onItemChange(item.id, 'operationId', value)}
+          placeholder="선택"
+        />
+      </td>
+      <td className="px-3 py-2">
+        <IconButton
+          type="button"
+          icon="ri-delete-bin-line"
+          size="sm"
+          onClick={() => onRemove(item.id)}
+        />
+      </td>
+    </tr>
+  );
+}
+
 export default function BomInputFormModal({ editMode = false }: BomInputFormModalProps) {
   const [productName, setProductName] = useState('');
   const [unit, setUnit] = useState('');
   const [bomItems, setBomItems] = useState<BomItem[]>([]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
 
   const materialOptions = MOCK_MATERIALS.map((m) => ({
     key: m.id,
@@ -117,7 +260,12 @@ export default function BomInputFormModal({ editMode = false }: BomInputFormModa
   };
 
   const handleRemoveRow = (id: string) => {
-    setBomItems(bomItems.filter((item) => item.id !== id));
+    const updatedItems = bomItems.filter((item) => item.id !== id);
+    const reorderedItems = updatedItems.map((item, index) => ({
+      ...item,
+      sequence: index + 1,
+    }));
+    setBomItems(reorderedItems);
   };
 
   const handleMaterialChange = (id: string, materialId: string) => {
@@ -131,6 +279,23 @@ export default function BomInputFormModal({ editMode = false }: BomInputFormModa
 
   const handleItemChange = (id: string, field: keyof BomItem, value: string | number) => {
     setBomItems(bomItems.map((item) => (item.id === id ? { ...item, [field]: value } : item)));
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setBomItems((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+
+        const newItems = arrayMove(items, oldIndex, newIndex);
+        return newItems.map((item, index) => ({
+          ...item,
+          sequence: index + 1,
+        }));
+      });
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -190,7 +355,11 @@ export default function BomInputFormModal({ editMode = false }: BomInputFormModa
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
+                  <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase whitespace-nowrap w-8">
+                    <i className="ri-draggable"></i>
+                  </th>
                   {[
+                    '공정 순서',
                     '자재',
                     '제품 코드',
                     '타입',
@@ -199,122 +368,48 @@ export default function BomInputFormModal({ editMode = false }: BomInputFormModa
                     '단가',
                     '수량',
                     '작업',
-                    '공정 순서',
                     '삭제',
                   ].map((h) => (
                     <th
                       key={h}
-                      className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap"
+                      className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase whitespace-nowrap"
                     >
                       {h}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {bomItems.map((item) => (
-                  <tr key={item.id}>
-                    <td className="px-3 py-2 w-40">
-                      <Dropdown
-                        items={materialOptions}
-                        value={item.itemId}
-                        onChange={(value) => handleMaterialChange(item.id, value)}
-                        placeholder="선택"
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={bomItems.map((item) => item.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {bomItems.map((item) => (
+                      <SortableRow
+                        key={item.id}
+                        item={item}
+                        materialOptions={materialOptions}
+                        operationOptions={operationOptions}
+                        onMaterialChange={handleMaterialChange}
+                        onItemChange={handleItemChange}
+                        onRemove={handleRemoveRow}
                       />
-                    </td>
-                    <td className="px-3 py-2">
-                      <input
-                        type="text"
-                        className="w-32 px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50"
-                        value={item.materialInfo?.productCode || ''}
-                        disabled
-                      />
-                    </td>
-                    <td className="px-3 py-2">
-                      <input
-                        type="text"
-                        className="w-24 px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50"
-                        value={item.materialInfo?.type || ''}
-                        disabled
-                      />
-                    </td>
-                    <td className="px-3 py-2">
-                      <input
-                        type="text"
-                        className="w-32 px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50"
-                        value={item.materialInfo?.supplier || ''}
-                        disabled
-                      />
-                    </td>
-                    <td className="px-3 py-2">
-                      <input
-                        type="text"
-                        className="w-16 px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50"
-                        value={item.materialInfo?.unit || ''}
-                        disabled
-                      />
-                    </td>
-                    <td className="px-3 py-2">
-                      <input
-                        type="text"
-                        className="w-24 px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50 text-right"
-                        value={
-                          item.materialInfo?.unitPrice
-                            ? item.materialInfo.unitPrice.toLocaleString() + '원'
-                            : ''
-                        }
-                        disabled
-                      />
-                    </td>
-                    <td className="px-3 py-2">
-                      <input
-                        type="number"
-                        className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
-                        value={item.quantity}
-                        onChange={(e) =>
-                          handleItemChange(item.id, 'quantity', Number(e.target.value))
-                        }
-                        min="1"
-                      />
-                    </td>
-                    <td className="px-3 py-2 w-32">
-                      <Dropdown
-                        items={operationOptions}
-                        value={item.operationId}
-                        onChange={(value) => handleItemChange(item.id, 'operationId', value)}
-                        placeholder="선택"
-                      />
-                    </td>
-                    <td className="px-3 py-2">
-                      <input
-                        type="number"
-                        className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
-                        value={item.sequence}
-                        onChange={(e) =>
-                          handleItemChange(item.id, 'sequence', Number(e.target.value))
-                        }
-                        min="1"
-                        disabled
-                      />
-                    </td>
-                    <td className="px-3 py-2">
-                      <IconButton
-                        type="button"
-                        icon="ri-delete-bin-line"
-                        size="sm"
-                        onClick={() => handleRemoveRow(item.id)}
-                      />
-                    </td>
-                  </tr>
-                ))}
-                {bomItems.length === 0 && (
-                  <tr>
-                    <td colSpan={10} className="px-3 py-8 text-center text-gray-500 text-sm">
-                      구성품을 추가해주세요
-                    </td>
-                  </tr>
-                )}
-              </tbody>
+                    ))}
+                    {bomItems.length === 0 && (
+                      <tr>
+                        <td colSpan={11} className="px-3 py-8 text-center text-gray-500 text-sm">
+                          구성품을 추가해주세요
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </SortableContext>
+              </DndContext>
             </table>
           </div>
         </div>
