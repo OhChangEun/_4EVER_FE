@@ -12,7 +12,10 @@ import {
   PositionDataResponse,
   PositionDetailResponse,
 } from '@/app/(private)/hrm/types/HrmPositionsApiType';
-import { DepartmentsListResponse } from '@/app/(private)/hrm/types/HrmDepartmentsApiType';
+import {
+  DepartmentsListResponse,
+  DepartmentsRequestBody,
+} from '@/app/(private)/hrm/types/HrmDepartmentsApiType';
 import {
   PayrollRequestParams,
   PayRollDetailResponse,
@@ -80,6 +83,15 @@ export const fetchPositionsDetail = async (positionId: string): Promise<Position
 export const fetchDepartmentsList = async (): Promise<DepartmentsListResponse> => {
   const res = await axios.get<ApiResponse<DepartmentsListResponse>>(`${HRM_ENDPOINTS.DEPARTMENTS}`);
   return res.data.data;
+};
+
+// 부서 수정
+export const patchDepartments = async (departmentId: string, body: DepartmentsRequestBody) => {
+  const res = await axios.patch<ApiResponse<null>>(
+    `${HRM_ENDPOINTS.DEPARTMENTS_DETAIL(departmentId)}`,
+    body,
+  );
+  return res.data;
 };
 
 // 월별 급여 목록 조회

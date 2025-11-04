@@ -21,6 +21,7 @@ export const HRM_ENDPOINTS = {
 
   // 부서
   DEPARTMENTS: `${HRM_BASE_PATH}/departments`, // 부서 목록 조회
+  DEPARTMENTS_DETAIL: (departmentId: string) => `${HRM_BASE_PATH}/departments/${departmentId}`, // 부서 수정
 
   // 직원
   EMPLOYEE: `${HRM_BASE_PATH}/employee`, // 직원 목록 조회

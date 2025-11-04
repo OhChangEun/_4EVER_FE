@@ -20,7 +20,7 @@ export default function DepartmentsTab() {
     staleTime: Infinity,
   });
 
-  const departmentList = departmentsData?.departments ?? [];
+  const departmentList = departmentsData?.content ?? [];
 
   // 부서 상세보기 모달창
   const handleViewDepartment = (dept: DepartmentsData) => {
