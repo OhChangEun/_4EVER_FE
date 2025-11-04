@@ -1,6 +1,7 @@
 import axios from '@/lib/axiosInstance';
 import {
   AttendanceRecordsResponse,
+  EditUserRequest,
   ProfileInfoResponse,
   RequestVacation,
   TodayAttendResponse,
@@ -61,4 +62,12 @@ export const getCompletedTraining = async (): Promise<TrainingResponse[]> => {
     PROFILE_ENDPOINTS.COMPLETED_TRAINING,
   );
   return res.data.data;
+};
+
+export const postProfile = async (profileInfo: EditUserRequest): Promise<ApiResponseNoData> => {
+  const res = await axios.post<ApiResponseNoData>(PROFILE_ENDPOINTS.EDIT_PROFILE, {
+    phoneNumber: profileInfo.phoneNumber,
+    address: profileInfo.address,
+  });
+  return res.data;
 };

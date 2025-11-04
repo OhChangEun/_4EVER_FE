@@ -190,7 +190,9 @@ const InvoiceList = () => {
                   <td className="py-3 px-4 text-sm font-medium text-gray-900">
                     {invoice.invoiceNumber}
                   </td>
-                  <td className="py-3 px-4 text-sm text-gray-900">{invoice.supply.supplierName}</td>
+                  <td className="py-3 px-4 text-sm text-gray-900">
+                    {invoice.connection.connectionName}
+                  </td>
                   <td className="py-3 px-4 text-sm font-medium text-gray-900 text-right">
                     ₩{invoice.totalAmount.toLocaleString()}
                   </td>

@@ -96,8 +96,8 @@ export default function AttendanceRecord() {
 
   return (
     <>
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="p-6 border-b border-gray-200">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 min-h-188">
+        <div className="p-6 border-b border-gray-200 ">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center space-x-3">
               {/* <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -120,7 +120,7 @@ export default function AttendanceRecord() {
 
         <div className="p-6">
           {/* 오늘 근태 현황 */}
-          <div className="mb-6 rounded-lg bg-gray-50 p-4">
+          <div className="mb-6 rounded-lg bg-gray-50 p-4 ">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-sm font-medium text-gray-900">오늘 근태 현황</h3>
               <span className="text-xs text-gray-500">

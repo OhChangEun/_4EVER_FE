@@ -1,18 +1,18 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { FormEvent, useEffect, useState } from 'react';
 import { EditUserRequest, EmploymentInfoProps, ProfileInfoResponse } from '../ProfileType';
-import { getProfile } from '../profile.api';
+import { getProfile, postProfile } from '../profile.api';
 
-const EmploymentInfo = ({ $isEditing, $handleToggleEdit }: EmploymentInfoProps) => {
+const EmploymentInfo = ({ $isEditing, $setIsEditing }: EmploymentInfoProps) => {
   const { data: profileInfo } = useQuery<ProfileInfoResponse>({
     queryKey: ['profileInfo'],
     queryFn: getProfile,
   });
   const [formData, setFormData] = useState<EditUserRequest>({
     email: '',
-    phone: '',
+    phoneNumber: '',
     address: '',
   });
 
@@ -58,14 +58,14 @@ const EmploymentInfo = ({ $isEditing, $handleToggleEdit }: EmploymentInfoProps) 
     readOnly?: boolean;
   }> = [
     { key: 'email', label: '이메일', type: 'email', readOnly: true },
+    { key: 'phoneNumber', label: '연락처' },
     { key: 'address', label: '주소' },
-    { key: 'phone', label: '연락처' },
   ];
 
   useEffect(() => {
     setFormData({
       email: profileInfo?.email ?? '',
-      phone: profileInfo?.phoneNumber ?? '',
+      phoneNumber: profileInfo?.phoneNumber ?? '',
       address: profileInfo?.address ?? '',
     });
   }, [profileInfo]);
@@ -76,9 +76,34 @@ const EmploymentInfo = ({ $isEditing, $handleToggleEdit }: EmploymentInfoProps) 
       [key]: value,
     }));
   };
+  const queryClient = useQueryClient();
+  const { mutate: editProfile } = useMutation({
+    mutationFn: postProfile,
+    onMutate: async (newData) => {
+      await queryClient.cancelQueries({ queryKey: ['profileInfo'] });
+      const previousData = queryClient.getQueryData(['profileInfo']);
+      queryClient.setQueryData(['profileInfo'], (old: EditUserRequest) => ({
+        ...old!,
+        ...newData,
+      }));
+      return { previousData };
+    },
+    onError: (error, newData, context) => {
+      if (context?.previousData) queryClient.setQueryData(['profileInfo'], context.previousData);
+      alert(`프로필 수정 중 오류가 발생했습니다. ${error}`);
+    },
+    onSuccess: () => {
+      $setIsEditing(false);
+      alert('프로필 수정이 완료되었습니다.');
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['profileInfo'] });
+    },
+  });
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    editProfile(formData);
   };
 
   return (
@@ -90,7 +115,7 @@ const EmploymentInfo = ({ $isEditing, $handleToggleEdit }: EmploymentInfoProps) 
               <i className="ri-user-3-line text-2xl"></i>
             </div>
             <div>
-              <p className="text-sm text-white/80">{''}</p>
+              <p className="text-sm text-white/80">{profileInfo?.employeeNumber}</p>
               <h2 className="text-2xl font-semibold">{profileInfo?.name}</h2>
               <p className="text-sm text-white/80">
                 {profileInfo?.department} · {profileInfo?.position}
@@ -166,7 +191,9 @@ const EmploymentInfo = ({ $isEditing, $handleToggleEdit }: EmploymentInfoProps) 
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
               <button
                 type="button"
-                onClick={$handleToggleEdit}
+                onClick={() => {
+                  $setIsEditing(false);
+                }}
                 className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100"
               >
                 취소

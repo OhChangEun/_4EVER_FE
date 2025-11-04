@@ -9,19 +9,20 @@ import {
   getProgressTraining,
   postTraining,
 } from '../profile.api';
+import StatusLabel from '@/app/components/common/StatusLabel';
 
 const TrainingStatus = () => {
   const [activeTab, setActiveTab] = useState('progress');
 
   const { data: trainingRes } = useQuery<TrainingResponse[]>({
-    queryKey: ['training'],
+    queryKey: ['training', activeTab],
     queryFn: () => {
       switch (activeTab) {
         case 'progress':
           return getProgressTraining();
         case 'available':
           return getAvailableTraining();
-        case 'complete':
+        case 'completed':
           return getCompletedTraining();
         default:
           return Promise.resolve([]);
@@ -97,79 +98,99 @@ const TrainingStatus = () => {
 
       <div className="p-6 min-h-150 ">
         {/* 수강중인 교육 */}
-        {activeTab === 'current' && (
-          <div className="space-y-4">
-            {trainingRes?.map((training) => (
-              <div key={training.trainingId} className="border border-gray-200 rounded-lg p-4">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <h3 className="text-sm font-medium text-gray-900">{training.trainingName}</h3>
+        {activeTab === 'progress' && (
+          <>
+            {trainingRes && trainingRes.length > 0 ? (
+              <div className="space-y-4">
+                {trainingRes.map((training) => (
+                  <div key={training.trainingId} className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-3">
+                          <h3 className="text-sm font-medium text-gray-900">
+                            {training.trainingName}
+                          </h3>
+                        </div>
+                        <p className="text-xs text-gray-500">{training.description}</p>
+                        <p className="text-xs text-gray-500">
+                          {training.category} | {training.durationHours}시간
+                        </p>
+                      </div>
+                      <StatusLabel $statusCode={training.trainingStatus} />
                     </div>
-                    <p className="text-xs text-gray-500">강사: | 시간: {training.durationHours}</p>
-                    <p className="text-xs text-gray-500">교육 시작일: </p>
                   </div>
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      training.trainingStatus === '진행중'
-                        ? 'bg-blue-100 text-blue-800'
-                        : 'bg-green-100 text-green-800'
-                    }`}
-                  >
-                    {training.trainingStatus}
-                  </span>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
+            ) : (
+              <p className="text-sm text-gray-500 text-center py-6">수강중인 교육이 없습니다.</p>
+            )}
+          </>
         )}
 
         {/* 신청 가능한 교육 */}
         {activeTab === 'available' && (
-          <div className="space-y-4">
-            {trainingRes?.map((training) => (
-              <div key={training.trainingId} className="border border-gray-200 rounded-lg p-4">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <h3 className="text-sm font-medium text-gray-900">{training.trainingName}</h3>
-                      <p className="text-sm font-medium text-gray-900">{training.trainingName}</p>
+          <>
+            {trainingRes && trainingRes.length > 0 ? (
+              <div className="space-y-4">
+                {trainingRes.map((training) => (
+                  <div key={training.trainingId} className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <h3 className="text-sm font-medium text-gray-900">
+                            {training.trainingName}
+                          </h3>
+                        </div>
+                        <p className="text-xs font-medium text-gray-500">{training.description}</p>
+                        <p className="text-xs text-gray-500 mb-2">
+                          {training.category} | {training.durationHours}시간
+                        </p>
+                      </div>
                     </div>
-                    <p className="text-xs text-gray-500 mb-2">: | 시간: {training.durationHours}</p>
-                    <p className="text-xs text-gray-500 mb-2">교육 시작일: </p>
-                  </div>
-                </div>
 
-                <button
-                  onClick={() => handleApplyTraining(training.trainingId)}
-                  className="w-full mt-3 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 cursor-pointer whitespace-nowrap"
-                >
-                  교육 신청하기
-                </button>
+                    <button
+                      onClick={() => handleApplyTraining(training.trainingId)}
+                      className="w-full mt-3 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 cursor-pointer whitespace-nowrap"
+                    >
+                      교육 신청하기
+                    </button>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            ) : (
+              <p className="text-sm text-gray-500 text-center py-6">신청 가능한 교육이 없습니다.</p>
+            )}
+          </>
         )}
 
         {/* 수료한 교육 */}
         {activeTab === 'completed' && (
-          <div className="space-y-4">
-            {trainingRes?.map((training) => (
-              <div key={training.trainingId} className="border border-gray-200 rounded-lg p-4">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <h3 className="text-sm font-medium text-gray-900">{training.trainingName}</h3>
-                    {/* <p className="text-xs text-gray-500">| 시간: {training.durationHours}</p> */}
-                    <p className="text-xs text-gray-500">| 시간: {training.durationHours}</p>
-                    <p className="text-xs text-gray-500">수료일: {}</p>
+          <>
+            {trainingRes && trainingRes.length > 0 ? (
+              <div className="space-y-4">
+                {trainingRes.map((training) => (
+                  <div key={training.trainingId} className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <h3 className="text-sm font-medium text-gray-900">
+                          {training.trainingName}
+                        </h3>
+                        <p className="text-xs text-gray-500">{training.durationHours}시간</p>
+                        <p className="text-xs text-gray-500">
+                          수료일: {training.complementationDate}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-xs text-gray-500">수료</div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-xs text-gray-500">수료</div>
-                  </div>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
+            ) : (
+              <p className="text-sm text-gray-500 text-center py-6">수료한 교육이 없습니다.</p>
+            )}
+          </>
         )}
       </div>
     </div>

@@ -119,4 +119,5 @@ export const PROFILE_ENDPOINTS = {
     `${PROFILE_BASE_PATH}/trainings/request?trainingId=${trainingId}`,
   CHECK_IN: `${HRM_BASE_PATH}/attendance/check-in`,
   CHECK_OUT: `${HRM_BASE_PATH}/attendance/check-out`,
+  EDIT_PROFILE: `${PROFILE_BASE_PATH}/employees/profile/update`,
 };

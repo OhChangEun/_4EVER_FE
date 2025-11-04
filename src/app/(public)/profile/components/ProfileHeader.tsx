@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { ProfileHeaderProps } from '../ProfileType';
 
-const ProfileHeader = ({ $isEditing, $handleToggleEdit }: ProfileHeaderProps) => {
+const ProfileHeader = ({ $isEditing, $setIsEditing }: ProfileHeaderProps) => {
   return (
     <header className="bg-white shadow-sm border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -20,7 +20,9 @@ const ProfileHeader = ({ $isEditing, $handleToggleEdit }: ProfileHeaderProps) =>
 
           <div className="flex items-center space-x-4">
             <button
-              onClick={$handleToggleEdit}
+              onClick={() => {
+                $setIsEditing(true);
+              }}
               className={`px-4 py-2 font-medium rounded-lg transition-colors duration-200 cursor-pointer whitespace-nowrap flex items-center space-x-2 ${
                 $isEditing
                   ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'

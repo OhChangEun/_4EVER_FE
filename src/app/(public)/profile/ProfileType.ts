@@ -1,16 +1,16 @@
 export interface EmploymentInfoProps {
   $isEditing: boolean;
-  $handleToggleEdit: () => void;
+  $setIsEditing: (show: boolean) => void;
 }
 
 export interface ProfileHeaderProps {
   $isEditing: boolean;
-  $handleToggleEdit: () => void;
+  $setIsEditing: (show: boolean) => void;
 }
 
 export interface EditUserRequest {
-  email: string;
-  phone: string;
+  email?: string;
+  phoneNumber: string;
   address: string;
 }
 
@@ -22,6 +22,7 @@ export interface RequestVacation {
 
 export interface ProfileInfoResponse {
   name: string;
+  employeeNumber: string;
   department: string;
   position: string;
   hireDate: string;
@@ -53,4 +54,7 @@ export interface TrainingResponse {
   durationHours: number;
   delieveryMethod: string;
   completionStatus: string;
+  category: string;
+  description: string;
+  complementationDate: string;
 }
