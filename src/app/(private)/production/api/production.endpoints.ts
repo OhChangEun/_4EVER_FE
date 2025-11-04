@@ -1,6 +1,6 @@
 import { API_BASE_URL } from '@/app/types/api';
 
-export const PRODUCTION_BASE_PATH = `${API_BASE_URL}/api/scm-pp/pp`;
+export const PRODUCTION_BASE_PATH = `${API_BASE_URL}/scm-pp/pp`;
 
 export const PRODUCTION_ENDPOINTS = {
   // BOM 관련

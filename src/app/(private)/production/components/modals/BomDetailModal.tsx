@@ -97,7 +97,7 @@ export default function BomDetailModal({ bomId }: BomDetailModalProps) {
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-500">상태</label>
-                <div className="mt-1">{getStatusBadge(bomDetail.status)}</div>
+                <div className="mt-1">{getStatusBadge(bomDetail.statusCode)}</div>
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-500">최종 수정일</label>

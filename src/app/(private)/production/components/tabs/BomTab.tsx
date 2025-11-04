@@ -107,8 +107,8 @@ export default function BomTab() {
                   <tr key={bom.bomId} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">{bom.itemName}</div>
-                        <div className="text-sm text-gray-500">{bom.itemCode}</div>
+                        <div className="text-sm font-medium text-gray-900">{bom.productName}</div>
+                        <div className="text-sm text-gray-500">{bom.productNumber}</div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -117,7 +117,7 @@ export default function BomTab() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {bom.version}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">{bom.status}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{bom.statusCode}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {bom.lastModifiedAt}
                     </td>

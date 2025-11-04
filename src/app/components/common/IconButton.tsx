@@ -24,7 +24,7 @@ export default function IconButton({
   };
 
   const sizes = {
-    sm: { px: 'px-2', py: 'py-1.5', text: 'text-sm', square: 'w-8 h-8' },
+    sm: { px: 'px-1', py: 'py-1', text: 'text-sm', square: 'w-8 h-8' },
     md: { px: 'px-3', py: 'py-1.5', text: 'text-base', square: 'w-10 h-10' },
     lg: { px: 'px-4', py: 'py-2', text: 'text-lg', square: 'w-12 h-12' },
   };

@@ -41,7 +41,7 @@ export interface BomDetailResponse {
   productNumber: string;
   productName: string;
   version: string;
-  status: string; // 예: "활성"
+  statusCode: string; // 예: "활성"
   lastModifiedAt: string;
   components: BomComponent[];
   levelStructure: BomLevelStructure;
