@@ -16,7 +16,7 @@ export default function Input({
   disabled,
   ...props
 }: InputProps) {
-  const base = 'rounded-lg w-full focus:outline-none transition-colors placeholder-gray-400';
+  const base = ' w-full focus:outline-none transition-colors placeholder-gray-300';
 
   const variants = {
     default: 'border border-gray-300 focus:border-blue-500 bg-white',
@@ -24,9 +24,9 @@ export default function Input({
   };
 
   const sizes = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-base',
-    lg: 'px-5 py-3 text-lg',
+    sm: 'px-2.5 py-1 text-xs rounded-sm',
+    md: 'px-3 py-1.5 text-sm rounded-md',
+    lg: 'px-4 py-2 text-lg rounded-lg',
   };
 
   const disabledClasses = 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200';
@@ -40,15 +40,15 @@ export default function Input({
   `;
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col">
       {/* Label */}
-      {label && <label className="text-sm text-gray-600 font-medium">{label}</label>}
-
+      {label && <label className="ml-1 mb-2 text-[13px] text-gray-500 font-medium">{label}</label>}
       {/* Input */}
       <input className={appliedClasses} disabled={disabled} {...props} />
-
       {/* Error Message */}
-      {error && <span className="text-xs text-red-500 mt-0.5">{error}</span>}
+      <div className="min-h-[12px]">
+        {error && <span className="ml-1 text-xs text-red-500">{error}</span>}
+      </div>
     </div>
   );
 }
