@@ -14,11 +14,12 @@ export const PRODUCTION_ENDPOINTS = {
   MES_WORK_ORDERS_SUMMARY: `${PRODUCTION_BASE_PATH}/mes/work-orders/summary`, // 생산관리 페이지 카드뷰 데이터 조회
 
   // MRP 순소요 목록
-  MRP_ORDERS: `${PRODUCTION_BASE_PATH}/mrp/orders`, // MRP 순소요 목록 조회
+  MRP_ORDERS: `${PRODUCTION_BASE_PATH}/quotations/mrp`, // MRP 순소요 목록 조회
   MRP_PLANNED_ORDER_DETAIL: (mrpId: string) =>
     `${PRODUCTION_BASE_PATH}/mrp/planned-orders/detail/${mrpId}`, // MRP 계획 주문 상세 조회
   MRP_PLANNED_ORDERS_LIST: `${PRODUCTION_BASE_PATH}/mrp/planned-orders/list`, // MRP 계획 주문 목록 조회
   MRP_REQUEST_SUMMARY: `${PRODUCTION_BASE_PATH}/mrp/request-summary`, // MRP 자재 구매 요청 리스트
+  MRP_CONVERT: `${PRODUCTION_BASE_PATH}/mrp/convert`, // MRP 순소요 목록 조회
 
   // MPS 계획
   MPS_PLANS: `${PRODUCTION_BASE_PATH}/quotations/mps`, // 제품별 MPS 조회

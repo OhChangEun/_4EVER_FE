@@ -2,18 +2,24 @@
 import { useMemo, useState } from 'react';
 import Dropdown from '@/app/components/common/Dropdown';
 import Button from '@/app/components/common/Button';
-import { MRP_ORDER_STATUS_OPTIONS, PRODUCTS } from '../../constants';
+import { MRP_ORDER_STATUS_OPTIONS } from '../../constants';
 import { KeyValueItem } from '@/app/types/CommonType';
-import { useQuery } from '@tanstack/react-query';
-import { FetchMrpOrdersListParams, MrpOrdersListResponse } from '../../types/MrpOrdersListApiType';
-import { fetchMrpOrdersList } from '../../api/production.api';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { fetchMrpOrdersList, postMrpConvert } from '../../api/production.api';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
 import Pagination from '@/app/components/common/Pagination';
+import {
+  FetchMrpOrdersListParams,
+  MrpOrdersListData,
+  MrpOrdersListResponse,
+} from '../../types/MrpOrdersApiType';
+import { MrpOrdersConvertReqeustBody } from '../../types/MrpOrdersConvertApiType';
+import { useRouter } from 'next/navigation';
 
 export default function OrdersTab() {
-  const [selectedProduct, setSelectedProduct] = useState('ALL');
-  const [selectedQuote, setSelectedQuote] = useState('ALL');
-  const [selectedStockStatus, setSelectedStockStatus] = useState('ALL');
+  const [selectedProduct, setSelectedProduct] = useState('');
+  const [selectedQuote, setSelectedQuote] = useState('');
+  const [selectedStockStatus, setSelectedStockStatus] = useState('');
 
   const [selectedRequirements, setSelectedRequirements] = useState<string[]>([]);
 
@@ -22,8 +28,8 @@ export default function OrdersTab() {
 
   const queryParams = useMemo(
     (): FetchMrpOrdersListParams => ({
+      bomId: selectedQuote,
       quotationId: selectedProduct,
-      productId: selectedQuote,
       availableStatusCode: selectedStockStatus,
       page: currentPage - 1,
       size: pageSize,
@@ -41,7 +47,7 @@ export default function OrdersTab() {
     staleTime: 1000,
   });
 
-  const orderItems = orders?.content || [];
+  const orderItems: MrpOrdersListData[] = orders?.content ?? [];
   const pageInfo = orders?.page;
 
   const totalPages = pageInfo?.totalPages ?? 1;
@@ -71,9 +77,41 @@ export default function OrdersTab() {
     );
   };
 
+  // 계획 주문 전환 mutation
+  const router = useRouter();
+
+  const { mutate: mrpConvert } = useMutation({
+    mutationFn: (body: MrpOrdersConvertReqeustBody) => postMrpConvert(body),
+    onSuccess: () => {
+      alert('계획 주문 전환이 완료되었습니다.');
+      router.push('/production?tab=mrp&subTab=orders');
+    },
+    onError: (error) => {
+      console.log('계획 주문 전환 실패', error);
+      alert('계획 주문 전환에 실패했습니다.');
+    },
+  });
+
+  // 계획 주문 전환 실행
   const handleConvertToPlannedOrder = () => {
-    console.log('계획 주문 전환:', selectedRequirements);
-    // 실제 로직 구현
+    if (selectedRequirements.length === 0) {
+      alert('전환할 항목을 선택해주세요.');
+      return;
+    }
+
+    const selectedItems = orderItems
+      .filter((item) => selectedRequirements.includes(item.itemId))
+      .map((item) => ({
+        quotationId: item.quotationId,
+        itemId: item.itemId,
+        quantity: item.requiredQuantity,
+      }));
+
+    const body = {
+      items: selectedItems,
+    };
+
+    mrpConvert(body);
   };
 
   const getAvailableStatusBadge = (status: string) => {
@@ -97,15 +135,6 @@ export default function OrdersTab() {
       <div className="flex justify-between items-center p-4 border-b border-gray-200">
         <h2 className="text-md font-semibold text-gray-900">순소요 - 무엇이 얼마나 부족한가?</h2>
         <div className="flex gap-4 justify-end items-center">
-          <Dropdown
-            placeholder="전체 제품"
-            items={PRODUCTS}
-            value={selectedProduct}
-            onChange={(product: string) => {
-              setSelectedProduct(product);
-              setCurrentPage(1);
-            }}
-          />
           <Dropdown
             placeholder="전체 견적"
             items={quotes}
@@ -158,12 +187,6 @@ export default function OrdersTab() {
                   소요 수량
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  현재 재고
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  안전 재고
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   가용 재고
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -190,31 +213,33 @@ export default function OrdersTab() {
               {orderItems.map((item) => (
                 <tr key={item.itemId} className="hover:bg-gray-50">
                   <td className="px-4 py-3">
-                    <input
-                      type="checkbox"
-                      checked={selectedRequirements.includes(item.itemId)}
-                      onChange={() => handleRequirementSelection(item.itemId)}
-                      className="rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
-                    />
+                    {item.availableStatusCode === 'SUFFICIENT' ? (
+                      <input
+                        type="checkbox"
+                        disabled
+                        className="rounded border-gray-300 text-gray-300"
+                      />
+                    ) : (
+                      <input
+                        type="checkbox"
+                        checked={selectedRequirements.includes(item.itemId)}
+                        onChange={() => handleRequirementSelection(item.itemId)}
+                        className="rounded border-gray-300 cursor-pointer"
+                      />
+                    )}
                   </td>
                   <td className="px-4 py-3 text-sm font-medium text-gray-900">{item.itemName}</td>
                   <td className="px-4 py-3 text-sm text-gray-900">
                     {item.requiredQuantity.toLocaleString()}
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-900">
-                    {item.currentStock.toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-900">
-                    {item.safetyStock.toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-900">
                     {item.availableStock.toLocaleString()}
                   </td>
                   <td className="px-4 py-3">{getAvailableStatusBadge(item.availableStatusCode)}</td>
                   <td className="px-4 py-3 text-sm">
-                    {item.shortageQty > 0 ? (
+                    {item.shortageQuantity > 0 ? (
                       <span className="text-red-600 font-medium">
-                        {item.shortageQty.toLocaleString()}
+                        {item.shortageQuantity.toLocaleString()}
                       </span>
                     ) : (
                       <span className="text-green-600">-</span>

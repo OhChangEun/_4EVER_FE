@@ -23,6 +23,7 @@ import { apisssssssss } from './api';
 import { KeyValueItem } from '@/app/types/CommonType';
 import { BomRequestBody, MaterialResponse } from '../types/BomType';
 import { PageRequest } from '@/app/types/Page';
+import { MrpOrdersConvertReqeustBody } from '../types/MrpOrdersConvertApiType';
 
 // --- 상단 섹션 ---
 // 구매 관리 지표
@@ -221,6 +222,12 @@ export const fetchMrpOrdersList = async (
     `${PRODUCTION_ENDPOINTS.MRP_ORDERS}`,
     { params },
   );
+  return res.data.data;
+};
+
+// MRP 계획 주문 전환
+export const postMrpConvert = async (body: MrpOrdersConvertReqeustBody) => {
+  const res = await apisssssssss.post(`${PRODUCTION_ENDPOINTS.MRP_CONVERT}`, body);
   return res.data.data;
 };
 

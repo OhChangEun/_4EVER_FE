@@ -1,14 +1,17 @@
 import { Page, PageRequest } from '@/app/types/Page';
 
 export interface MrpOrdersListData {
+  quotationId: string;
   itemId: string;
   itemName: string;
-  requiredQuantity: number;
+  requiredQuantity: number; // 소요 수량
   currentStock: number;
-  safetyStock: number;
-  availableStock: number;
+  reservedStock: number; // 예약 수량
+  actualAvailableStock: number;
+  safetyStock: number; // 필요없음
+  availableStock: number; // 가용재고
   availableStatusCode: string;
-  shortageQty: number;
+  shortageQuantity: number;
   itemType: string;
   procurementStartDate: string;
   expectedArrivalDate: string;
@@ -22,7 +25,7 @@ export interface MrpOrdersListResponse {
 }
 
 export interface FetchMrpOrdersListParams extends PageRequest {
+  bomId: string;
   quotationId: string;
-  productId: string;
   availableStatusCode: string;
 }

@@ -285,12 +285,20 @@ export default function QuotationTab() {
               {quotationDataList.map((quote) => (
                 <tr key={quote.quotationId} className="hover:bg-gray-50 text-center">
                   <td className="px-4 py-3">
-                    <input
-                      type="checkbox"
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      checked={selectedQuotes.includes(quote.quotationId)}
-                      onChange={() => handleQuoteSelect(quote.quotationId)}
-                    />
+                    {quote.availableStatus === 'UNCHECKED' ? (
+                      <input
+                        type="checkbox"
+                        className="rounded border-gray-300 text-gray-300"
+                        disabled
+                      />
+                    ) : (
+                      <input
+                        type="checkbox"
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        checked={selectedQuotes.includes(quote.quotationId)}
+                        onChange={() => handleQuoteSelect(quote.quotationId)}
+                      />
+                    )}
                   </td>
                   <td className="px-4 py-3 text-sm font-medium text-gray-900">
                     {quote.quotationNumber}

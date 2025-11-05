@@ -49,12 +49,12 @@ export default function MesTab() {
 
   const getStatusBadge = (status: string) => {
     const statusConfig: Record<string, { label: string; class: string }> = {
-      PLANNED: { label: '대기', class: 'bg-yellow-100 text-yellow-800' },
+      PLANNED: { label: '대기', class: 'bg-blue-100 text-blue-800' },
       IN_PROGRESS: { label: '진행중', class: 'bg-blue-100 text-blue-800' },
-      COMPLETED: { label: '완료', class: 'bg-green-100 text-green-800' },
-      ON_HOLD: { label: '보류', class: 'bg-red-100 text-red-800' },
+      COMPLETED: { label: '완료', class: 'bg-blue-100 text-blue-800' },
+      ON_HOLD: { label: '보류', class: 'bg-blue-100 text-blue-800' },
     };
-    const config = statusConfig[status] || { label: status, class: 'bg-gray-100 text-gray-800' };
+    const config = statusConfig[status] || { label: status, class: 'bg-blue-100 text-blue-800' };
     return (
       <span className={`px-2 py-1 rounded-full text-xs font-medium ${config.class}`}>
         {config.label}
@@ -74,12 +74,11 @@ export default function MesTab() {
   ) => {
     const isCurrent = currentOperation === operation;
 
-    // 현재 진행 중인 공정은 '시작' 아이콘으로 명확하게 표시
     if (isCurrent) {
       return {
-        icon: 'ri-play-circle-fill', // 진행 중
+        icon: 'ri-circle-fill',
         class: 'text-blue-600 font-bold',
-        label: isFirst ? '시작' : '진행중', // 첫 번째 공정은 '시작'으로 표시해도 좋습니다.
+        label: isFirst ? '시작' : '진행중',
       };
     }
 
@@ -139,67 +138,140 @@ export default function MesTab() {
               mesListData.map((order) => (
                 <div
                   key={order.mesId}
-                  className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition duration-200"
+                  className="bg-white border border-gray-200/80 rounded-xl p-4 transition duration-200"
                 >
-                  {/* 상단: MES 번호, 제품 정보 및 상태 */}
-                  <div className="flex items-start justify-between mb-3 pb-3">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <div className="text-lg font-bold text-gray-900">{order.mesNumber}</div>
-                        <div className="text-sm text-gray-500 mt-1">
-                          {order.productName} ({order.quantity.toLocaleString()} {order.uomName})
+                  <div className="flex justify-between gap-8">
+                    {/* 상단: MES 번호, 제품 정보 및 상태 */}
+                    <div className="flex items-start justify-between ml-1">
+                      <div className="min-w-[180px] space-y-3">
+                        {getStatusBadge(order.status)}
+
+                        {/* <div className="text-sm text-gray-500 mt-1">
+                        {order.productName} ({order.quantity.toLocaleString()} {order.uomName})
+                      </div> */}
+                        <div className="text-[20px] font-extrabold text-blue-600 rounded-xl mt-3">
+                          {/* <i className="ri-file-text-line mr-1"></i>견적: {order.quotationNumber} */}
+                          {order.quotationNumber}
+                        </div>
+
+                        <div>
+                          <div className="pl-0.5 text-sm text-gray-400">MES 목록</div>
+                          <div className="text-[18px] font-bold text-blue-600 rounded-xl">
+                            {order.productName} {order.quantity}
+                            {order.uomName}
+                            {/* <i className="ri-file-text-line mr-1"></i>견적: {order.quotationNumber} */}
+                          </div>
+                        </div>
+
+                        <div>
+                          <div className="pl-0.5 text-sm text-gray-400">기간</div>
+                          <div className="items-center gap-1 text-[15px] font-bold text-blue-600">
+                            <div>
+                              {order.startDate} ~ {order.endDate}
+                            </div>
+                          </div>
                         </div>
                       </div>
+                    </div>
 
-                      <div className="text-xs text-blue-600 mt-1">
-                        <i className="ri-file-text-line mr-1"></i>견적: {order.quotationNumber}
-                      </div>
-                    </div>
-                    {getStatusBadge(order.status)}
-                  </div>
-                  {/* 진행률 바 (진행중일 때만) */}
-                  {order.status === 'IN_PROGRESS' && (
-                    <div className="mb-4 pt-2 border-t border-dashed border-gray-100">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs text-gray-600 font-medium">진행률</span>
-                        <span className="text-sm font-bold text-blue-600">
-                          {order.progressRate}%
-                        </span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div
-                          className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                          style={{ width: `${order.progressRate}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  )}
-                  {/* 공정 순서 (가장 중요한 시각화) */}
-                  <div className="mb-4 pt-2 border-t border-dashed border-gray-100">
-                    <div className="text-xs text-gray-500 mb-2 font-medium">공정 순서</div>
-                    <div className="flex items-center gap-1 overflow-x-auto pb-1 custom-scrollbar">
-                      {order.sequence.map((operation, index) => {
-                        const status = getOperationStatusIcon(
-                          operation,
-                          order.currentOperation,
-                          index === 0,
-                        );
-                        return (
-                          <div
-                            key={operation}
-                            className="flex items-center gap-1 whitespace-nowrap"
-                          >
-                            <i className={`${status.icon} ${status.class} text-md`}></i>
-                            <span className={`text-xs ${status.class}`}>{operation}</span>
-                            {index < order.sequence.length - 1 && (
-                              <i className="ri-arrow-right-line text-sm text-gray-300 mx-1"></i>
-                            )}
+                    {/* 공정 순서 (세로 방향) */}
+                    <div className="flex-1 rounded-xl bg-gray-100 p-4">
+                      <div className="flex items-center">
+                        <div className="mb-3 pt-2 border-gray-100">
+                          <div className="ml-2 text-sm text-gray-300 mb-3 font-medium">
+                            공정 순서
                           </div>
-                        );
-                      })}
+
+                          <div className="flex flex-col gap-2 overflow-y-auto max-h-96 custom-scrollbar">
+                            {order.sequence.map((operation, index) => {
+                              const status = getOperationStatusIcon(
+                                operation,
+                                order.currentOperation,
+                                index === 0,
+                              );
+                              const isLast = index === order.sequence.length - 1;
+
+                              // 진행 중 or 완료된 공정인가?
+                              const isActive = status.label === '진행중' || status.label === '완료';
+
+                              // 다음 단계 선 색상도 파란색으로
+                              const nextIsActive =
+                                index < order.sequence.length - 1 &&
+                                (() => {
+                                  const nextOp = order.sequence[index + 1];
+                                  const nextStatus = getOperationStatusIcon(
+                                    nextOp,
+                                    order.currentOperation,
+                                    false,
+                                  );
+                                  return (
+                                    nextStatus.label === '진행중' || nextStatus.label === '완료'
+                                  );
+                                })();
+
+                              return (
+                                <div key={operation} className="flex w-[76px] items-start gap-2">
+                                  {/* 아이콘 + 라인 */}
+                                  <div className="relative flex flex-col items-center">
+                                    <i
+                                      className={`${status.icon} ${
+                                        isActive ? 'text-blue-600' : 'text-gray-300'
+                                      } text-sm z-10`}
+                                    ></i>
+
+                                    {/* 세로 라인: 아이콘 관통 */}
+                                    {!isLast && (
+                                      <div
+                                        className={`absolute top-1/2 left-1/2 -translate-x-1/2 w-0.5 h-10 z-0 ${
+                                          nextIsActive ? 'bg-blue-500' : 'bg-gray-300'
+                                        }`}
+                                      ></div>
+                                    )}
+                                  </div>
+
+                                  {/* 공정명 */}
+                                  <div className="flex-1 pt-0.5">
+                                    <span
+                                      className={`text-xs ${
+                                        isActive ? 'text-blue-600 font-medium' : 'text-gray-400'
+                                      }`}
+                                    >
+                                      {operation}
+                                    </span>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {/* 진행률 바 */}
+                        <div className="flex-1 ml-10 p-2 pb-6">
+                          <div className="flex items-center justify-end mb-2">
+                            <span className="text-lg font-bold text-blue-600">
+                              {/* {order.progressRate}% */}
+                              34%
+                            </span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-md h-12 overflow-hidden shadow-inner">
+                            <div
+                              className="bg-gradient-to-r from-blue-400 to-blue-600 h-12 rounded-sm transition-all duration-700 ease-out flex items-center justify-end px-3"
+                              // style={{ width: `${order.progressRate}%` }}
+                              style={{ width: `${27}%` }}
+                            >
+                              {order.progressRate > 10 && (
+                                <span className="text-xs font-semibold text-white">
+                                  {order.progressRate}%
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex justify-end pt-2 border-t">
+
+                  {/* <div className="flex justify-end pt-2">
                     <IconButton
                       label="공정 상세 보기"
                       icon="ri-search-line"
@@ -207,7 +279,7 @@ export default function MesTab() {
                       variant="ghost"
                       onClick={() => handleShowProcessDetail(order.mesId)}
                     />
-                  </div>
+                  </div> */}
                 </div>
               ))
             ) : (
