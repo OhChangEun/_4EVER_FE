@@ -33,6 +33,7 @@ export default function PrivateGuard({ children }: { children: ReactNode }) {
       setReady(true);
     })();
   }, [setReady]);
+
   const { data } = useQuery({
     queryKey: ['userInfo'],
     queryFn: getUserInfo,
