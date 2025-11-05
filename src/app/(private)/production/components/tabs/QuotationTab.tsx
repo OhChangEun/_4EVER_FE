@@ -1,12 +1,7 @@
 'use client';
 import Dropdown from '@/app/components/common/Dropdown';
 import { useState, useMemo } from 'react'; // useMemo 추가
-import {
-  AVAILABLE_STOCK_STATUS,
-  AvailableStockStatus,
-  QUOTATIONS_STATUS,
-  QuotationStatus,
-} from '@/app/(private)/production/constants';
+import { AvailableStockStatus, QuotationStatus } from '@/app/(private)/production/constants';
 import IconButton from '@/app/components/common/IconButton';
 import {
   QuotationData,
@@ -17,20 +12,34 @@ import SimulationResultModal from '@/app/(private)/production/components/modals/
 import MpsPreviewModal from '@/app/(private)/production/components/modals/MpsPreviewModal';
 import {
   fetchQuotationSimulationResult,
-  fetchQuotationList, // API 함수 추가
+  fetchQuotationList,
+  fetchQuotationConfirm,
+  fetchQuotationStatusDropdown,
+  fetchAvailableStatusDropdown, // API 함수 추가
 } from '@/app/(private)/production/api/production.api';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import {
-  FetchQuotationSimulationParams,
-  QuotationSimulationResponse,
-} from '@/app/(private)/production/types/QuotationSimulationApiType';
+import { FetchQuotationSimulationParams } from '@/app/(private)/production/types/QuotationSimulationApiType';
 import { QuotationPreviewResponse } from '@/app/(private)/production/types/QuotationPreviewApiType'; // 타입은 여전히 필요
 import Pagination from '@/app/components/common/Pagination';
 import DateRangePicker from '@/app/components/common/DateRangePicker';
+import { useModal } from '@/app/components/common/modal/useModal';
+import { useDropdown } from '@/app/hooks/useDropdown';
 
 export default function QuotationTab() {
+  const { openModal } = useModal();
+
+  // 견적 상태 드롭다운
+  const { options: quotationsStatusOptions } = useDropdown(
+    'quotationsStatusDropdown',
+    fetchQuotationStatusDropdown,
+  );
+  // 가용 재고 상태 드롭다운
+  const { options: availableStatusOptions } = useDropdown(
+    'availableStatusDropdown',
+    fetchAvailableStatusDropdown,
+  );
+
   // 모달 open 여부
-  const [showSimulationModal, setShowSimulationModal] = useState(false);
   const [showMpsPreviewModal, setShowMpsPreviewModal] = useState(false);
   // 필터링 상태(날짜, 가용재고 상태, 견적 상태)
   const [startDate, setStartDate] = useState('');
@@ -45,10 +54,6 @@ export default function QuotationTab() {
   const [pageSize] = useState(10);
   // MPS 프리뷰 결과를 저장할 state
   const [mpsPreviewData, setMpsPreviewData] = useState<QuotationPreviewResponse>();
-  // 시뮬레이션 응답 저장
-  const [simulationResponse, setSimulationResponse] = useState<QuotationSimulationResponse | null>(
-    null,
-  );
 
   // --- API 호출 및 상태 관리 ---
 
@@ -57,12 +62,11 @@ export default function QuotationTab() {
     (): FetchQuotationParams => ({
       page: currentPage - 1, // API는 0-based
       size: pageSize,
-      stockStatusCode: selectedStockStatus, // 가용재고 상태
       statusCode: selectedQuotationsStatus, // 견적 상태
       startDate: startDate || undefined,
       endDate: endDate || undefined,
     }),
-    [currentPage, pageSize, startDate, endDate, selectedStockStatus, selectedQuotationsStatus],
+    [currentPage, pageSize, startDate, endDate, selectedQuotationsStatus],
   );
 
   const {
@@ -81,11 +85,21 @@ export default function QuotationTab() {
   const totalElements = quotationListData?.page?.totalElements || 0;
 
   // 2. 시뮬레이션 쿼리
-  const simulationMutation = useMutation({
+  const { mutate: simulationQuotations, isPending: simulationPending } = useMutation({
     mutationFn: (params: FetchQuotationSimulationParams) => fetchQuotationSimulationResult(params),
     onSuccess: (data) => {
-      setSimulationResponse(data);
-      setShowSimulationModal(true);
+      console.log(data);
+      // 시뮬레이션 결과 모달
+      if (data?.content && data.content.length > 0) {
+        openModal(SimulationResultModal, {
+          title: '시뮬레이션 결과',
+          simulationResults: data.content,
+          selectedQuotes: selectedQuotes,
+          onConfirm: handleConfirmProposedDelivery,
+        });
+      } else {
+        alert('시뮬레이션 결과가 없습니다.');
+      }
     },
     onError: (error) => {
       console.error('시뮬레이션 실패:', error);
@@ -93,11 +107,20 @@ export default function QuotationTab() {
     },
   });
 
-  const handleQuoteSelect = (quotationNumber: string) => {
+  const { mutate: confirmQuotations } = useMutation({
+    mutationFn: (params: string[]) => fetchQuotationConfirm(params),
+    onSuccess: () => {
+      alert('제안납기를 확정하였습니다.');
+    },
+    onError: (error) => {
+      console.error('제안납기 확정 실패:', error);
+      alert('제안납기를 확정하는데 실패했습니다.');
+    },
+  });
+
+  const handleQuoteSelect = (quotationId: string) => {
     setSelectedQuotes((prev) =>
-      prev.includes(quotationNumber)
-        ? prev.filter((id) => id !== quotationNumber)
-        : [...prev, quotationNumber],
+      prev.includes(quotationId) ? prev.filter((id) => id !== quotationId) : [...prev, quotationId],
     );
   };
 
@@ -108,9 +131,9 @@ export default function QuotationTab() {
       return;
     }
     // API 데이터에서 선택된 견적 중 'NOT_CHECKED'인지 확인
-    const unCheckedQuotes = selectedQuotes.filter((quotationNumber) => {
-      const quote = quotationDataList.find((q) => q.quotationNumber === quotationNumber);
-      return quote && quote.stockStatusCode === 'UNCHECKED';
+    const unCheckedQuotes = selectedQuotes.filter((quotationId) => {
+      const quote = quotationDataList.find((q) => q.quotationId === quotationId);
+      return quote && quote.availableStatus === 'UNCHECKED';
     });
 
     if (unCheckedQuotes.length === 0) {
@@ -119,7 +142,7 @@ export default function QuotationTab() {
     }
 
     // Mutation 실행
-    simulationMutation.mutate({
+    simulationQuotations({
       quotationIds: selectedQuotes,
       page: currentPage - 1, // 0-based 인덱스
       size: pageSize,
@@ -142,15 +165,19 @@ export default function QuotationTab() {
     // useQuery가 currentPage 변경을 감지하고 자동으로 데이터를 다시 불러옴
   };
 
+  // MPS 생성 프리뷰
   const handleConfirmProposedDelivery = (previewData: QuotationPreviewResponse) => {
-    setShowSimulationModal(false);
+    openModal(MpsPreviewModal, {
+      title: 'MPS 생성 Preview',
+      previewResults: previewData,
+      onConfirm: handleConfirmMps,
+    });
+
     setMpsPreviewData(previewData);
-    setShowMpsPreviewModal(true);
   };
 
   const handleConfirmMps = () => {
-    setShowMpsPreviewModal(false);
-    alert('MRP 실행이 시작되었습니다. MRP 탭에서 결과를 확인하세요.');
+    confirmQuotations(selectedQuotes);
   };
 
   // --- 렌더링 ---
@@ -180,7 +207,7 @@ export default function QuotationTab() {
           <div className="flex gap-3 pr-5">
             <Dropdown
               placeholder="전체 가용재고"
-              items={AVAILABLE_STOCK_STATUS}
+              items={availableStatusOptions}
               value={selectedStockStatus}
               onChange={(status: AvailableStockStatus) => {
                 setSelectedStockStatus(status);
@@ -189,7 +216,7 @@ export default function QuotationTab() {
             />
             <Dropdown
               placeholder="전체 상태"
-              items={QUOTATIONS_STATUS}
+              items={quotationsStatusOptions}
               value={selectedQuotationsStatus}
               onChange={(status: QuotationStatus) => {
                 setSelectedQuotationsStatus(status);
@@ -204,10 +231,10 @@ export default function QuotationTab() {
             />
           </div>
           <IconButton
-            label={simulationMutation.isPending ? '시뮬레이션 중...' : '시뮬레이션 실행'}
-            icon={simulationMutation.isPending ? 'ri-loader-4-line animate-spin' : 'ri-play-line'}
+            label={simulationPending ? '시뮬레이션 중...' : '시뮬레이션 실행'}
+            icon={simulationPending ? 'ri-loader-4-line animate-spin' : 'ri-play-line'}
             onClick={handleSimulation}
-            disabled={selectedQuotes.length === 0 || simulationMutation.isPending}
+            disabled={selectedQuotes.length === 0 || simulationPending}
           />
         </div>
       </div>
@@ -222,7 +249,7 @@ export default function QuotationTab() {
                     className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     onChange={(e) => {
                       if (e.target.checked) {
-                        setSelectedQuotes(quotationDataList.map((q) => q.quotationNumber));
+                        setSelectedQuotes(quotationDataList.map((q) => q.quotationId));
                       } else {
                         setSelectedQuotes([]);
                       }
@@ -230,32 +257,32 @@ export default function QuotationTab() {
                     // 현재 페이지 데이터만 모두 선택했는지 확인
                     checked={
                       quotationDataList.length > 0 &&
-                      quotationDataList.every((q) => selectedQuotes.includes(q.quotationNumber))
+                      quotationDataList.every((q) => selectedQuotes.includes(q.quotationId))
                     }
                   />
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   견적 번호
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   고객사
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {/* <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   제품
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   요청 수량
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                </th> */}
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   요청 납기
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   가용 재고
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   제안 납기
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   상태
                 </th>
               </tr>
@@ -263,29 +290,26 @@ export default function QuotationTab() {
             <tbody className="bg-white divide-y divide-gray-200">
               {/* API 데이터로 렌더링 */}
               {quotationDataList.map((quote) => (
-                <tr key={quote.quotationNumber} className="hover:bg-gray-50">
+                <tr key={quote.quotationId} className="hover:bg-gray-50 text-center">
                   <td className="px-4 py-3">
                     <input
                       type="checkbox"
                       className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      checked={selectedQuotes.includes(quote.quotationNumber)}
-                      onChange={() => handleQuoteSelect(quote.quotationNumber)}
+                      checked={selectedQuotes.includes(quote.quotationId)}
+                      onChange={() => handleQuoteSelect(quote.quotationId)}
                     />
                   </td>
                   <td className="px-4 py-3 text-sm font-medium text-gray-900">
                     {quote.quotationNumber}
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-900">{quote.customerCompanyName}</td>
-                  <td className="px-4 py-3 text-sm text-gray-900">{quote.product}</td>
+                  <td className="px-4 py-3 text-sm text-gray-900">{quote.customerName}</td>
+                  {/* <td className="px-4 py-3 text-sm text-gray-900">{quote.items[0].productName}</td>
                   <td className="px-4 py-3 text-sm text-gray-900">
-                    {/* 숫자로 변환 후 포맷팅이 필요할 수 있으나, 현재는 string 타입 그대로 사용 */}
                     {quote.requestQuantity}EA
-                  </td>
+                  </td> */}
                   <td className="px-4 py-3 text-sm text-gray-900">{quote.requestDate}</td>
-                  <td className="px-4 py-3">{quote.stockStatusCode}</td>
-                  <td className="px-4 py-3 text-sm text-gray-900">
-                    {quote.suggestedDueDate || '-'}
-                  </td>
+                  <td className="px-4 py-3">{quote.availableStatus}</td>
+                  <td className="px-4 py-3 text-sm text-gray-900">{quote.dueDate || '-'}</td>
                   <td className="px-4 py-3">{quote.statusCode}</td>
                 </tr>
               ))}
@@ -309,22 +333,6 @@ export default function QuotationTab() {
           />
         )}
       </div>
-      {/* 시뮬레이션 결과 모달 */}
-      {showSimulationModal && simulationResponse && (
-        <SimulationResultModal
-          simulationResults={simulationResponse.content}
-          onClose={() => setShowSimulationModal(false)}
-          onConfirm={handleConfirmProposedDelivery}
-        />
-      )}
-      {/* MPS 생성 Preview 모달 */}
-      {showMpsPreviewModal && mpsPreviewData?.content && (
-        <MpsPreviewModal
-          previewResults={mpsPreviewData.content}
-          onClose={() => setShowMpsPreviewModal(false)}
-          onConfirm={handleConfirmMps}
-        />
-      )}
     </>
   );
 }

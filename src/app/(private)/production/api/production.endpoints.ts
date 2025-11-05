@@ -41,4 +41,6 @@ export const PRODUCTION_ENDPOINTS = {
   MRP_TOGGLE_QUOTATIONS: `${PRODUCTION_BASE_PATH}/mrp/toggle/quotations`, // MRP 견적 토글 목록
   MRP_TOGGLE_STATUS_CODES: `${PRODUCTION_BASE_PATH}/mrp/toggle/status-codes`, // MRP 가능 상태 코드 목록
   PRODUCTS: `${PRODUCTION_BASE_PATH}/products`, // 자재 드롭다운
+  AVAILABLE_STATUS_DROPDOWN: `${PRODUCTION_BASE_PATH}/available/status/toggle`, // 가용재고 상태 드롭다운
+  QUOTATION_STATUS_DROPDOWN: `${PRODUCTION_BASE_PATH}/status/toggle`, // 견적 상태 드롭다운
 };

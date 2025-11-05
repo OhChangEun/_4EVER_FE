@@ -5,10 +5,7 @@ import {
   FetchQuotationSimulationParams,
   QuotationSimulationResponse,
 } from '@/app/(private)/production/types/QuotationSimulationApiType';
-import {
-  FetchQuotationPreviewParams,
-  QuotationPreviewResponse,
-} from '@/app/(private)/production/types/QuotationPreviewApiType';
+import { QuotationPreviewResponse } from '@/app/(private)/production/types/QuotationPreviewApiType';
 import { MpsListParams, MpsListResponse } from '@/app/(private)/production/types/MpsApiType';
 import { FetchMesListParams, MesListResponse } from '../types/MesListApiType';
 import { MesDetailResponse } from '../types/MesDetailApiType';
@@ -57,6 +54,20 @@ export const fetchProductDropdown = async (): Promise<KeyValueItem[]> => {
   );
   return res.data.data;
 };
+
+export const fetchAvailableStatusDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await apisssssssss.get<ApiResponse<KeyValueItem[]>>(
+    `${PRODUCTION_ENDPOINTS.AVAILABLE_STATUS_DROPDOWN}`,
+  );
+  return res.data.data;
+};
+
+export const fetchQuotationStatusDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await apisssssssss.get<ApiResponse<KeyValueItem[]>>(
+    `${PRODUCTION_ENDPOINTS.QUOTATION_STATUS_DROPDOWN}`,
+  );
+  return res.data.data;
+};
 // export const fetchMrpPlannedOrderStatus = async (): Promise<MpsDropdownResponse> => {
 //   const res = await apisssssssss.get<ApiResponse<MpsDropdownResponse>>(
 //     `${PRODUCTION_ENDPOINTS.MRP_PLANNED_ORDER_STATUS_CODES}`,
@@ -102,20 +113,18 @@ export const fetchQuotationSimulationResult = async (
   });
   const res = await apisssssssss.post<ApiResponse<QuotationSimulationResponse>>(
     `${PRODUCTION_ENDPOINTS.QUOTATION_SIMULATE}?${query.toString()}`,
-    quotationIds,
+    { quotationIds },
   );
   return res.data.data;
 };
 
 // 제안 납기 계획 프리뷰 조회
 export const fetchQuotationPreview = async (
-  params: FetchQuotationPreviewParams,
+  params: string[],
 ): Promise<QuotationPreviewResponse> => {
-  const { quotationIds } = params;
-
   const res = await apisssssssss.post<ApiResponse<QuotationPreviewResponse>>(
     `${PRODUCTION_ENDPOINTS.QUOTATION_PREVIEW}`,
-    quotationIds,
+    params,
   );
   return res.data.data;
 };
@@ -124,9 +133,16 @@ export const fetchQuotationPreview = async (
 export const fetchMpsList = async (params: MpsListParams): Promise<MpsListResponse> => {
   const res = await apisssssssss.get<ApiResponse<MpsListResponse>>(
     `${PRODUCTION_ENDPOINTS.MPS_PLANS}`,
-    {
-      params,
-    },
+    { params },
+  );
+  return res.data.data;
+};
+
+// 제안 납기 확정
+export const fetchQuotationConfirm = async (params: string[]) => {
+  const res = await apisssssssss.post<ApiResponse<null>>(
+    `${PRODUCTION_ENDPOINTS.QUOTATION_CONFIRM}`,
+    { quotationIds: params },
   );
   return res.data.data;
 };
