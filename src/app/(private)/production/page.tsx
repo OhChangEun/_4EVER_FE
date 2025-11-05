@@ -69,6 +69,7 @@ export default async function ProductionPage() {
               inputSize="md"
               disabled
               placeholder="이름을 입력하세요"
+              required
               // error="에러"
             />
             <TabNavigation tabs={PRODUCTION_TABS} />

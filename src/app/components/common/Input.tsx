@@ -14,6 +14,7 @@ export default function Input({
   inputSize = 'md',
   className = '',
   disabled,
+  required,
   ...props
 }: InputProps) {
   const base = ' w-full text-gray-800 focus:outline-none transition-colors placeholder-gray-300';
@@ -42,7 +43,12 @@ export default function Input({
   return (
     <div className="flex flex-col">
       {/* Label */}
-      {label && <label className="ml-1 mb-2 text-[13px] text-gray-500">{label}</label>}
+      {label && (
+        <label className="ml-1 mb-2 text-[13px] text-gray-500 flex items-center">
+          {label}
+          {required && <span className="pl-1 pt-2 text-red-500">*</span>}
+        </label>
+      )}
       {/* Input */}
       <input className={appliedClasses} disabled={disabled} {...props} />
       {/* Error Message */}
