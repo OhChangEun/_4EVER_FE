@@ -5,6 +5,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string;
   variant?: 'default' | 'outline';
   inputSize?: 'sm' | 'md' | 'lg';
+  icon?: string;
 }
 
 export default function Input({
@@ -13,6 +14,7 @@ export default function Input({
   variant = 'default',
   inputSize = 'md',
   className = '',
+  icon,
   disabled,
   required,
   ...props
@@ -32,9 +34,12 @@ export default function Input({
 
   const disabledClasses = 'bg-gray-100 text-gray-400 border-gray-200';
 
+  const iconPaddingLeft = icon && !disabled ? 'pl-9' : '';
+
   const appliedClasses = `
     ${base}
     ${sizes[inputSize]}
+    ${iconPaddingLeft}
     ${disabled ? disabledClasses : variants[variant]}
     ${error ? 'border-red-500 focus:border-red-500' : ''}
     ${className}
@@ -50,7 +55,14 @@ export default function Input({
         </label>
       )}
       {/* Input */}
-      <input className={appliedClasses} disabled={disabled} {...props} />
+      <div className="relative flex items-center">
+        {icon && !disabled && (
+          <i
+            className={`${icon} absolute left-2.5 pb-0.5 z-10 text-gray-500 text-lg pointer-events-none`}
+          />
+        )}
+        <input className={appliedClasses} disabled={disabled} required={required} {...props} />
+      </div>
       {/* Error Message */}
       <div className="min-h-[12px]">
         {error && <span className="ml-1 text-xs text-red-500">{error}</span>}

@@ -65,10 +65,11 @@ export default async function ProductionPage() {
 
           <Suspense fallback={<div>Loading..</div>}>
             <Input
+              icon="ri-search-line"
               label="사용자 이름"
               inputSize="md"
-              disabled
               placeholder="이름을 입력하세요"
+              disabled
               required
               // error="에러"
             />
