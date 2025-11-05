@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Dropdown from '@/app/components/common/Dropdown';
 import Button from '@/app/components/common/Button';
 import { useMutation, useQuery } from '@tanstack/react-query';

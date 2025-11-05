@@ -2,10 +2,7 @@
 import { useState, useMemo } from 'react';
 import Button from '@/app/components/common/Button';
 import Dropdown from '@/app/components/common/Dropdown';
-import {
-  MRP_PLANNED_ORDER_STATUS_OPTIONS,
-  MrpPlannedOrderStatus,
-} from '@/app/(private)/production/constants';
+import { MrpPlannedOrderStatus } from '@/app/(private)/production/constants';
 import { useQuery } from '@tanstack/react-query';
 import { fetchMrpPlannedOrdersList } from '@/app/(private)/production/api/production.api';
 import {
@@ -16,9 +13,17 @@ import TableStatusBox from '@/app/components/common/TableStatusBox';
 import Pagination from '@/app/components/common/Pagination';
 import { useModal } from '@/app/components/common/modal/useModal';
 import MrpPurchaseRequestModal from '@/app/(private)/production/components/modals/MrpPurchaseRequestModal';
+import { useDropdown } from '@/app/hooks/useDropdown';
+import { fetchPurchaseRequisitionStatusDropdown } from '@/app/(private)/purchase/api/purchase.api';
 
 export default function PlannedOrdersTab() {
   const { openModal } = useModal();
+
+  // mrp 계획주문 - 상태 드롭다운(구매 쪽이랑 같음)
+  const { options: mrpQuotationOptions } = useDropdown(
+    'purchaseRequisitionStatusDropdown',
+    fetchPurchaseRequisitionStatusDropdown,
+  );
 
   // 드롭다운 상태
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
@@ -104,8 +109,8 @@ export default function PlannedOrdersTab() {
         </h4>
         <div className="flex items-center gap-3">
           <Dropdown
-            placeholder="전체 부서"
-            items={MRP_PLANNED_ORDER_STATUS_OPTIONS}
+            placeholder="전체 상태"
+            items={mrpQuotationOptions}
             value={selectedStatus}
             onChange={(status: MrpPlannedOrderStatus) => {
               setSelectedStatus(status);

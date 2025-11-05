@@ -19,6 +19,7 @@ import ErrorMessage from '@/app/components/common/ErrorMessage';
 import { mapProductionStatsToCards } from '@/app/(private)/production/services/production.service';
 import Providers from '@/app/providers';
 import { FetchQuotationParams } from '@/app/(private)/production/types/QuotationApiType';
+import { fetchPurchaseRequisitionStatusDropdown } from '../purchase/api/purchase.api';
 
 export default async function ProductionPage() {
   const queryClient = getQueryClient();
@@ -78,6 +79,12 @@ export default async function ProductionPage() {
     queryClient.prefetchQuery({
       queryKey: ['mrpAvailableStatusDropdown'],
       queryFn: fetchMrpAvailableStatusDropdown,
+    }),
+
+    // mrp 계획주문 - 상태 드롭다운(구매 쪽이랑 같음)
+    queryClient.prefetchQuery({
+      queryKey: ['purchaseRequisitionStatusDropdown'],
+      queryFn: fetchPurchaseRequisitionStatusDropdown,
     }),
   ]);
 
