@@ -17,7 +17,7 @@ export const PRODUCTION_ENDPOINTS = {
   MRP_ORDERS: `${PRODUCTION_BASE_PATH}/quotations/mrp`, // MRP 순소요 목록 조회
   MRP_PLANNED_ORDER_DETAIL: (mrpId: string) =>
     `${PRODUCTION_BASE_PATH}/mrp/planned-orders/detail/${mrpId}`, // MRP 계획 주문 상세 조회
-  MRP_PLANNED_ORDERS_LIST: `${PRODUCTION_BASE_PATH}/mrp/planned-orders/list`, // MRP 계획 주문 목록 조회
+  MRP_PLANNED_ORDERS_LIST: `${PRODUCTION_BASE_PATH}/mrp/runs`, // MRP 계획 주문 목록 조회
   MRP_REQUEST_SUMMARY: `${PRODUCTION_BASE_PATH}/mrp/request-summary`, // MRP 자재 구매 요청 리스트
   MRP_CONVERT: `${PRODUCTION_BASE_PATH}/mrp/convert`, // MRP 순소요 목록 조회
 

@@ -14,7 +14,6 @@ import {
 } from '@/app/(private)/production/types/MrpPlannedOrdersListApiType';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
 import Pagination from '@/app/components/common/Pagination';
-import MrpPlannedOrderDetailModal from '@/app/(private)/production/components/modals/MrpPlannedOrderDetailModal';
 import { useModal } from '@/app/components/common/modal/useModal';
 import MrpPurchaseRequestModal from '@/app/(private)/production/components/modals/MrpPurchaseRequestModal';
 
@@ -32,7 +31,7 @@ export default function PlannedOrdersTab() {
   // 쿼리 파라미터 객체 생성
   const queryParams = useMemo(
     (): FetchMrpPlannedOrdersListParams => ({
-      statusCode: selectedStatus,
+      status: selectedStatus,
       page: currentPage - 1,
       size: pageSize,
     }),
@@ -61,7 +60,7 @@ export default function PlannedOrdersTab() {
     if (selectedOrders.length === plannedOrders.length) {
       setSelectedOrders([]);
     } else {
-      setSelectedOrders(plannedOrders.map((order) => order.mrpId));
+      setSelectedOrders(plannedOrders.map((order) => order.mrpRunId));
     }
   };
 
@@ -71,19 +70,14 @@ export default function PlannedOrdersTab() {
     );
   };
 
-  const handleShowDetail = (mrpId: string) => {
-    const id = openModal(MrpPlannedOrderDetailModal, { title: '계획주문 상세', mrpId: mrpId });
-    console.log(id);
-  };
-
   const handlePurchaseRequest = () => {
     console.log('자재구매 요청:', selectedOrders);
 
     // 선택된 주문들을 필터링하여 모달에 전달
     const selectedOrdersData = plannedOrders
-      .filter((order) => selectedOrders.includes(order.mrpId))
+      .filter((order) => selectedOrders.includes(order.mrpRunId))
       .map((order) => ({
-        id: order.mrpId,
+        id: order.mrpRunId,
         referenceQuote: order.quotationNumber,
         material: order.itemName,
         quantity: order.quantity,
@@ -158,24 +152,21 @@ export default function PlannedOrdersTab() {
                   수량
                 </th>
                 <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  조달 시작일
+                  구매 권장일
                 </th>
                 <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   상태
-                </th>
-                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  작업
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {plannedOrders.map((order) => (
-                <tr key={order.mrpId} className="hover:bg-gray-50 text-center">
+                <tr key={order.mrpRunId} className="hover:bg-gray-50 text-center">
                   <td className="px-4 py-3">
                     <input
                       type="checkbox"
-                      checked={selectedOrders.includes(order.mrpId)}
-                      onChange={() => handleOrderSelection(order.mrpId)}
+                      checked={selectedOrders.includes(order.mrpRunId)}
+                      onChange={() => handleOrderSelection(order.mrpRunId)}
                       className="rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
                     />
                   </td>
@@ -187,16 +178,7 @@ export default function PlannedOrdersTab() {
                     {order.quantity.toLocaleString()}
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-900">{order.procurementStartDate}</td>
-                  <td className="px-4 py-3">{order.statusCode}</td>
-                  <td className="px-4 py-3">
-                    <button
-                      className="text-blue-600 hover:text-blue-800 cursor-pointer"
-                      title="상세보기"
-                      onClick={() => handleShowDetail(order.mrpId)}
-                    >
-                      <i className="ri-eye-line"></i>
-                    </button>
-                  </td>
+                  <td className="px-4 py-3">{order.status}</td>
                 </tr>
               ))}
             </tbody>
