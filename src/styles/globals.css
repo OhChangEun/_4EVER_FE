@@ -77,21 +77,4 @@ html {
       var(--font-pacifico), sans-serif;
     letter-spacing: -0.05em;
   }
-
-  body {
-    transform: translateY(-0.05em);
-  }
-
-  button,
-  a,
-  input,
-  select,
-  textarea,
-  label,
-  span,
-  p,
-  div {
-    /* 한글 폰트 특성 때문에 살짝 위로 올림 */
-    transform: translateY(-0.08em);
-  }
 }
