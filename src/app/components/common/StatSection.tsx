@@ -29,8 +29,8 @@ export default function StatSection({ title, subTitle, statsData }: StatSectionP
   const role = 'CUSTOMER_ADMIN';
 
   const isCardVisibleByRole = (role: string) => {
-    const allowedRoles = ['ALL_ADMIN', 'FINANCE', 'SALES']; // 통계카드 접근 허용
-    return allowedRoles.includes(role);
+    const notAllowedRoles = ['CUSTOMER_ADMIN', 'SUPPLIER_ADMIN']; // 통계카드 접근 허용
+    return !notAllowedRoles.includes(role);
   };
 
   const showStats = isCardVisibleByRole(role);
