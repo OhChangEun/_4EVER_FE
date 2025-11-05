@@ -1,6 +1,6 @@
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   label: string;
-  variant?: 'primary' | 'secondary' | 'outline' | 'whiteOutline';
+  variant?: 'primary' | 'secondary' | 'outline' | 'whiteOutline' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
   icon?: string;
 }
@@ -19,6 +19,7 @@ export default function Button({
     secondary: 'bg-gray-200 font-semibold text-gray-500 hover:bg-gray-300',
     outline: 'font-normal border border-blue-500 text-blue-500 bg-transparent hover:bg-blue-50',
     whiteOutline: 'bg-white font-normal border border-gray-300 text-gray-500/70 hover:bg-gray-50',
+    ghost: 'bg-transparent text-blue-600 hover:bg-blue-100',
   };
 
   const sizes = {

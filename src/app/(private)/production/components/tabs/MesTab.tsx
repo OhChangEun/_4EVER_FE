@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import {
   FetchMesListParams,
   MesListResponse,
+  MesSummaryItem,
 } from '@/app/(private)/production/types/MesListApiType';
 import Dropdown from '@/app/components/common/Dropdown';
 import {
@@ -15,6 +16,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchMesList } from '../../api/production.api';
 import { useModal } from '@/app/components/common/modal/useModal';
 import ProcessDetailModal from '../modals/ProcessDetailModal';
+import IconButton from '@/app/components/common/IconButton';
 
 export default function MesTab() {
   const { openModal } = useModal();
@@ -43,7 +45,7 @@ export default function MesTab() {
   });
 
   // content 배열만 추출
-  const mesListData = mesResponse?.content || [];
+  const mesListData: MesSummaryItem[] = mesResponse?.content || [];
 
   const getStatusBadge = (status: string) => {
     const statusConfig: Record<string, { label: string; class: string }> = {
@@ -64,11 +66,43 @@ export default function MesTab() {
     openModal(ProcessDetailModal, { title: 'MES 현황', mesId: mesId });
   };
 
+  // 새로운 공정 상태 아이콘을 위한 헬퍼 함수 (진행 중 강조)
+  const getOperationStatusIcon = (
+    operation: string,
+    currentOperation: string,
+    isFirst: boolean,
+  ) => {
+    const isCurrent = currentOperation === operation;
+
+    // 현재 진행 중인 공정은 '시작' 아이콘으로 명확하게 표시
+    if (isCurrent) {
+      return {
+        icon: 'ri-play-circle-fill', // 진행 중
+        class: 'text-blue-600 font-bold',
+        label: isFirst ? '시작' : '진행중', // 첫 번째 공정은 '시작'으로 표시해도 좋습니다.
+      };
+    }
+
+    // 현재 공정보다 앞에 있는 공정은 완료된 것으로 간주 (단순화)
+    // 실제 로직에 따라 완료/대기를 구분해야 하지만, 여기서는 currentOperation을 기준으로 단순화합니다.
+    const isCompleted = mesListData.some(
+      (item) =>
+        item.currentOperation === currentOperation &&
+        item.sequence.indexOf(operation) < item.sequence.indexOf(currentOperation),
+    );
+
+    return {
+      icon: isCompleted ? 'ri-check-line' : 'ri-time-line', // 완료 또는 대기
+      class: isCompleted ? 'text-green-600' : 'text-gray-400',
+      label: isCompleted ? '완료' : '대기',
+    };
+  };
+
   return (
-    <>
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-gray-900">제조실행시스템 (MES)</h2>
-        <div className="flex gap-4 justify-end">
+        <h2 className="text-xl font-bold text-gray-900">제조실행시스템 (MES) 현황 🏭</h2>
+        <div className="flex gap-3 justify-end">
           <Dropdown
             placeholder="전체 견적"
             items={MES_QUOTE_OPTIONS}
@@ -88,110 +122,105 @@ export default function MesTab() {
         </div>
       </div>
 
-      {isLoading ? (
-        <div className="text-center py-8 text-gray-500">
-          <i className="ri-loader-4-line animate-spin text-2xl"></i>
-          <p className="mt-2">로딩 중...</p>
-        </div>
-      ) : isError ? (
-        <div className="text-center py-8 text-red-500">
-          <i className="ri-error-warning-line text-2xl"></i>
-          <p className="mt-2">데이터를 불러오는데 실패했습니다.</p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {mesListData && mesListData.length > 0 ? (
-            mesListData.map((order) => (
-              <div
-                key={order.mesId}
-                className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">{order.mesNumber}</div>
-                    <div className="text-xs text-gray-500">
-                      {order.productName} ({order.quantity}
-                      {order.uomName})
-                    </div>
-                    <div className="text-xs text-blue-600 mt-1">견적: {order.quotationNumber}</div>
-                  </div>
-                  {getStatusBadge(order.status)}
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-3">
-                  <div>
-                    <div className="text-xs text-gray-500">현재 공정</div>
-                    <div className="text-sm font-medium text-gray-900">
-                      {order.currentOperation}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-gray-500">시작일</div>
-                    <div className="text-sm text-gray-900">{order.startDate}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-gray-500">완료 예정일</div>
-                    <div className="text-sm text-gray-900">{order.endDate}</div>
-                  </div>
-                </div>
-
-                {order.status === 'IN_PROGRESS' && (
-                  <div className="mb-3">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs text-gray-500">진행률</span>
-                      <span className="text-xs font-medium text-gray-900">
-                        {order.progressRate}%
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${order.progressRate}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                )}
-
-                <div className="mb-3">
-                  <div className="text-xs text-gray-500 mb-2">공정 현황</div>
-                  <div className="flex items-center gap-2 overflow-x-auto">
-                    {order.sequence.map((operation, index) => (
-                      <div key={operation} className="flex items-center gap-1 whitespace-nowrap">
-                        <i
-                          className={`${order.currentOperation === operation ? 'ri-play-circle-fill text-blue-600' : 'ri-time-line text-gray-400'} text-sm`}
-                        ></i>
-                        <span
-                          className={`text-xs ${
-                            order.currentOperation === operation ? 'text-blue-600' : 'text-gray-500'
-                          }`}
-                        >
-                          {operation}
-                        </span>
-                        {index < order.sequence.length - 1 && (
-                          <i className="ri-arrow-right-line text-xs text-gray-300 mx-1"></i>
-                        )}
+      <div className="border-t border-gray-200 pt-4">
+        {isLoading ? (
+          <div className="text-center py-12 text-gray-500">
+            <i className="ri-loader-4-line animate-spin text-3xl"></i>
+            <p className="mt-3 text-lg font-medium">MES 데이터를 로딩 중입니다...</p>
+          </div>
+        ) : isError ? (
+          <div className="text-center py-12 text-red-500">
+            <i className="ri-error-warning-line text-3xl"></i>
+            <p className="mt-3 text-lg font-medium">데이터를 불러오는데 실패했습니다.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            {mesListData && mesListData.length > 0 ? (
+              mesListData.map((order) => (
+                <div
+                  key={order.mesId}
+                  className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition duration-200"
+                >
+                  {/* 상단: MES 번호, 제품 정보 및 상태 */}
+                  <div className="flex items-start justify-between mb-3 pb-3">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <div className="text-lg font-bold text-gray-900">{order.mesNumber}</div>
+                        <div className="text-sm text-gray-500 mt-1">
+                          {order.productName} ({order.quantity.toLocaleString()} {order.uomName})
+                        </div>
                       </div>
-                    ))}
+
+                      <div className="text-xs text-blue-600 mt-1">
+                        <i className="ri-file-text-line mr-1"></i>견적: {order.quotationNumber}
+                      </div>
+                    </div>
+                    {getStatusBadge(order.status)}
+                  </div>
+                  {/* 진행률 바 (진행중일 때만) */}
+                  {order.status === 'IN_PROGRESS' && (
+                    <div className="mb-4 pt-2 border-t border-dashed border-gray-100">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs text-gray-600 font-medium">진행률</span>
+                        <span className="text-sm font-bold text-blue-600">
+                          {order.progressRate}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${order.progressRate}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  )}
+                  {/* 공정 순서 (가장 중요한 시각화) */}
+                  <div className="mb-4 pt-2 border-t border-dashed border-gray-100">
+                    <div className="text-xs text-gray-500 mb-2 font-medium">공정 순서</div>
+                    <div className="flex items-center gap-1 overflow-x-auto pb-1 custom-scrollbar">
+                      {order.sequence.map((operation, index) => {
+                        const status = getOperationStatusIcon(
+                          operation,
+                          order.currentOperation,
+                          index === 0,
+                        );
+                        return (
+                          <div
+                            key={operation}
+                            className="flex items-center gap-1 whitespace-nowrap"
+                          >
+                            <i className={`${status.icon} ${status.class} text-md`}></i>
+                            <span className={`text-xs ${status.class}`}>{operation}</span>
+                            {index < order.sequence.length - 1 && (
+                              <i className="ri-arrow-right-line text-sm text-gray-300 mx-1"></i>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div className="flex justify-end pt-2 border-t">
+                    <IconButton
+                      label="공정 상세 보기"
+                      icon="ri-search-line"
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleShowProcessDetail(order.mesId)}
+                    />
                   </div>
                 </div>
-
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleShowProcessDetail(order.mesId)}
-                    className="text-xs text-blue-600 hover:text-blue-800 cursor-pointer"
-                  >
-                    <i className="ri-eye-line mr-1"></i>공정상세
-                  </button>
-                </div>
+              ))
+            ) : (
+              <div className="text-center py-12 text-gray-500 col-span-full">
+                <i className="ri-file-list-3-line text-3xl"></i>
+                <p className="mt-3 text-lg font-medium">
+                  선택한 조건에 해당하는 작업지시가 없습니다.
+                </p>
               </div>
-            ))
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              선택한 조건에 해당하는 작업지시가 없습니다.
-            </div>
-          )}
-        </div>
-      )}
-    </>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
