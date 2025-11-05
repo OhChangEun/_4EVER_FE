@@ -26,7 +26,6 @@ import { PurchaseReqParams } from '@/app/(private)/purchase/types/PurchaseApiReq
 import { useModal } from '@/app/components/common/modal/useModal';
 import { useDropdown } from '@/app/hooks/useDropdown';
 import { formatDateTime } from '@/app/utils/date';
-import CalendarButton from '@/app/components/common/Calendar';
 // import CalendarButton from '@/app/components/common/Calendar';
 
 export default function PurchaseRequestListTab() {
@@ -159,7 +158,6 @@ export default function PurchaseRequestListTab() {
             }}
           />
 
-          <CalendarButton />
           {/* <CalendarButton /> */}
           <DateRangePicker
             startDate={startDate}
