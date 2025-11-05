@@ -53,8 +53,8 @@ export default function QuotationTab() {
   // --- API 호출 및 상태 관리 ---
 
   // 1. 견적 리스트를 가져오는 useQuery
-  const quotationListQueryParams: FetchQuotationParams = useMemo(
-    () => ({
+  const quotationListQueryParams = useMemo(
+    (): FetchQuotationParams => ({
       page: currentPage - 1, // API는 0-based
       size: pageSize,
       stockStatusCode: selectedStockStatus, // 가용재고 상태
@@ -179,6 +179,7 @@ export default function QuotationTab() {
         <div className="flex items-center">
           <div className="flex gap-3 pr-5">
             <Dropdown
+              placeholder="전체 가용재고"
               items={AVAILABLE_STOCK_STATUS}
               value={selectedStockStatus}
               onChange={(status: AvailableStockStatus) => {
@@ -187,6 +188,7 @@ export default function QuotationTab() {
               }}
             />
             <Dropdown
+              placeholder="전체 상태"
               items={QUOTATIONS_STATUS}
               value={selectedQuotationsStatus}
               onChange={(status: QuotationStatus) => {

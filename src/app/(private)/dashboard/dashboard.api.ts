@@ -1,12 +1,11 @@
-import axios from 'axios';
 import { DashboardStatRes } from './types/DashboardStatsType';
 import { ApiResponse, DASHBOARD_ENDPOINTS } from '@/app/types/api';
 import { DashboardWorkflowRes } from './types/DashboardWorkflowType';
+import axios from '@/lib/axiosInstance';
 
 // ----------------------- 통계 지표 -----------------------
 export const getDashboardStats = async (): Promise<DashboardStatRes> => {
   const res = await axios.get<ApiResponse<DashboardStatRes>>(DASHBOARD_ENDPOINTS.STATS);
-  console.log(res.data.data);
   return res.data.data;
 };
 

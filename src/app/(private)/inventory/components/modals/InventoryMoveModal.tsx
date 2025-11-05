@@ -2,37 +2,22 @@
 
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { getWarehouseInfo, postStockMovement } from '../../inventory.api';
-import { StockMovementRequest } from '../../types/InventoryDetailType';
-import { useState } from 'react';
-import { WarehouseToggleResponse } from '../../types/AddInventoryModalType';
-
-interface InventoryMoveModalProps {
-  $setShowMoveModal: (show: boolean) => void;
-  $selectedStock: {
-    itemName: string;
-    itemNumber: string;
-    warehouseName: string;
-    warehouseNumber: string;
-    currentStock: number;
-    uomName: string;
-  };
-}
-
-const mockStockMovement: StockMovementRequest = {
-  fromWarehouseId: 1,
-  toWarehouseId: 2,
-  stockId: 101,
-  stockQuantity: 50,
-  uomName: 'EA',
-};
+import { useEffect, useMemo, useState } from 'react';
+import { InventoryMoveModalProps } from '../../types/InventoryMoveModalType';
+import {
+  WarehouseToggleQueryParams,
+  WarehouseToggleResponse,
+} from '../../types/AddInventoryModalType';
+import ModalStatusBox from '@/app/components/common/ModalStatusBox';
 
 const InventoryMoveModal = ({ $setShowMoveModal, $selectedStock }: InventoryMoveModalProps) => {
   const [formData, setFormData] = useState({
-    fromWarehouseId: 0,
-    toWarehouseId: 0,
-    stockId: 0,
+    fromWarehouseId: $selectedStock.warehouseId,
+    toWarehouseId: '',
+    itemId: $selectedStock.itemId,
     stockQuantity: 0,
-    uomName: '',
+    uomName: $selectedStock.uomName,
+    reason: '',
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -47,15 +32,22 @@ const InventoryMoveModal = ({ $setShowMoveModal, $selectedStock }: InventoryMove
 
   // -----------------------------
 
-  // const {
-  //   data: warehouseInfoRes,
-  //   isLoading: isWarehouseInfoLoading,
-  //   isError: isWarehouseInfoError,
-  // } = useQuery<WarehouseToggleResponse[]>({
-  //   queryKey: ['getWarehouseInfo', formData.itemId],
-  //   queryFn: () => getWarehouseInfo(formData.itemId),
-  //   enabled: !!formData.itemId,
-  // });
+  const queryParams = useMemo(() => {
+    const params: WarehouseToggleQueryParams = {
+      warehouseId: $selectedStock.warehouseId,
+    };
+    return params;
+  }, [$selectedStock.warehouseId]);
+
+  const {
+    data: warehouseInfoRes,
+    isLoading,
+    isError,
+  } = useQuery<WarehouseToggleResponse[]>({
+    queryKey: ['getWarehouseInfo', queryParams],
+    queryFn: ({ queryKey }) => getWarehouseInfo(queryKey[1] as WarehouseToggleQueryParams),
+    enabled: !!$selectedStock.itemId,
+  });
 
   const { mutate: moveStock } = useMutation({
     mutationFn: postStockMovement,
@@ -64,10 +56,27 @@ const InventoryMoveModal = ({ $setShowMoveModal, $selectedStock }: InventoryMove
       `);
       $setShowMoveModal(false);
     },
-    onError: (error) => {
-      alert(` 등록 중 오류가 발생했습니다. ${error}`);
+    onError: () => {
+      alert(` 등록 중 오류가 발생했습니다.`);
     },
   });
+
+  const [errorModal, setErrorModal] = useState(false);
+  useEffect(() => {
+    setErrorModal(isError);
+  }, [isError]);
+
+  if (isLoading)
+    return <ModalStatusBox $type="loading" $message="창고 정보를 불러오는 중입니다..." />;
+
+  if (errorModal)
+    return (
+      <ModalStatusBox
+        $type="error"
+        $message="창고 정보를 불러오는 중 오류가 발생했습니다."
+        $onClose={() => setErrorModal(false)}
+      />
+    );
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
@@ -92,16 +101,20 @@ const InventoryMoveModal = ({ $setShowMoveModal, $selectedStock }: InventoryMove
           </div>
         </div>
 
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">이동할 창고</label>
-            <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm pr-8">
+            <select
+              onChange={handleInputChange}
+              name="toWarehouseId"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm pr-8"
+            >
               <option value="">창고를 선택하세요</option>
-              {/* {warehouses.map((warehouse) => (
-                <option key={warehouse.id} value={warehouse.id}>
-                  {warehouse.name} ({warehouse.type})
+              {warehouseInfoRes?.map((warehouse) => (
+                <option key={warehouse.warehouseId} value={warehouse.warehouseId}>
+                  {warehouse.warehouseName}
                 </option>
-              ))} */}
+              ))}
             </select>
           </div>
 
@@ -109,8 +122,15 @@ const InventoryMoveModal = ({ $setShowMoveModal, $selectedStock }: InventoryMove
             <label className="block text-sm font-medium text-gray-700 mb-1">이동할 위치</label>
             <input
               type="text"
+              readOnly
+              disabled
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               placeholder="예: A-01-01"
+              value={
+                warehouseInfoRes?.find(
+                  (w) => String(w.warehouseId) === String(formData.toWarehouseId),
+                )?.warehouseNumber ?? ''
+              }
             />
           </div>
 
@@ -127,6 +147,19 @@ const InventoryMoveModal = ({ $setShowMoveModal, $selectedStock }: InventoryMove
             />
           </div>
 
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">이동 사유</label>
+            <input
+              type="text"
+              name="reason"
+              value={formData.reason}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+              placeholder="이동 사유를 입력하세요"
+              maxLength={18}
+            />
+          </div>
+
           <div className="flex gap-3 pt-4">
             <button
               type="button"
@@ -137,7 +170,6 @@ const InventoryMoveModal = ({ $setShowMoveModal, $selectedStock }: InventoryMove
             </button>
             <button
               type="submit"
-              onClick={handleSubmit}
               className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium cursor-pointer"
             >
               이동

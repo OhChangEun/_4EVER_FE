@@ -5,17 +5,18 @@ import {
   AddInventoryItemsRequest,
   AddInventoryItemsToggleResponse,
   AddInventoryModalProps,
+  WarehouseToggleQueryParams,
   WarehouseToggleResponse,
 } from '../../types/AddInventoryModalType';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { getItemInfo, getWarehouseInfo, postAddMaterial } from '../../inventory.api';
+import ModalStatusBox from '@/app/components/common/ModalStatusBox';
 
 const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
   const [selectedItem, setSelectedItem] = useState<AddInventoryItemsToggleResponse | null>(null);
 
   const [formData, setFormData] = useState<AddInventoryItemsRequest>({
     itemId: '',
-    supplierCompanyId: '',
     safetyStock: 0,
     currentStock: 0,
     warehouseId: '',
@@ -34,13 +35,8 @@ const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
     setFormData((prev) => ({
       ...prev,
       itemId: found?.itemId ?? '',
-      supplierCompanyId: found?.supplierCompanyId ?? '',
     }));
   };
-
-  useEffect(() => {
-    console.log(formData);
-  }, [formData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,8 +62,8 @@ const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
     isLoading: isWarehouseInfoLoading,
     isError: isWarehouseInfoError,
   } = useQuery<WarehouseToggleResponse[]>({
-    queryKey: ['getWarehouseInfo', formData.itemId],
-    queryFn: () => getWarehouseInfo(formData.itemId),
+    queryKey: ['getWarehouseInfo'],
+    queryFn: () => getWarehouseInfo(),
     enabled: !!formData.itemId,
   });
 
@@ -82,6 +78,36 @@ const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
       alert(` 자재 등록 중 오류가 발생했습니다. ${error}`);
     },
   });
+
+  const [errorModal, setErrorModal] = useState(false);
+
+  useEffect(() => {
+    setErrorModal(isItemInfoLoading || isWarehouseInfoLoading);
+  }, [isItemInfoLoading, isWarehouseInfoLoading]);
+
+  if (isItemInfoLoading)
+    return <ModalStatusBox $type="loading" $message="자재 정보를 불러오는 중입니다..." />;
+
+  if (isWarehouseInfoLoading)
+    return <ModalStatusBox $type="loading" $message="창고 정보를 불러오는 중입니다..." />;
+
+  if (errorModal)
+    return (
+      <ModalStatusBox
+        $type="error"
+        $message="자재 정보를 불러오는 중 오류가 발생했습니다."
+        $onClose={() => setErrorModal(false)}
+      />
+    );
+
+  if (errorModal)
+    return (
+      <ModalStatusBox
+        $type="error"
+        $message="창고 정보를 불러오는 중 오류가 발생했습니다."
+        $onClose={() => setErrorModal(false)}
+      />
+    );
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -112,7 +138,7 @@ const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
                 <option value="">자재를 선택하세요</option>
                 {ItemInfoRes?.map((item) => (
                   <option key={item.itemId} value={item.itemId}>
-                    {item.itemIdName}
+                    {item.itemName}
                   </option>
                 ))}
               </select>

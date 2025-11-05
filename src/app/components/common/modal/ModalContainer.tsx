@@ -13,14 +13,14 @@ const ModalContainer = ({ children, title, onClose }: ModalContainerProps) => {
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50"
+        className="fixed z-[9999] inset-0 flex items-center justify-center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         // onClick={onClose}
       >
         <motion.div
-          className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-6 w-full max-w-lg relative pointer-events-auto"
+          className="border border-gray-100 bg-white rounded-2xl shadow-xl p-6 max-h-[720px] min-w-[400px] min-h-[380px] overflow-scroll relative pointer-events-auto"
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}

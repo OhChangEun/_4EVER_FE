@@ -1,5 +1,4 @@
 import LowStockList from './components/LowStockList';
-import LowStockActions from './components/LowStockActions';
 import { getQueryClient } from '@/lib/queryClient';
 import { dehydrate } from '@tanstack/react-query';
 import StatSection from '@/app/components/common/StatSection';

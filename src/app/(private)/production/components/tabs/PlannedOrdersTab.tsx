@@ -2,33 +2,36 @@
 import { useState, useMemo } from 'react';
 import Button from '@/app/components/common/Button';
 import Dropdown from '@/app/components/common/Dropdown';
-import { MRP_PLANNED_ORDER_STATUS_OPTIONS, MrpPlannedOrderStatus } from '../../constants';
+import {
+  MRP_PLANNED_ORDER_STATUS_OPTIONS,
+  MrpPlannedOrderStatus,
+} from '@/app/(private)/production/constants';
 import { useQuery } from '@tanstack/react-query';
-import { fetchMrpPlannedOrdersList } from '../../api/production.api';
+import { fetchMrpPlannedOrdersList } from '@/app/(private)/production/api/production.api';
 import {
   FetchMrpPlannedOrdersListParams,
   MrpPlannedOrdersListResponse,
-} from '../../types/MrpPlannedOrdersListApiType';
+} from '@/app/(private)/production/types/MrpPlannedOrdersListApiType';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
 import Pagination from '@/app/components/common/Pagination';
-import MrpPlannedOrderDetailModal from '../modals/MrpPlannedOrderDetailModal';
+import MrpPlannedOrderDetailModal from '@/app/(private)/production/components/modals/MrpPlannedOrderDetailModal';
+import { useModal } from '@/app/components/common/modal/useModal';
+import MrpPurchaseRequestModal from '@/app/(private)/production/components/modals/MrpPurchaseRequestModal';
 
 export default function PlannedOrdersTab() {
+  const { openModal } = useModal();
+
   // 드롭다운 상태
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<MrpPlannedOrderStatus>('ALL');
-
-  // 모달 상태
-  const [showDetailModal, setShowDetailModal] = useState(false);
-  const [selectedMrpId, setSelectedMrpId] = useState<string | null>(null);
 
   // 페이지네이션 상태
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
   // 쿼리 파라미터 객체 생성
-  const queryParams = useMemo<FetchMrpPlannedOrdersListParams>(
-    () => ({
+  const queryParams = useMemo(
+    (): FetchMrpPlannedOrdersListParams => ({
       statusCode: selectedStatus,
       page: currentPage - 1,
       size: pageSize,
@@ -68,20 +71,35 @@ export default function PlannedOrdersTab() {
     );
   };
 
-  const handlePurchaseRequest = () => {
-    console.log('자재 구매 요청:', selectedOrders);
-    alert(`${selectedOrders.length}개 항목을 자재 구매 요청합니다.`);
-    // 실제 로직 구현
-  };
-
   const handleShowDetail = (mrpId: string) => {
-    setSelectedMrpId(mrpId);
-    setShowDetailModal(true);
+    const id = openModal(MrpPlannedOrderDetailModal, { title: '계획주문 상세', mrpId: mrpId });
+    console.log(id);
   };
 
-  const handleCloseDetail = () => {
-    setShowDetailModal(false);
-    setSelectedMrpId(null);
+  const handlePurchaseRequest = () => {
+    console.log('자재구매 요청:', selectedOrders);
+
+    // 선택된 주문들을 필터링하여 모달에 전달
+    const selectedOrdersData = plannedOrders
+      .filter((order) => selectedOrders.includes(order.mrpId))
+      .map((order) => ({
+        id: order.mrpId,
+        referenceQuote: order.quotationNumber,
+        material: order.itemName,
+        quantity: order.quantity,
+        unitPrice: 15000, // 목업 데이터 (실제로는 API에서 가져와야 함)
+        totalPrice: order.quantity * 15000, // 목업 계산
+        supplier: '(주)공급업체', // 목업 데이터
+        deliveryDate: order.procurementStartDate,
+        status: 'PLANNED' as const,
+      }));
+
+    openModal(MrpPurchaseRequestModal, {
+      title: '자재 구매 요청',
+      orders: selectedOrdersData,
+      editable: true,
+      onConfirm: () => setSelectedOrders([]), // 선택 초기화
+    });
   };
 
   return (
@@ -92,6 +110,7 @@ export default function PlannedOrdersTab() {
         </h4>
         <div className="flex items-center gap-3">
           <Dropdown
+            placeholder="전체 부서"
             items={MRP_PLANNED_ORDER_STATUS_OPTIONS}
             value={selectedStatus}
             onChange={(status: MrpPlannedOrderStatus) => {
@@ -121,7 +140,7 @@ export default function PlannedOrdersTab() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   <input
                     type="checkbox"
                     checked={selectedOrders.length === plannedOrders.length}
@@ -129,29 +148,29 @@ export default function PlannedOrdersTab() {
                     className="rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
                   />
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   참조 견적서
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   자재
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   수량
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   조달 시작일
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   상태
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   작업
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {plannedOrders.map((order) => (
-                <tr key={order.mrpId} className="hover:bg-gray-50">
+                <tr key={order.mrpId} className="hover:bg-gray-50 text-center">
                   <td className="px-4 py-3">
                     <input
                       type="checkbox"
@@ -192,11 +211,6 @@ export default function PlannedOrdersTab() {
             />
           )}
         </div>
-      )}
-
-      {/* Detail Modal Render */}
-      {showDetailModal && selectedMrpId && (
-        <MrpPlannedOrderDetailModal mrpId={selectedMrpId} onClose={handleCloseDetail} />
       )}
     </>
   );

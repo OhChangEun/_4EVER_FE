@@ -12,26 +12,26 @@ export const mapPurchaseStatsToCards = (
       const cards: StatCardType[] = [
         createStatCard(
           '구매 요청',
-          stats.purchase_request_count.value,
-          stats.purchase_request_count.delta_rate,
+          stats.purchaseRequestCount.value,
+          stats.purchaseRequestCount.delta_rate,
           '건',
         ),
         createStatCard(
           '구매 승인 대기',
-          stats.purchase_approval_pending_count.value,
-          stats.purchase_approval_pending_count.delta_rate,
+          stats.purchaseApprovalPendingCount.value,
+          stats.purchaseApprovalPendingCount.delta_rate,
           '건',
         ),
         createStatCard(
           '발주 금액',
-          stats.purchase_order_amount.value,
-          stats.purchase_order_amount.delta_rate,
+          stats.purchaseOrderAmount.value,
+          stats.purchaseOrderAmount.delta_rate,
           '₩',
         ),
         createStatCard(
           '발주 승인 대기',
-          stats.purchase_order_approval_pending_count.value,
-          stats.purchase_order_approval_pending_count.delta_rate,
+          stats.purchaseOrderApprovalPendingCount.value,
+          stats.purchaseOrderApprovalPendingCount.delta_rate,
           '건',
         ),
       ];

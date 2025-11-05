@@ -15,8 +15,8 @@ export default function MpsTab() {
   const [endDate, setEndDate] = useState('');
 
   // React Query를 사용하여 MPS 데이터 조회
-  const queryParams = useMemo<MpsListParams>(
-    () => ({
+  const queryParams = useMemo(
+    (): MpsListParams => ({
       productId: selectedProduct,
       startDate: startDate,
       endDate: endDate,
@@ -133,6 +133,7 @@ export default function MpsTab() {
           </div>
         ) : (
           <Dropdown
+            placeholder="전체 제품"
             items={productOptions}
             value={selectedProduct}
             onChange={(product: string) => setSelectedProduct(product)}

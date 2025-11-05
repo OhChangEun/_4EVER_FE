@@ -1,7 +1,7 @@
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon: string;
   label?: string;
-  variant?: 'primary' | 'secondary' | 'outline';
+  variant?: 'primary' | 'secondary' | 'outline' | 'whiteOutline';
   size?: 'sm' | 'md' | 'lg';
 }
 
@@ -14,17 +14,17 @@ export default function IconButton({
   ...props
 }: ButtonProps) {
   const base =
-    'inline-flex items-center justify-center rounded-lg font-semibold focus:outline-none transition cursor-pointer whitespace-nowrap';
+    'inline-flex items-center justify-center rounded-lg focus:outline-none transition cursor-pointer whitespace-nowrap';
 
   const variants = {
-    primary: 'bg-blue-500 text-white hover:opacity-85',
-    secondary: 'bg-gray-200 text-gray-500 hover:bg-gray-300',
-    outline: 'border border-blue-500 text-blue-500 bg-transparent hover:bg-blue-50',
-    whiteOutline: 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50',
+    primary: 'bg-blue-500 font-semibold text-white hover:opacity-85',
+    secondary: 'bg-gray-200 font-semibold text-gray-500 hover:bg-gray-300',
+    outline: 'font-normal border border-blue-500 text-blue-500 bg-transparent hover:bg-blue-50',
+    whiteOutline: 'bg-white font-normal border border-gray-300 text-gray-500/70 hover:bg-gray-50',
   };
 
   const sizes = {
-    sm: { px: 'px-2', py: 'py-1', text: 'text-sm', square: 'w-8 h-8' },
+    sm: { px: 'px-2', py: 'py-1.5', text: 'text-sm', square: 'w-8 h-8' },
     md: { px: 'px-3', py: 'py-1.5', text: 'text-base', square: 'w-10 h-10' },
     lg: { px: 'px-4', py: 'py-2', text: 'text-lg', square: 'w-12 h-12' },
   };

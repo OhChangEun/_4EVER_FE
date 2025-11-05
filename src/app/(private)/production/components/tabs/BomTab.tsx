@@ -8,11 +8,13 @@ import BomDetailModal from '@/app/(private)/production/components/modals/BomDeta
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { deletBomItem, fetchBomList } from '../../api/production.api';
 import { getQueryClient } from '@/lib/queryClient';
+import { useModal } from '@/app/components/common/modal/useModal';
+import Input from '@/app/components/common/Input';
 
 export default function BomTab() {
+  const { openModal } = useModal();
+
   const [selectedBom, setSelectedBom] = useState<BomListData | null>(null);
-  const [showBomDetailModal, setShowBomDetailModal] = useState(false);
-  const [showBomCreateModal, setShowBomCreateModal] = useState(false);
   const [editingBom, setEditingBom] = useState<BomListData | null>(null);
 
   const queryClient = getQueryClient();
@@ -43,14 +45,13 @@ export default function BomTab() {
   // content 배열 추출
   const bomList = bomResponse?.content || [];
 
-  const handleViewDetail = (bom: BomListData) => {
-    setSelectedBom(bom);
-    setShowBomDetailModal(true);
+  const handleViewDetail = (bomId: string) => {
+    openModal(BomDetailModal, { title: 'BOM 상세 정보', bomId: bomId });
+    // BomDetailModal bomId={selectedBom.bomId}
   };
 
   const handleEdit = (bom: BomListData) => {
     setEditingBom(bom);
-    setShowBomCreateModal(true);
   };
 
   const handleDelete = (bomId: string) => {
@@ -61,13 +62,11 @@ export default function BomTab() {
 
   const handleCreate = () => {
     setEditingBom(null);
-    setShowBomCreateModal(true);
   };
 
   const handleSubmit = (data: Partial<BomListData>) => {
     console.log('BOM 데이터:', data);
     alert(editingBom ? 'BOM이 수정되었습니다.' : 'BOM이 생성되었습니다.');
-    setShowBomCreateModal(false);
   };
 
   const getStatusBadge = (status: string) => {
@@ -148,7 +147,7 @@ export default function BomTab() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                       <button
-                        onClick={() => handleViewDetail(bom)}
+                        onClick={() => handleViewDetail(bom.bomId)}
                         className="text-blue-600 hover:text-blue-900 cursor-pointer"
                         disabled={deleteMutation.isPending}
                       >
@@ -181,11 +180,6 @@ export default function BomTab() {
             </tbody>
           </table>
         </div>
-      )}
-
-      {/* BOM 상세보기 모달 */}
-      {showBomDetailModal && selectedBom && (
-        <BomDetailModal bomId={selectedBom.bomId} onClose={() => setShowBomDetailModal(false)} />
       )}
 
       {/* BOM 생성/수정 모달 */}

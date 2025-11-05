@@ -1,19 +1,20 @@
 import { InventoryStatResponse } from './types/InventoryStatsType';
 import axios from 'axios';
 import { InventoryQueryParams, InventoryResponse } from './types/InventoryListType';
-import { InventoryDetailResponse, StockMovementRequest } from './types/InventoryDetailType';
-import { LowStockItemResponse } from '../low-stock/types/LowStockItems';
+import { InventoryDetailResponse, StockMovementRequest } from './types/InventoryDetailModalType';
+import { LowStockItemResponse } from '../low-stock/types/LowStockAlertType';
 import { StockMovementResponse } from './types/StockMovement';
 import {
   ManageMentCommonQueryParams,
   ProductionListResponse,
   ReadyToShipListResponse,
-} from './types/InventoryShippingListType';
-import { ReceivedListResponse } from './types/InventoryReceivingListType';
-import { markAsReadyToShipResponse, ShippingDetailResponse } from './types/ShippingDetailType';
+} from './types/ShippingManagementListType';
+import { ReceivedListResponse } from './types/ReceivingManagementListType';
+import { markAsReadyToShipResponse, ShippingDetailResponse } from './types/ShippingDetailModalType';
 import {
   AddInventoryItemsRequest,
   AddInventoryItemsToggleResponse,
+  WarehouseToggleQueryParams,
   WarehouseToggleResponse,
 } from './types/AddInventoryModalType';
 import { ApiResponse, ApiResponseNoData, INVENTORY_ENDPOINTS } from '@/app/types/api';
@@ -193,9 +194,14 @@ export const getItemInfo = async (): Promise<AddInventoryItemsToggleResponse[]> 
   return res.data.data;
 };
 
-export const getWarehouseInfo = async (itemId: string): Promise<WarehouseToggleResponse[]> => {
+export const getWarehouseInfo = async (
+  params?: WarehouseToggleQueryParams,
+): Promise<WarehouseToggleResponse[]> => {
+  const query = new URLSearchParams({
+    ...(params?.warehouseId && { warehouseId: String(params.warehouseId) }),
+  }).toString();
   const res = await axios.get<ApiResponse<{ warehouses: WarehouseToggleResponse[] }>>(
-    INVENTORY_ENDPOINTS.WAREHOUSE_TOGGLE(itemId),
+    `${INVENTORY_ENDPOINTS.WAREHOUSE_TOGGLE}?${query}`,
   );
   return res.data.data.warehouses;
 };

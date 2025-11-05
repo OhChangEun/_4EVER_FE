@@ -6,20 +6,16 @@ export type InvoiceStatus = 'ALL' | 'UNPAID' | 'PENDING' | 'PAID';
 export interface InvoiceListRes {
   invoiceId: string;
   invoiceNumber: string;
-  supply: {
-    supplierId: string;
-    supplierCode: string;
-    supplierName: string;
+  connection: {
+    connectionId: string;
+    connectionCode: string;
+    connectionName: string;
   };
   totalAmount: number;
   issueDate: string;
   dueDate: string;
   statusCode: string;
   referenceNumber: string;
-  reference: {
-    referenceId: number;
-    referenceCode: string;
-  };
 }
 
 export interface InvoiceQueryParams {

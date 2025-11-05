@@ -1,8 +1,8 @@
 import { Stat, StatResponse } from '@/app/types/StatType';
 
 interface WarehouseStat {
-  totalWarehouse: Stat;
-  inOperationWarehouse: Stat;
+  total_warehouse: Stat;
+  in_operation_warehouse: Stat;
 }
 
 export type WarehouseStatResponse = StatResponse<WarehouseStat>;

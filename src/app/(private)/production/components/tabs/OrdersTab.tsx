@@ -20,8 +20,8 @@ export default function OrdersTab() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  const queryParams = useMemo<FetchMrpOrdersListParams>(
-    () => ({
+  const queryParams = useMemo(
+    (): FetchMrpOrdersListParams => ({
       quotationId: selectedProduct,
       productId: selectedQuote,
       availableStatusCode: selectedStockStatus,
@@ -98,6 +98,7 @@ export default function OrdersTab() {
         <h2 className="text-md font-semibold text-gray-900">순소요 - 무엇이 얼마나 부족한가?</h2>
         <div className="flex gap-4 justify-end items-center">
           <Dropdown
+            placeholder="전체 제품"
             items={PRODUCTS}
             value={selectedProduct}
             onChange={(product: string) => {
@@ -106,6 +107,7 @@ export default function OrdersTab() {
             }}
           />
           <Dropdown
+            placeholder="전체 견적"
             items={quotes}
             value={selectedQuote}
             onChange={(quote: string) => {
@@ -114,6 +116,7 @@ export default function OrdersTab() {
             }}
           />
           <Dropdown
+            placeholder="전체 상태"
             items={MRP_ORDER_STATUS_OPTIONS}
             value={selectedStockStatus}
             onChange={(status: string) => {
