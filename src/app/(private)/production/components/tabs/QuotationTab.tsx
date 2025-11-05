@@ -26,7 +26,7 @@ import { useModal } from '@/app/components/common/modal/useModal';
 import { useDropdown } from '@/app/hooks/useDropdown';
 
 export default function QuotationTab() {
-  const { openModal } = useModal();
+  const { openModal, removeAllModals } = useModal();
 
   // 견적 상태 드롭다운
   const { options: quotationsStatusOptions } = useDropdown(
@@ -106,6 +106,7 @@ export default function QuotationTab() {
     mutationFn: (params: string[]) => fetchQuotationConfirm(params),
     onSuccess: () => {
       alert('제안납기를 확정하였습니다.');
+      removeAllModals(); // 모든 탭 닫기
     },
     onError: (error) => {
       console.error('제안납기 확정 실패:', error);
@@ -285,7 +286,7 @@ export default function QuotationTab() {
               {quotationDataList.map((quote) => (
                 <tr key={quote.quotationId} className="hover:bg-gray-50 text-center">
                   <td className="px-4 py-3">
-                    {quote.availableStatus === 'UNCHECKED' ? (
+                    {quote.availableStatus === 'CHECKED' ? (
                       <input
                         type="checkbox"
                         className="rounded border-gray-300 text-gray-300"

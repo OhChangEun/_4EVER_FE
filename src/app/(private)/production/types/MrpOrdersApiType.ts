@@ -12,6 +12,7 @@ export interface MrpOrdersListData {
   availableStock: number; // 가용재고
   availableStatusCode: string;
   shortageQuantity: number;
+  consumptionQuantity: number; // 소모량
   itemType: string;
   procurementStartDate: string;
   expectedArrivalDate: string;
@@ -25,7 +26,7 @@ export interface MrpOrdersListResponse {
 }
 
 export interface FetchMrpOrdersListParams extends PageRequest {
-  bomId: string;
+  bomId?: string;
   quotationId: string;
   availableStatusCode: string;
 }

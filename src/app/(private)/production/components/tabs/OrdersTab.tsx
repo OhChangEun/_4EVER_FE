@@ -1,11 +1,14 @@
 'use client';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Dropdown from '@/app/components/common/Dropdown';
 import Button from '@/app/components/common/Button';
-import { MRP_ORDER_STATUS_OPTIONS } from '../../constants';
-import { KeyValueItem } from '@/app/types/CommonType';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { fetchMrpOrdersList, postMrpConvert } from '../../api/production.api';
+import {
+  fetchMrpAvailableStatusDropdown,
+  fetchMrpOrdersList,
+  fetchMrpQuotationsDropdown,
+  postMrpConvert,
+} from '../../api/production.api';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
 import Pagination from '@/app/components/common/Pagination';
 import {
@@ -15,9 +18,20 @@ import {
 } from '../../types/MrpOrdersApiType';
 import { MrpOrdersConvertReqeustBody } from '../../types/MrpOrdersConvertApiType';
 import { useRouter } from 'next/navigation';
+import { useDropdown } from '@/app/hooks/useDropdown';
 
 export default function OrdersTab() {
-  const [selectedProduct, setSelectedProduct] = useState('');
+  // mrp 순소요 - 견적 드롭다운
+  const { options: mrpQuotationOptions } = useDropdown(
+    'mrpQuotationsDropdown',
+    fetchMrpQuotationsDropdown,
+  );
+  // mrp 순소요 - 가용 재고 상태 드롭다운
+  const { options: mrpAvailableStatusOptions } = useDropdown(
+    'mrpAvailableStatusDropdown',
+    fetchMrpAvailableStatusDropdown,
+  );
+
   const [selectedQuote, setSelectedQuote] = useState('');
   const [selectedStockStatus, setSelectedStockStatus] = useState('');
 
@@ -28,13 +42,12 @@ export default function OrdersTab() {
 
   const queryParams = useMemo(
     (): FetchMrpOrdersListParams => ({
-      bomId: selectedQuote,
-      quotationId: selectedProduct,
+      quotationId: selectedQuote,
       availableStatusCode: selectedStockStatus,
       page: currentPage - 1,
       size: pageSize,
     }),
-    [selectedProduct, selectedQuote, selectedStockStatus, currentPage],
+    [selectedQuote, selectedStockStatus, currentPage],
   );
 
   const {
@@ -51,16 +64,6 @@ export default function OrdersTab() {
   const pageInfo = orders?.page;
 
   const totalPages = pageInfo?.totalPages ?? 1;
-
-  // 견적 목록
-  const quotes: KeyValueItem[] = [
-    { key: 'ALL', value: '전체 견적' },
-    { key: 'Q_2024_001', value: 'Q-2024-001' },
-    { key: 'Q_2024_002', value: 'Q-2024-002' },
-    { key: 'Q_2024_003', value: 'Q-2024-003' },
-    { key: 'Q_2024_004', value: 'Q-2024-004' },
-    { key: 'Q_2024_005', value: 'Q-2024-005' },
-  ];
 
   const handleSelectAllRequirements = () => {
     if (!orders) return;
@@ -136,17 +139,18 @@ export default function OrdersTab() {
         <h2 className="text-md font-semibold text-gray-900">순소요 - 무엇이 얼마나 부족한가?</h2>
         <div className="flex gap-4 justify-end items-center">
           <Dropdown
-            placeholder="전체 견적"
-            items={quotes}
+            placeholder="견적 선택"
+            items={mrpQuotationOptions}
             value={selectedQuote}
             onChange={(quote: string) => {
               setSelectedQuote(quote);
               setCurrentPage(1);
             }}
+            autoSelectFirst
           />
           <Dropdown
             placeholder="전체 상태"
-            items={MRP_ORDER_STATUS_OPTIONS}
+            items={mrpAvailableStatusOptions}
             value={selectedStockStatus}
             onChange={(status: string) => {
               setSelectedStockStatus(status);

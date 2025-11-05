@@ -7,6 +7,8 @@ import StatSection from '@/app/components/common/StatSection';
 import {
   fetchAvailableStatusDropdown,
   fetchMpsBomDropdown,
+  fetchMrpAvailableStatusDropdown,
+  fetchMrpQuotationsDropdown,
   fetchOperationDropdown,
   fetchProductDropdown,
   fetchProductionStats,
@@ -64,6 +66,18 @@ export default async function ProductionPage() {
     queryClient.prefetchQuery({
       queryKey: ['operationsDropdown'],
       queryFn: fetchOperationDropdown,
+    }),
+
+    // mrp 순소요 - 견적 드롭다운
+    queryClient.prefetchQuery({
+      queryKey: ['mrpQuotationsDropdown'],
+      queryFn: fetchMrpQuotationsDropdown,
+    }),
+
+    // mrp 순소요 - 가용 재고 상태 드롭다운
+    queryClient.prefetchQuery({
+      queryKey: ['mrpAvailableStatusDropdown'],
+      queryFn: fetchMrpAvailableStatusDropdown,
     }),
   ]);
 

@@ -69,6 +69,22 @@ export const fetchQuotationStatusDropdown = async (): Promise<KeyValueItem[]> =>
   );
   return res.data.data;
 };
+
+// mrp 순소요 - 견적 드롭다운
+export const fetchMrpQuotationsDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await apisssssssss.get<ApiResponse<KeyValueItem[]>>(
+    `${PRODUCTION_ENDPOINTS.MRP_QUOTATION_DROPDOWN}`,
+  );
+  return res.data.data;
+};
+
+// mrp 순소요 - 가용 재고 상태 드롭다운
+export const fetchMrpAvailableStatusDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await apisssssssss.get<ApiResponse<KeyValueItem[]>>(
+    `${PRODUCTION_ENDPOINTS.MRP_AVAILABLE_STATUS_DROPDOWN}`,
+  );
+  return res.data.data;
+};
 // export const fetchMrpPlannedOrderStatus = async (): Promise<MpsDropdownResponse> => {
 //   const res = await apisssssssss.get<ApiResponse<MpsDropdownResponse>>(
 //     `${PRODUCTION_ENDPOINTS.MRP_PLANNED_ORDER_STATUS_CODES}`,

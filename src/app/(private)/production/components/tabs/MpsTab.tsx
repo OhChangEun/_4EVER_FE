@@ -120,6 +120,7 @@ export default function MpsTab() {
           items={dropdownOptions}
           value={selectedProduct}
           onChange={(product: string) => setSelectedProduct(product)}
+          autoSelectFirst
         />
         <DateRangePicker
           startDate={startDate}
