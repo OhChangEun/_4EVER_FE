@@ -79,24 +79,20 @@ export default function PlannedOrdersTab() {
     console.log('자재구매 요청:', selectedOrders);
 
     // 선택된 주문들을 필터링하여 모달에 전달
-    const selectedOrdersData = plannedOrders
-      .filter((order) => selectedOrders.includes(order.mrpRunId))
-      .map((order) => ({
-        id: order.mrpRunId,
-        referenceQuote: order.quotationNumber,
-        material: order.itemName,
-        quantity: order.quantity,
-        unitPrice: 15000, // 목업 데이터 (실제로는 API에서 가져와야 함)
-        totalPrice: order.quantity * 15000, // 목업 계산
-        supplier: '(주)공급업체', // 목업 데이터
-        deliveryDate: order.procurementStartDate,
-        status: 'PLANNED' as const,
-      }));
+    const selectedOrdersData = plannedOrders.filter((order) =>
+      selectedOrders.includes(order.mrpRunId),
+    );
+
+    const itemIds = selectedOrdersData.map((order) => order.itemId);
+    console.log('아이디 목록:', itemIds);
+
+    const referenceQuotes = selectedOrdersData.map((order) => order.quotationNumber);
 
     openModal(MrpPurchaseRequestModal, {
       title: '자재 구매 요청',
-      orders: selectedOrdersData,
-      editable: true,
+      itemIds: itemIds,
+      referenceQuotes: referenceQuotes,
+      editable: false, // 편집 불가
       onConfirm: () => setSelectedOrders([]), // 선택 초기화
     });
   };

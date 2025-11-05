@@ -1,5 +1,5 @@
 import { ProductionStatResponse } from '@/app/(private)/production/types/ProductionStatsType';
-import { ApiResponse, ApiResponseNoData } from '@/app/types/api';
+import { ApiResponse, ApiResponseNoData, INVENTORY_ENDPOINTS } from '@/app/types/api';
 import { PRODUCTION_ENDPOINTS } from '@/app/(private)/production/api/production.endpoints';
 import {
   FetchQuotationSimulationParams,
@@ -11,9 +11,7 @@ import { FetchMesListParams, MesListResponse } from '../types/MesListApiType';
 import { MesDetailResponse } from '../types/MesDetailApiType';
 import { BomListResponse } from '../types/BomListApiType';
 import { BomDetailResponse } from '../types/BomDetailApiType';
-import { FetchMrpOrdersListParams, MrpOrdersListResponse } from '../types/MrpOrdersListApiType';
 import { FetchQuotationParams, QuotationListResponse } from '../types/QuotationApiType';
-import { MpsDropdownResponse } from '../types/DropdownApiType';
 import {
   FetchMrpPlannedOrdersListParams,
   MrpPlannedOrdersListResponse,
@@ -24,6 +22,8 @@ import { KeyValueItem } from '@/app/types/CommonType';
 import { BomRequestBody, MaterialResponse } from '../types/BomType';
 import { PageRequest } from '@/app/types/Page';
 import { MrpOrdersConvertReqeustBody } from '../types/MrpOrdersConvertApiType';
+import { ItemResponse } from '../../inventory/types/ItemListType';
+import { FetchMrpOrdersListParams, MrpOrdersListResponse } from '../types/MrpOrdersApiType';
 
 // --- 상단 섹션 ---
 // 구매 관리 지표
@@ -255,6 +255,7 @@ export const fetchMrpPlannedOrdersList = async (
     `${PRODUCTION_ENDPOINTS.MRP_PLANNED_ORDERS_LIST}`,
     { params },
   );
+  console.log(res.data.data);
   return res.data.data;
 };
 
@@ -264,6 +265,17 @@ export const fetchMrpPlannedOrdersDetail = async (
 ): Promise<MrpPlannedOrdersDetailResponse> => {
   const res = await apisssssssss.get<ApiResponse<MrpPlannedOrdersDetailResponse>>(
     `${PRODUCTION_ENDPOINTS.MRP_PLANNED_ORDER_DETAIL(mrpId)}`,
+  );
+  return res.data.data;
+};
+
+// 자재 상세 조회
+export const postItemsInfo = async (body: string[]): Promise<ItemResponse[]> => {
+  const res = await apisssssssss.post<ApiResponse<ItemResponse[]>>(
+    `${INVENTORY_ENDPOINTS.MATERIALS_LIST}`,
+    {
+      itemIds: body,
+    },
   );
   return res.data.data;
 };

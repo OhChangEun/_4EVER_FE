@@ -4,6 +4,7 @@ import { Page, PageRequest } from '@/app/types/Page';
 export interface MrpPlannedOrderList {
   mrpRunId: string;
   quotationNumber: string; // 참조 견적서
+  itemId: string;
   itemName: string; // 자재
   quantity: number; // 수량
   status: string; // 상태

@@ -27,13 +27,23 @@ export interface PurchaseRequestItem {
   note?: string;
 }
 
+export interface StockPurchaseRequestItem {
+  productId: string;
+  quantity: number;
+}
+
 // 서버 전송용 (id 제외)
 export type PurchaseRequestItemBody = Omit<PurchaseRequestItem, 'id'>;
 
-// 구매 요청 바디
+// 비재고성 구매 요청 바디
 export interface PurchaseRequestBody {
   requesterId: string;
   items: PurchaseRequestItemBody[];
+}
+
+// 재고성 구매 요청 바디
+export interface StockPurchaseRequestBody {
+  items: StockPurchaseRequestItem[];
 }
 
 export interface FetchSupplierListParams extends PageRequest {
