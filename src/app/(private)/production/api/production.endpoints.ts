@@ -9,8 +9,8 @@ export const PRODUCTION_ENDPOINTS = {
   PRODUCTS_DETAIL: (productId: string) => `${PRODUCTION_BASE_PATH}/products/${productId}`, // 자재 상세 정보(입력 모달 출력용)
 
   // MES 작업 목록
-  MES_WORK_ORDERS: `${PRODUCTION_BASE_PATH}/mes/work-orders`, // MES 작업 목록 조회
-  MES_WORK_ORDER_DETAIL: (mesId: string) => `${PRODUCTION_BASE_PATH}/mes/work-orders/${mesId}`, // MES 작업 상세 조회
+  MES_WORK_ORDERS: `${PRODUCTION_BASE_PATH}/mes`, // MES 작업 목록 조회
+  MES_WORK_ORDER_DETAIL: (mesId: string) => `${PRODUCTION_BASE_PATH}/mes/${mesId}`, // MES 작업 상세 조회
   MES_WORK_ORDERS_SUMMARY: `${PRODUCTION_BASE_PATH}/mes/work-orders/summary`, // 생산관리 페이지 카드뷰 데이터 조회
 
   // MRP 순소요 목록

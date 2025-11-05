@@ -5,7 +5,6 @@ import {
   FetchMesListParams,
   MesListResponse,
 } from '@/app/(private)/production/types/MesListApiType';
-import ProcessDetailModal from '@/app/(private)/production/components/modals/ProcessDetailModal';
 import Dropdown from '@/app/components/common/Dropdown';
 import {
   MES_STATUS_OPTIONS,
@@ -14,12 +13,14 @@ import {
 } from '@/app/(private)/production/constants';
 import { useQuery } from '@tanstack/react-query';
 import { fetchMesList } from '../../api/production.api';
+import { useModal } from '@/app/components/common/modal/useModal';
+import ProcessDetailModal from '../modals/ProcessDetailModal';
 
 export default function MesTab() {
-  const [showProcessModal, setShowProcessModal] = useState(false);
-  const [selectedMesId, setSelectedMesId] = useState<string>();
+  const { openModal } = useModal();
+
   const [selectedMesStatus, setSelectedMesStatus] = useState<MesStatusCode>('ALL');
-  const [selectedMesQuote, setSelectedMesQuote] = useState<string>('ALL');
+  const [selectedMesQuote, setSelectedMesQuote] = useState<string>('');
 
   // 쿼리 파라미터 객체 생성
   const queryParams = useMemo(
@@ -36,7 +37,7 @@ export default function MesTab() {
     isLoading,
     isError,
   } = useQuery<MesListResponse>({
-    queryKey: ['mes', queryParams],
+    queryKey: ['mesList', queryParams],
     queryFn: ({ queryKey }) => fetchMesList(queryKey[1] as FetchMesListParams),
     staleTime: 1000,
   });
@@ -59,9 +60,8 @@ export default function MesTab() {
     );
   };
 
-  const handleShowProcessDetail = (order: string) => {
-    setSelectedMesId(order);
-    setShowProcessModal(true);
+  const handleShowProcessDetail = (mesId: string) => {
+    openModal(ProcessDetailModal, { title: 'MES 현황', mesId: mesId });
   };
 
   return (
@@ -191,10 +191,6 @@ export default function MesTab() {
             </div>
           )}
         </div>
-      )}
-      {/* 공정 상세 모달 */}
-      {showProcessModal && selectedMesId && (
-        <ProcessDetailModal mesId={selectedMesId} onClose={() => setShowProcessModal(false)} />
       )}
     </>
   );
