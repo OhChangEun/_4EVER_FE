@@ -22,6 +22,6 @@ export interface QuotationListResponse {
 
 // 응답 요청시 request params
 export interface FetchQuotationParams extends DateRequest, PageRequest {
-  stockStatusCode: AvailableStockStatus;
+  // stockStatusCode: AvailableStockStatus;
   statusCode: QuotationStatus;
 }

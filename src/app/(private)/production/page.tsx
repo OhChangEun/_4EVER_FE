@@ -23,7 +23,6 @@ export default async function ProductionPage() {
   const initialQuotationParams: FetchQuotationParams = {
     page: 0,
     size: 10,
-    stockStatusCode: 'ALL',
     statusCode: 'ALL',
     startDate: undefined,
     endDate: undefined,

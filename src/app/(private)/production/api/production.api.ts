@@ -27,6 +27,7 @@ import { KeyValueItem } from '@/app/types/CommonType';
 import { BomRequestBody, MaterialResponse } from '../types/BomType';
 import { PageRequest } from '@/app/types/Page';
 
+// --- 상단 섹션 ---
 // 구매 관리 지표
 export const fetchProductionStats = async (): Promise<ProductionStatResponse | null> => {
   try {
@@ -41,7 +42,7 @@ export const fetchProductionStats = async (): Promise<ProductionStatResponse | n
   }
 };
 
-// -- 드롭다운 조회 ---
+// --- 드롭다운 조회 ---
 // mps 제품 드롭다운
 export const fetchMpsProducts = async (): Promise<MpsDropdownResponse> => {
   const res = await apisssssssss.get<ApiResponse<MpsDropdownResponse>>(
@@ -81,6 +82,7 @@ export const fetchProductDropdown = async (): Promise<KeyValueItem[]> => {
 //   return res.data.data;
 // };
 
+// --- 견적 ---
 // 견적 목록 조회
 export const fetchQuotationList = async (
   params: FetchQuotationParams,
@@ -129,6 +131,7 @@ export const fetchMpsList = async (params: MpsListParams): Promise<MpsListRespon
   return res.data.data;
 };
 
+// --- MES ---
 // MES(Manufacturing Execution System) 작업 목록 조회
 export const fetchMesList = async (params: FetchMesListParams): Promise<MesListResponse> => {
   const res = await apisssssssss.get<ApiResponse<MesListResponse>>(
@@ -146,6 +149,7 @@ export const fetchMesDetail = async (mesId: string) => {
   return res.data.data;
 };
 
+// --- BOM ---
 // BOM 목록 조회
 export const fetchBomList = async (params: PageRequest): Promise<BomListResponse> => {
   const res = await apisssssssss.get<ApiResponse<BomListResponse>>(`${PRODUCTION_ENDPOINTS.BOMS}`, {
@@ -192,6 +196,7 @@ export const deletBomItem = async (bomId: string): Promise<ApiResponseNoData> =>
   return res.data;
 };
 
+// --- MRP ---
 // MRP 순소요 목록 조회
 export const fetchMrpOrdersList = async (
   params: FetchMrpOrdersListParams,
