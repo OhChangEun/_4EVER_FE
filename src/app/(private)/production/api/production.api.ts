@@ -41,8 +41,8 @@ export const fetchProductionStats = async (): Promise<ProductionStatResponse | n
 
 // --- 드롭다운 조회 ---
 // mps 제품 드롭다운
-export const fetchMpsProducts = async (): Promise<MpsDropdownResponse> => {
-  const res = await apisssssssss.get<ApiResponse<MpsDropdownResponse>>(
+export const fetchMpsBomDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await apisssssssss.get<ApiResponse<KeyValueItem[]>>(
     `${PRODUCTION_ENDPOINTS.MPS_TOGGLE_PRODUCTS}`,
   );
   return res.data.data;

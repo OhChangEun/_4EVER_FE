@@ -29,6 +29,8 @@ export interface MpsListResponse {
   page: Page;
 }
 
-export interface MpsListParams extends DateRequest, PageRequest {
-  productId: string;
+export interface MpsListParams extends PageRequest {
+  bomId: string;
+  startDate: string;
+  endDate: string;
 }

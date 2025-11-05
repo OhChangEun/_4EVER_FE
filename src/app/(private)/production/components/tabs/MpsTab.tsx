@@ -4,12 +4,13 @@ import DateRangePicker from '@/app/components/common/DateRangePicker';
 import Dropdown from '@/app/components/common/Dropdown';
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { fetchMpsProducts, fetchMpsList } from '@/app/(private)/production/api/production.api';
+import { fetchMpsBomDropdown, fetchMpsList } from '@/app/(private)/production/api/production.api';
 import { MpsListParams, MpsListResponse } from '@/app/(private)/production/types/MpsApiType';
-import { KeyValueItem } from '@/app/types/CommonType';
-import { MpsDropdownResponse } from '@/app/(private)/production/types/DropdownApiType';
+import { useDropdown } from '@/app/hooks/useDropdown';
 
 export default function MpsTab() {
+  const { options: dropdownOptions } = useDropdown('mpsBomsDropdown', fetchMpsBomDropdown);
+
   const [selectedProduct, setSelectedProduct] = useState<string>('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -17,32 +18,12 @@ export default function MpsTab() {
   // React Query를 사용하여 MPS 데이터 조회
   const queryParams = useMemo(
     (): MpsListParams => ({
-      productId: selectedProduct,
+      bomId: selectedProduct,
       startDate: startDate,
       endDate: endDate,
     }),
     [selectedProduct, startDate, endDate],
   );
-
-  const {
-    data: dropdownItems = [],
-    isLoading: isDropdownLoading,
-    isError: isDropdownError,
-  } = useQuery<MpsDropdownResponse>({
-    queryKey: ['mpsProductsDropdown'],
-    queryFn: fetchMpsProducts,
-    staleTime: Infinity,
-  });
-
-  // key-value 형태로 변환
-  const productOptions: KeyValueItem[] = useMemo(() => {
-    return [
-      ...dropdownItems.map((item) => ({
-        key: item.productId,
-        value: item.productName,
-      })),
-    ];
-  }, [dropdownItems]);
 
   const {
     data: currentData,
@@ -123,22 +104,12 @@ export default function MpsTab() {
 
       {/* 제품 선택 드롭다운 및 날짜 선택 */}
       <div className="flex justify-between gap-4">
-        {isDropdownLoading ? (
-          <div className="w-24 px-4 py-2 rounded-sm bg-gray-100 text-gray-500">
-            제품 목록 로딩 중...
-          </div>
-        ) : isDropdownError ? (
-          <div className="w-64 px-4 py-2 border border-red-300 rounded-lg bg-red-50 text-red-600">
-            제품 목록 로드 실패
-          </div>
-        ) : (
-          <Dropdown
-            placeholder="전체 제품"
-            items={productOptions}
-            value={selectedProduct}
-            onChange={(product: string) => setSelectedProduct(product)}
-          />
-        )}
+        <Dropdown
+          placeholder="전체 제품"
+          items={dropdownOptions}
+          value={selectedProduct}
+          onChange={(product: string) => setSelectedProduct(product)}
+        />
         <DateRangePicker
           startDate={startDate}
           onStartDateChange={setStartDate}

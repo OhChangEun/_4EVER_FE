@@ -21,7 +21,7 @@ export const PRODUCTION_ENDPOINTS = {
   MRP_REQUEST_SUMMARY: `${PRODUCTION_BASE_PATH}/mrp/request-summary`, // MRP 자재 구매 요청 리스트
 
   // MPS 계획
-  MPS_PLANS: `${PRODUCTION_BASE_PATH}/mps/plans`, // 제품별 MPS 조회
+  MPS_PLANS: `${PRODUCTION_BASE_PATH}/quotations/mps`, // 제품별 MPS 조회
 
   // 견적
   QUOTATIONS: `${PRODUCTION_BASE_PATH}/quotations`, // 견적 목록 조회
@@ -33,7 +33,7 @@ export const PRODUCTION_ENDPOINTS = {
   STATISTICS: `${PRODUCTION_BASE_PATH}/statistics`, // PP 통계 조회
 
   // 드롭다운 관련
-  MPS_TOGGLE_PRODUCTS: `${PRODUCTION_BASE_PATH}/mps/toggle/products`,
+  MPS_TOGGLE_PRODUCTS: `${PRODUCTION_BASE_PATH}/mps/boms/toggle`,
   OPERATIONS_DROPDOWN: `${PRODUCTION_BASE_PATH}/operations`,
 
   MRP_PLANNED_ORDER_STATUS_CODES: `${PRODUCTION_BASE_PATH}/mrp/toggle/planned-order-list-status-codes`, // MRP 계획 주문 상태 코드 목록

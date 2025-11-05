@@ -39,8 +39,6 @@ export default function QuotationTab() {
     fetchAvailableStatusDropdown,
   );
 
-  // 모달 open 여부
-  const [showMpsPreviewModal, setShowMpsPreviewModal] = useState(false);
   // 필터링 상태(날짜, 가용재고 상태, 견적 상태)
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -52,21 +50,18 @@ export default function QuotationTab() {
   // 페이지네이션 상태
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
-  // MPS 프리뷰 결과를 저장할 state
-  const [mpsPreviewData, setMpsPreviewData] = useState<QuotationPreviewResponse>();
-
-  // --- API 호출 및 상태 관리 ---
 
   // 1. 견적 리스트를 가져오는 useQuery
   const quotationListQueryParams = useMemo(
     (): FetchQuotationParams => ({
+      availableStatusCode: selectedStockStatus, // 가용재고 산태
+      statusCode: selectedQuotationsStatus, // 견적 상태
       page: currentPage - 1, // API는 0-based
       size: pageSize,
-      statusCode: selectedQuotationsStatus, // 견적 상태
       startDate: startDate || undefined,
       endDate: endDate || undefined,
     }),
-    [currentPage, pageSize, startDate, endDate, selectedQuotationsStatus],
+    [selectedStockStatus, selectedQuotationsStatus, currentPage, pageSize, startDate, endDate],
   );
 
   const {
@@ -172,8 +167,6 @@ export default function QuotationTab() {
       previewResults: previewData,
       onConfirm: handleConfirmMps,
     });
-
-    setMpsPreviewData(previewData);
   };
 
   const handleConfirmMps = () => {

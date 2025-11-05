@@ -5,11 +5,13 @@ import { dehydrate } from '@tanstack/react-query';
 import { PRODUCTION_TABS } from '@/app/(private)/production/constants';
 import StatSection from '@/app/components/common/StatSection';
 import {
-  fetchMpsProducts,
+  fetchAvailableStatusDropdown,
+  fetchMpsBomDropdown,
   fetchOperationDropdown,
   fetchProductDropdown,
   fetchProductionStats,
   fetchQuotationList,
+  fetchQuotationStatusDropdown,
 } from '@/app/(private)/production/api/production.api';
 import ErrorMessage from '@/app/components/common/ErrorMessage';
 import { mapProductionStatsToCards } from '@/app/(private)/production/services/production.service';
@@ -24,6 +26,7 @@ export default async function ProductionPage() {
     page: 0,
     size: 10,
     statusCode: 'ALL',
+    availableStatusCode: 'ALL',
     startDate: undefined,
     endDate: undefined,
   };
@@ -36,19 +39,28 @@ export default async function ProductionPage() {
     }),
 
     // --- 드롭 다운 prefetch ---
+    // 가용재고 상태 드롭다운
+    queryClient.prefetchQuery({
+      queryKey: ['availableStatusDropdown'],
+      queryFn: fetchAvailableStatusDropdown,
+    }),
+    // 상태 드롭다운
+    queryClient.prefetchQuery({
+      queryKey: ['quotationsStatusDropdown'],
+      queryFn: fetchQuotationStatusDropdown,
+    }),
     // MPS 제품 드롭다운 prefetch
     queryClient.prefetchQuery({
-      queryKey: ['mpsProductsDropdown'],
-      queryFn: fetchMpsProducts,
+      queryKey: ['mpsBomsDropdown'],
+      queryFn: fetchMpsBomDropdown,
     }),
-
     // 자재 드롭다운
     queryClient.prefetchQuery({
       queryKey: ['productsDropdown'],
       queryFn: fetchProductDropdown,
     }),
 
-    // 자재 드롭다운
+    // 공정 드롭다운
     queryClient.prefetchQuery({
       queryKey: ['operationsDropdown'],
       queryFn: fetchOperationDropdown,
