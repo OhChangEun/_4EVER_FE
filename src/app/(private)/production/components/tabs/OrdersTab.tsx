@@ -190,6 +190,9 @@ export default function OrdersTab() {
                   가용 재고
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  소모량
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   가용 재고 상태
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -232,8 +235,12 @@ export default function OrdersTab() {
                   <td className="px-4 py-3 text-sm text-gray-900">
                     {item.requiredQuantity.toLocaleString()}
                   </td>
+
                   <td className="px-4 py-3 text-sm text-gray-900">
                     {item.availableStock.toLocaleString()}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-900">
+                    {item.consumptionQuantity.toLocaleString()}
                   </td>
                   <td className="px-4 py-3">{getAvailableStatusBadge(item.availableStatusCode)}</td>
                   <td className="px-4 py-3 text-sm">
@@ -242,7 +249,7 @@ export default function OrdersTab() {
                         {item.shortageQuantity.toLocaleString()}
                       </span>
                     ) : (
-                      <span className="text-green-600">-</span>
+                      0
                     )}
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-900">{item.itemType}</td>
