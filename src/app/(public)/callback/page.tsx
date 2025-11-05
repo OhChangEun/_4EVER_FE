@@ -87,7 +87,7 @@ export default function CallbackPage() {
         const res = await axios.post(USER_ENDPOINTS.LOGIN, body.toString(), {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            Authorization: 'Basic ZXZIcnA6c3VwZXItc2VjcmV0',
+            Authorization: 'Basic ZXZlcnA6QUNUVUFMX1NFQ1JFVA==',
           },
         });
 
