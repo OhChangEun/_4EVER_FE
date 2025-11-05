@@ -5,6 +5,10 @@ import Link from 'next/link';
 import { UserProps } from '@/app/components/header/types/UserType';
 import ProfileInfoModal from './ProfileInfoModal';
 import { useRole } from '@/app/hooks/useRole';
+import { useMutation } from '@tanstack/react-query';
+import { logout } from '@/app/(public)/callback/callback.api';
+import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 export default function ProfileDropdown({
   userName = '홍길동',
@@ -15,6 +19,7 @@ export default function ProfileDropdown({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isSupOrCusModalOpen, setIsSupOrCusModalOpen] = useState(false);
   const role = useRole();
+  const router = useRouter();
   // 외부 클릭 감지
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -35,8 +40,24 @@ export default function ProfileDropdown({
   const handleLogout = () => {
     // 로그아웃 로직
     console.log('로그아웃');
-    // router.push('/login');
+    logoutRequest();
   };
+
+  const { mutate: logoutRequest } = useMutation({
+    mutationFn: logout,
+    onSuccess: () => {
+      alert('로그아웃 되었습니다.');
+      router.push('/dashboard');
+      localStorage.clear();
+      Cookies.remove('access_token');
+      Cookies.remove('access_token_expires_at');
+      Cookies.remove('JSESSIONID');
+      window.location.reload();
+    },
+    onError: (error) => {
+      alert(error);
+    },
+  });
 
   const handleProfile = (e: React.MouseEvent) => {
     if (role === 'SUPPLIER_ADMIN' || role === 'CUSTOMER_ADMIN') {
