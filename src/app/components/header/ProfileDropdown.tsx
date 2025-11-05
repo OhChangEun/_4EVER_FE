@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { UserProps } from '@/app/components/header/types/UserType';
+import ProfileInfoModal from './ProfileInfoModal';
+import { useRole } from '@/app/hooks/useRole';
 
 export default function ProfileDropdown({
   userName = '홍길동',
@@ -11,7 +13,8 @@ export default function ProfileDropdown({
 }: UserProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
+  const [isSupOrCusModalOpen, setIsSupOrCusModalOpen] = useState(false);
+  const role = useRole();
   // 외부 클릭 감지
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -33,6 +36,13 @@ export default function ProfileDropdown({
     // 로그아웃 로직
     console.log('로그아웃');
     // router.push('/login');
+  };
+
+  const handleProfile = (e: React.MouseEvent) => {
+    if (role === 'SUPPLIER_ADMIN' || role === 'CUSTOMER_ADMIN') {
+      e.preventDefault();
+      setIsSupOrCusModalOpen(true);
+    }
   };
 
   return (
@@ -76,7 +86,7 @@ export default function ProfileDropdown({
             <Link
               href="/profile"
               className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer transition-colors"
-              onClick={() => setIsOpen(false)}
+              onClick={handleProfile}
             >
               <i className="ri-user-settings-line mr-3 text-gray-400"></i>
               프로필 설정
@@ -100,6 +110,7 @@ export default function ProfileDropdown({
           </div>
         </div>
       )}
+      {isSupOrCusModalOpen && <ProfileInfoModal $setIsOpen={setIsSupOrCusModalOpen} />}
     </div>
   );
 }
