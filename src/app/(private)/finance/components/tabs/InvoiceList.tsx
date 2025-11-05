@@ -18,10 +18,16 @@ import { useSearchParams } from 'next/navigation';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
 import InvoiceDetailModal from '@/app/(private)/finance/components/modals/InvoiceDetailModal';
 import StatusLabel from '@/app/components/common/StatusLabel';
+import { useRole } from '@/app/hooks/useRole';
 
 const InvoiceList = () => {
   const searchParams = useSearchParams();
-  const currentTab = searchParams.get('tab') || 'sales';
+  const role = useRole();
+  // const role = 'CUSTOMER_ADMIN';
+  // const role = 'SUPPLIER_ADMIN';
+  const defaultTab =
+    role === 'SUPPLIER_ADMIN' ? 'sales' : role === 'CUSTOMER_ADMIN' ? 'purchase' : 'sales';
+  const currentTab = searchParams.get('tab') || defaultTab;
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<string>('');
 

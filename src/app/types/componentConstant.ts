@@ -10,6 +10,7 @@ import SalesChart from '@/app/(private)/sales/components/tabs/SalesChart';
 import ShippingManagementList from '@/app/(private)/inventory/components/tabs/ShippingManagementList';
 import InventoryList from '@/app/(private)/inventory/components/tabs/InventoryList';
 import ReceivingManagementList from '@/app/(private)/inventory/components/tabs/ReceivingManagementList';
+import { ALL } from './role.constant';
 
 // 재무 관리 탭 전환
 export const FINANCE_TABS: Tab[] = [
@@ -18,8 +19,15 @@ export const FINANCE_TABS: Tab[] = [
     name: '매출 전표 관리',
     icon: 'ri-money-dollar-circle-line',
     component: InvoiceList,
+    roles: [...ALL, 'SUPPLIER_ADMIN'],
   },
-  { id: 'purchase', name: '매입 전표 관리', icon: 'ri-shopping-cart-line', component: InvoiceList },
+  {
+    id: 'purchase',
+    name: '매입 전표 관리',
+    icon: 'ri-shopping-cart-line',
+    component: InvoiceList,
+    roles: [...ALL, 'CUSTOMER_ADMIN'],
+  },
 ];
 
 // 구매 관리 탭 전환

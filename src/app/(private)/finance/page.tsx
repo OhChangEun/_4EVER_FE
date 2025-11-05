@@ -9,6 +9,7 @@ import { mapFinanceStatsToCards } from './finance.service';
 import StatSection from '@/app/components/common/StatSection';
 import TabNavigation from '@/app/components/common/TabNavigation';
 import { FINANCE_TABS } from '@/app/types/componentConstant';
+import FinanceTabs from './components/tabs/FinanceTabs';
 
 export default async function FinancePage() {
   const queryClient = getQueryClient();
@@ -45,7 +46,7 @@ export default async function FinancePage() {
 
           {/* 탭 네비게이션 */}
           <Suspense fallback={<div>Loading...</div>}>
-            <TabNavigation tabs={FINANCE_TABS} />
+            <FinanceTabs />
           </Suspense>
         </main>
       </div>
