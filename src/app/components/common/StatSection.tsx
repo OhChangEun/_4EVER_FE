@@ -7,6 +7,7 @@ import PageTitle from '@/app/components/common/PageTitle';
 import StatCardList from '@/app/components/statCard/StatCardList';
 import SlidingNavBar from './SlidingNavBar';
 import { useAuthStore } from '@/store/authStore';
+import { useRole } from '@/app/hooks/useRole';
 
 interface StatSectionProps {
   title: string;
@@ -19,29 +20,41 @@ export default function StatSection({ title, subTitle, statsData }: StatSectionP
   const [selectedPeriod, setSelectedPeriod] = useState<Period>(DEFAULT_PERIOD);
 
   const stats = statsData[selectedPeriod];
-  const userInfo = useAuthStore((state) => state.userInfo);
-  console.log(userInfo);
   const handlePeriodSelect = (key: string) => {
     setSelectedPeriod(key as Period);
   };
+
+  // const role = useRole();
+  // const role = 'SUPPLIER_ADMIN';
+  const role = 'CUSTOMER_ADMIN';
+
+  const isCardVisibleByRole = (role: string) => {
+    const allowedRoles = ['ALL_ADMIN', 'FINANCE', 'SALES']; // 통계카드 접근 허용
+    return allowedRoles.includes(role);
+  };
+
+  const showStats = isCardVisibleByRole(role);
+
   return (
     <div className="">
       <div className="flex justify-between">
         {/* 페이지 제목 */}
         <PageTitle title={title} subTitle={subTitle} />
 
-        <div className="pt-4">
-          {/* 기간 선택 필터 */}
-          <SlidingNavBar
-            items={STAT_PERIODS}
-            selectedKey={selectedPeriod}
-            onSelect={handlePeriodSelect}
-          />
-        </div>
+        {showStats && (
+          <div className="pt-4">
+            {/* 기간 선택 필터 */}
+            <SlidingNavBar
+              items={STAT_PERIODS}
+              selectedKey={selectedPeriod}
+              onSelect={handlePeriodSelect}
+            />
+          </div>
+        )}
       </div>
 
       {/* 지표 리스트 */}
-      <StatCardList stats={stats} period={selectedPeriod} />
+      {showStats && <StatCardList stats={stats} period={selectedPeriod} />}
     </div>
   );
 }

@@ -1,49 +1,76 @@
 'use client';
 
 import NewOrderModal from '@/app/(private)/sales/components/modals/NewOrderModal';
+import { useRole } from '@/app/hooks/useRole';
 import Link from 'next/link';
 import { useState } from 'react';
 
-export default function QuickActions() {
+const QuickActions = () => {
   const [showNewOrderModal, setShowNewOrderModal] = useState(false);
-
-  const actions = [
+  // const role = useRole();
+  // const role = 'ALL_ADMIN';
+  const role = 'CUSTOMER_ADMIN';
+  // const role = 'SUPPLIER_ADMIN';
+  const allActions = [
     {
       title: '신규 주문 등록',
-      description: '새로운 판매 주문을 등록합니다',
+      description: '새로운 판매 주문을 등록합니다.',
       icon: 'ri-add-circle-line',
       color: 'blue',
       href: '/sales',
+      roles: ['ALL_ADMIN'],
     },
     {
       title: '신규 견적서 작성',
-      description: '새로운 견적서를 작성합니다',
+      description: '새로운 견적서를 작성합니다.',
       icon: 'ri-file-text-line',
       color: 'indigo',
       href: '/production',
+      roles: ['ALL_ADMIN', 'CUSTOMER_ADMIN'],
     },
     {
       title: '자재 구매 요청',
-      description: '새로운 구매 요청을 생성합니다',
+      description: '새로운 구매 요청을 생성합니다.',
       icon: 'ri-shopping-cart-line',
       color: 'green',
       href: '/purchase/request/new',
+      roles: ['ALL_ADMIN'],
     },
     {
       title: '재고 확인',
-      description: '재고 현황을 확인합니다',
+      description: '재고 현황을 확인합니다.',
       icon: 'ri-archive-line',
       color: 'purple',
       href: '/inventory',
+      roles: ['ALL_ADMIN'],
     },
     {
       title: '공급사 확인',
-      description: '공급업체 정보를 확인합니다',
+      description: '공급업체 정보를 확인합니다.',
       icon: 'ri-building-line',
       color: 'orange',
       href: '/companies',
+      roles: ['ALL_ADMIN'],
+    },
+    {
+      title: '자재 목록 수정',
+      description: '제공 가능한 자재 목록을 수정합니다.',
+      icon: 'ri-shopping-cart-line',
+      color: 'green',
+      href: '/purchase/request/new',
+      roles: ['SUPPLIER_ADMIN'],
+    },
+    {
+      title: '자사 정보 수정',
+      description: '자사 정보를 수정합니다.',
+      icon: 'ri-building-line',
+      color: 'orange',
+      href: '/companies',
+      roles: ['SUPPLIER_ADMIN', 'CUSTOMER_ADMIN'],
     },
   ];
+
+  const visibleActions = allActions.filter((a) => a.roles.includes(role as string));
 
   const getColorClasses = (color: string) => {
     const colorMap = {
@@ -64,7 +91,7 @@ export default function QuickActions() {
       </div>
 
       <div className="space-y-3">
-        {actions.map((action, index) => {
+        {visibleActions.map((action, index) => {
           const colors = getColorClasses(action.color);
 
           const handleClick = (e: React.MouseEvent) => {
@@ -103,4 +130,6 @@ export default function QuickActions() {
       )}
     </div>
   );
-}
+};
+
+export default QuickActions;
