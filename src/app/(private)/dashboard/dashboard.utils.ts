@@ -25,6 +25,7 @@ export const getTabCodeText = (tabCode: string | undefined) => {
 
 export const getColorClasses = (color: string) => {
   const colorMap = {
+    red: { bg: 'bg-red-100', icon: 'text-red-600' },
     blue: { bg: 'bg-blue-100', icon: 'text-blue-600' },
     indigo: { bg: 'bg-indigo-100', icon: 'text-indigo-600' },
     green: { bg: 'bg-green-100', icon: 'text-green-600' },
