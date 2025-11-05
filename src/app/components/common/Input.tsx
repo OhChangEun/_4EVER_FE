@@ -16,11 +16,11 @@ export default function Input({
   disabled,
   ...props
 }: InputProps) {
-  const base = ' w-full focus:outline-none transition-colors placeholder-gray-300';
+  const base = ' w-full text-gray-800 focus:outline-none transition-colors placeholder-gray-300';
 
   const variants = {
-    default: 'border border-gray-300 focus:border-blue-500 bg-white',
-    outline: 'border-2 border-blue-500 bg-transparent focus:border-blue-600',
+    default: 'border border-gray-300 focus:border-gray-500 bg-white',
+    outline: 'border border-blue-500 bg-transparent focus:ring focus:ring-blue-500',
   };
 
   const sizes = {
@@ -35,14 +35,14 @@ export default function Input({
     ${base}
     ${sizes[inputSize]}
     ${disabled ? disabledClasses : variants[variant]}
-    ${error ? 'border-red-500 focus:border-red-600' : ''}
+    ${error ? 'border-red-500 focus:border-red-500' : ''}
     ${className}
   `;
 
   return (
     <div className="flex flex-col">
       {/* Label */}
-      {label && <label className="ml-1 mb-2 text-[13px] text-gray-500 font-medium">{label}</label>}
+      {label && <label className="ml-1 mb-2 text-[13px] text-gray-500">{label}</label>}
       {/* Input */}
       <input className={appliedClasses} disabled={disabled} {...props} />
       {/* Error Message */}
