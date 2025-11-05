@@ -13,6 +13,7 @@ import ErrorMessage from '@/app/components/common/ErrorMessage';
 import { mapProductionStatsToCards } from '@/app/(private)/production/services/production.service';
 import Providers from '@/app/providers';
 import { FetchQuotationParams } from '@/app/(private)/production/types/QuotationApiType';
+import Input from '@/app/components/common/Input';
 
 export default async function ProductionPage() {
   const queryClient = getQueryClient();
@@ -63,6 +64,13 @@ export default async function ProductionPage() {
           )}
 
           <Suspense fallback={<div>Loading..</div>}>
+            <Input
+              label="사용자 이름"
+              inputSize="md"
+              disabled
+              placeholder="이름을 입력하세요"
+              // error="에러"
+            />
             <TabNavigation tabs={PRODUCTION_TABS} />
           </Suspense>
         </main>

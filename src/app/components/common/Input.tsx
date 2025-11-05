@@ -29,7 +29,7 @@ export default function Input({
     lg: 'px-4 py-2 text-lg rounded-lg',
   };
 
-  const disabledClasses = 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200';
+  const disabledClasses = 'bg-gray-100 text-gray-400 border-gray-200';
 
   const appliedClasses = `
     ${base}
