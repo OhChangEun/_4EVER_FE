@@ -4,13 +4,12 @@ import NewOrderModal from '@/app/(private)/sales/components/modals/NewOrderModal
 import { useRole } from '@/app/hooks/useRole';
 import Link from 'next/link';
 import { useState } from 'react';
+import { getColorClasses } from '../dashboard.utils';
 
 const QuickActions = () => {
   const [showNewOrderModal, setShowNewOrderModal] = useState(false);
-  // const role = useRole();
-  // const role = 'ALL_ADMIN';
-  const role = 'CUSTOMER_ADMIN';
-  // const role = 'SUPPLIER_ADMIN';
+  const role = useRole();
+
   const allActions = [
     {
       title: '신규 주문 등록',
@@ -18,7 +17,21 @@ const QuickActions = () => {
       icon: 'ri-add-circle-line',
       color: 'blue',
       href: '/sales',
-      roles: ['ALL_ADMIN'],
+      role: [
+        'ALL_ADMIN',
+        'MM_USER',
+        'MM_ADMIN',
+        'SD_USER',
+        'SD_ADMIN',
+        'IM_USER',
+        'IM_ADMIN',
+        'FCM_USER',
+        'FCM_ADMIN',
+        'HRM_USER',
+        'HRM_ADMIN',
+        'PP_USER',
+        'PP_ADMIN',
+      ],
     },
     {
       title: '신규 견적서 작성',
@@ -26,7 +39,22 @@ const QuickActions = () => {
       icon: 'ri-file-text-line',
       color: 'indigo',
       href: '/production',
-      roles: ['ALL_ADMIN', 'CUSTOMER_ADMIN'],
+      roles: [
+        'ALL_ADMIN',
+        'MM_USER',
+        'MM_ADMIN',
+        'SD_USER',
+        'SD_ADMIN',
+        'IM_USER',
+        'IM_ADMIN',
+        'FCM_USER',
+        'FCM_ADMIN',
+        'HRM_USER',
+        'HRM_ADMIN',
+        'PP_USER',
+        'PP_ADMIN',
+        'CUSTOMER_ADMIN',
+      ],
     },
     {
       title: '자재 구매 요청',
@@ -34,7 +62,21 @@ const QuickActions = () => {
       icon: 'ri-shopping-cart-line',
       color: 'green',
       href: '/purchase/request/new',
-      roles: ['ALL_ADMIN'],
+      roles: [
+        'ALL_ADMIN',
+        'MM_USER',
+        'MM_ADMIN',
+        'SD_USER',
+        'SD_ADMIN',
+        'IM_USER',
+        'IM_ADMIN',
+        'FCM_USER',
+        'FCM_ADMIN',
+        'HRM_USER',
+        'HRM_ADMIN',
+        'PP_USER',
+        'PP_ADMIN',
+      ],
     },
     {
       title: '재고 확인',
@@ -42,7 +84,21 @@ const QuickActions = () => {
       icon: 'ri-archive-line',
       color: 'purple',
       href: '/inventory',
-      roles: ['ALL_ADMIN'],
+      roles: [
+        'ALL_ADMIN',
+        'MM_USER',
+        'MM_ADMIN',
+        'SD_USER',
+        'SD_ADMIN',
+        'IM_USER',
+        'IM_ADMIN',
+        'FCM_USER',
+        'FCM_ADMIN',
+        'HRM_USER',
+        'HRM_ADMIN',
+        'PP_USER',
+        'PP_ADMIN',
+      ],
     },
     {
       title: '공급사 확인',
@@ -50,7 +106,21 @@ const QuickActions = () => {
       icon: 'ri-building-line',
       color: 'orange',
       href: '/companies',
-      roles: ['ALL_ADMIN'],
+      roles: [
+        'ALL_ADMIN',
+        'MM_USER',
+        'MM_ADMIN',
+        'SD_USER',
+        'SD_ADMIN',
+        'IM_USER',
+        'IM_ADMIN',
+        'FCM_USER',
+        'FCM_ADMIN',
+        'HRM_USER',
+        'HRM_ADMIN',
+        'PP_USER',
+        'PP_ADMIN',
+      ],
     },
     {
       title: '자재 목록 수정',
@@ -70,18 +140,7 @@ const QuickActions = () => {
     },
   ];
 
-  const visibleActions = allActions.filter((a) => a.roles.includes(role as string));
-
-  const getColorClasses = (color: string) => {
-    const colorMap = {
-      blue: { bg: 'bg-blue-100', icon: 'text-blue-600' },
-      indigo: { bg: 'bg-indigo-100', icon: 'text-indigo-600' },
-      green: { bg: 'bg-green-100', icon: 'text-green-600' },
-      purple: { bg: 'bg-purple-100', icon: 'text-purple-600' },
-      orange: { bg: 'bg-orange-100', icon: 'text-orange-600' },
-    };
-    return colorMap[color as keyof typeof colorMap] || colorMap.blue;
-  };
+  const visibleActions = allActions.filter((a) => a.roles?.includes(role as string));
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6">

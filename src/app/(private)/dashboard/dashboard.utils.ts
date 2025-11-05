@@ -22,3 +22,14 @@ export const getTabCodeText = (tabCode: string | undefined) => {
       return '알 수 없는 프로세스';
   }
 };
+
+export const getColorClasses = (color: string) => {
+  const colorMap = {
+    blue: { bg: 'bg-blue-100', icon: 'text-blue-600' },
+    indigo: { bg: 'bg-indigo-100', icon: 'text-indigo-600' },
+    green: { bg: 'bg-green-100', icon: 'text-green-600' },
+    purple: { bg: 'bg-purple-100', icon: 'text-purple-600' },
+    orange: { bg: 'bg-orange-100', icon: 'text-orange-600' },
+  };
+  return colorMap[color as keyof typeof colorMap] || colorMap.blue;
+};

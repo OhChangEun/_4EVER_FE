@@ -1,7 +1,7 @@
-import axios from 'axios';
 import { DashboardStatRes } from './types/DashboardStatsType';
 import { ApiResponse, DASHBOARD_ENDPOINTS } from '@/app/types/api';
 import { DashboardWorkflowRes } from './types/DashboardWorkflowType';
+import axios from '@/lib/axiosInstance';
 
 // ----------------------- 통계 지표 -----------------------
 export const getDashboardStats = async (): Promise<DashboardStatRes> => {
@@ -14,6 +14,5 @@ export const getWorkflowStatus = async (role: string): Promise<DashboardWorkflow
   const res = await axios.get<ApiResponse<DashboardWorkflowRes>>(
     DASHBOARD_ENDPOINTS.WORKFLOW_STATUS(role),
   );
-
   return res.data.data;
 };

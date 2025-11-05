@@ -6,7 +6,6 @@ import { STAT_PERIODS } from '@/app/(private)/purchase/constants';
 import PageTitle from '@/app/components/common/PageTitle';
 import StatCardList from '@/app/components/statCard/StatCardList';
 import SlidingNavBar from './SlidingNavBar';
-import { useAuthStore } from '@/store/authStore';
 import { useRole } from '@/app/hooks/useRole';
 
 interface StatSectionProps {
@@ -24,16 +23,13 @@ export default function StatSection({ title, subTitle, statsData }: StatSectionP
     setSelectedPeriod(key as Period);
   };
 
-  // const role = useRole();
-  // const role = 'SUPPLIER_ADMIN';
-  const role = 'CUSTOMER_ADMIN';
-
+  const role = useRole();
   const isCardVisibleByRole = (role: string) => {
     const notAllowedRoles = ['CUSTOMER_ADMIN', 'SUPPLIER_ADMIN']; // 통계카드 접근 허용
     return !notAllowedRoles.includes(role);
   };
 
-  const showStats = isCardVisibleByRole(role);
+  const showStats = isCardVisibleByRole(role as string);
 
   return (
     <div className="">
