@@ -1,18 +1,19 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  CustomerOrSupplierInfoResponse,
-  ProfileInfoModalProps,
-} from './types/CustomerOrSupplierInfoType';
-import { useQuery } from '@tanstack/react-query';
+import { ProfileInfo, ProfileInfoModalProps } from './types/CustomerOrSupplierInfoType';
 import { getSupOrCusProfile } from './header.api';
+import { useRole } from '@/app/hooks/useRole';
+import { useQuery } from '@tanstack/react-query';
 
 const ProfileInfoModal = ({ $setIsOpen }: ProfileInfoModalProps) => {
-  const { data: profileInfoRes } = useQuery<CustomerOrSupplierInfoResponse>({
-    queryKey: ['supOrCusprofileInfo'],
+  const role = useRole();
+
+  const { data: profileInfoRes } = useQuery<ProfileInfo>({
+    queryKey: ['supOrCusProfile', role],
     queryFn: getSupOrCusProfile,
   });
+
   return (
     <AnimatePresence>
       <motion.div
