@@ -202,7 +202,7 @@ const InventoryDetailModal = ({
               </div>
               <div className="p-4">
                 <div className="space-y-4">
-                  {inventoryDetailRes?.stockMovements.map((movement) => (
+                  {inventoryDetailRes?.stockMovement.map((movement) => (
                     <div
                       key={movement.referenceNumber}
                       className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg"

@@ -28,9 +28,7 @@ const WorkflowStatus = ({ $workflowData }: DashboardProps) => {
           <button
             onClick={() => setActiveTab('first')}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 cursor-pointer whitespace-nowrap ${
-              activeTab === 'first'
-                ? 'bg-white text-blue-600 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
+              activeTab === 'first' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 '
             }`}
           >
             {getTabCodeText(firstTabCode)}
@@ -52,7 +50,7 @@ const WorkflowStatus = ({ $workflowData }: DashboardProps) => {
         {currentWorkflows.map((workflow) => (
           <div
             key={workflow.itemId}
-            className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+            className="flex items-center justify-between p-4 border border-gray-200 rounded-lg  transition-colors duration-200"
           >
             <div className="flex items-center space-x-4">
               <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">

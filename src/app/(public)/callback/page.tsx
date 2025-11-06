@@ -2,37 +2,33 @@
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import Cookies from 'js-cookie';
 import { startAuthorization } from '@/lib/auth/startAuthorization';
 import { USER_ENDPOINTS } from '@/app/types/api';
 import { useQuery } from '@tanstack/react-query';
 import { getUserInfo } from './callback.api';
 import { useAuthStore } from '@/store/authStore';
 
-const REDIRECT_URI = 'http://localhost:3000/callback';
-// const REDIRECT_URI = 'https://everp.co.kr/callback';
+// const REDIRECT_URI = 'http://localhost:3000/callback'; // 배포용
+const REDIRECT_URI = 'https://everp.co.kr/callback'; // 서버용
 
-function saveAccessToken(at: string, expiresIn: number) {
-  const expiresAtMs = Date.now() + expiresIn * 1000; // 밀리초 타임스탬프
-  const expiresDays = expiresIn / (60 * 60 * 24);
-  console.log(at);
-  Cookies.set('access_token', at, {
-    expires: expiresDays,
-    secure: true,
-    sameSite: 'strict',
-    path: '/',
-  });
-  Cookies.set('access_token_expires_at', String(expiresAtMs), {
-    expires: expiresDays,
-    secure: true,
-    sameSite: 'strict',
-    path: '/',
-  });
+function saveAccessToken(accessToken: string, expiresIn: number) {
+  localStorage.setItem('access_token', accessToken);
+  localStorage.setItem('access_token_expires_at', String(Date.now() + expiresIn * 1000));
 }
 
 function cleanupPkce() {
   localStorage.removeItem('pkce_verifier');
   localStorage.removeItem('oauth_state');
+}
+
+// 키 생성 로직 추가
+function makeBasicAuthHeader(clientId: string, clientSecret: string): string {
+  const plain = `${clientId}:${clientSecret}`;
+  const utf8 = new TextEncoder().encode(plain);
+  let binary = '';
+  for (let i = 0; i < utf8.length; i++) binary += String.fromCharCode(utf8[i]);
+  const encoded = btoa(binary);
+  return `Basic ${encoded}`;
 }
 
 export default function CallbackPage() {
@@ -77,7 +73,8 @@ export default function CallbackPage() {
 
         const body = new URLSearchParams({
           grant_type: 'authorization_code',
-          client_id: 'everp-spa',
+          // client_id: 'everp-spa', // 로컬용
+          client_id: 'everp', // 배포용
           redirect_uri: REDIRECT_URI,
           code,
           code_verifier: verifier,
@@ -86,7 +83,8 @@ export default function CallbackPage() {
         const res = await axios.post(USER_ENDPOINTS.LOGIN, body.toString(), {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            // Authorization: 'Basic ZXZIcnA6c3VwZXItc2VjcmV0',
+            // 동적으로 키 생성
+            Authorization: makeBasicAuthHeader('everp', 'super-secret'),
           },
         });
 
