@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import axios from 'axios';
 import { startAuthorization } from '@/lib/auth/startAuthorization';
 import { USER_ENDPOINTS } from '@/app/types/api';
-import { useQuery } from '@tanstack/react-query';
 import { getUserInfo } from './callback.api';
 import { useAuthStore } from '@/store/authStore';
+import Cookies from 'js-cookie';
 
 const REDIRECT_URI = 'http://localhost:3000/callback'; // 배포용
 // const REDIRECT_URI = 'https://everp.co.kr/callback'; // 서버용
@@ -32,24 +32,7 @@ function makeBasicAuthHeader(clientId: string, clientSecret: string): string {
 }
 
 export default function CallbackPage() {
-  const [isTokenReady, setIsTokenReady] = useState(false);
   const { setUserInfo } = useAuthStore();
-  const {
-    data: userInfoRes,
-    isLoading,
-    isError,
-    isSuccess,
-  } = useQuery({
-    queryKey: ['userInfo'],
-    queryFn: getUserInfo,
-    enabled: isTokenReady,
-  });
-
-  useEffect(() => {
-    if (isSuccess && userInfoRes) {
-      setUserInfo(userInfoRes);
-    }
-  }, [isSuccess, userInfoRes, setUserInfo]);
   useEffect(() => {
     (async () => {
       try {
@@ -91,8 +74,11 @@ export default function CallbackPage() {
         const { access_token, expires_in } = res.data;
 
         saveAccessToken(access_token, expires_in);
-        setIsTokenReady(true);
-        // cleanupPkce();
+
+        const userInfo = await getUserInfo();
+        setUserInfo(userInfo);
+        Cookies.set('role', userInfo.userRole.toUpperCase(), { path: '/', sameSite: 'lax' });
+        cleanupPkce();
 
         const returnTo = localStorage.getItem('oauth_return_to') || '/';
         localStorage.removeItem('oauth_return_to');
@@ -113,7 +99,7 @@ export default function CallbackPage() {
           errMessage = error.message;
         }
 
-        // cleanupPkce();
+        cleanupPkce();
 
         if (errMessage === 'invalid_grant') {
           // startAuthorization('/');
@@ -123,7 +109,7 @@ export default function CallbackPage() {
         throw new Error(errMessage);
       }
     })();
-  }, []);
+  }, [setUserInfo]);
 
   return <p>Signing you in…</p>;
 }

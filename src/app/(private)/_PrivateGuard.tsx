@@ -6,6 +6,7 @@ import { startAuthorization } from '@/lib/auth/startAuthorization';
 import { useQuery } from '@tanstack/react-query';
 import { getUserInfo } from '../(public)/callback/callback.api';
 import { useAuthStore } from '@/store/authStore';
+import Cookies from 'js-cookie';
 
 export default function PrivateGuard({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
@@ -41,6 +42,7 @@ export default function PrivateGuard({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (data) {
       setUserInfo(data);
+      Cookies.set('role', data.userRole.toUpperCase(), { path: '/', sameSite: 'lax' });
     }
   }, [data, setUserInfo]);
 
