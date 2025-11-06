@@ -9,6 +9,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { deletBomItem, fetchBomList } from '../../api/production.api';
 import { getQueryClient } from '@/lib/queryClient';
 import { useModal } from '@/app/components/common/modal/useModal';
+import Input from '@/app/components/common/Input';
 
 export default function BomTab() {
   const { openModal } = useModal();
