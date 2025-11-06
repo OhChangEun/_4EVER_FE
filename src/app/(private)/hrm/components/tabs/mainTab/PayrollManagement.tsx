@@ -1,20 +1,40 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
-import { fetchDepartmentsList, fetchPayRollList } from '@/app/(private)/hrm/api/hrm.api';
+import {
+  fetchDepartmentsDropdown,
+  fetchPayRollList,
+  fetchPayrollStatusDropdown,
+} from '@/app/(private)/hrm/api/hrm.api';
 import { KeyValueItem } from '@/app/types/CommonType';
 import Dropdown from '@/app/components/common/Dropdown';
 import { PayrollDetailModal } from '@/app/(private)/hrm/components/modals/PayrollDetailModal';
 import Pagination from '@/app/components/common/Pagination';
 import { PayRollList, PayrollRequestParams } from '@/app/(private)/hrm/types/HrmPayrollApiType';
 import { useModal } from '@/app/components/common/modal/useModal';
+import { useDropdown } from '@/app/hooks/useDropdown';
 
 export default function PayrollManagement() {
   // --- 모달 출력 ---
   const { openModal } = useModal();
 
   // --- 드롭다운 ---
+  // 부서 드롭다운
+  const { options: departmentsOptions } = useDropdown(
+    'departmentsDropdown',
+    fetchDepartmentsDropdown,
+    'include',
+  );
+  // 상태 드롭다운
+  const { options: statusOptions } = useDropdown(
+    'payrollStatusDropdown',
+    fetchPayrollStatusDropdown,
+    'include',
+  );
+
+  // --- 선택된 드롭다운 상태 ---
   const [selectedDepartment, setSelectedDepartment] = useState(''); // 부서
+  const [selectedPayrollStatus, setSelectedPayrollStatus] = useState(''); // 상태
 
   // 년도와 월
   const now = new Date();
@@ -48,37 +68,16 @@ export default function PayrollManagement() {
     });
   }, []);
 
-  const {
-    data: departmentsData,
-    isLoading: isDeptLoading,
-    isError: isDeptError,
-  } = useQuery({
-    queryKey: ['departmentsList'],
-    queryFn: fetchDepartmentsList,
-    staleTime: Infinity,
-  });
-
-  const departmentsOptions: KeyValueItem[] = useMemo(() => {
-    const departmentList = departmentsData?.departments ?? [];
-
-    return [
-      { key: '', value: '전체 부서' },
-      ...departmentList.map((item) => ({
-        key: item.departmentId,
-        value: item.departmentName,
-      })),
-    ];
-  }, [departmentsData]);
-
   const payrollQueryParams = useMemo(
     (): PayrollRequestParams => ({
       year: Number(selectedYear),
       month: Number(selectedMonth),
       department: selectedDepartment || undefined,
+      statusCode: selectedPayrollStatus || undefined,
       page: currentPage - 1,
       size: pageSize,
     }),
-    [selectedYear, selectedMonth, selectedDepartment, currentPage],
+    [selectedYear, selectedMonth, selectedDepartment, selectedPayrollStatus, currentPage],
   );
 
   const {
@@ -134,6 +133,15 @@ export default function PayrollManagement() {
               value={selectedDepartment}
               onChange={(dept: string) => {
                 setSelectedDepartment(dept);
+                setCurrentPage(1);
+              }}
+            />
+            <Dropdown
+              placeholder="전체 상태"
+              items={statusOptions}
+              value={selectedPayrollStatus}
+              onChange={(status: string) => {
+                setSelectedPayrollStatus(status);
                 setCurrentPage(1);
               }}
             />

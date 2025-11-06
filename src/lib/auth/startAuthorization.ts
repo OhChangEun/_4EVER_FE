@@ -16,8 +16,8 @@ export async function startAuthorization(returnTo?: string) {
 
   const params = new URLSearchParams({
     response_type: 'code',
-    client_id: 'everp-spa',
-    // client_id: 'everp',
+    // client_id: 'everp', // vercel
+    client_id: 'everp-spa', // local
     redirect_uri: REDIRECT_URI,
     scope: 'erp.user.profile offline_access',
     state,

@@ -1,10 +1,6 @@
 'use client';
 
-import {
-  fetchDepartmentsList,
-  fetchPositionsList,
-  fetchTrainingList,
-} from '@/app/(private)/hrm/api/hrm.api';
+import { fetchDepartmentsDropdown, fetchTrainingList } from '@/app/(private)/hrm/api/hrm.api';
 import {
   TrainingListData,
   TrainingRequestParams,
@@ -12,15 +8,22 @@ import {
 import Dropdown from '@/app/components/common/Dropdown';
 import { useModal } from '@/app/components/common/modal/useModal';
 import Pagination from '@/app/components/common/Pagination';
-import { KeyValueItem } from '@/app/types/CommonType';
 import { useQuery } from '@tanstack/react-query';
 import React, { useState, useMemo } from 'react';
 import TrainingDetailModal from '@/app/(private)/hrm/components/modals/TrainingDetailModal';
 import AddEmployeeTrainingModal from '@/app/(private)/hrm/components/modals/AddEmployeeTrainingModal';
+import { useDropdown } from '@/app/hooks/useDropdown';
 
 export default function EmployeeTrainingTab() {
   // --- 모달 출력 ---
   const { openModal } = useModal();
+
+  // 부서 드롭다운
+  const { options: departmentsOptions } = useDropdown(
+    'departmentsDropdown',
+    fetchDepartmentsDropdown,
+    'include',
+  );
 
   // --- 드롭다운 ---
   const [selectedDepartment, setSelectedDepartment] = useState(''); // 부서
@@ -30,28 +33,6 @@ export default function EmployeeTrainingTab() {
   const pageSize = 10;
 
   const [employeeSearchTerm, setEmployeeSearchTerm] = useState('');
-
-  const {
-    data: departmentsData,
-    isLoading: isDeptLoading,
-    isError: isDeptError,
-  } = useQuery({
-    queryKey: ['departmentsList'],
-    queryFn: fetchDepartmentsList,
-    staleTime: Infinity,
-  });
-
-  const departmentsOptions: KeyValueItem[] = useMemo(() => {
-    const departmentList = departmentsData?.departments ?? [];
-
-    return [
-      { key: '', value: '전체 부서' },
-      ...departmentList.map((item) => ({
-        key: item.departmentId,
-        value: item.departmentName,
-      })),
-    ];
-  }, [departmentsData]);
 
   const trainingQueryParams = useMemo(
     (): TrainingRequestParams => ({
@@ -175,7 +156,7 @@ export default function EmployeeTrainingTab() {
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {training.lastTrainingDate.split('T')[0]}
+                  {training.lastTrainingDate?.split('T')[0]}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div className="flex space-x-2">
