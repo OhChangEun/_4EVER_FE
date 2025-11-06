@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import Cookies from 'js-cookie';
 import { startAuthorization } from '@/lib/auth/startAuthorization';
 import { USER_ENDPOINTS } from '@/app/types/api';
 import { useQuery } from '@tanstack/react-query';
@@ -12,22 +11,9 @@ import { useAuthStore } from '@/store/authStore';
 // const REDIRECT_URI = 'http://localhost:3000/callback'; // 배포용
 const REDIRECT_URI = 'https://everp.co.kr/callback'; // 서버용
 
-function saveAccessToken(at: string, expiresIn: number) {
-  const expiresAtMs = Date.now() + expiresIn * 1000; // 밀리초 타임스탬프
-  const expiresDays = expiresIn / (60 * 60 * 24);
-  console.log(at);
-  Cookies.set('access_token', at, {
-    expires: expiresDays,
-    secure: true,
-    sameSite: 'strict',
-    path: '/',
-  });
-  Cookies.set('access_token_expires_at', String(expiresAtMs), {
-    expires: expiresDays,
-    secure: true,
-    sameSite: 'strict',
-    path: '/',
-  });
+function saveAccessToken(accessToken: string, expiresIn: number) {
+  localStorage.setItem('access_token', accessToken);
+  localStorage.setItem('access_token_expires_at', String(Date.now() + expiresIn * 1000));
 }
 
 function cleanupPkce() {
@@ -44,7 +30,6 @@ function makeBasicAuthHeader(clientId: string, clientSecret: string): string {
   const encoded = btoa(binary);
   return `Basic ${encoded}`;
 }
-
 
 export default function CallbackPage() {
   const [isTokenReady, setIsTokenReady] = useState(false);

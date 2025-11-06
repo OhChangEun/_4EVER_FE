@@ -10,12 +10,15 @@ import AddWarehouseModal from './modals/AddWarehouseModal';
 import WarehouseDetailModal from './modals/WarehouseDetailModal';
 import ManageWarehouseModal from './modals/ManageWarehouseModal';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
+import Warehouse3DModal from './warehouseVisualizer/components/Warehouse3DModal';
 
 const WarehouseList = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showManageModal, setShowManageModal] = useState(false);
+  const [show3DModal, setShow3DModal] = useState(false);
   const [selectedWarehouseId, setSelectedWarehouseId] = useState<string>('');
+  const [selectedWarehouseName, setSelectedWarehouseName] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(1);
 
   const handleWarehouseDetail = (warehouseId: string) => {
@@ -26,6 +29,12 @@ const WarehouseList = () => {
   const handleWarehouseManage = (warehouseId: string) => {
     setSelectedWarehouseId(warehouseId);
     setShowManageModal(true);
+  };
+
+  const handleWarehouse3D = (warehouseId: string, warehouseName: string) => {
+    setSelectedWarehouseId(warehouseId);
+    setSelectedWarehouseName(warehouseName);
+    setShow3DModal(true);
   };
 
   const queryParams = useMemo(
@@ -108,13 +117,20 @@ const WarehouseList = () => {
                 </div>
               </div>
 
-              <div className="flex gap-2 pt-3 border-t border-gray-200">
+              <div className="flex flex-col gap-2 pt-3 border-t border-gray-200 sm:flex-row">
                 <button
                   onClick={() => handleWarehouseDetail(warehouse.warehouseId)}
                   className="flex-1 px-3 py-2 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
                 >
                   <i className="ri-eye-line mr-1"></i>
                   상세보기
+                </button>
+                <button
+                  onClick={() => handleWarehouse3D(warehouse.warehouseId, warehouse.warehouseName)}
+                  className="flex-1 px-3 py-2 text-sm border border-blue-200 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer"
+                >
+                  <i className="ri-cube-3-line mr-1"></i>
+                  3D 보기
                 </button>
                 <button
                   onClick={() => handleWarehouseManage(warehouse.warehouseId)}
@@ -154,6 +170,14 @@ const WarehouseList = () => {
         <ManageWarehouseModal
           $setShowManageModal={setShowManageModal}
           $selectedWarehouseId={selectedWarehouseId}
+        />
+      )}
+
+      {show3DModal && (
+        <Warehouse3DModal
+          warehouseId={selectedWarehouseId}
+          warehouseName={selectedWarehouseName}
+          onClose={() => setShow3DModal(false)}
         />
       )}
     </div>
