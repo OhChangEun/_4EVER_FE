@@ -17,9 +17,8 @@ export default function PrivateGuard({ children }: { children: ReactNode }) {
       const exp = Number(localStorage.getItem('access_token_expires_at'));
 
       if (!token || !exp || Date.now() > exp) {
-        localStorage.remove('access_token');
-        localStorage.remove('access_token_expires_at');
-
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('access_token_expires_at');
         try {
           // await trySilentRefresh();
           startAuthorization(window.location.pathname);
