@@ -15,7 +15,8 @@ export async function trySilentRefresh() {
   try {
     const body = new URLSearchParams({
       grant_type: 'refresh_token',
-      client_id: 'everp',
+      // client_id: 'everp',
+      client_id: 'everp-spa',
     });
 
     const res = await axios.post('https://auth.everp.co.kr/oauth2/token', body.toString(), {
