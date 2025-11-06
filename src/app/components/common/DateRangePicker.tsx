@@ -1,4 +1,5 @@
 import React from 'react';
+import CalendarButton from './CalendarButton';
 
 interface DateRangePickerProps {
   startDate: string;
@@ -13,20 +14,40 @@ export default function DateRangePicker({
   onStartDateChange,
   onEndDateChange,
 }: DateRangePickerProps) {
+  const handleStartDateChange = (date: string | null) => {
+    const newStartDate = date || '';
+
+    // 시작 날짜가 끝 날짜보다 이후라면 끝 날짜도 함께 업데이트
+    if (newStartDate && endDate && new Date(newStartDate) > new Date(endDate)) {
+      onEndDateChange(newStartDate);
+    }
+
+    onStartDateChange(newStartDate);
+  };
+
+  const handleEndDateChange = (date: string | null) => {
+    const newEndDate = date || '';
+
+    // 끝 날짜가 시작 날짜보다 이전이라면 시작 날짜도 함께 업데이트
+    if (newEndDate && startDate && new Date(newEndDate) < new Date(startDate)) {
+      onStartDateChange(newEndDate);
+    }
+
+    onEndDateChange(newEndDate);
+  };
+
   return (
-    <div className="flex items-center space-x-2">
-      <input
-        type="date"
-        value={startDate}
-        onChange={(e) => onStartDateChange(e.target.value)}
-        className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
+    <div className="flex items-center space-x-1">
+      <CalendarButton
+        selectedDate={startDate}
+        onDateChange={handleStartDateChange}
+        placeholder="시작 날짜"
       />
-      <span className="text-lg">~</span>
-      <input
-        type="date"
-        value={endDate}
-        onChange={(e) => onEndDateChange(e.target.value)}
-        className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
+      <span className="text-gray-400 text-lg">~</span>
+      <CalendarButton
+        selectedDate={endDate}
+        onDateChange={handleEndDateChange}
+        placeholder="끝 날짜"
       />
     </div>
   );
