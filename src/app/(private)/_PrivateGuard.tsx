@@ -20,8 +20,8 @@ export default function PrivateGuard({ children }: { children: ReactNode }) {
         localStorage.removeItem('access_token');
         localStorage.removeItem('access_token_expires_at');
         try {
-          await trySilentRefresh();
-          // startAuthorization(window.location.pathname);
+          // await trySilentRefresh();
+          startAuthorization(window.location.pathname);
         } catch {
           startAuthorization(window.location.pathname);
           return;
