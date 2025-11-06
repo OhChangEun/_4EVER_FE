@@ -15,7 +15,8 @@ export default function UnauthorizedPage() {
         <div className="space-y-3">
           <h1 className="text-3xl font-semibold text-slate-900">접근 권한이 필요합니다</h1>
           <p className="text-slate-600 leading-relaxed">
-            요청하신 페이지를 열 수 있는 권한이 없습니다. 권한이 있어야 하는 경우 관리자에게 요청하거나, 올바른 역할로 로그인했는지 확인하세요.
+            요청하신 페이지를 열 수 있는 권한이 없습니다. 권한이 있어야 하는 경우 관리자에게
+            요청하거나, 올바른 역할로 로그인했는지 확인하세요.
           </p>
         </div>
         <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-left text-sm text-slate-600 space-y-3">
