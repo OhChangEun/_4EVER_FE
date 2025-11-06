@@ -2,6 +2,7 @@ import axios from 'axios';
 import { startAuthorization } from './startAuthorization';
 
 export async function trySilentRefresh() {
+  const token = localStorage.getItem('access_token');
   try {
     const body = new URLSearchParams({
       grant_type: 'refresh_token',
@@ -12,6 +13,7 @@ export async function trySilentRefresh() {
       withCredentials: true,
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
+        access_token: token,
       },
     });
 
