@@ -35,6 +35,17 @@ function cleanupPkce() {
   localStorage.removeItem('oauth_state');
 }
 
+// 키 생성 로직 추가
+function makeBasicAuthHeader(clientId: string, clientSecret: string): string {
+  const plain = `${clientId}:${clientSecret}`;
+  const utf8 = new TextEncoder().encode(plain);
+  let binary = '';
+  for (let i = 0; i < utf8.length; i++) binary += String.fromCharCode(utf8[i]);
+  const encoded = btoa(binary);
+  return `Basic ${encoded}`;
+}
+
+
 export default function CallbackPage() {
   const [isTokenReady, setIsTokenReady] = useState(false);
   const { setUserInfo } = useAuthStore();
@@ -87,7 +98,8 @@ export default function CallbackPage() {
         const res = await axios.post(USER_ENDPOINTS.LOGIN, body.toString(), {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            Authorization: 'Basic ZXZlcnA6QUNUVUFMX1NFQ1JFVA==',
+            // 동적으로 키 생성
+            Authorization: makeBasicAuthHeader('everp', 'super-secret'),
           },
         });
 
