@@ -2,7 +2,8 @@ import { generateRandomBase64Url, createCodeChallenge } from './pkce';
 
 export async function startAuthorization(returnTo?: string) {
   const AUTH_URL = 'https://auth.everp.co.kr';
-  const REDIRECT_URI = 'http://localhost:3000/callback';
+  // const REDIRECT_URI = 'http://localhost:3000/callback'; // 로컬용
+  const REDIRECT_URI = 'https://everp.co.kr/callback'; // 배포용
 
   const codeVerifier = generateRandomBase64Url(32);
   const codeChallenge = await createCodeChallenge(codeVerifier);
@@ -15,7 +16,7 @@ export async function startAuthorization(returnTo?: string) {
 
   const params = new URLSearchParams({
     response_type: 'code',
-    client_id: 'everp-spa',
+    client_id: 'everp',
     redirect_uri: REDIRECT_URI,
     scope: 'erp.user.profile offline_access',
     state,
