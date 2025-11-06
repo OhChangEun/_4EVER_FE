@@ -3,7 +3,6 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { trySilentRefresh } from '@/lib/auth/refresh';
 import { startAuthorization } from '@/lib/auth/startAuthorization';
-import Cookies from 'js-cookie';
 import { useQuery } from '@tanstack/react-query';
 import { getUserInfo } from '../(public)/callback/callback.api';
 import { useAuthStore } from '@/store/authStore';
@@ -14,12 +13,12 @@ export default function PrivateGuard({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     (async () => {
-      const token = Cookies.get('access_token');
-      const exp = Number(Cookies.get('access_token_expires_at'));
+      const token = localStorage.getItem('access_token');
+      const exp = Number(localStorage.getItem('access_token_expires_at'));
 
       if (!token || !exp || Date.now() > exp) {
-        Cookies.remove('access_token');
-        Cookies.remove('access_token_expires_at');
+        localStorage.remove('access_token');
+        localStorage.remove('access_token_expires_at');
 
         try {
           // await trySilentRefresh();
