@@ -2,8 +2,8 @@
 'use client';
 import {
   fetchAttendanceList,
-  fetchDepartmentsList,
-  fetchPositionsList,
+  fetchAttendanceStatusDropdown,
+  fetchDepartmentsDropdown,
 } from '@/app/(private)/hrm/api/hrm.api';
 import {
   AttendanceListData,
@@ -12,18 +12,37 @@ import {
 import Dropdown from '@/app/components/common/Dropdown';
 import { useModal } from '@/app/components/common/modal/useModal';
 import Pagination from '@/app/components/common/Pagination';
-import { KeyValueItem } from '@/app/types/CommonType';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
 import { AttendanceEditModal } from '@/app/(private)/hrm/components/modals/AttendanceEditModal';
 import { formatMinutesToHourMin, formatTime } from '@/app/utils/date';
+import { useDropdown } from '@/app/hooks/useDropdown';
 
 export default function AttendanceTab() {
   // --- 모달 출력 ---
   const { openModal } = useModal();
 
   // --- 드롭다운 ---
+  // 부서 드롭다운
+  const { options: departmentsOptions } = useDropdown(
+    'departmentsDropdown',
+    fetchDepartmentsDropdown,
+    'include',
+  );
+
+  const {
+    data: statusData,
+    isLoading: statusLoading,
+    isError: errorLoading,
+  } = useQuery({
+    queryKey: ['attendanceStatusDropdown'],
+    queryFn: fetchAttendanceStatusDropdown,
+    staleTime: Infinity,
+  });
+
+  // --- 선택된 드롭다운 상태 ---
   const [selectedDepartment, setSelectedDepartment] = useState(''); // 부서
+  const [selectedPayrollStatus, setSelectedPayrollStatus] = useState(''); // 부서
 
   // --- 페이지 네이션 ---
   const [currentPage, setCurrentPage] = useState(1);
@@ -34,28 +53,6 @@ export default function AttendanceTab() {
   const [selectedDate, setSelectedDate] = useState(today);
 
   const [employeeSearchTerm, setEmployeeSearchTerm] = useState('');
-
-  const {
-    data: departmentsData,
-    isLoading: isDeptLoading,
-    isError: isDeptError,
-  } = useQuery({
-    queryKey: ['departmentsList'],
-    queryFn: fetchDepartmentsList,
-    staleTime: Infinity,
-  });
-
-  const departmentsOptions: KeyValueItem[] = useMemo(() => {
-    const departmentList = departmentsData?.departments ?? [];
-
-    return [
-      { key: '', value: '전체 부서' },
-      ...departmentList.map((item) => ({
-        key: item.departmentId,
-        value: item.departmentName,
-      })),
-    ];
-  }, [departmentsData]);
 
   const attendanceQueryParams = useMemo(
     (): AttendanceRequestParams => ({
@@ -104,6 +101,16 @@ export default function AttendanceTab() {
             value={selectedDepartment}
             onChange={(dept: string) => {
               setSelectedDepartment(dept);
+              setCurrentPage(1);
+            }}
+          />
+
+          <Dropdown
+            placeholder="전체 상태"
+            items={statusData ?? []}
+            value={selectedPayrollStatus}
+            onChange={(status: string) => {
+              setSelectedPayrollStatus(status);
               setCurrentPage(1);
             }}
           />

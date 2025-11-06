@@ -11,6 +11,7 @@ export interface InventoryResponse {
   warehouseName: string;
   warehouseType: string;
   statusCode: string;
+  shelfNumber?: number;
 }
 
 export interface InventoryQueryParams {

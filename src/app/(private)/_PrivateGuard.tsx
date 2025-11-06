@@ -3,10 +3,10 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { trySilentRefresh } from '@/lib/auth/refresh';
 import { startAuthorization } from '@/lib/auth/startAuthorization';
-import Cookies from 'js-cookie';
 import { useQuery } from '@tanstack/react-query';
 import { getUserInfo } from '../(public)/callback/callback.api';
 import { useAuthStore } from '@/store/authStore';
+import Cookies from 'js-cookie';
 
 export default function PrivateGuard({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
@@ -14,13 +14,12 @@ export default function PrivateGuard({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     (async () => {
-      const token = Cookies.get('access_token');
-      const exp = Number(Cookies.get('access_token_expires_at'));
+      const token = localStorage.getItem('access_token');
+      const exp = Number(localStorage.getItem('access_token_expires_at'));
 
       if (!token || !exp || Date.now() > exp) {
-        Cookies.remove('access_token');
-        Cookies.remove('access_token_expires_at');
-
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('access_token_expires_at');
         try {
           // await trySilentRefresh();
           startAuthorization(window.location.pathname);
@@ -33,6 +32,7 @@ export default function PrivateGuard({ children }: { children: ReactNode }) {
       setReady(true);
     })();
   }, [setReady]);
+
   const { data } = useQuery({
     queryKey: ['userInfo'],
     queryFn: getUserInfo,
@@ -42,6 +42,7 @@ export default function PrivateGuard({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (data) {
       setUserInfo(data);
+      Cookies.set('role', data.userRole.toUpperCase(), { path: '/', sameSite: 'lax' });
     }
   }, [data, setUserInfo]);
 
