@@ -2,11 +2,24 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { MM, SD, IM, FCM, HRM, PP } from '@/lib/role';
 const ACCESS_RULES = [
-  { path: '/dashboard', roles: ['ALL_ADMIN', ...MM, ...HRM, ...FCM, ...IM, ...PP, ...SD] },
-  { path: '/purchase', roles: ['ALL_ADMIN', ...MM, ...SD, ...IM, ...PP] },
-  { path: '/sales', roles: ['ALL_ADMIN', ...MM, ...SD, ...IM, ...PP] },
+  {
+    path: '/dashboard',
+    roles: [
+      'ALL_ADMIN',
+      ...MM,
+      ...HRM,
+      ...FCM,
+      ...IM,
+      ...PP,
+      ...SD,
+      'SUPPLIER_ADMIN',
+      'CUSTOMER_ADMIN',
+    ],
+  },
+  { path: '/purchase', roles: ['ALL_ADMIN', ...MM, ...SD, ...IM, ...PP, 'CUSTOMER_ADMIN'] },
+  { path: '/sales', roles: ['ALL_ADMIN', ...MM, ...SD, ...IM, ...PP, 'SUPPLIER_ADMIN'] },
   { path: '/inventory', roles: ['ALL_ADMIN', ...MM, ...SD, ...IM, ...PP] },
-  { path: '/finance', roles: ['ALL_ADMIN', ...FCM] },
+  { path: '/finance', roles: ['ALL_ADMIN', ...FCM, 'SUPPLIER_ADMIN', 'CUSTOMER_ADMIN'] },
   { path: '/hrm', roles: ['ALL_ADMIN', ...HRM] },
   { path: '/production', roles: ['ALL_ADMIN', ...MM, ...SD, ...IM, ...PP] },
 ];

@@ -9,12 +9,24 @@ const NAV_ITEMS = [
   {
     href: '/dashboard',
     label: '대시보드',
-    roles: ['ALL_ADMIN', ...MM, ...HRM, ...FCM, ...IM, ...PP, ...SD],
+    roles: ['ALL_ADMIN', ...MM, ...HRM, ...FCM, ...IM, ...PP, ...SD, 'CUSTOMER_ADMIN'],
   },
-  { href: '/purchase', label: '구매관리', roles: ['ALL_ADMIN', ...MM, ...SD, ...IM, ...PP] },
-  { href: '/sales', label: '영업관리', roles: ['ALL_ADMIN', ...MM, ...SD, ...IM, ...PP] },
+  {
+    href: '/purchase',
+    label: '구매관리',
+    roles: ['ALL_ADMIN', ...MM, ...SD, ...IM, ...PP, 'CUSTOMER_ADMIN'],
+  },
+  {
+    href: '/sales',
+    label: '영업관리',
+    roles: ['ALL_ADMIN', ...MM, ...SD, ...IM, ...PP, 'SUPPLIER_ADMIN'],
+  },
   { href: '/inventory', label: '재고관리', roles: ['ALL_ADMIN', ...MM, ...SD, ...IM, ...PP] },
-  { href: '/finance', label: '재무관리', roles: ['ALL_ADMIN', ...FCM] },
+  {
+    href: '/finance',
+    label: '재무관리',
+    roles: ['ALL_ADMIN', ...FCM, 'CUSTOMER_ADMIN', 'SUPPLIER_ADMIN'],
+  },
   { href: '/hrm', label: '인적자원관리', roles: ['ALL_ADMIN', ...HRM] },
   { href: '/production', label: '생산관리', roles: ['ALL_ADMIN', ...MM, ...SD, ...IM, ...PP] },
 ] as const;
