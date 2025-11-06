@@ -10,7 +10,7 @@ export default function UnauthorizedPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4 py-12 text-center">
       <div className="max-w-lg w-full rounded-3xl border border-white/10 bg-slate-900/70 backdrop-blur-lg shadow-2xl p-10 space-y-8">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-500/15 text-red-400 text-3xl">
-          <span aria-hidden>🚫</span>
+          <i className="ri-error-warning-line text-3xl text-red-400" aria-hidden="true"></i>
         </div>
         <div className="space-y-3">
           <h1 className="text-3xl font-semibold text-white">접근 권한이 필요합니다</h1>
