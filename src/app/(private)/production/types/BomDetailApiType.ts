@@ -26,6 +26,7 @@ export interface BomLevelStructure {
 
 // 공정(Routing) 정보
 export interface BomRouting {
+  itemName: string;
   sequence: number;
   operationName: string;
   runTime: number; // 단위 시간 (예: 분)

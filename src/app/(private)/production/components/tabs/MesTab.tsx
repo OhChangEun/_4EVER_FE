@@ -18,6 +18,7 @@ import { useModal } from '@/app/components/common/modal/useModal';
 import ProcessDetailModal from '../modals/ProcessDetailModal';
 import { useDropdown } from '@/app/hooks/useDropdown';
 import Pagination from '@/app/components/common/Pagination';
+import IconButton from '@/app/components/common/IconButton';
 
 export default function MesTab() {
   const [selectedMesQuote, setSelectedMesQuote] = useState('');
@@ -195,30 +196,37 @@ export default function MesTab() {
                     key={order.mesId}
                     className="bg-white border border-gray-200/80 rounded-xl p-4 transition duration-200"
                   >
-                    <div className="flex justify-between gap-8">
+                    <div className="min-w-[180px] flex justify-between gap-8">
                       {/* 상단: MES 번호, 제품 정보 및 상태 */}
-                      <div className="flex items-start justify-between ml-1">
-                        <div className="min-w-[180px] space-y-3">
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center ">
                           {getStatusBadge(order.status)}
+                          <IconButton
+                            label="공정 상세 보기"
+                            icon="ri-search-line"
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleShowProcessDetail(order.mesId)}
+                          />
+                        </div>
 
-                          <div className="text-[20px] font-extrabold text-blue-600 rounded-xl mt-3">
-                            {order.quotationNumber}
+                        <div className="text-[22px] font-black text-blue-600 rounded-xl">
+                          {order.quotationNumber}
+                        </div>
+
+                        <div>
+                          <div className="pl-0.5 text-xs text-gray-400">MES 목록</div>
+                          <div className="text-lg font-semibold text-blue-600 rounded-xl">
+                            {order.productName} {order.quantity}
+                            {order.uomName}
                           </div>
+                        </div>
 
-                          <div>
-                            <div className="pl-0.5 text-sm text-gray-400">MES 목록</div>
-                            <div className="text-[18px] font-bold text-blue-600 rounded-xl">
-                              {order.productName} {order.quantity}
-                              {order.uomName}
-                            </div>
-                          </div>
-
-                          <div>
-                            <div className="pl-0.5 text-sm text-gray-400">기간</div>
-                            <div className="items-center gap-1 text-[15px] font-bold text-blue-600">
-                              <div>
-                                {order.startDate} ~ {order.endDate}
-                              </div>
+                        <div>
+                          <div className="pl-0.5 text-[13px] text-gray-400">기간</div>
+                          <div className="items-center gap-1 text-[15px] font-semibold text-blue-600">
+                            <div>
+                              {order.startDate} ~ {order.endDate}
                             </div>
                           </div>
                         </div>

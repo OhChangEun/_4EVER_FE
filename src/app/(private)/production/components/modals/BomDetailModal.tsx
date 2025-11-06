@@ -109,41 +109,31 @@ export default function BomDetailModal({ bomId }: BomDetailModalProps) {
             <h4 className="text-md font-semibold text-gray-900 mb-4">구성품 리스트</h4>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+                <thead className="bg-gray-50 text-center">
                   <tr>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase">
                       품목 코드
                     </th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase">
                       품목명
                     </th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                      수량
-                    </th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                      단위
-                    </th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                      레벨
-                    </th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase">수량</th>
+                    <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase">단위</th>
+                    <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase">레벨</th>
+                    <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase">
                       공급사
-                    </th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                      공정
                     </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {bomDetail.components.map((comp) => (
-                    <tr key={comp.itemId}>
+                    <tr key={comp.itemId} className="text-center">
                       <td className="px-4 py-2 text-sm text-gray-900">{comp.code}</td>
                       <td className="px-4 py-2 text-sm text-gray-900">{comp.name}</td>
                       <td className="px-4 py-2 text-sm text-gray-900">{comp.quantity}</td>
                       <td className="px-4 py-2 text-sm text-gray-900">{comp.unit}</td>
                       <td className="px-4 py-2 text-sm text-gray-900">{comp.level}</td>
                       <td className="px-4 py-2 text-sm text-gray-900">{comp.supplierName}</td>
-                      <td className="px-4 py-2 text-sm text-gray-900">{comp.operationName}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -164,21 +154,25 @@ export default function BomDetailModal({ bomId }: BomDetailModalProps) {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">
                       순서
                     </th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">
+                      품목명
+                    </th>
+                    <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">
                       공정명
                     </th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">
                       가동시간(분)
                     </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {bomDetail.routing.map((routing) => (
-                    <tr key={routing.sequence}>
+                    <tr key={routing.sequence} className="text-center">
                       <td className="px-4 py-2 text-sm text-gray-900">{routing.sequence}</td>
+                      <td className="px-4 py-2 text-sm text-gray-900">{routing.itemName}</td>
                       <td className="px-4 py-2 text-sm text-gray-900">{routing.operationName}</td>
                       <td className="px-4 py-2 text-sm text-gray-900">{routing.runTime}</td>
                     </tr>
