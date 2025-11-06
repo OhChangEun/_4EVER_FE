@@ -114,7 +114,10 @@ export default function CallbackPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-slate-100 flex items-center justify-center px-4">
       <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white shadow-xl shadow-slate-200/60 px-10 py-12 text-center space-y-6">
-        <div className="mx-auto h-16 w-16 rounded-full border-4 border-t-transparent border-red-400 animate-spin" aria-hidden />
+        <div
+          className="mx-auto h-16 w-16 rounded-full border-4 border-t-transparent border-red-400 animate-spin"
+          aria-hidden
+        />
         <div className="space-y-3">
           <h1 className="text-2xl font-semibold text-slate-900">로그인 정보를 확인하고 있어요</h1>
           <p className="text-sm leading-relaxed text-slate-600">
