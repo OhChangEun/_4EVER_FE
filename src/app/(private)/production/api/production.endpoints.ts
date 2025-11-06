@@ -9,9 +9,14 @@ export const PRODUCTION_ENDPOINTS = {
   PRODUCTS_DETAIL: (productId: string) => `${PRODUCTION_BASE_PATH}/products/${productId}`, // 자재 상세 정보(입력 모달 출력용)
 
   // MES 작업 목록
-  MES_WORK_ORDERS: `${PRODUCTION_BASE_PATH}/mes`, // MES 작업 목록 조회
-  MES_WORK_ORDER_DETAIL: (mesId: string) => `${PRODUCTION_BASE_PATH}/mes/${mesId}`, // MES 작업 상세 조회
-  MES_WORK_ORDERS_SUMMARY: `${PRODUCTION_BASE_PATH}/mes/work-orders/summary`, // 생산관리 페이지 카드뷰 데이터 조회
+  MES_LIST: `${PRODUCTION_BASE_PATH}/mes`, // MES 목록 조회
+  MES_WORK_ORDER_DETAIL: (mesId: string) => `${PRODUCTION_BASE_PATH}/mes/${mesId}`, // MES 상세 조회
+  MES_START: (mesId: string) => `${PRODUCTION_BASE_PATH}/mes/${mesId}/start`, // MES 시작
+  MES_COMPLETE: (mesId: string) => `${PRODUCTION_BASE_PATH}/mes/${mesId}/complete`, // MES 완료
+  MES_OPERATION_START: (mesId: string, operationId: string) =>
+    `${PRODUCTION_BASE_PATH}/mes/${mesId}/operations/${operationId}/start`, // 공정 시작
+  MES_OPERATION_COMPLETE: (mesId: string, operationId: string) =>
+    `${PRODUCTION_BASE_PATH}/mes/${mesId}/operations/${operationId}/complete`, // 공정 완료
 
   // MRP 순소요 목록
   MRP_ORDERS: `${PRODUCTION_BASE_PATH}/quotations/mrp`, // MRP 순소요 목록 조회

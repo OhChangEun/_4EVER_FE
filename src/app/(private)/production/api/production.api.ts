@@ -164,24 +164,6 @@ export const fetchQuotationConfirm = async (params: string[]) => {
   return res.data.data;
 };
 
-// --- MES ---
-// MES(Manufacturing Execution System) 작업 목록 조회
-export const fetchMesList = async (params: FetchMesListParams): Promise<MesListResponse> => {
-  const res = await apisssssssss.get<ApiResponse<MesListResponse>>(
-    `${PRODUCTION_ENDPOINTS.MES_WORK_ORDERS}`,
-    { params },
-  );
-  return res.data.data;
-};
-
-// MES 작업 상세 정보 조회
-export const fetchMesDetail = async (mesId: string) => {
-  const res = await apisssssssss.get<ApiResponse<MesDetailResponse>>(
-    `${PRODUCTION_ENDPOINTS.MES_WORK_ORDER_DETAIL(mesId)}`,
-  );
-  return res.data.data;
-};
-
 // --- BOM ---
 // BOM 목록 조회
 export const fetchBomList = async (params: PageRequest): Promise<BomListResponse> => {
@@ -278,4 +260,50 @@ export const postItemsInfo = async (body: string[]): Promise<ItemResponse[]> => 
     },
   );
   return res.data.data;
+};
+
+// --- MES ---
+// MES(Manufacturing Execution System) 작업 목록 조회
+export const fetchMesList = async (params: FetchMesListParams): Promise<MesListResponse> => {
+  const res = await apisssssssss.get<ApiResponse<MesListResponse>>(
+    `${PRODUCTION_ENDPOINTS.MES_LIST}`,
+    { params },
+  );
+  return res.data.data;
+};
+
+// MES 작업 상세 정보 조회
+export const fetchMesDetail = async (mesId: string) => {
+  const res = await apisssssssss.get<ApiResponse<MesDetailResponse>>(
+    `${PRODUCTION_ENDPOINTS.MES_WORK_ORDER_DETAIL(mesId)}`,
+  );
+  return res.data.data;
+};
+
+// MES 시작
+export const startMes = async (mesId: string) => {
+  const res = await apisssssssss.put<ApiResponse<void>>(PRODUCTION_ENDPOINTS.MES_START(mesId));
+  return res.data;
+};
+
+// MES 완료
+export const completeMes = async (mesId: string) => {
+  const res = await apisssssssss.put<ApiResponse<void>>(PRODUCTION_ENDPOINTS.MES_COMPLETE(mesId));
+  return res.data;
+};
+
+// 공정 시작
+export const startMesOperation = async (mesId: string, operationId: string) => {
+  const res = await apisssssssss.put<ApiResponse<void>>(
+    PRODUCTION_ENDPOINTS.MES_OPERATION_START(mesId, operationId),
+  );
+  return res.data;
+};
+
+// 공정 완료
+export const completeMesOperation = async (mesId: string, operationId: string) => {
+  const res = await apisssssssss.put<ApiResponse<void>>(
+    PRODUCTION_ENDPOINTS.MES_OPERATION_COMPLETE(mesId, operationId),
+  );
+  return res.data;
 };
