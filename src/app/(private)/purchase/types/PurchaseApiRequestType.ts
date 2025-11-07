@@ -30,6 +30,7 @@ export interface PurchaseRequestItem {
 export interface StockPurchaseRequestItem {
   productId: string;
   quantity: number;
+  mrpRunId?: string; // 재고관리 쪽에선 안 넣어도 됨
 }
 
 // 서버 전송용 (id 제외)

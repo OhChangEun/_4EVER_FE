@@ -73,10 +73,16 @@ export default function PlannedOrdersTab() {
   const totalPages = pageInfo?.totalPages ?? 1;
 
   const handleSelectAllOrders = () => {
-    if (selectedOrders.length === plannedOrders.length) {
+    // 선택 가능한 주문만 필터링 (INITIAL, REJECTED 제외)
+    const selectableOrders = plannedOrders
+      .filter((order) => order.status === 'INITIAL' || order.status === 'REJECTED')
+      .map((order) => order.mrpRunId);
+
+    // 이미 모두 선택된 경우 해제, 아니면 전체 선택
+    if (selectedOrders.length === selectableOrders.length) {
       setSelectedOrders([]);
     } else {
-      setSelectedOrders(plannedOrders.map((order) => order.mrpRunId));
+      setSelectedOrders(selectableOrders);
     }
   };
 
@@ -87,27 +93,17 @@ export default function PlannedOrdersTab() {
   };
 
   const handlePurchaseRequest = () => {
-    console.log('자재구매 요청:', selectedOrders);
-
-    // 선택된 주문들을 필터링하여 모달에 전달
     const selectedOrdersData = plannedOrders.filter((order) =>
       selectedOrders.includes(order.mrpRunId),
     );
 
-    const itemIds = selectedOrdersData.map((order) => order.itemId);
-    console.log('아이디 목록:', itemIds);
-
-    const referenceQuotes = selectedOrdersData.map((order) => order.quotationNumber);
-
     openModal(MrpPurchaseRequestModal, {
       title: '자재 구매 요청',
-      itemIds: itemIds,
-      referenceQuotes: referenceQuotes,
-      editable: false, // 편집 불가
-      onConfirm: () => setSelectedOrders([]), // 선택 초기화
+      orders: selectedOrdersData, // 전체 데이터를 넘김
+      editable: false,
+      onConfirm: () => setSelectedOrders([]),
     });
   };
-
   return (
     <>
       <div className="p-4 border-b border-gray-200 flex items-center justify-between">
@@ -184,12 +180,20 @@ export default function PlannedOrdersTab() {
               {plannedOrders.map((order) => (
                 <tr key={order.mrpRunId} className="hover:bg-gray-50 text-center">
                   <td className="px-4 py-3">
-                    <input
-                      type="checkbox"
-                      checked={selectedOrders.includes(order.mrpRunId)}
-                      onChange={() => handleOrderSelection(order.mrpRunId)}
-                      className="rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
-                    />
+                    {order.status === 'INITIAL' || order.status === 'REJECTED' ? (
+                      <input
+                        type="checkbox"
+                        checked={selectedOrders.includes(order.mrpRunId)}
+                        onChange={() => handleOrderSelection(order.mrpRunId)}
+                        className="rounded border-gray-300 cursor-pointer"
+                      />
+                    ) : (
+                      <input
+                        type="checkbox"
+                        className="rounded border-gray-300 text-gray-300"
+                        disabled
+                      />
+                    )}
                   </td>
                   <td className="px-4 py-3 text-sm font-medium text-blue-600">
                     {order.quotationNumber}

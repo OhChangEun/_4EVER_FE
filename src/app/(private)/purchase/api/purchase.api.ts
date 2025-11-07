@@ -19,7 +19,6 @@ import {
   FetchPurchaseOrderParams,
   PurchaseReqParams,
   FetchSupplierListParams,
-  PurchaseRequestItemBody,
   PurchaseRequestBody,
   StockPurchaseRequestBody,
 } from '@/app/(private)/purchase/types/PurchaseApiRequestType';
@@ -96,7 +95,7 @@ export const createPurchaseRequest = async (
 // 재고성 구매 요청 등록
 export const createStockPurchaseRequest = async (data: StockPurchaseRequestBody) => {
   const res = await apisssssssss.post<ApiResponse<null>>(
-    `${PURCHASE_ENDPOINTS.STOCK_PURCHASE_REQUISITIONS}?requesterId=123`,
+    `${PURCHASE_ENDPOINTS.STOCK_PURCHASE_REQUISITIONS}?requesterId=internel3`,
     data,
   );
   return res.data;

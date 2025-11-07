@@ -4,25 +4,25 @@ import { ModalProps } from '@/app/components/common/modal/types';
 import { useMutation } from '@tanstack/react-query';
 import { StockPurchaseRequestBody } from '@/app/(private)/purchase/types/PurchaseApiRequestType';
 import { createStockPurchaseRequest } from '@/app/(private)/purchase/api/purchase.api';
-// import { postItemsInfo } from '@/app/(private)/inventory/inventory.api';
-import { ItemResponse } from '@/app/(private)/inventory/types/ItemListType';
 import { postItemsInfo } from '../../api/production.api';
+import { MrpPlannedOrderList } from '../../types/MrpPlannedOrdersListApiType';
+import { ItemResponse } from '@/app/(private)/inventory/types/ItemListType';
 
 interface ItemWithQuantity extends ItemResponse {
   quantity: number;
   totalPrice: number;
+  mrpRunId: string;
+  quotationNumber: string;
 }
 
 interface PurchaseRequestModalProps extends ModalProps {
-  itemIds: string[];
-  referenceQuotes?: string[]; // 각 아이템별 견적서 번호 배열
+  orders: MrpPlannedOrderList[];
   onConfirm: () => void;
   editable?: boolean;
 }
 
 export default function MrpPurchaseRequestModal({
-  itemIds,
-  referenceQuotes,
+  orders,
   onConfirm,
   onClose,
   editable = true,
@@ -30,22 +30,23 @@ export default function MrpPurchaseRequestModal({
   const [editableOrders, setEditableOrders] = useState<ItemWithQuantity[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // itemIds로 상세 정보 조회
+  // 아이템 상세 정보 조회
   const { mutate: fetchItemsInfo } = useMutation({
     mutationFn: (itemIds: string[]) => postItemsInfo(itemIds),
     onSuccess: (data: ItemResponse[]) => {
-      // itemIds 순서에 맞게 데이터 정렬
-      const ordersWithQuantity: ItemWithQuantity[] = itemIds
-        .map((itemId) => {
-          const item = data.find((d) => d.itemId === itemId);
+      const ordersWithQuantity: ItemWithQuantity[] = orders
+        .map((order) => {
+          const item = data.find((d) => d.itemId === order.itemId);
           if (!item) {
-            console.error(`Item not found: ${itemId}`);
+            console.warn(`Item not found: ${order.itemId}`);
             return null;
           }
           return {
             ...item,
-            quantity: parseInt(item.itemNmber) || 0,
-            totalPrice: (parseInt(item.itemNmber) || 0) * item.unitPrice,
+            quantity: order.quantity,
+            totalPrice: order.quantity * item.unitPrice,
+            mrpRunId: order.mrpRunId,
+            quotationNumber: order.quotationNumber,
           };
         })
         .filter((item): item is ItemWithQuantity => item !== null);
@@ -54,13 +55,19 @@ export default function MrpPurchaseRequestModal({
       setIsLoading(false);
     },
     onError: (error) => {
-      console.error('자재 정보 조회 실패: ', error);
+      console.error('자재 정보 조회 실패:', error);
       alert('자재 정보를 불러오는데 실패했습니다.');
       setIsLoading(false);
     },
   });
 
-  // 구매 요청 생성
+  // 컴포넌트 마운트 시 데이터 조회
+  useEffect(() => {
+    const itemIds = orders.map((o) => o.itemId);
+    if (itemIds.length > 0) fetchItemsInfo(itemIds);
+  }, [orders, fetchItemsInfo]);
+
+  // 구매 요청 API
   const { mutate: createStockPurchase, isPending } = useMutation({
     mutationFn: (data: StockPurchaseRequestBody) => createStockPurchaseRequest(data),
     onSuccess: () => {
@@ -69,20 +76,12 @@ export default function MrpPurchaseRequestModal({
       onClose();
     },
     onError: (error) => {
-      console.error('자재 구매 요청 실패: ', error);
+      console.error('자재 구매 요청 실패:', error);
       alert('자재 구매 요청에 실패했습니다.');
     },
   });
 
-  // 컴포넌트 마운트 시 itemIds로 상세 정보 조회
-  useEffect(() => {
-    if (itemIds && itemIds.length > 0) {
-      fetchItemsInfo(itemIds);
-    }
-  }, [itemIds]);
-
-  const totalAmount = editableOrders.reduce((sum, order) => sum + order.totalPrice, 0);
-
+  // 수량 변경 핸들러
   const handleQuantityChange = (index: number, newQuantity: number) => {
     const updatedOrders = [...editableOrders];
     const order = updatedOrders[index];
@@ -94,17 +93,23 @@ export default function MrpPurchaseRequestModal({
     setEditableOrders(updatedOrders);
   };
 
+  // 구매 요청 확정
   const handleConfirm = () => {
     const requestBody: StockPurchaseRequestBody = {
       items: editableOrders.map((order) => ({
         productId: order.itemId,
         quantity: order.quantity,
+        mrpRunId: order.mrpRunId,
       })),
     };
 
     createStockPurchase(requestBody);
   };
 
+  // 총 금액 계산
+  const totalAmount = editableOrders.reduce((sum, order) => sum + order.totalPrice, 0);
+
+  // 로딩 중
   if (isLoading) {
     return (
       <div className="min-w-3xl flex justify-center items-center p-8">
@@ -113,8 +118,10 @@ export default function MrpPurchaseRequestModal({
     );
   }
 
+  // 렌더링
   return (
     <div className="min-w-3xl">
+      {/* 요약 영역 */}
       <div className="space-y-6">
         <div className="bg-blue-50 p-4 rounded-lg">
           <h4 className="font-medium text-blue-900 mb-2">구매 요청 요약</h4>
@@ -134,6 +141,7 @@ export default function MrpPurchaseRequestModal({
           </div>
         </div>
 
+        {/* 테이블 영역 */}
         <div className="overflow-x-auto overflow-y-auto max-h-[252px] rounded shadow-xs">
           <table className="min-w-full divide-y divide-gray-100 border-b border-gray-100">
             <thead className="sticky top-0 z-10 bg-gray-100">
@@ -158,11 +166,11 @@ export default function MrpPurchaseRequestModal({
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-gray-200 text-center">
               {editableOrders.map((order, index) => (
-                <tr key={order.itemId} className="hover:bg-gray-50 text-center">
+                <tr key={order.itemId} className="hover:bg-gray-50">
                   <td className="px-4 py-3 text-sm font-medium text-blue-600">
-                    {referenceQuotes?.[index] || order.itemId}
+                    {order.quotationNumber}
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-900">{order.itemName}</td>
                   <td className="px-4 py-3">
@@ -170,11 +178,9 @@ export default function MrpPurchaseRequestModal({
                       <input
                         type="number"
                         value={order.quantity}
-                        className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
-                        onChange={(e) => {
-                          const newQuantity = parseInt(e.target.value) || 0;
-                          handleQuantityChange(index, newQuantity);
-                        }}
+                        min={0}
+                        className="w-20 px-2 py-1 border border-gray-300 rounded text-sm text-right"
+                        onChange={(e) => handleQuantityChange(index, parseInt(e.target.value) || 0)}
                       />
                     ) : (
                       order.quantity.toLocaleString()
@@ -194,6 +200,7 @@ export default function MrpPurchaseRequestModal({
         </div>
       </div>
 
+      {/* 버튼 영역 */}
       <div className="flex justify-end pt-2 pb-6">
         <Button label="구매 요청 확정" onClick={handleConfirm} disabled={isPending} />
       </div>
