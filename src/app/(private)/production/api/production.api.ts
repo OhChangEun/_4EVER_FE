@@ -40,76 +40,6 @@ export const fetchProductionStats = async (): Promise<ProductionStatResponse | n
   }
 };
 
-// --- 드롭다운 조회 ---
-// mps 제품 드롭다운
-export const fetchMpsBomDropdown = async (): Promise<KeyValueItem[]> => {
-  const res = await apisssssssss.get<ApiResponse<KeyValueItem[]>>(
-    `${PRODUCTION_ENDPOINTS.MPS_TOGGLE_PRODUCTS}`,
-  );
-  return res.data.data;
-};
-
-export const fetchProductDropdown = async (): Promise<KeyValueItem[]> => {
-  const res = await apisssssssss.get<ApiResponse<KeyValueItem[]>>(
-    `${PRODUCTION_ENDPOINTS.PRODUCTS}`,
-  );
-  return res.data.data;
-};
-
-export const fetchAvailableStatusDropdown = async (): Promise<KeyValueItem[]> => {
-  const res = await apisssssssss.get<ApiResponse<KeyValueItem[]>>(
-    `${PRODUCTION_ENDPOINTS.AVAILABLE_STATUS_DROPDOWN}`,
-  );
-  return res.data.data;
-};
-
-export const fetchQuotationStatusDropdown = async (): Promise<KeyValueItem[]> => {
-  const res = await apisssssssss.get<ApiResponse<KeyValueItem[]>>(
-    `${PRODUCTION_ENDPOINTS.QUOTATION_STATUS_DROPDOWN}`,
-  );
-  return res.data.data;
-};
-
-// mrp 순소요 - 견적 드롭다운
-export const fetchMrpQuotationsDropdown = async (): Promise<KeyValueItem[]> => {
-  const res = await apisssssssss.get<ApiResponse<KeyValueItem[]>>(
-    `${PRODUCTION_ENDPOINTS.MRP_QUOTATION_DROPDOWN}`,
-  );
-  return res.data.data;
-};
-
-// mrp 순소요 - 가용 재고 상태 드롭다운
-export const fetchMrpAvailableStatusDropdown = async (): Promise<KeyValueItem[]> => {
-  const res = await apisssssssss.get<ApiResponse<KeyValueItem[]>>(
-    `${PRODUCTION_ENDPOINTS.MRP_AVAILABLE_STATUS_DROPDOWN}`,
-  );
-  return res.data.data;
-};
-// export const fetchMrpPlannedOrderStatus = async (): Promise<MpsDropdownResponse> => {
-//   const res = await apisssssssss.get<ApiResponse<MpsDropdownResponse>>(
-//     `${PRODUCTION_ENDPOINTS.MRP_PLANNED_ORDER_STATUS_CODES}`,
-//   );
-//   return res.data.data;
-// };
-// export const fetchMrpProducts = async (): Promise<MpsDropdownResponse> => {
-//   const res = await apisssssssss.get<ApiResponse<MpsDropdownResponse>>(
-//     `${PRODUCTION_ENDPOINTS.MRP_TOGGLE_PRODUCTS}`,
-//   );
-//   return res.data.data;
-// };
-// export const fetchMrpQuotations = async (): Promise<MpsDropdownResponse> => {
-//   const res = await apisssssssss.get<ApiResponse<MpsDropdownResponse>>(
-//     `${PRODUCTION_ENDPOINTS.MRP_TOGGLE_QUOTATIONS}`,
-//   );
-//   return res.data.data;
-// };
-// export const fetchMrpStatus = async (): Promise<MpsDropdownResponse> => {
-//   const res = await apisssssssss.get<ApiResponse<MpsDropdownResponse>>(
-//     `${PRODUCTION_ENDPOINTS.MRP_TOGGLE_STATUS_CODES}`,
-//   );
-//   return res.data.data;
-// };
-
 // --- 견적 ---
 // 견적 목록 조회
 export const fetchQuotationList = async (
@@ -306,4 +236,74 @@ export const completeMesOperation = async (mesId: string, operationId: string) =
     PRODUCTION_ENDPOINTS.MES_OPERATION_COMPLETE(mesId, operationId),
   );
   return res.data;
+};
+
+// --- 드롭다운 조회 ---
+// mps 제품 드롭다운
+export const fetchMpsBomDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await apisssssssss.get<ApiResponse<KeyValueItem[]>>(
+    `${PRODUCTION_ENDPOINTS.MPS_TOGGLE_PRODUCTS}`,
+  );
+  return res.data.data;
+};
+
+export const fetchProductDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await apisssssssss.get<ApiResponse<KeyValueItem[]>>(
+    `${PRODUCTION_ENDPOINTS.PRODUCTS}`,
+  );
+  return res.data.data;
+};
+
+export const fetchAvailableStatusDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await apisssssssss.get<ApiResponse<KeyValueItem[]>>(
+    `${PRODUCTION_ENDPOINTS.AVAILABLE_STATUS_DROPDOWN}`,
+  );
+  return res.data.data;
+};
+
+export const fetchQuotationStatusDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await apisssssssss.get<ApiResponse<KeyValueItem[]>>(
+    `${PRODUCTION_ENDPOINTS.QUOTATION_STATUS_DROPDOWN}`,
+  );
+  return res.data.data;
+};
+
+// mrp 순소요 - 견적 드롭다운
+export const fetchMrpQuotationsDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await apisssssssss.get<ApiResponse<KeyValueItem[]>>(
+    `${PRODUCTION_ENDPOINTS.MRP_QUOTATION_DROPDOWN}`,
+  );
+  return res.data.data;
+};
+
+// mrp 순소요 - 가용 재고 상태 드롭다운
+export const fetchMrpAvailableStatusDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await apisssssssss.get<ApiResponse<KeyValueItem[]>>(
+    `${PRODUCTION_ENDPOINTS.MRP_AVAILABLE_STATUS_DROPDOWN}`,
+  );
+  return res.data.data;
+};
+
+// mrp 계획 주문 -견적 드롭다운
+export const fetchMrpPlannedOrderQuotationsDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await apisssssssss.get<ApiResponse<KeyValueItem[]>>(
+    `${PRODUCTION_ENDPOINTS.MRP_RUNS_QUOTATIONS_DROPDOWN}`,
+  );
+  return res.data.data;
+};
+
+// mrp 계획 주문 - 상태 드롭다운
+export const fetchMrpPlannedOrderStatusDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await apisssssssss.get<ApiResponse<KeyValueItem[]>>(
+    `${PRODUCTION_ENDPOINTS.MRP_RUNS_STATUS_DROPDOWN}`,
+  );
+  return res.data.data;
+};
+
+// mes 상태 드롭다운
+export const fetchMesStatusDropdown = async (): Promise<KeyValueItem[]> => {
+  const res = await apisssssssss.get<ApiResponse<KeyValueItem[]>>(
+    `${PRODUCTION_ENDPOINTS.MES_STATUS_DROPDOWN}`,
+  );
+  return res.data.data;
 };

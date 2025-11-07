@@ -4,7 +4,11 @@ import Button from '@/app/components/common/Button';
 import Dropdown from '@/app/components/common/Dropdown';
 import { MrpPlannedOrderStatus } from '@/app/(private)/production/constants';
 import { useQuery } from '@tanstack/react-query';
-import { fetchMrpPlannedOrdersList } from '@/app/(private)/production/api/production.api';
+import {
+  fetchMrpPlannedOrderQuotationsDropdown,
+  fetchMrpPlannedOrdersList,
+  fetchMrpPlannedOrderStatusDropdown,
+} from '@/app/(private)/production/api/production.api';
 import {
   FetchMrpPlannedOrdersListParams,
   MrpPlannedOrdersListResponse,
@@ -14,19 +18,25 @@ import Pagination from '@/app/components/common/Pagination';
 import { useModal } from '@/app/components/common/modal/useModal';
 import MrpPurchaseRequestModal from '@/app/(private)/production/components/modals/MrpPurchaseRequestModal';
 import { useDropdown } from '@/app/hooks/useDropdown';
-import { fetchPurchaseRequisitionStatusDropdown } from '@/app/(private)/purchase/api/purchase.api';
 
 export default function PlannedOrdersTab() {
   const { openModal } = useModal();
 
-  // mrp 계획주문 - 상태 드롭다운(구매 쪽이랑 같음)
+  // mrp 계획주문 견적 드롭다운
   const { options: mrpQuotationOptions } = useDropdown(
-    'purchaseRequisitionStatusDropdown',
-    fetchPurchaseRequisitionStatusDropdown,
+    'mrpPlannedOrderQuotationsDropdown',
+    fetchMrpPlannedOrderQuotationsDropdown,
+  );
+
+  // mrp 계획주문 상태 드롭다운
+  const { options: mrpStatusOptions } = useDropdown(
+    'mrpPlannedOrderStatusDropdown',
+    fetchMrpPlannedOrderStatusDropdown,
   );
 
   // 드롭다운 상태
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
+  const [selectedQutations, setSelectedQutations] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<MrpPlannedOrderStatus>('ALL');
 
   // 페이지네이션 상태
@@ -37,10 +47,11 @@ export default function PlannedOrdersTab() {
   const queryParams = useMemo(
     (): FetchMrpPlannedOrdersListParams => ({
       status: selectedStatus,
+      quotationId: selectedQutations,
       page: currentPage - 1,
       size: pageSize,
     }),
-    [selectedStatus, currentPage],
+    [selectedStatus, selectedQutations, currentPage],
   );
 
   // API 호출
@@ -105,8 +116,17 @@ export default function PlannedOrdersTab() {
         </h4>
         <div className="flex items-center gap-3">
           <Dropdown
-            placeholder="전체 상태"
+            placeholder="견적 선택"
             items={mrpQuotationOptions}
+            value={selectedQutations}
+            onChange={(quotation: string) => {
+              setSelectedQutations(quotation);
+              setCurrentPage(1);
+            }}
+          />
+          <Dropdown
+            placeholder="전체 상태"
+            items={mrpStatusOptions}
             value={selectedStatus}
             onChange={(status: MrpPlannedOrderStatus) => {
               setSelectedStatus(status);

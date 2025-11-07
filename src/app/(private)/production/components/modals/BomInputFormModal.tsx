@@ -137,14 +137,7 @@ interface SortableRowProps {
   onRemove: (id: string) => void;
 }
 
-function SortableRow({
-  item,
-  materialOptions,
-  // operationOptions,
-  onMaterialChange,
-  onItemChange,
-  onRemove,
-}: SortableRowProps) {
+function SortableRow({ item, onMaterialChange, onItemChange, onRemove }: SortableRowProps) {
   const { options: productsOptions } = useDropdown('productsDropdown', fetchProductDropdown);
   const { options: operationOptions } = useDropdown('operationsDropdown', fetchOperationDropdown);
 
@@ -260,6 +253,7 @@ function SortableRow({
       <td className="px-3 py-2">
         <IconButton
           type="button"
+          variant="secondary"
           icon="ri-delete-bin-line"
           size="sm"
           onClick={() => onRemove(item.id)}

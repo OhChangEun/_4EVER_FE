@@ -42,14 +42,14 @@ export const PRODUCTION_ENDPOINTS = {
   MPS_TOGGLE_PRODUCTS: `${PRODUCTION_BASE_PATH}/mps/boms/toggle`,
   OPERATIONS_DROPDOWN: `${PRODUCTION_BASE_PATH}/operations`,
 
-  MRP_PLANNED_ORDER_STATUS_CODES: `${PRODUCTION_BASE_PATH}/mrp/toggle/planned-order-list-status-codes`, // MRP 계획 주문 상태 코드 목록
-  MRP_TOGGLE_PRODUCTS: `${PRODUCTION_BASE_PATH}/mrp/toggle/products`, // MRP 제품 토글 목록
-  MRP_TOGGLE_QUOTATIONS: `${PRODUCTION_BASE_PATH}/mrp/toggle/quotations`, // MRP 견적 토글 목록
-  MRP_TOGGLE_STATUS_CODES: `${PRODUCTION_BASE_PATH}/mrp/toggle/status-codes`, // MRP 가능 상태 코드 목록
   PRODUCTS: `${PRODUCTION_BASE_PATH}/products`, // 자재 드롭다운
   AVAILABLE_STATUS_DROPDOWN: `${PRODUCTION_BASE_PATH}/available/status/toggle`, // 가용재고 상태 드롭다운
   QUOTATION_STATUS_DROPDOWN: `${PRODUCTION_BASE_PATH}/status/toggle`, // 견적 상태 드롭다운
 
   MRP_QUOTATION_DROPDOWN: `${PRODUCTION_BASE_PATH}/mrp/quotations/toggle`, // 견적 드롭다운
   MRP_AVAILABLE_STATUS_DROPDOWN: `${PRODUCTION_BASE_PATH}/mrp/available/status/toggle`, // 견적 드롭다운
+
+  MRP_RUNS_QUOTATIONS_DROPDOWN: `${PRODUCTION_BASE_PATH}/mrp/runs/quotations/toggle`, // MRP 계획주문 견적 드롭다운
+  MRP_RUNS_STATUS_DROPDOWN: `${PRODUCTION_BASE_PATH}/mrp/runs/status/toggle`, // MRP 계획주문 상태 드롭다운
+  MES_STATUS_DROPDOWN: `${PRODUCTION_BASE_PATH}/mes/status/toggle`, // MES 상태 드롭다운
 };

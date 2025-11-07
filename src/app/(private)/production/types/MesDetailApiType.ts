@@ -4,6 +4,7 @@ export interface MesOperationManagerData {
 }
 
 export interface MesOperationData {
+  mesOperationLogId: string;
   operationNumber: string;
   operationName: string;
   sequence: number;
@@ -12,6 +13,8 @@ export interface MesOperationData {
   finishedAt: string;
   durationHours: number;
   manager: MesOperationManagerData;
+  canStart: boolean;
+  canComplete: boolean;
 }
 
 export interface MesPlanData {
@@ -31,4 +34,6 @@ export interface MesDetailResponse {
   plan: MesPlanData;
   currentOperation: string;
   operations: MesOperationData[];
+  canStartMes: boolean;
+  canCompleteMes: boolean;
 }

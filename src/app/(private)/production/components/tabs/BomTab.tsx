@@ -11,6 +11,7 @@ import BomInputFormModal from '../modals/BomInputFormModal';
 import Pagination from '@/app/components/common/Pagination';
 import { useMemo, useState } from 'react';
 import { PageRequest } from '@/app/types/Page';
+import Button from '@/app/components/common/Button';
 
 export default function BomTab() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -74,22 +75,22 @@ export default function BomTab() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   제품 정보
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   BOM 번호
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   버전
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   상태
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   최종 수정일
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   작업
                 </th>
               </tr>
@@ -97,7 +98,7 @@ export default function BomTab() {
             <tbody className="bg-white divide-y divide-gray-200">
               {bomList.length > 0 ? (
                 bomList.map((bom) => (
-                  <tr key={bom.bomId} className="hover:bg-gray-50">
+                  <tr key={bom.bomId} className="hover:bg-gray-50 text-center">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
                         <div className="text-sm font-medium text-gray-900">{bom.productName}</div>
@@ -114,19 +115,14 @@ export default function BomTab() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {bom.lastModifiedAt}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                      <button
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <Button
+                        label="상세보기"
+                        variant="ghost"
+                        size="sm"
                         onClick={() => handleViewDetail(bom.bomId)}
-                        className="text-blue-600 hover:text-blue-900 cursor-pointer"
-                      >
-                        상세보기
-                      </button>
-                      <button
-                        onClick={() => handleEdit()}
-                        className="text-green-600 hover:text-green-900 cursor-pointer"
-                      >
-                        수정
-                      </button>
+                      />
+                      <Button label="수정" variant="ghost" size="sm" onClick={() => handleEdit()} />
                     </td>
                   </tr>
                 ))

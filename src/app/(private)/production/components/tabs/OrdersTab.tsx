@@ -206,7 +206,7 @@ export default function OrdersTab() {
                   자재 유형
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  조달 시작일
+                  구매 권장일
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   예상 도착일
@@ -214,13 +214,16 @@ export default function OrdersTab() {
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   공급사
                 </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  전환 상태
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {orderItems.map((item) => (
                 <tr key={item.itemId} className="hover:bg-gray-50">
                   <td className="px-4 py-3">
-                    {item.availableStatusCode === 'SUFFICIENT' ? (
+                    {item.convertStatus !== 'NOT_CONVERTED' ? (
                       <input
                         type="checkbox"
                         disabled
@@ -264,6 +267,9 @@ export default function OrdersTab() {
                     {item.expectedArrivalDate || '-'}
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-900">{item.supplierCompanyName}</td>
+                  <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                    {item.convertStatus}
+                  </td>
                 </tr>
               ))}
             </tbody>

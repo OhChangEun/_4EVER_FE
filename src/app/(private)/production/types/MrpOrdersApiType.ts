@@ -17,6 +17,7 @@ export interface MrpOrdersListData {
   procurementStartDate: string;
   expectedArrivalDate: string;
   supplierCompanyName: string;
+  convertStatus: string;
 }
 
 // MRP 순소요 목록 최상위 응답 타입

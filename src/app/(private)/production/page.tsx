@@ -5,21 +5,20 @@ import { dehydrate } from '@tanstack/react-query';
 import { PRODUCTION_TABS } from '@/app/(private)/production/constants';
 import StatSection from '@/app/components/common/StatSection';
 import {
-  fetchAvailableStatusDropdown,
+  fetchMesStatusDropdown,
   fetchMpsBomDropdown,
   fetchMrpAvailableStatusDropdown,
+  fetchMrpPlannedOrderQuotationsDropdown,
+  fetchMrpPlannedOrderStatusDropdown,
   fetchMrpQuotationsDropdown,
   fetchOperationDropdown,
-  fetchProductDropdown,
   fetchProductionStats,
   fetchQuotationList,
-  fetchQuotationStatusDropdown,
 } from '@/app/(private)/production/api/production.api';
 import ErrorMessage from '@/app/components/common/ErrorMessage';
 import { mapProductionStatsToCards } from '@/app/(private)/production/services/production.service';
 import Providers from '@/app/providers';
 import { FetchQuotationParams } from '@/app/(private)/production/types/QuotationApiType';
-import { fetchPurchaseRequisitionStatusDropdown } from '../purchase/api/purchase.api';
 
 export default async function ProductionPage() {
   const queryClient = getQueryClient();
@@ -42,26 +41,26 @@ export default async function ProductionPage() {
     }),
 
     // --- 드롭 다운 prefetch ---
-    // 가용재고 상태 드롭다운
-    queryClient.prefetchQuery({
-      queryKey: ['availableStatusDropdown'],
-      queryFn: fetchAvailableStatusDropdown,
-    }),
-    // 상태 드롭다운
-    queryClient.prefetchQuery({
-      queryKey: ['quotationsStatusDropdown'],
-      queryFn: fetchQuotationStatusDropdown,
-    }),
+    // // 가용재고 상태 드롭다운
+    // queryClient.prefetchQuery({
+    //   queryKey: ['availableStatusDropdown'],
+    //   queryFn: fetchAvailableStatusDropdown,
+    // }),
+    // // 견적 상태 드롭다운
+    // queryClient.prefetchQuery({
+    //   queryKey: ['quotationsStatusDropdown'],
+    //   queryFn: fetchQuotationStatusDropdown,
+    // }),
     // MPS 제품 드롭다운 prefetch
     queryClient.prefetchQuery({
       queryKey: ['mpsBomsDropdown'],
       queryFn: fetchMpsBomDropdown,
     }),
-    // 자재 드롭다운
-    queryClient.prefetchQuery({
-      queryKey: ['productsDropdown'],
-      queryFn: fetchProductDropdown,
-    }),
+    // // 자재 드롭다운
+    // queryClient.prefetchQuery({
+    //   queryKey: ['productsDropdown'],
+    //   queryFn: fetchProductDropdown,
+    // }),
 
     // 공정 드롭다운
     queryClient.prefetchQuery({
@@ -81,10 +80,22 @@ export default async function ProductionPage() {
       queryFn: fetchMrpAvailableStatusDropdown,
     }),
 
-    // mrp 계획주문 - 상태 드롭다운(구매 쪽이랑 같음)
+    // mrp 계획주문 - 견적 드롭다운
     queryClient.prefetchQuery({
-      queryKey: ['purchaseRequisitionStatusDropdown'],
-      queryFn: fetchPurchaseRequisitionStatusDropdown,
+      queryKey: ['mrpPlannedOrderQuotationsDropdown'],
+      queryFn: fetchMrpPlannedOrderQuotationsDropdown,
+    }),
+
+    // mrp 계획주문 - 상태 드롭다운
+    queryClient.prefetchQuery({
+      queryKey: ['mrpPlannedOrderStatusDropdown'],
+      queryFn: fetchMrpPlannedOrderStatusDropdown,
+    }),
+
+    // mes 상태 드롭다운
+    queryClient.prefetchQuery({
+      queryKey: ['mesStatusDropdown'],
+      queryFn: fetchMesStatusDropdown,
     }),
   ]);
 

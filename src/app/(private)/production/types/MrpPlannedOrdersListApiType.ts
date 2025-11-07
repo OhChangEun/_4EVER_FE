@@ -20,4 +20,5 @@ export interface MrpPlannedOrdersListResponse {
 
 export interface FetchMrpPlannedOrdersListParams extends PageRequest {
   status?: string;
+  quotationId?: string;
 }

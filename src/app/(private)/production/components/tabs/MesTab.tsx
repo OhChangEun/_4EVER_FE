@@ -7,13 +7,12 @@ import {
   MesSummaryItem,
 } from '@/app/(private)/production/types/MesListApiType';
 import Dropdown from '@/app/components/common/Dropdown';
-import {
-  MES_STATUS_OPTIONS,
-  MES_QUOTE_OPTIONS,
-  MesStatusCode,
-} from '@/app/(private)/production/constants';
 import { useQuery } from '@tanstack/react-query';
-import { fetchMesList, fetchMrpQuotationsDropdown } from '../../api/production.api';
+import {
+  fetchMesList,
+  fetchMesStatusDropdown,
+  fetchMrpQuotationsDropdown,
+} from '../../api/production.api';
 import { useModal } from '@/app/components/common/modal/useModal';
 import ProcessDetailModal from '../modals/ProcessDetailModal';
 import { useDropdown } from '@/app/hooks/useDropdown';
@@ -22,7 +21,7 @@ import IconButton from '@/app/components/common/IconButton';
 
 export default function MesTab() {
   const [selectedMesQuote, setSelectedMesQuote] = useState('');
-  const [selectedMesStatus, setSelectedMesStatus] = useState<MesStatusCode>('ALL');
+  const [selectedMesStatus, setSelectedMesStatus] = useState('');
 
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
@@ -33,6 +32,8 @@ export default function MesTab() {
     'mrpQuotationsDropdown',
     fetchMrpQuotationsDropdown,
   );
+
+  const { options: mesStatusOptions } = useDropdown('mesStatusDropdown', fetchMesStatusDropdown);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const currentStepRef = useRef<HTMLDivElement>(null);
@@ -82,14 +83,13 @@ export default function MesTab() {
     openModal(ProcessDetailModal, { title: 'MES 현황', mesId: mesId });
   };
 
-  // 공정 상태 아이콘 및 크기 결정
   const getOperationStatus = (
     operationIndex: number,
     currentOperationNumber: number,
     status: string,
   ) => {
-    // PLANNED 상태면 모두 회색
-    if (status === 'PENDINGs') {
+    // 모든 공정이 아직 시작 전일 때 (대기 상태)
+    if (status === 'PLANNED' || status === 'PENDING') {
       return {
         icon: 'ri-circle-fill',
         class: 'text-gray-300',
@@ -103,9 +103,9 @@ export default function MesTab() {
     // 현재 진행 중인 공정
     if (operationNum === currentOperationNumber) {
       return {
-        icon: 'ri-circle-fill',
+        icon: 'ri-play-circle-fill',
         class: 'text-blue-600',
-        size: 'text-[14px]', // 현재 공정: 큰 크기
+        size: 'text-[16px]',
         lineClass: 'bg-blue-500',
       };
     }
@@ -113,10 +113,10 @@ export default function MesTab() {
     // 완료된 공정 (현재보다 이전)
     if (operationNum < currentOperationNumber) {
       return {
-        icon: 'ri-circle-fill',
-        class: 'text-blue-600',
-        size: 'text-[10px]', // 완료된 공정: 작은 크기
-        lineClass: 'bg-blue-500',
+        icon: 'ri-checkbox-circle-fill',
+        class: 'text-blue-400',
+        size: 'text-[13px]',
+        lineClass: 'bg-blue-400',
       };
     }
 
@@ -151,7 +151,7 @@ export default function MesTab() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-gray-900">제조실행시스템 (MES) 현황 🏭</h2>
+        <h2 className="text-xl font-bold text-gray-900">제조실행시스템 (MES) 현황</h2>
         <div className="flex gap-3 justify-end">
           <Dropdown
             placeholder="견적 선택"
@@ -165,9 +165,9 @@ export default function MesTab() {
           />
           <Dropdown
             placeholder="전체 상태"
-            items={MES_STATUS_OPTIONS}
+            items={mesStatusOptions}
             value={selectedMesStatus}
-            onChange={(status: MesStatusCode) => {
+            onChange={(status: string) => {
               setSelectedMesStatus(status);
             }}
           />
@@ -273,7 +273,7 @@ export default function MesTab() {
                                       className={`text-xs ${
                                         index + 1 === currentOpNum
                                           ? 'text-blue-600 font-bold'
-                                          : index + 1 < currentOpNum && order.status !== 'PENDINGS'
+                                          : index + 1 < currentOpNum && order.status !== 'PENDING'
                                             ? 'text-blue-600 font-medium'
                                             : 'text-gray-400'
                                       }`}
@@ -289,7 +289,7 @@ export default function MesTab() {
                           {/* 진행률 바 */}
                           <div className="flex-1 ml-10 p-2 pb-8">
                             <div>
-                              <div className="flex items-center justify-end mb-2">
+                              <div className="flex items-center justify-end mb-0.5">
                                 <span className="text-lg font-bold text-blue-600">
                                   {order.progressRate}%
                                 </span>
@@ -298,13 +298,7 @@ export default function MesTab() {
                                 <div
                                   className="bg-gradient-to-r from-blue-400 to-blue-600 h-12 rounded-sm transition-all duration-700 ease-out flex items-center justify-end"
                                   style={{ width: `${order.progressRate}` }}
-                                >
-                                  {order.progressRate > 10 && (
-                                    <span className="text-xs font-semibold text-white">
-                                      {order.progressRate}%
-                                    </span>
-                                  )}
-                                </div>
+                                ></div>
                               </div>
                             </div>
                           </div>
