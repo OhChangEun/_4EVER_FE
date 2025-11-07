@@ -24,7 +24,6 @@ import {
 } from '@/app/(private)/purchase/types/PurchaseApiRequestType';
 import { PURCHASE_ENDPOINTS } from '@/app/(private)/purchase/api/purchase.endpoints';
 import { KeyValueItem } from '@/app/types/CommonType';
-import { apisssssssss } from '../../production/api/api';
 
 // 구매 관리 지표
 export const fetchPurchaseStats = async (): Promise<PurchaseStatResponse | null> => {
@@ -94,7 +93,7 @@ export const createPurchaseRequest = async (
 
 // 재고성 구매 요청 등록
 export const createStockPurchaseRequest = async (data: StockPurchaseRequestBody) => {
-  const res = await apisssssssss.post<ApiResponse<null>>(
+  const res = await axios.post<ApiResponse<null>>(
     `${PURCHASE_ENDPOINTS.STOCK_PURCHASE_REQUISITIONS}?requesterId=internel3`,
     data,
   );
