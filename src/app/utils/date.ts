@@ -33,8 +33,8 @@ export const formatDateTime = (isoString: string): string => {
 };
 
 // Date → YYYY-MM-DD
-export const formatDate = (date: Date): string => {
-  if (!date || isNaN(date.getTime())) return '';
+export const formatDate = (date: Date | null): string | null => {
+  if (!date || isNaN(date.getTime())) return null;
   return date.toISOString().split('T')[0];
 };
 
