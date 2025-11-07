@@ -33,16 +33,15 @@ export const formatDateTime = (isoString: string): string => {
 };
 
 // Date → YYYY-MM-DD
-export const formatDate = (date: Date | null): string | null => {
-  if (!date || isNaN(date.getTime())) return null;
+export const formatDate = (date: Date): string => {
+  if (!date || isNaN(date.getTime())) return '';
   return date.toISOString().split('T')[0];
 };
 
 // YYYY-MM-DD → ISO
 export const toISOString = (dateStr: string): string => {
   const date = new Date(dateStr);
-  if (isNaN(date.getTime())) {
-    throw new Error(`Invalid date STRING: ${dateStr}`);
-  }
+  if (isNaN(date.getTime())) return '';
+
   return date.toISOString();
 };

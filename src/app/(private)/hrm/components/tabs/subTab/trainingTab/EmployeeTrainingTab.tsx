@@ -13,10 +13,13 @@ import React, { useState, useMemo } from 'react';
 import TrainingDetailModal from '@/app/(private)/hrm/components/modals/TrainingDetailModal';
 import AddEmployeeTrainingModal from '@/app/(private)/hrm/components/modals/AddEmployeeTrainingModal';
 import { useDropdown } from '@/app/hooks/useDropdown';
+import Input from '@/app/components/common/Input';
+import { useDebouncedKeyword } from '@/app/hooks/useDebouncedKeyword';
 
 export default function EmployeeTrainingTab() {
   // --- 모달 출력 ---
   const { openModal } = useModal();
+  const { keyword, handleKeywordChange, debouncedKeyword } = useDebouncedKeyword();
 
   // 부서 드롭다운
   const { options: departmentsOptions } = useDropdown(
@@ -32,15 +35,14 @@ export default function EmployeeTrainingTab() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  const [employeeSearchTerm, setEmployeeSearchTerm] = useState('');
-
   const trainingQueryParams = useMemo(
     (): TrainingRequestParams => ({
       department: selectedDepartment || undefined,
+      name: debouncedKeyword,
       page: currentPage - 1,
       size: pageSize,
     }),
-    [selectedDepartment, currentPage],
+    [selectedDepartment, debouncedKeyword, currentPage],
   );
 
   const {
@@ -90,20 +92,12 @@ export default function EmployeeTrainingTab() {
             }}
           />
 
-          {/* 직원 이름 검색 */}
-          <div className="relative flex-1 max-w-xs">
-            <input
-              type="text"
-              placeholder="직원 이름 검색..."
-              value={employeeSearchTerm}
-              onChange={(e) => {
-                setEmployeeSearchTerm(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-            <i className="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-          </div>
+          <Input
+            value={keyword}
+            onChange={handleKeywordChange}
+            icon="ri-search-line"
+            placeholder="직원 이름 검색"
+          />
         </div>
       </div>
 
