@@ -1,3 +1,5 @@
+'use client';
+
 import {
   autoUpdate,
   flip,
@@ -10,22 +12,26 @@ import {
   useFloating,
   useInteractions,
 } from '@floating-ui/react';
-import NotificationHeader from './NotificationHeader';
-import NotificationPagination from './NotificationPagination';
 import { useState } from 'react';
-import NotificationList from './NotificationList';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   fetchNotifications,
   readAllNotifications,
   readNotification,
 } from '@/lib/api/notification.api';
+import NotificationHeader from './NotificationHeader';
+import NotificationPagination from './NotificationPagination';
+import NotificationList from './NotificationList';
+import { useNotificationSSE } from './useNotificationSSE';
 
-// 메인 컴포넌트
 export default function NotificationDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
+  const [sseUnreadCount, setSseUnreadCount] = useState<number | null>(null);
   const ITEMS_PER_PAGE = 3;
+
+  // TODO: 실제 userId로 교체 필요
+  const userId = '019a2581-dd40-7cc8-b450-39df10062ec0';
 
   const { refs, floatingStyles, context } = useFloating({
     open: isOpen,
@@ -39,6 +45,9 @@ export default function NotificationDropdown() {
   const dismiss = useDismiss(context);
   const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss]);
 
+  const queryClient = useQueryClient();
+
+  // 알림 목록 조회
   const {
     data: notificationData,
     isLoading,
@@ -48,7 +57,18 @@ export default function NotificationDropdown() {
     queryFn: fetchNotifications,
   });
 
-  const queryClient = useQueryClient();
+  // SSE 연결 (실시간 알림)
+  useNotificationSSE({
+    userId,
+    enabled: true,
+    onAlarm: (alarm) => {
+      console.log('New alarm received:', alarm);
+      // 토스트 알림 등 추가 처리 가능
+    },
+    onUnreadCountChange: (count) => {
+      setSseUnreadCount(count);
+    },
+  });
 
   // 알림 전체 읽기
   const { mutate: readAll } = useMutation({
@@ -67,9 +87,12 @@ export default function NotificationDropdown() {
     },
   });
 
-  // 알림 데이터 처리
   const notifications = notificationData?.items ?? [];
   const pageInfo = notificationData?.page;
+
+  // 읽지 않은 알림 개수 (SSE가 우선, 없으면 로컬 계산)
+  const unreadCount =
+    sseUnreadCount !== null ? sseUnreadCount : notifications.filter((n) => !n.isRead).length;
 
   const handleReadAll = () => {
     readAll();
@@ -83,9 +106,6 @@ export default function NotificationDropdown() {
     setCurrentPage(pageNumber);
   };
 
-  // 읽지 않은 알림 개수
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
-
   return (
     <>
       <button
@@ -96,7 +116,7 @@ export default function NotificationDropdown() {
       >
         <i className="ri-notification-3-line text-xl"></i>
         {unreadCount > 0 && (
-          <span className="absolute top-0.5 right-0.5 w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></span>
+          <span className="absolute top-0.5 right-0.5 w-2 h-2 bg-blue-300 rounded-full flex-shrink-0"></span>
         )}
       </button>
 

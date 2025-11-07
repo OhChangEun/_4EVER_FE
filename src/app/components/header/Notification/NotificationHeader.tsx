@@ -9,11 +9,11 @@ export default function NotificationHeader({
   onReadAll,
 }: NotificationHeaderProps) {
   return (
-    <div className="px-6 py-3 border-b border-gray-200">
+    <div className="px-5 py-3 border-b border-gray-200">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <i className="ri-notification-3-fill pt-1 text-blue-500 text-lg"></i>
-          <h3 className="pt-1.5 text-base font-bold text-gray-900">알림</h3>
+          <i className="pt-0.5 ri-notification-3-fill text-blue-300"></i>
+          <h3 className="text-sm font-bold text-gray-700">알림</h3>
         </div>
         {notificationCount > 0 && (
           <button

@@ -2,23 +2,26 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { UserProps } from '@/app/components/header/types/UserType';
 import ProfileInfoModal from './ProfileInfoModal';
 import { useRole } from '@/app/hooks/useRole';
 import { useMutation } from '@tanstack/react-query';
 import { logout } from '@/app/(public)/callback/callback.api';
 import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/store/authStore';
 
-export default function ProfileDropdown({
-  userName = '홍길동',
-  userEmail = 'hong@company.com',
-  userRole = '관리자',
-}: UserProps) {
+export default function ProfileDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isSupOrCusModalOpen, setIsSupOrCusModalOpen] = useState(false);
   const role = useRole();
   const router = useRouter();
+  const { userInfo } = useAuthStore();
+
+  const userName = userInfo?.userName;
+  const userEmail = userInfo?.loginEmail;
+
+  console.log(userInfo?.loginEmail);
+
   // 외부 클릭 감지
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -77,8 +80,8 @@ export default function ProfileDropdown({
         </div>
         {/* 이름 & 직급 */}
         <div className="hidden md:block text-left pl-1">
-          <div className="text-sm font-medium text-gray-900">{userName}</div>
-          <div className="text-xs text-gray-400">{userRole}</div>
+          <div className="text-sm font-medium text-gray-900">오창은</div>
+          <div className="text-xs text-gray-400">{role}</div>
         </div>
         <i
           className={`ri-arrow-down-s-line text-lg font-medium transition-transform ${isOpen ? 'rotate-180' : ''}`}
@@ -94,7 +97,7 @@ export default function ProfileDropdown({
                 <i className="ri-user-3-line text-gray-600"></i>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-900">{userName}</p>
+                <p className="text-sm font-medium text-gray-900">오창은</p>
                 <p className="text-xs text-gray-500">{userEmail}</p>
               </div>
             </div>

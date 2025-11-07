@@ -4,14 +4,9 @@ import { useEffect, useState } from 'react';
 import Logo from '@/app/components/header/Logo';
 import Navigation from '@/app/components/header/Navigation';
 import ProfileDropdown from '@/app/components/header/ProfileDropdown';
-import { UserProps } from '@/app/components/header/types/UserType';
 import NotificationDropdown from './Notification/NoificationDropdown';
 
-export default function Header({
-  userRole = '관리자',
-  userName = '홍길동',
-  userEmail = 'hong@company.com',
-}: UserProps) {
+export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -40,7 +35,7 @@ export default function Header({
           {/* 우측: 알림 + 프로필 */}
           <div className="flex items-center space-x-4">
             <NotificationDropdown />
-            <ProfileDropdown userName={userName} userEmail={userEmail} userRole={userRole} />
+            <ProfileDropdown />
           </div>
         </div>
       </div>
