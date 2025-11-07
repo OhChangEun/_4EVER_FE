@@ -14,3 +14,35 @@ export const formatTime = (isoString: string) => {
   const minutes = date.getMinutes().toString().padStart(2, '0');
   return `${hours}:${minutes}`;
 };
+
+// ISO → YYYY-MM-DD HH:mm:ss
+export const formatDateTime = (isoString: string): string => {
+  if (!isoString) return '-';
+
+  const date = new Date(isoString);
+  if (isNaN(date.getTime())) return '-';
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+};
+
+// Date → YYYY-MM-DD
+export const formatDate = (date: Date | null): string | null => {
+  if (!date || isNaN(date.getTime())) return null;
+  return date.toISOString().split('T')[0];
+};
+
+// YYYY-MM-DD → ISO
+export const toISOString = (dateStr: string): string => {
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) {
+    throw new Error(`Invalid date STRING: ${dateStr}`);
+  }
+  return date.toISOString();
+};

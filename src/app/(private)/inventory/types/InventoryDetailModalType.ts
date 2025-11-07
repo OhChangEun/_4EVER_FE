@@ -34,7 +34,7 @@ export interface InventoryDetailResponse {
   location: string;
   lastModified: string;
   description: string;
-  stockMovements: StockMovement[];
+  stockMovement: StockMovement[];
 }
 
 export interface StockMovementRequest {

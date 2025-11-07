@@ -1,10 +1,9 @@
 import { Page } from '@/app/types/Page';
 
 export interface PurchaseReqItem {
-  id: number;
-  lineNo: number;
   itemId: number;
   itemName: string;
+  dueDate: string;
   quantity: number;
   uomCode: string; // 단위 (예: 'EA')
   unitPrice: number;
@@ -12,35 +11,27 @@ export interface PurchaseReqItem {
 }
 
 export interface PurchaseReqDetailResponse {
-  id: number;
-  prNumber: string;
-  requesterId: number;
+  id: string;
+  purchaseRequisitionNumber: string;
+  requesterId: string;
   requesterName: string;
-  departmentId: number;
+  departmentId: string;
   departmentName: string;
   requestDate: string; // "2024-01-15"
-  createdAt: string; // "2024-01-15T00:00:00Z"
-  desiredDeliveryDate: string; // "2024-01-25"
-  status: string; // 예: 'APPROVED'
-  currency: string; // 예: 'KRW'
-  totalAmount: number;
+  statusCode: string;
   items: PurchaseReqItem[];
+  totalAmount: number;
 }
 
 export interface PurchaseReqResponse {
-  id: number;
-  prNumber: string; // 구매요청번호
-  requesterId: number;
+  purchaseRequisitionId: string;
+  purchaseRequisitionNumber: string;
+  requesterId: string;
   requesterName: string;
-  departmentId: number;
+  departmentId: string;
   departmentName: string;
-  origin: string; // 예: 'MRP'
-  originRefId: string; // 원본 참조 ID
-  requestDate: string; // 요청일 (yyyy-MM-dd)
-  desiredDeliveryDate: string; // 납기요청일 (yyyy-MM-dd)
-  createdBy: number;
-  itemCount: number;
-  hasPreferredVendor: boolean;
+  statusCode: string;
+  requestDate: string;
   totalAmount: number;
 }
 

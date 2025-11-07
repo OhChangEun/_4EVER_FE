@@ -1,3 +1,10 @@
+export interface EmployeeData {
+  employeeId: string;
+  employeeName: string;
+  position: string;
+  hireDate: string;
+}
+
 export interface DepartmentsData {
   departmentId: string;
   departmentNumber: string;
@@ -6,10 +13,17 @@ export interface DepartmentsData {
   managerName: string;
   managerId: string;
   location: string;
-  employeeCount: string;
+  statusCode: string;
+  employeeCount: number;
   establishedDate: string;
+  employees: EmployeeData[];
 }
 
 export interface DepartmentsListResponse {
-  departments: DepartmentsData[];
+  content: DepartmentsData[];
+}
+
+export interface DepartmentsRequestBody {
+  managerId: string;
+  description: string;
 }

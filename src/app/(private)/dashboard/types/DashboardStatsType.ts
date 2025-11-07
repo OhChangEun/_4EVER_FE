@@ -1,10 +1,10 @@
 import { Stat, StatResponse } from '@/app/types/StatType';
 
 interface DashboardStat {
-  totalSales: Stat;
-  totalPurchases: Stat;
-  netProfit: Stat;
-  totalEmployee: Stat;
+  total_sales: Stat;
+  total_purchases: Stat;
+  net_profit: Stat;
+  total_employees: Stat;
 }
 
 export type DashboardStatRes = StatResponse<DashboardStat>;
