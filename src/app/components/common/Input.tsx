@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -19,16 +21,17 @@ export default function Input({
   required,
   ...props
 }: InputProps) {
+  const [isFocused, setIsFocused] = useState(false);
   const base = ' w-full text-gray-800 focus:outline-none transition-colors placeholder-gray-300';
 
   const variants = {
-    default: 'border border-gray-300 focus:border-gray-500 bg-white',
+    default: 'border border-gray-300 focus:border-blue-500 bg-white',
     outline: 'border border-blue-500 bg-transparent focus:ring focus:ring-blue-500',
   };
 
   const sizes = {
-    sm: 'px-1 py-1 text-xs rounded-sm',
-    md: 'px-1 py-1.5 text-sm rounded-md',
+    sm: 'px-1 pr-1.5 py-1 text-xs rounded-sm',
+    md: 'px-1 pr-2 py-1.5 text-sm rounded-lg',
     lg: 'px-4 py-2 text-lg rounded-lg',
   };
 
@@ -58,10 +61,19 @@ export default function Input({
       <div className="relative flex items-center">
         {icon && !disabled && (
           <i
-            className={`${icon} absolute left-2.5 z-10 text-gray-500 text-base pointer-events-none`}
+            className={`${icon} absolute left-2.5 z-1 text-base pointer-events-none transition-colors ${
+              isFocused ? 'text-blue-500' : 'text-gray-400'
+            }`}
           />
         )}
-        <input className={appliedClasses} disabled={disabled} required={required} {...props} />
+        <input
+          className={appliedClasses}
+          disabled={disabled}
+          required={required}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          {...props}
+        />
         {/* Error Message */}
         {error && (
           <span className="absolute left-1 bottom-[-18px] text-xs text-red-500">{error}</span>

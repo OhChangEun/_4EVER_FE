@@ -59,11 +59,11 @@ export const MRP_TABS: Tab[] = [
 
 // 가용 재고 상태 필터링
 export type AvailableStockStatus = 'ALL' | 'CHECKED' | 'UNCHECKED';
-export const AVAILABLE_STOCK_STATUS: KeyValueItem<AvailableStockStatus>[] = [
-  { key: 'ALL', value: '전체 가용재고' },
-  { key: 'CHECKED', value: '확인' }, // 재고 충분
-  { key: 'UNCHECKED', value: '미확인' }, // 재고 상태 확인되지 않음
-];
+// export const AVAILABLE_STOCK_STATUS: KeyValueItem<AvailableStockStatus>[] = [
+//   { key: 'ALL', value: '전체 가용재고' },
+//   { key: 'CHECKED', value: '확인' }, // 재고 충분
+//   { key: 'UNCHECKED', value: '미확인' }, // 재고 상태 확인되지 않음
+// ];
 // export type AvailableStockStatus = 'ALL' | 'SUFFICIENT' | 'INSUFFICIENT' | 'UNKNOWN';
 // export const AVAILABLE_STOCK_STATUS: KeyValueItem<AvailableStockStatus>[] = [
 //   { key: 'ALL', value: '전체 가용재고' },
@@ -74,11 +74,11 @@ export const AVAILABLE_STOCK_STATUS: KeyValueItem<AvailableStockStatus>[] = [
 
 // 견적 상태 필터링
 export type QuotationStatus = 'ALL' | 'NEW' | 'CONFIRMED';
-export const QUOTATIONS_STATUS: KeyValueItem<QuotationStatus>[] = [
-  { key: 'ALL', value: '전체 상태' },
-  { key: 'NEW', value: '신규' },
-  { key: 'CONFIRMED', value: '확정' },
-];
+// export const QUOTATIONS_STATUS: KeyValueItem<QuotationStatus>[] = [
+//   { key: 'ALL', value: '전체 상태' },
+//   { key: 'NEW', value: '신규' },
+//   { key: 'CONFIRMED', value: '확정' },
+// ];
 
 // 제품 목록
 export const PRODUCTS: KeyValueItem[] = [

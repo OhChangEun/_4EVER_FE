@@ -25,12 +25,15 @@ const ACCESS_RULES = [
 ];
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  const rawRole = req.cookies.get('role')?.value ?? 'GUEST';
+  const roleCookie = req.cookies.get('role');
+  const rawRole = roleCookie?.value ?? 'GUEST';
   const role = rawRole.trim().toUpperCase();
+
   const rule = ACCESS_RULES.find((r) => pathname.startsWith(r.path));
-  if (rule && !rule.roles.includes(role)) {
+  if (rule && roleCookie && !rule.roles.includes(role)) {
     return NextResponse.redirect(new URL('/unauthorized', req.url));
   }
+
   return NextResponse.next();
 }
 export const config = {

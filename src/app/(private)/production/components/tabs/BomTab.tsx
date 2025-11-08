@@ -1,23 +1,32 @@
 'use client';
 
 import IconButton from '@/app/components/common/IconButton';
-import { useState } from 'react';
-import { BomListData, BomListResponse } from '@/app/(private)/production/types/BomListApiType';
+import { BomListResponse } from '@/app/(private)/production/types/BomListApiType';
 import BomDetailModal from '@/app/(private)/production/components/modals/BomDetailModal';
 // import BomInputFormModal from '@/app/(private)/production/components/modals/BomInputFormModal';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { deletBomItem, fetchBomList } from '../../api/production.api';
-import { getQueryClient } from '@/lib/queryClient';
+import { useQuery } from '@tanstack/react-query';
+import { fetchBomList } from '../../api/production.api';
 import { useModal } from '@/app/components/common/modal/useModal';
+import BomInputFormModal from '../modals/BomInputFormModal';
+import Pagination from '@/app/components/common/Pagination';
+import { useMemo, useState } from 'react';
+import { PageRequest } from '@/app/types/Page';
+import Button from '@/app/components/common/Button';
 import Input from '@/app/components/common/Input';
 
 export default function BomTab() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+
   const { openModal } = useModal();
 
-  const [selectedBom, setSelectedBom] = useState<BomListData | null>(null);
-  const [editingBom, setEditingBom] = useState<BomListData | null>(null);
-
-  const queryClient = getQueryClient();
+  const bomQueryParams = useMemo(
+    (): PageRequest => ({
+      page: currentPage - 1,
+      size: pageSize,
+    }),
+    [currentPage, pageSize],
+  );
 
   // bom 목록 조회
   const {
@@ -25,62 +34,24 @@ export default function BomTab() {
     isLoading,
     isError,
   } = useQuery<BomListResponse>({
-    queryKey: ['bomList'],
-    queryFn: fetchBomList,
-  });
-
-  // bom 삭제
-  const deleteMutation = useMutation({
-    mutationFn: (bomId: string) => deletBomItem(bomId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bomList'] });
-      alert('BOM이 삭제되었습니다.');
-    },
-    onError: (error) => {
-      console.error('BOM 삭제 실패:', error);
-      alert('BOM 삭제에 실패했습니다.');
-    },
+    queryKey: ['bomList', bomQueryParams],
+    queryFn: () => fetchBomList(bomQueryParams),
   });
 
   // content 배열 추출
   const bomList = bomResponse?.content || [];
+  const pageInfo = bomResponse?.page;
+
+  const handleCreate = () => {
+    openModal(BomInputFormModal, { title: 'BOM 생성' });
+  };
 
   const handleViewDetail = (bomId: string) => {
     openModal(BomDetailModal, { title: 'BOM 상세 정보', bomId: bomId });
-    // BomDetailModal bomId={selectedBom.bomId}
   };
 
-  const handleEdit = (bom: BomListData) => {
-    setEditingBom(bom);
-  };
-
-  const handleDelete = (bomId: string) => {
-    if (confirm('정말로 이 BOM을 삭제하시겠습니까?')) {
-      deleteMutation.mutate(bomId);
-    }
-  };
-
-  const handleCreate = () => {
-    setEditingBom(null);
-  };
-
-  const handleSubmit = (data: Partial<BomListData>) => {
-    console.log('BOM 데이터:', data);
-    alert(editingBom ? 'BOM이 수정되었습니다.' : 'BOM이 생성되었습니다.');
-  };
-
-  const getStatusBadge = (status: string) => {
-    const statusConfig: Record<string, { label: string; class: string }> = {
-      ACTIVE: { label: '활성', class: 'bg-green-100 text-green-800' },
-      INACTIVE: { label: '비활성', class: 'bg-gray-100 text-gray-800' },
-      DRAFT: { label: '초안', class: 'bg-yellow-100 text-yellow-800' },
-    };
-    const config = statusConfig[status] || { label: status, class: 'bg-gray-100 text-gray-800' };
-    return (
-      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${config.class}`}>
-        {config.label}
-      </span>
-    );
+  const handleEdit = () => {
+    openModal(BomInputFormModal, { title: 'BOM 수정', editMode: true });
   };
 
   return (
@@ -105,22 +76,22 @@ export default function BomTab() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   제품 정보
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   BOM 번호
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   버전
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   상태
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   최종 수정일
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   작업
                 </th>
               </tr>
@@ -128,11 +99,11 @@ export default function BomTab() {
             <tbody className="bg-white divide-y divide-gray-200">
               {bomList.length > 0 ? (
                 bomList.map((bom) => (
-                  <tr key={bom.bomId} className="hover:bg-gray-50">
+                  <tr key={bom.bomId} className="hover:bg-gray-50 text-center">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">{bom.itemName}</div>
-                        <div className="text-sm text-gray-500">{bom.itemCode}</div>
+                        <div className="text-sm font-medium text-gray-900">{bom.productName}</div>
+                        <div className="text-sm text-gray-500">{bom.productNumber}</div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -141,32 +112,18 @@ export default function BomTab() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {bom.version}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(bom.status)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{bom.statusCode}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {bom.lastModifiedAt}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                      <button
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <Button
+                        label="상세보기"
+                        variant="ghost"
+                        size="sm"
                         onClick={() => handleViewDetail(bom.bomId)}
-                        className="text-blue-600 hover:text-blue-900 cursor-pointer"
-                        disabled={deleteMutation.isPending}
-                      >
-                        상세보기
-                      </button>
-                      <button
-                        onClick={() => handleEdit(bom)}
-                        className="text-green-600 hover:text-green-900 cursor-pointer"
-                        disabled={deleteMutation.isPending}
-                      >
-                        수정
-                      </button>
-                      <button
-                        onClick={() => handleDelete(bom.bomId)}
-                        className="text-red-600 hover:text-red-900 cursor-pointer"
-                        disabled={deleteMutation.isPending}
-                      >
-                        {deleteMutation.isPending ? '삭제 중...' : '삭제'}
-                      </button>
+                      />
+                      <Button label="수정" variant="ghost" size="sm" onClick={() => handleEdit()} />
                     </td>
                   </tr>
                 ))
@@ -182,14 +139,14 @@ export default function BomTab() {
         </div>
       )}
 
-      {/* BOM 생성/수정 모달 */}
-      {/* {showBomCreateModal && (
-          <BomInputFormModal
-            editingBom={editingBom}
-            onClose={() => setShowBomCreateModal(false)}
-            onSubmit={handleSubmit}
-          />
-        )} */}
+      {isError || isLoading ? null : (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={pageInfo?.totalPages ?? 1}
+          totalElements={pageInfo?.totalElements}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
+      )}
     </>
   );
 }

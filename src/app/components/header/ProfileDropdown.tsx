@@ -7,7 +7,8 @@ import { useRole } from '@/app/hooks/useRole';
 import { useMutation } from '@tanstack/react-query';
 import { logout } from '@/app/(public)/callback/callback.api';
 import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/store/authStore';
+import { clearAccessToken } from '@/lib/auth/tokenStorage';
+import Cookies from 'js-cookie';
 
 export default function ProfileDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,12 +16,11 @@ export default function ProfileDropdown() {
   const [isSupOrCusModalOpen, setIsSupOrCusModalOpen] = useState(false);
   const role = useRole();
   const router = useRouter();
-  const { userInfo } = useAuthStore();
 
-  const userName = userInfo?.userName;
-  const userEmail = userInfo?.loginEmail;
+  const userName = Cookies.get('userName');
+  const userEmail = Cookies.get('userEmail');
 
-  console.log(userInfo?.loginEmail);
+  console.log(userName);
 
   // 외부 클릭 감지
   useEffect(() => {
@@ -50,9 +50,8 @@ export default function ProfileDropdown() {
     onSuccess: () => {
       alert('로그아웃 되었습니다.');
       router.push('/dashboard');
-      localStorage.clear();
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('access_token_expires_at');
+      clearAccessToken();
+      Cookies.remove('role', { path: '/' });
       window.location.reload();
     },
     onError: (error) => {

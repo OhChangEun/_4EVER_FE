@@ -7,14 +7,10 @@ import { USER_ENDPOINTS } from '@/app/types/api';
 import { getUserInfo } from './callback.api';
 import { useAuthStore } from '@/store/authStore';
 import Cookies from 'js-cookie';
+import { persistAccessToken } from '@/lib/auth/tokenStorage';
 
 const REDIRECT_URI = 'http://localhost:3000/callback'; // 배포용
 // const REDIRECT_URI = 'https://everp.co.kr/callback'; // 서버용
-
-function saveAccessToken(accessToken: string, expiresIn: number) {
-  localStorage.setItem('access_token', accessToken);
-  localStorage.setItem('access_token_expires_at', String(Date.now() + expiresIn * 1000));
-}
 
 function cleanupPkce() {
   localStorage.removeItem('pkce_verifier');
@@ -73,7 +69,7 @@ export default function CallbackPage() {
 
         const { access_token, expires_in } = res.data;
 
-        saveAccessToken(access_token, expires_in);
+        persistAccessToken(access_token, expires_in);
 
         const userInfo = await getUserInfo();
         setUserInfo(userInfo);
