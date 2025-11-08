@@ -1,20 +1,43 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
-import { fetchDepartmentsList, fetchPayRollList } from '@/app/(private)/hrm/api/hrm.api';
+import {
+  fetchDepartmentsDropdown,
+  fetchPayRollList,
+  fetchPayrollStatusDropdown,
+} from '@/app/(private)/hrm/api/hrm.api';
 import { KeyValueItem } from '@/app/types/CommonType';
 import Dropdown from '@/app/components/common/Dropdown';
 import { PayrollDetailModal } from '@/app/(private)/hrm/components/modals/PayrollDetailModal';
 import Pagination from '@/app/components/common/Pagination';
 import { PayRollList, PayrollRequestParams } from '@/app/(private)/hrm/types/HrmPayrollApiType';
 import { useModal } from '@/app/components/common/modal/useModal';
+import { useDropdown } from '@/app/hooks/useDropdown';
+import { useDebouncedKeyword } from '@/app/hooks/useDebouncedKeyword';
+import Input from '@/app/components/common/Input';
 
 export default function PayrollManagement() {
   // --- 모달 출력 ---
   const { openModal } = useModal();
+  const { keyword, handleKeywordChange, debouncedKeyword } = useDebouncedKeyword();
 
   // --- 드롭다운 ---
+  // 부서 드롭다운
+  const { options: departmentsOptions } = useDropdown(
+    'departmentsDropdown',
+    fetchDepartmentsDropdown,
+    'include',
+  );
+  // 상태 드롭다운
+  const { options: statusOptions } = useDropdown(
+    'payrollStatusDropdown',
+    fetchPayrollStatusDropdown,
+    'include',
+  );
+
+  // --- 선택된 드롭다운 상태 ---
   const [selectedDepartment, setSelectedDepartment] = useState(''); // 부서
+  const [selectedPayrollStatus, setSelectedPayrollStatus] = useState(''); // 상태
 
   // 년도와 월
   const now = new Date();
@@ -26,8 +49,6 @@ export default function PayrollManagement() {
   // --- 페이지 네이션 ---
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
-
-  const [searchTerm, setSearchTerm] = useState('');
 
   // 년도 옵션 (최근 5년)
   const yearOptions: KeyValueItem[] = useMemo(() => {
@@ -48,37 +69,24 @@ export default function PayrollManagement() {
     });
   }, []);
 
-  const {
-    data: departmentsData,
-    isLoading: isDeptLoading,
-    isError: isDeptError,
-  } = useQuery({
-    queryKey: ['departmentsList'],
-    queryFn: fetchDepartmentsList,
-    staleTime: Infinity,
-  });
-
-  const departmentsOptions: KeyValueItem[] = useMemo(() => {
-    const departmentList = departmentsData?.departments ?? [];
-
-    return [
-      { key: '', value: '전체 부서' },
-      ...departmentList.map((item) => ({
-        key: item.departmentId,
-        value: item.departmentName,
-      })),
-    ];
-  }, [departmentsData]);
-
   const payrollQueryParams = useMemo(
     (): PayrollRequestParams => ({
       year: Number(selectedYear),
       month: Number(selectedMonth),
+      name: debouncedKeyword,
       department: selectedDepartment || undefined,
+      statusCode: selectedPayrollStatus || undefined,
       page: currentPage - 1,
       size: pageSize,
     }),
-    [selectedYear, selectedMonth, selectedDepartment, currentPage],
+    [
+      selectedYear,
+      selectedMonth,
+      debouncedKeyword,
+      selectedDepartment,
+      selectedPayrollStatus,
+      currentPage,
+    ],
   );
 
   const {
@@ -137,19 +145,21 @@ export default function PayrollManagement() {
                 setCurrentPage(1);
               }}
             />
-            <div className="relative flex-1 max-w-xs">
-              <input
-                type="text"
-                placeholder="직원 이름 검색..."
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-              <i className="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-            </div>
+            <Dropdown
+              placeholder="전체 상태"
+              items={statusOptions}
+              value={selectedPayrollStatus}
+              onChange={(status: string) => {
+                setSelectedPayrollStatus(status);
+                setCurrentPage(1);
+              }}
+            />
+            <Input
+              value={keyword}
+              onChange={handleKeywordChange}
+              icon="ri-search-line"
+              placeholder="직원 이름 검색"
+            />
           </div>
         </div>
 

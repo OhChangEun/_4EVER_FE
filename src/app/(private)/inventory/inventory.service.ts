@@ -15,24 +15,24 @@ export const mapInventoryStatsToCards = (
           stats.store_complete.delta_rate,
           '건',
         ),
-        createStatCard(
-          '입고 대기',
-          stats.store_pending.value,
-          stats.store_pending.delta_rate,
-          '건',
-        ),
+        // createStatCard(
+        //   '입고 대기',
+        //   stats.store_pending.value,
+        //   stats.store_pending.delta_rate,
+        //   '건',
+        // ),
         createStatCard(
           '출고 완료',
           stats.delivery_complete.value,
           stats.delivery_complete.delta_rate,
           '건',
         ),
-        createStatCard(
-          '출고 대기',
-          stats.delivery_pending.value,
-          stats.delivery_pending.delta_rate,
-          '건',
-        ),
+        // createStatCard(
+        //   '출고 대기',
+        //   stats.delivery_pending.value,
+        //   stats.delivery_pending.delta_rate,
+        //   '건',
+        // ),
       ];
 
       acc[period] = cards;

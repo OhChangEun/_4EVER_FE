@@ -2,8 +2,8 @@
 'use client';
 import {
   fetchAttendanceList,
-  fetchDepartmentsList,
-  fetchPositionsList,
+  fetchAttendanceStatusDropdown,
+  fetchDepartmentsDropdown,
 } from '@/app/(private)/hrm/api/hrm.api';
 import {
   AttendanceListData,
@@ -12,18 +12,42 @@ import {
 import Dropdown from '@/app/components/common/Dropdown';
 import { useModal } from '@/app/components/common/modal/useModal';
 import Pagination from '@/app/components/common/Pagination';
-import { KeyValueItem } from '@/app/types/CommonType';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
 import { AttendanceEditModal } from '@/app/(private)/hrm/components/modals/AttendanceEditModal';
 import { formatMinutesToHourMin, formatTime } from '@/app/utils/date';
+import { useDropdown } from '@/app/hooks/useDropdown';
+import { useDebouncedKeyword } from '@/app/hooks/useDebouncedKeyword';
+import Input from '@/app/components/common/Input';
+import CalendarButton from '@/app/components/common/CalendarButton';
 
 export default function AttendanceTab() {
   // --- 모달 출력 ---
   const { openModal } = useModal();
 
+  const { keyword, handleKeywordChange, debouncedKeyword } = useDebouncedKeyword();
+
   // --- 드롭다운 ---
+  // 부서 드롭다운
+  const { options: departmentsOptions } = useDropdown(
+    'departmentsDropdown',
+    fetchDepartmentsDropdown,
+    'include',
+  );
+
+  const {
+    data: statusData,
+    isLoading: statusLoading,
+    isError: errorLoading,
+  } = useQuery({
+    queryKey: ['attendanceStatusDropdown'],
+    queryFn: fetchAttendanceStatusDropdown,
+    staleTime: Infinity,
+  });
+
+  // --- 선택된 드롭다운 상태 ---
   const [selectedDepartment, setSelectedDepartment] = useState(''); // 부서
+  const [selectedPayrollStatus, setSelectedPayrollStatus] = useState(''); // 급여 지급 상태
 
   // --- 페이지 네이션 ---
   const [currentPage, setCurrentPage] = useState(1);
@@ -31,40 +55,17 @@ export default function AttendanceTab() {
 
   // --- 달력 데이터 ---
   const today = new Date().toISOString().split('T')[0];
-  const [selectedDate, setSelectedDate] = useState(today);
-
-  const [employeeSearchTerm, setEmployeeSearchTerm] = useState('');
-
-  const {
-    data: departmentsData,
-    isLoading: isDeptLoading,
-    isError: isDeptError,
-  } = useQuery({
-    queryKey: ['departmentsList'],
-    queryFn: fetchDepartmentsList,
-    staleTime: Infinity,
-  });
-
-  const departmentsOptions: KeyValueItem[] = useMemo(() => {
-    const departmentList = departmentsData?.departments ?? [];
-
-    return [
-      { key: '', value: '전체 부서' },
-      ...departmentList.map((item) => ({
-        key: item.departmentId,
-        value: item.departmentName,
-      })),
-    ];
-  }, [departmentsData]);
+  const [selectedDate, setSelectedDate] = useState<string | null>(today);
 
   const attendanceQueryParams = useMemo(
     (): AttendanceRequestParams => ({
-      date: selectedDate,
+      date: selectedDate ?? '',
       department: selectedDepartment || undefined,
+      name: debouncedKeyword,
       page: currentPage - 1,
       size: pageSize,
     }),
-    [selectedDate, selectedDepartment, currentPage],
+    [selectedDate, selectedDepartment, debouncedKeyword, currentPage],
   );
 
   const {
@@ -88,15 +89,13 @@ export default function AttendanceTab() {
 
   return (
     <div className="mt-8">
-      <div className="flex items-center justify-between mb-4">
-        <input
-          type="date"
-          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          defaultValue="2024-01-15"
-          onChange={(e) => {
-            setSelectedDate(e.target.value);
-          }}
+      <div className="flex justify-between items-center mb-4">
+        <CalendarButton
+          selectedDate={selectedDate}
+          onDateChange={setSelectedDate}
+          placeholder="날짜 선택"
         />
+
         <div className="flex items-center gap-3">
           <Dropdown
             placeholder="전체 부서"
@@ -108,20 +107,21 @@ export default function AttendanceTab() {
             }}
           />
 
-          {/* 직원 이름 검색 */}
-          <div className="relative flex-1 max-w-xs">
-            <input
-              type="text"
-              placeholder="직원 이름 검색..."
-              value={employeeSearchTerm}
-              onChange={(e) => {
-                setEmployeeSearchTerm(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-            <i className="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-          </div>
+          <Dropdown
+            placeholder="전체 상태"
+            items={statusData ?? []}
+            value={selectedPayrollStatus}
+            onChange={(status: string) => {
+              setSelectedPayrollStatus(status);
+              setCurrentPage(1);
+            }}
+          />
+          <Input
+            value={keyword}
+            onChange={handleKeywordChange}
+            icon="ri-search-line"
+            placeholder="직원 이름 검색"
+          />
         </div>
       </div>
 

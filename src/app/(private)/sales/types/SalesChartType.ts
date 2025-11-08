@@ -49,6 +49,6 @@ export interface SalesAnalysis {
 }
 
 export interface AnalyticsQueryParams {
-  start?: string;
-  end?: string;
+  startDate?: string;
+  endDate?: string;
 }

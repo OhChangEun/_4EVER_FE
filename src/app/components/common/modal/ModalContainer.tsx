@@ -12,13 +12,7 @@ interface ModalContainerProps {
 const ModalContainer = ({ children, title, onClose }: ModalContainerProps) => {
   return (
     <AnimatePresence>
-      <motion.div
-        className="fixed z-[9999] inset-0 flex items-center justify-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        // onClick={onClose}
-      >
+      <div className="fixed z-[1000] inset-0 flex items-center justify-center pointer-events-none">
         <motion.div
           className="border border-gray-100 bg-white rounded-2xl shadow-xl p-6 max-h-[720px] min-w-[400px] min-h-[380px] overflow-scroll relative pointer-events-auto"
           initial={{ scale: 0.95, opacity: 0 }}
@@ -39,7 +33,7 @@ const ModalContainer = ({ children, title, onClose }: ModalContainerProps) => {
           {/* 모달 본문 */}
           <div className="pt-6">{children}</div>
         </motion.div>
-      </motion.div>
+      </div>
     </AnimatePresence>
   );
 };

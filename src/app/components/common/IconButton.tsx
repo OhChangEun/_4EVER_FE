@@ -1,7 +1,7 @@
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon: string;
   label?: string;
-  variant?: 'primary' | 'secondary' | 'outline' | 'whiteOutline' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'outline' | 'whiteOutline' | 'ghost' | 'soft';
   size?: 'sm' | 'md' | 'lg';
 }
 
@@ -18,10 +18,11 @@ export default function IconButton({
 
   const variants = {
     primary: 'bg-blue-500 font-semibold text-white hover:opacity-85',
-    secondary: 'bg-gray-200 font-semibold text-gray-500 hover:bg-gray-300',
+    secondary: 'bg-gray-100 font-medium text-gray-700 hover:bg-gray-200',
     outline: 'font-normal border border-blue-500 text-blue-500 bg-transparent hover:bg-blue-50',
     whiteOutline: 'bg-white font-normal border border-gray-300 text-gray-500/70 hover:bg-gray-50',
     ghost: 'bg-transparent text-blue-600 hover:bg-blue-100',
+    soft: 'bg-blue-100 font-medium text-blue-500 hover:bg-blue-200/70',
   };
 
   const sizes = {
@@ -53,7 +54,7 @@ export default function IconButton({
       {...props}
     >
       <i className={`${icon} ${iconSizes[size]} ${label ? 'pr-1' : ''}`}></i>
-      {label && <span className="pr-1">{label}</span>}
+      {label && <span className={`${size !== 'sm' && 'pr-1'}`}>{label}</span>}
     </button>
   );
 }

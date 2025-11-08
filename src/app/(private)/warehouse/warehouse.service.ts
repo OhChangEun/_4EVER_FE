@@ -10,14 +10,14 @@ export const mapWarehouseStatsToCards = (
       const cards: StatCardType[] = [
         createStatCard(
           '총 창고 수',
-          stats.totalWarehouse.value,
-          stats.totalWarehouse.delta_rate,
+          stats.total_warehouse.value,
+          stats.total_warehouse.delta_rate,
           '개',
         ),
         createStatCard(
           '운영 중인 창고',
-          stats.inOperationWarehouse.value,
-          stats.inOperationWarehouse.delta_rate,
+          stats.in_operation_warehouse.value,
+          stats.in_operation_warehouse.delta_rate,
           '개',
         ),
       ];

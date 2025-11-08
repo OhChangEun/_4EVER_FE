@@ -12,6 +12,7 @@ import Pagination from '@/app/components/common/Pagination';
 import { useMemo, useState } from 'react';
 import { PageRequest } from '@/app/types/Page';
 import Button from '@/app/components/common/Button';
+import Input from '@/app/components/common/Input';
 
 export default function BomTab() {
   const [currentPage, setCurrentPage] = useState(1);
