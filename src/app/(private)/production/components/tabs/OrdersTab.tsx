@@ -2,18 +2,38 @@
 import { useMemo, useState } from 'react';
 import Dropdown from '@/app/components/common/Dropdown';
 import Button from '@/app/components/common/Button';
-import { MRP_ORDER_STATUS_OPTIONS, PRODUCTS } from '../../constants';
-import { KeyValueItem } from '@/app/types/CommonType';
-import { useQuery } from '@tanstack/react-query';
-import { FetchMrpOrdersListParams, MrpOrdersListResponse } from '../../types/MrpOrdersListApiType';
-import { fetchMrpOrdersList } from '../../api/production.api';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import {
+  fetchMrpAvailableStatusDropdown,
+  fetchMrpOrdersList,
+  fetchMrpQuotationsDropdown,
+  postMrpConvert,
+} from '../../api/production.api';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
 import Pagination from '@/app/components/common/Pagination';
+import {
+  FetchMrpOrdersListParams,
+  MrpOrdersListData,
+  MrpOrdersListResponse,
+} from '../../types/MrpOrdersApiType';
+import { MrpOrdersConvertReqeustBody } from '../../types/MrpOrdersConvertApiType';
+import { useRouter } from 'next/navigation';
+import { useDropdown } from '@/app/hooks/useDropdown';
 
 export default function OrdersTab() {
-  const [selectedProduct, setSelectedProduct] = useState('ALL');
-  const [selectedQuote, setSelectedQuote] = useState('ALL');
-  const [selectedStockStatus, setSelectedStockStatus] = useState('ALL');
+  // mrp 순소요 - 견적 드롭다운
+  const { options: mrpQuotationOptions } = useDropdown(
+    'mrpQuotationsDropdown',
+    fetchMrpQuotationsDropdown,
+  );
+  // mrp 순소요 - 가용 재고 상태 드롭다운
+  const { options: mrpAvailableStatusOptions } = useDropdown(
+    'mrpAvailableStatusDropdown',
+    fetchMrpAvailableStatusDropdown,
+  );
+
+  const [selectedQuote, setSelectedQuote] = useState('');
+  const [selectedStockStatus, setSelectedStockStatus] = useState('');
 
   const [selectedRequirements, setSelectedRequirements] = useState<string[]>([]);
 
@@ -22,13 +42,12 @@ export default function OrdersTab() {
 
   const queryParams = useMemo(
     (): FetchMrpOrdersListParams => ({
-      quotationId: selectedProduct,
-      productId: selectedQuote,
+      quotationId: selectedQuote,
       availableStatusCode: selectedStockStatus,
       page: currentPage - 1,
       size: pageSize,
     }),
-    [selectedProduct, selectedQuote, selectedStockStatus, currentPage],
+    [selectedQuote, selectedStockStatus, currentPage],
   );
 
   const {
@@ -41,20 +60,10 @@ export default function OrdersTab() {
     staleTime: 1000,
   });
 
-  const orderItems = orders?.content || [];
+  const orderItems: MrpOrdersListData[] = orders?.content ?? [];
   const pageInfo = orders?.page;
 
   const totalPages = pageInfo?.totalPages ?? 1;
-
-  // 견적 목록
-  const quotes: KeyValueItem[] = [
-    { key: 'ALL', value: '전체 견적' },
-    { key: 'Q_2024_001', value: 'Q-2024-001' },
-    { key: 'Q_2024_002', value: 'Q-2024-002' },
-    { key: 'Q_2024_003', value: 'Q-2024-003' },
-    { key: 'Q_2024_004', value: 'Q-2024-004' },
-    { key: 'Q_2024_005', value: 'Q-2024-005' },
-  ];
 
   const handleSelectAllRequirements = () => {
     if (!orders) return;
@@ -71,9 +80,41 @@ export default function OrdersTab() {
     );
   };
 
+  // 계획 주문 전환 mutation
+  const router = useRouter();
+
+  const { mutate: mrpConvert } = useMutation({
+    mutationFn: (body: MrpOrdersConvertReqeustBody) => postMrpConvert(body),
+    onSuccess: () => {
+      alert('계획 주문 전환이 완료되었습니다.');
+      router.push('/production?tab=mrp&subTab=orders');
+    },
+    onError: (error) => {
+      console.log('계획 주문 전환 실패', error);
+      alert('계획 주문 전환에 실패했습니다.');
+    },
+  });
+
+  // 계획 주문 전환 실행
   const handleConvertToPlannedOrder = () => {
-    console.log('계획 주문 전환:', selectedRequirements);
-    // 실제 로직 구현
+    if (selectedRequirements.length === 0) {
+      alert('전환할 항목을 선택해주세요.');
+      return;
+    }
+
+    const selectedItems = orderItems
+      .filter((item) => selectedRequirements.includes(item.itemId))
+      .map((item) => ({
+        quotationId: item.quotationId,
+        itemId: item.itemId,
+        quantity: item.requiredQuantity,
+      }));
+
+    const body = {
+      items: selectedItems,
+    };
+
+    mrpConvert(body);
   };
 
   const getAvailableStatusBadge = (status: string) => {
@@ -98,26 +139,18 @@ export default function OrdersTab() {
         <h2 className="text-md font-semibold text-gray-900">순소요 - 무엇이 얼마나 부족한가?</h2>
         <div className="flex gap-4 justify-end items-center">
           <Dropdown
-            placeholder="전체 제품"
-            items={PRODUCTS}
-            value={selectedProduct}
-            onChange={(product: string) => {
-              setSelectedProduct(product);
-              setCurrentPage(1);
-            }}
-          />
-          <Dropdown
-            placeholder="전체 견적"
-            items={quotes}
+            placeholder="견적 선택"
+            items={mrpQuotationOptions}
             value={selectedQuote}
             onChange={(quote: string) => {
               setSelectedQuote(quote);
               setCurrentPage(1);
             }}
+            autoSelectFirst
           />
           <Dropdown
             placeholder="전체 상태"
-            items={MRP_ORDER_STATUS_OPTIONS}
+            items={mrpAvailableStatusOptions}
             value={selectedStockStatus}
             onChange={(status: string) => {
               setSelectedStockStatus(status);
@@ -158,13 +191,10 @@ export default function OrdersTab() {
                   소요 수량
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  현재 재고
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  안전 재고
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   가용 재고
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  소모량
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   가용 재고 상태
@@ -176,7 +206,7 @@ export default function OrdersTab() {
                   자재 유형
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  조달 시작일
+                  구매 권장일
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   예상 도착일
@@ -184,40 +214,49 @@ export default function OrdersTab() {
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   공급사
                 </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  전환 상태
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {orderItems.map((item) => (
                 <tr key={item.itemId} className="hover:bg-gray-50">
                   <td className="px-4 py-3">
-                    <input
-                      type="checkbox"
-                      checked={selectedRequirements.includes(item.itemId)}
-                      onChange={() => handleRequirementSelection(item.itemId)}
-                      className="rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
-                    />
+                    {item.convertStatus !== 'NOT_CONVERTED' ? (
+                      <input
+                        type="checkbox"
+                        disabled
+                        className="rounded border-gray-300 text-gray-300"
+                      />
+                    ) : (
+                      <input
+                        type="checkbox"
+                        checked={selectedRequirements.includes(item.itemId)}
+                        onChange={() => handleRequirementSelection(item.itemId)}
+                        className="rounded border-gray-300 cursor-pointer"
+                      />
+                    )}
                   </td>
                   <td className="px-4 py-3 text-sm font-medium text-gray-900">{item.itemName}</td>
                   <td className="px-4 py-3 text-sm text-gray-900">
                     {item.requiredQuantity.toLocaleString()}
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-900">
-                    {item.currentStock.toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-900">
-                    {item.safetyStock.toLocaleString()}
-                  </td>
+
                   <td className="px-4 py-3 text-sm text-gray-900">
                     {item.availableStock.toLocaleString()}
                   </td>
+                  <td className="px-4 py-3 text-sm text-gray-900">
+                    {item.consumptionQuantity.toLocaleString()}
+                  </td>
                   <td className="px-4 py-3">{getAvailableStatusBadge(item.availableStatusCode)}</td>
                   <td className="px-4 py-3 text-sm">
-                    {item.shortageQty > 0 ? (
+                    {item.shortageQuantity > 0 ? (
                       <span className="text-red-600 font-medium">
-                        {item.shortageQty.toLocaleString()}
+                        {item.shortageQuantity.toLocaleString()}
                       </span>
                     ) : (
-                      <span className="text-green-600">-</span>
+                      0
                     )}
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-900">{item.itemType}</td>
@@ -228,6 +267,9 @@ export default function OrdersTab() {
                     {item.expectedArrivalDate || '-'}
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-900">{item.supplierCompanyName}</td>
+                  <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                    {item.convertStatus}
+                  </td>
                 </tr>
               ))}
             </tbody>

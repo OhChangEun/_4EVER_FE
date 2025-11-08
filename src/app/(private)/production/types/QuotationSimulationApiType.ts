@@ -4,23 +4,24 @@ import { Page, PageRequest } from '@/app/types/Page';
 export interface SimulationData {
   status: string;
   availableQuantity: number;
+  shortageQuantity: number;
   suggestedDueDate: string;
   generatedAt: string;
 }
 
 // 부족 재고 데이터
 export interface ShortageStock {
-  itemIm: string;
+  itemId: string;
   itemName: string;
   requiredQuantity: number;
   currentStock: number;
   shortQuantity: number;
 }
 
-// 응답 데이터
+// 시뮬레이션 후 응답 데이터
 export interface QuotationSimulationData {
   quotationId: string;
-  quotationCode: string;
+  quotationNumber: string;
   customerCompanyId: string;
   customerCompanyName: string;
   productId: string;

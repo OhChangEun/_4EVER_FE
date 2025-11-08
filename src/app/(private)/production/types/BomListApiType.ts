@@ -1,13 +1,13 @@
-import { Page } from '@/app/types/Page';
+import { Page, PageRequest } from '@/app/types/Page';
 
 export interface BomListData {
   bomId: string;
   bomNumber: string;
-  itemId: string;
-  itemCode: string;
-  itemName: string;
+  productId: string;
+  productNumber: string;
+  productName: string;
   version: string;
-  status: string;
+  statusCode: string;
   lastModifiedAt: string;
 }
 export interface BomListResponse {
@@ -15,6 +15,4 @@ export interface BomListResponse {
   content: BomListData[];
 }
 
-// export interface FetchBomListParams {
-//   나중에 추가
-// }
+export type BomListRequestParams = PageRequest;

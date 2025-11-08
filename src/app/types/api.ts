@@ -1,5 +1,7 @@
 // 공통 API Base URL
 export const API_BASE_URL = 'https://api.everp.co.kr/api';
+// export const API_BASE_URL = 'https://b5bd9b62ef90.ngrok-free.app/api';
+
 export const SALES_BASE_PATH = `${API_BASE_URL}/business/sd`;
 export const FINANCE_BASE_PATH = `${API_BASE_URL}/business/fcm`;
 export const DASHBOARD_BASE_PATH = `${API_BASE_URL}/dashboard`;
@@ -76,6 +78,7 @@ export const INVENTORY_ENDPOINTS = {
   MARKAS_READY_TO_SHIP_DETAIL: (itemId: string) =>
     `${INVENTORY_BASE_PATH}/sales-orders/${itemId}/status`,
   ADD_MATERIALS: `${INVENTORY_BASE_PATH}/iv/items`,
+  MATERIALS_LIST: `${INVENTORY_BASE_PATH}/iv/items/info`,
   EDIT_SAFETY_STOCK: (itemId: string, safetyStock: number) =>
     `${INVENTORY_BASE_PATH}/iv/items/${itemId}/safety-stock?safetyStock=${safetyStock}`,
   // ---------- 메뉴 조회 ----------
