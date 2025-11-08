@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getUserInfo } from '../(public)/callback/callback.api';
 import { useAuthStore } from '@/store/authStore';
 import Cookies from 'js-cookie';
+import { clearAccessToken, readStoredToken } from '@/lib/auth/tokenStorage';
 
 export default function PrivateGuard({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
@@ -14,12 +15,10 @@ export default function PrivateGuard({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     (async () => {
-      const token = localStorage.getItem('access_token');
-      const exp = Number(localStorage.getItem('access_token_expires_at'));
+      const { token, expiresAt } = readStoredToken();
 
-      if (!token || !exp || Date.now() > exp) {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('access_token_expires_at');
+      if (!token || !expiresAt || Date.now() > expiresAt) {
+        clearAccessToken();
         try {
           // await trySilentRefresh();
           startAuthorization(window.location.pathname);

@@ -8,6 +8,8 @@ import { useRole } from '@/app/hooks/useRole';
 import { useMutation } from '@tanstack/react-query';
 import { logout } from '@/app/(public)/callback/callback.api';
 import { useRouter } from 'next/navigation';
+import { clearAccessToken } from '@/lib/auth/tokenStorage';
+import Cookies from 'js-cookie';
 
 export default function ProfileDropdown({
   userName = '홍길동',
@@ -47,9 +49,8 @@ export default function ProfileDropdown({
     onSuccess: () => {
       alert('로그아웃 되었습니다.');
       router.push('/dashboard');
-      localStorage.clear();
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('access_token_expires_at');
+      clearAccessToken();
+      Cookies.remove('role', { path: '/' });
       window.location.reload();
     },
     onError: (error) => {
