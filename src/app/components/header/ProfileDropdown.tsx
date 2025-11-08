@@ -9,6 +9,7 @@ import { logout } from '@/app/(public)/callback/callback.api';
 import { useRouter } from 'next/navigation';
 import { clearAccessToken } from '@/lib/auth/tokenStorage';
 import Cookies from 'js-cookie';
+import { useAuthStore } from '@/store/authStore';
 
 export default function ProfileDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,10 +18,11 @@ export default function ProfileDropdown() {
   const role = useRole();
   const router = useRouter();
 
-  const userName = Cookies.get('userName');
-  const userEmail = Cookies.get('userEmail');
+  const { userInfo } = useAuthStore();
+  const userNmae = userInfo?.userName;
+  const userEmail = userInfo?.loginEmail;
 
-  console.log(userName);
+  console.log(userEmail);
 
   // 외부 클릭 감지
   useEffect(() => {
