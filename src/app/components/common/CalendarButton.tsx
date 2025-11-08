@@ -6,6 +6,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { formatDate } from '@/app/utils/date';
 import Button from './Button';
+import IconButton from './IconButton';
 
 interface CalendarButtonProps {
   selectedDate: string | null;
@@ -47,7 +48,8 @@ export default function CalendarButton({
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <div ref={wrapperRef} className="relative inline-block">
-        <Button
+        <IconButton
+          icon="ri-calendar-line"
           label={selectedDate || placeholder}
           variant={selectedDate ? 'soft' : 'secondary'}
           size="sm"
@@ -70,7 +72,7 @@ export default function CalendarButton({
 
             {/* 초기화 버튼 */}
             <div className="absolute z-50 bottom-3 right-3 flex justify-end">
-              <Button label="초기화" variant="outline" size="sm" onClick={handleReset} />
+              <Button label="초기화" variant="ghost" size="sm" onClick={handleReset} />
             </div>
           </div>
         )}

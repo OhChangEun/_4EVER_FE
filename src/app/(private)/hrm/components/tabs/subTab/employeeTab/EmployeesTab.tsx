@@ -16,10 +16,13 @@ import { EmployeeDetailModal } from '@/app/(private)/hrm/components/modals/Emplo
 import { EmployeeEditModal } from '@/app/(private)/hrm/components/modals/EmployeeEditModal';
 import EmployeeRegisterModal from '@/app/(private)/hrm/components/modals/EmployeeRegisterModal';
 import { useDropdown } from '@/app/hooks/useDropdown';
+import { useDebouncedKeyword } from '@/app/hooks/useDebouncedKeyword';
+import Input from '@/app/components/common/Input';
 
 export default function EmployeesTab() {
+  const { keyword, handleKeywordChange, debouncedKeyword } = useDebouncedKeyword();
+
   const [selectedDepartment, setSelectedDepartment] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
@@ -36,10 +39,11 @@ export default function EmployeesTab() {
   const employeesQueryParams = useMemo(
     (): EmployeeListRequestParams => ({
       departmentId: selectedDepartment || undefined,
+      name: debouncedKeyword,
       page: currentPage - 1,
       size: pageSize,
     }),
-    [selectedDepartment, currentPage, pageSize],
+    [selectedDepartment, debouncedKeyword, currentPage, pageSize],
   );
 
   const {
@@ -88,20 +92,12 @@ export default function EmployeesTab() {
           value={selectedDepartment}
           onChange={(dept: string) => setSelectedDepartment(dept)}
         />
-
-        <div className="relative flex-1 max-w-xs">
-          <input
-            type="text"
-            placeholder="이름 검색..."
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              handleFilterChange();
-            }}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
-          <i className="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-        </div>
+        <Input
+          value={keyword}
+          onChange={handleKeywordChange}
+          icon="ri-search-line"
+          placeholder="직원 이름 검색"
+        />
         <IconButton
           icon="ri-user-add-line"
           label="신규 직원 등록"
