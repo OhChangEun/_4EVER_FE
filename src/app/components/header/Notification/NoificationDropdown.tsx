@@ -23,6 +23,7 @@ import NotificationHeader from './NotificationHeader';
 import NotificationPagination from './NotificationPagination';
 import NotificationList from './NotificationList';
 import { useNotificationSSE } from './useNotificationSSE';
+import ErrorMessage from '../../common/ErrorMessage';
 
 export default function NotificationDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -58,8 +59,7 @@ export default function NotificationDropdown() {
   });
 
   // SSE 연결 (실시간 알림)
-  useNotificationSSE({
-    userId,
+  const { error } = useNotificationSSE({
     enabled: true,
     onAlarm: (alarm) => {
       console.log('New alarm received:', alarm);
@@ -129,15 +129,19 @@ export default function NotificationDropdown() {
               {...getFloatingProps()}
               className="w-96 bg-white rounded-xl shadow-xl border border-gray-200 z-50 overflow-hidden"
             >
-              <NotificationHeader notificationCount={unreadCount} onReadAll={handleReadAll} />
-
-              <NotificationList
-                notifications={notifications}
-                onNotificationClick={handleNotificationClick}
-              />
-
-              {pageInfo && notifications.length > ITEMS_PER_PAGE && (
-                <NotificationPagination page={pageInfo} onPageChange={handlePageChange} />
+              {error ? (
+                <ErrorMessage message={error} />
+              ) : (
+                <>
+                  <NotificationHeader notificationCount={unreadCount} onReadAll={handleReadAll} />
+                  <NotificationList
+                    notifications={notifications}
+                    onNotificationClick={handleNotificationClick}
+                  />
+                  {pageInfo && notifications.length > ITEMS_PER_PAGE && (
+                    <NotificationPagination page={pageInfo} onPageChange={handlePageChange} />
+                  )}
+                </>
               )}
             </div>
           </FloatingFocusManager>

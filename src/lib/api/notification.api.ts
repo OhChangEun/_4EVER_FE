@@ -1,7 +1,7 @@
-import axios from 'axios';
 import { NOTIFICATION_ENDPOINTS } from '@/lib/api/notification.endpoints';
 import { NotificationListResponse } from '@/app/components/header/types/NotificatioApiType';
 import { ApiResponse } from '@/app/types/api';
+import axios from '../axiosInstance';
 
 // 알림 목록 조회
 export const fetchNotifications = async (): Promise<NotificationListResponse> => {
@@ -26,6 +26,6 @@ export const readAllNotifications = async () => {
 };
 
 // SSE 구독
-export const subscribeNotifications = (userId: string) => {
-  return new EventSource(NOTIFICATION_ENDPOINTS.SUBSCRIBE(userId));
+export const subscribeNotifications = () => {
+  return new EventSource(NOTIFICATION_ENDPOINTS.SUBSCRIBE);
 };
