@@ -38,11 +38,11 @@ export const getQuoteList = async (
     ...(params?.size && { size: String(params.size) }),
   }).toString();
 
-  const res = await axios.get<ApiResponse<{ items: Quote[]; page: Page }>>(
+  const res = await axios.get<ApiResponse<{ content: Quote[]; page: Page }>>(
     `${SALES_ENDPOINTS.QUOTES_LIST}?${query}`,
   );
 
-  return { data: res.data.data.items, pageData: res.data.data.page };
+  return { data: res.data.data.content, pageData: res.data.data.page };
 };
 
 export const getQuoteDetail = async (quotationId: string): Promise<QuoteDetail> => {
@@ -156,8 +156,8 @@ export const putCustomer = async (
 // ----------------------- 매출 분석 -----------------------
 export const getAnalytics = async (params?: AnalyticsQueryParams): Promise<SalesAnalysis> => {
   const query = new URLSearchParams({
-    ...(params?.start && { start: params.start }),
-    ...(params?.end && { end: params.end }),
+    ...(params?.startDate && { startDate: params.startDate }),
+    ...(params?.endDate && { endDate: params.endDate }),
   }).toString();
 
   const res = await axios.get<ApiResponse<SalesAnalysis>>(`${SALES_ENDPOINTS.ANALYTICS}?${query}`);

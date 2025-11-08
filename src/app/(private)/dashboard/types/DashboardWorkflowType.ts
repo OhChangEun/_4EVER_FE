@@ -1,5 +1,4 @@
 export interface DashboardWorkflowRes {
-  role: string;
   tabs: {
     tabCode: string;
     items: {

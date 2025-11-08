@@ -56,7 +56,7 @@ export const FINANCE_ENDPOINTS = {
 // ----------------------- DASHBOARD -----------------------
 export const DASHBOARD_ENDPOINTS = {
   STATS: `${DASHBOARD_BASE_PATH}/statistics`,
-  WORKFLOW_STATUS: (role: string) => `${DASHBOARD_BASE_PATH}/workflows?role=${role}`,
+  WORKFLOW_STATUS: `${DASHBOARD_BASE_PATH}/workflows`,
 } as const;
 
 // ----------------------- INVENTORY -----------------------
