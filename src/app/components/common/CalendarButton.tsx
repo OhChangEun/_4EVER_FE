@@ -49,6 +49,7 @@ export default function CalendarButton({
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <div ref={wrapperRef} className="relative inline-block">
         <IconButton
+          type="button"
           icon="ri-calendar-line"
           label={selectedDate || placeholder}
           variant={selectedDate ? 'soft' : 'secondary'}
