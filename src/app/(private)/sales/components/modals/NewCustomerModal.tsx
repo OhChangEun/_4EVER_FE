@@ -5,9 +5,12 @@ import {
   CustomerData,
   NewCustomerModalProps,
 } from '@/app/(private)/sales/types/NewCustomerModalType';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { postCustomer } from '@/app/(private)/sales/sales.api';
+import { SalesCustomer } from '../../types/SalesCustomerListType';
+import { Page } from '@/app/types/Page';
 const NewCustomerModal = ({ $onClose }: NewCustomerModalProps) => {
+  const queryClient = useQueryClient();
   const [customerData, setCustomerData] = useState<CustomerData>({
     companyName: '',
     businessNumber: '',
@@ -67,16 +70,63 @@ const NewCustomerModal = ({ $onClose }: NewCustomerModalProps) => {
     }));
   };
 
+  // 낙관적 갱신x
+  // const { mutate: createCustomer, isPending } = useMutation({
+  //   mutationFn: postCustomer,
+  //   onSuccess: (data) => {
+  //     alert(`고객이 성공적으로 등록되었습니다.
+  //       `);
+
+  //     $onClose();
+  //   },
+  //   onError: (error) => {
+  //     alert(`고객 등록 중 오류가 발생했습니다. ${error}`);
+  //   },
+  // });
+
+  // 낙관적 갱신
   const { mutate: createCustomer, isPending } = useMutation({
     mutationFn: postCustomer,
-    onSuccess: (data) => {
-      alert(`고객이 성공적으로 등록되었습니다.
-        `);
+    onMutate: async (newCustomer) => {
+      await queryClient.cancelQueries({ queryKey: ['customerList'] });
+      // 이전 데이터 저장
+      const previousData = queryClient.getQueryData<{
+        data: { customers: SalesCustomer[]; page: Page };
+      }>(['customerList']);
+      // 낙관적 업데이트
+      queryClient.setQueryData<{ data: { customers: SalesCustomer[]; page: Page } }>(
+        ['customerList'],
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            data: {
+              ...oldData.data,
+              customers: [newCustomer as unknown as SalesCustomer, ...oldData.data.customers],
+            },
+          };
+        },
+      );
 
+      return { previousData };
+    },
+    onError: (error, _newCustomer, context) => {
+      // error: 오류 객체
+      // _newCustomer: 새로 생성하려던 고객 정보
+      // context: 이전 캐시 데이터 백업용
+      // 에러 시 기존 데이터로 복원
+      if (context?.previousData) {
+        queryClient.setQueryData(['customerList'], context.previousData);
+      }
+      alert(`고객 등록 중 오류가 발생했습니다. ${error}`);
+    },
+    onSuccess: () => {
+      alert('고객이 성공적으로 등록되었습니다.');
       $onClose();
     },
-    onError: (error) => {
-      alert(`고객 등록 중 오류가 발생했습니다. ${error}`);
+    onSettled: () => {
+      // 성공,실패 상관없이 서버 데이터로 최신화
+      queryClient.invalidateQueries({ queryKey: ['customerList'] });
     },
   });
 
