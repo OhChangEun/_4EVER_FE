@@ -5,13 +5,8 @@ import { useQuery } from '@tanstack/react-query';
 import { getCurrentStockMovement } from '../inventory.api';
 import { FormatDate, getMovementColor, getMovementIcon } from '../inventory.utils';
 import StatusLabel from '@/app/components/common/StatusLabel';
-import { useSearchParams } from 'next/navigation';
 
 export default function StockMovement() {
-  const searchParams = useSearchParams();
-  const mockState = searchParams.get('stockMovementMock');
-  const skipQuery = mockState === 'loading' || mockState === 'error';
-
   const {
     data: stockMovementRes,
     isLoading,
@@ -20,7 +15,6 @@ export default function StockMovement() {
     queryKey: ['stockMovement'],
     queryFn: getCurrentStockMovement,
     staleTime: 1000,
-    enabled: !skipQuery,
   });
 
   const stockMovementCount = stockMovementRes?.length ?? 0;
