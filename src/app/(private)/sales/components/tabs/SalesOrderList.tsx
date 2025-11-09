@@ -8,12 +8,13 @@ import { useDebounce } from 'use-debounce';
 import { getOrderList } from '../../sales.api';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
 import {
+  getOrderSearchKeywordOptions,
   ORDER_LIST_TABLE_HEADERS,
-  ORDER_SEARCH_KEYWORD_OPTIONS,
   ORDER_STATUS_OPTIONS,
 } from '@/app/(private)/sales/constant';
 import Pagination from '@/app/components/common/Pagination';
 import StatusLabel from '@/app/components/common/StatusLabel';
+import { useRole } from '@/app/hooks/useRole';
 
 const SalesOrderList = () => {
   const [showOrderDetailModal, setShowOrderDetailModal] = useState(false);
@@ -59,6 +60,9 @@ const SalesOrderList = () => {
 
   const totalPages = pageInfo?.totalPages ?? 1;
 
+  const role = useRole();
+  const orderOptions = getOrderSearchKeywordOptions(role as string);
+
   return (
     <div className="bg-white rounded-lg border border-gray-200 mt-6">
       {/* 헤더 */}
@@ -103,10 +107,12 @@ const SalesOrderList = () => {
           </select>
           <select
             value={searchType}
+            disabled={role === 'CUSTOMER_ADMIN'}
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSearchType(e.target.value)}
-            className="bg-white px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-8"
+            // className="bg-white px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-8"
+            className={`bg-white px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-8 ${role === 'CUSTOMER_ADMIN' ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'border-gray-300 text-gray-900'}`}
           >
-            {ORDER_SEARCH_KEYWORD_OPTIONS.map(({ key, value }) => (
+            {orderOptions.map(({ key, value }) => (
               <option key={key} value={key}>
                 {value}
               </option>
@@ -121,7 +127,9 @@ const SalesOrderList = () => {
                 type="text"
                 value={searchTerm}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-                placeholder="주문번호, 고객명, 담당자로 검색"
+                placeholder={
+                  role === 'CUSTOMER_ADMIN' ? '주문번호로 검색' : '주문번호, 고객명, 담당자로 검색'
+                }
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>

@@ -13,12 +13,13 @@ import { useDebounce } from 'use-debounce';
 import QuoteReviewModal from '../modals/QuoteReviewModal';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
 import {
-  QOUTE_SEARCH_KEYWORD_OPTIONS,
+  getQuoteSearchKeywordOptions,
   QUOTE_LIST_TABLE_HEADERS,
 } from '@/app/(private)/sales/constant';
 import { QUOTE_STATUS_OPTIONS } from '@/app/(private)/sales/constant';
 import Pagination from '@/app/components/common/Pagination';
 import StatusLabel from '@/app/components/common/StatusLabel';
+import { useRole } from '@/app/hooks/useRole';
 
 const SalesQuoteList = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -73,6 +74,8 @@ const SalesQuoteList = () => {
     setShowReviewModal(true);
   };
 
+  const role = useRole();
+  const quoteOptions = getQuoteSearchKeywordOptions(role as string);
   useEffect(() => {
     console.log(debouncedSearchTerm);
   }, [searchTerm]);
@@ -121,10 +124,12 @@ const SalesQuoteList = () => {
             </select>
             <select
               value={searchType}
+              disabled={role === 'CUSTOMER_ADMIN'}
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSearchType(e.target.value)}
-              className="bg-white px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-8"
+              // className="bg-white px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-8"
+              className={`bg-white px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-8 ${role === 'CUSTOMER_ADMIN' ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'border-gray-300 text-gray-900'}`}
             >
-              {QOUTE_SEARCH_KEYWORD_OPTIONS.map(({ key, value }) => (
+              {quoteOptions.map(({ key, value }) => (
                 <option key={key} value={key}>
                   {value}
                 </option>
@@ -134,7 +139,9 @@ const SalesQuoteList = () => {
               <i className="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
               <input
                 type="text"
-                placeholder="견적번호, 고객명, 담당자로 검색..."
+                placeholder={
+                  role === 'CUSTOMER_ADMIN' ? '견적번호로 검색' : '견적번호, 고객명, 담당자로 검색'
+                }
                 value={searchTerm}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-80 bg-white"
