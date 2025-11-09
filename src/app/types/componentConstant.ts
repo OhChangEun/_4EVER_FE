@@ -54,10 +54,34 @@ export const PURCHASE_TABS: Tab[] = [
 
 // 영업 관리 탭 전환
 export const SALES_TABS: Tab[] = [
-  { id: 'quotes', name: '견적 관리', icon: 'ri-file-text-line', component: SalesQuoteList },
-  { id: 'orders', name: '주문 관리', icon: 'ri-shopping-cart-line', component: SalesOrderList },
-  { id: 'customers', name: '고객 관리', icon: 'ri-user-3-line', component: SalesCustomerList },
-  { id: 'analytics', name: '매출 분석', icon: 'ri-bar-chart-line', component: SalesChart },
+  {
+    id: 'quotes',
+    name: '견적 관리',
+    icon: 'ri-file-text-line',
+    component: SalesQuoteList,
+    roles: [...ALL, 'CUSTOMER_ADMIN'],
+  },
+  {
+    id: 'orders',
+    name: '주문 관리',
+    icon: 'ri-shopping-cart-line',
+    component: SalesOrderList,
+    roles: [...ALL, 'CUSTOMER_ADMIN'],
+  },
+  {
+    id: 'customers',
+    name: '고객 관리',
+    icon: 'ri-user-3-line',
+    component: SalesCustomerList,
+    roles: [...ALL],
+  },
+  {
+    id: 'analytics',
+    name: '매출 분석',
+    icon: 'ri-bar-chart-line',
+    component: SalesChart,
+    roles: [...ALL],
+  },
 ];
 
 // 재고 관리 탭 전환

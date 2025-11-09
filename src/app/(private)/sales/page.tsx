@@ -8,6 +8,7 @@ import StatSection from '@/app/components/common/StatSection';
 import { mapSalesStatsToCards } from '@/app/(private)/sales/sales.service';
 import TabNavigation from '@/app/components/common/TabNavigation';
 import { SALES_TABS } from '@/app/types/componentConstant';
+import SalesTabs from './components/tabs/SalesTabs';
 
 export default async function SalesPage() {
   const queryClient = getQueryClient();
@@ -40,7 +41,7 @@ export default async function SalesPage() {
           />
           {/* 탭 콘텐츠 */}
           <Suspense fallback={<div>Loading...</div>}>
-            <TabNavigation tabs={SALES_TABS} />
+            <SalesTabs />
           </Suspense>
         </main>
       </div>
