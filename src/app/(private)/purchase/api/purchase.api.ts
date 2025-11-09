@@ -1,6 +1,8 @@
-import axios from 'axios';
 import { ApiResponse } from '@/app/types/api';
-import { PurchaseStatResponse } from '@/app/(private)/purchase/types/PurchaseStatsType';
+import {
+  PurchaseStatResponse,
+  SupplierPurchaseStatResponse,
+} from '@/app/(private)/purchase/types/PurchaseStatsType';
 import {
   PurchaseOrderDetailResponse,
   PurchaseOrderListResponse,
@@ -24,6 +26,7 @@ import {
 } from '@/app/(private)/purchase/types/PurchaseApiRequestType';
 import { PURCHASE_ENDPOINTS } from '@/app/(private)/purchase/api/purchase.endpoints';
 import { KeyValueItem } from '@/app/types/CommonType';
+import axios from '@/lib/axiosInstance';
 
 // 구매 관리 지표
 export const fetchPurchaseStats = async (): Promise<PurchaseStatResponse | null> => {
@@ -38,6 +41,19 @@ export const fetchPurchaseStats = async (): Promise<PurchaseStatResponse | null>
     return null;
   }
 };
+
+export const fetchSupplierOrdersPurchaseStats =
+  async (): Promise<SupplierPurchaseStatResponse | null> => {
+    try {
+      const res = await axios.get<ApiResponse<SupplierPurchaseStatResponse>>(
+        `${PURCHASE_ENDPOINTS.SUPPLIER_ORDERS_STATISTICS}`,
+      );
+      return res.data.data;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  };
 
 // 구매 요청 목록
 export const fetchPurchaseReqList = async (
