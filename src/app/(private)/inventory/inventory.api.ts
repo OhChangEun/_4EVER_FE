@@ -19,6 +19,7 @@ import {
 } from './types/AddInventoryModalType';
 import { ApiResponse, ApiResponseNoData, INVENTORY_ENDPOINTS } from '@/app/types/api';
 import { Page } from '@/app/types/Page';
+import { ItemResponse } from './types/ItemListType';
 // ----------------------- 재고 통계 -----------------------
 export const getInventoryStats = async (): Promise<InventoryStatResponse> => {
   const res = await axios.get<ApiResponse<InventoryStatResponse>>(INVENTORY_ENDPOINTS.STATS);
@@ -213,3 +214,14 @@ export const postAddMaterial = async (
 
   return res.data;
 };
+
+// 자재 상세 조회
+// export const postItemsInfo = async (body: string[]): Promise<ItemResponse[]> => {
+//   const res = await axios.post<ApiResponse<ItemResponse[]>>(
+//     `${INVENTORY_ENDPOINTS.MATERIALS_LIST}`,
+//     {
+//       itemIds: body,
+//     },
+//   );
+//   return res.data.data;
+// };

@@ -18,10 +18,10 @@ export default async function DashboardPage() {
 
   await queryClient.prefetchQuery({
     queryKey: ['workflowStatus'],
-    queryFn: () => getWorkflowStatus('SD_USER'), // 예시로 'SD_USER' 역할 사용
+    queryFn: getWorkflowStatus,
   });
 
-  const workflowData = await getWorkflowStatus('SD_USER');
+  const workflowData = await getWorkflowStatus();
 
   const dehydratedState = dehydrate(queryClient);
   const dashboardStatsData = mapDashboardStatsToCards(dashboardStats);

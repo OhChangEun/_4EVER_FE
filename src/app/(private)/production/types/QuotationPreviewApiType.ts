@@ -18,10 +18,7 @@ export interface QuotationPreviewData {
 }
 
 // 제안 납기 계획 프리뷰 결과 최상위 응답 타입
-export interface QuotationPreviewResponse {
-  content: QuotationPreviewData[];
-  page: Page;
-}
+export type QuotationPreviewResponse = QuotationPreviewData[];
 
 // 응답 요청시 request params
 export interface FetchQuotationPreviewParams extends PageRequest {

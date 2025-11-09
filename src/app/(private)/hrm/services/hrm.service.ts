@@ -14,18 +14,6 @@ export const mapHrmStatsToCards = (data: HrmStatResponse): Record<string, StatCa
           '명',
         ),
         createStatCard(
-          '진행 중인 교육',
-          stats.ongoingProgramCount.value,
-          stats.ongoingProgramCount.delta_rate,
-          '건',
-        ),
-        createStatCard(
-          '완료된 교육',
-          stats.completedProgramCount.value,
-          stats.completedProgramCount.delta_rate,
-          '건',
-        ),
-        createStatCard(
           '신규 입사자 수',
           stats.newEmployeeCount.value,
           stats.newEmployeeCount.delta_rate,

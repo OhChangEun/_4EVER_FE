@@ -26,6 +26,9 @@ import { PurchaseReqParams } from '@/app/(private)/purchase/types/PurchaseApiReq
 import { useModal } from '@/app/components/common/modal/useModal';
 import { useDropdown } from '@/app/hooks/useDropdown';
 import { formatDateTime } from '@/app/utils/date';
+import SearchBar from '@/app/components/common/SearchBar';
+import { useDebounce } from 'use-debounce';
+// import CalendarButton from '@/app/components/common/Calendar';
 
 export default function PurchaseRequestListTab() {
   const { openModal } = useModal();
@@ -45,7 +48,7 @@ export default function PurchaseRequestListTab() {
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [selectedSearchType, setSelectedSearchType] = useState<string>('');
   const [keyword, setKeyword] = useState<string>('');
-  const [showRequestModal, setShowRequestModal] = useState(false);
+  const [debouncedKeyword] = useDebounce(keyword, 200);
 
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -59,16 +62,15 @@ export default function PurchaseRequestListTab() {
     (): PurchaseReqParams => ({
       statusCode: selectedStatus,
       type: selectedSearchType,
-      keyword: keyword,
-      startDate: startDate,
-      endDate: endDate,
+      keyword: debouncedKeyword,
+      startDate,
+      endDate,
       page: currentPage - 1,
       size: pageSize,
     }),
-    [selectedStatus, selectedSearchType, keyword, startDate, endDate, currentPage],
+    [selectedStatus, selectedSearchType, debouncedKeyword, startDate, endDate, currentPage],
   );
 
-  // React Query로 요청 목록 가져오기
   const {
     data: requestData,
     isLoading,
@@ -115,6 +117,12 @@ export default function PurchaseRequestListTab() {
     });
   };
 
+  const handleViewRequestModal = () => {
+    openModal(PurchaseRequestModal, {
+      title: '구매 요청 작성',
+    });
+  };
+
   const handleApprove = (prId: string) => {
     if (confirm('해당 요청을 승인하시겠습니까?')) {
       approvePurchaseRequest(prId);
@@ -131,7 +139,13 @@ export default function PurchaseRequestListTab() {
     <>
       {/* 필터 헤더 */}
       <div className="pb-4 border-b border-gray-200 flex justify-between items-center">
-        <h3 className="text-lg font-semibold text-gray-900">구매 요청 목록</h3>
+        {/* <CalendarButton /> */}
+        <DateRangePicker
+          startDate={startDate}
+          onStartDateChange={setStartDate}
+          endDate={endDate}
+          onEndDateChange={setEndDate}
+        />
         <div className="flex items-center space-x-4">
           <Dropdown
             placeholder="전체 상태"
@@ -142,29 +156,22 @@ export default function PurchaseRequestListTab() {
               setCurrentPage(1);
             }}
           />
-          <Dropdown
-            placeholder="검색 타입"
-            items={purchaseRequisitionSearchTypeOptions}
-            value={selectedSearchType}
-            onChange={(type: string): void => {
-              setSelectedSearchType(type);
-              setCurrentPage(1);
-            }}
-          />
 
-          <DateRangePicker
-            startDate={startDate}
-            onStartDateChange={setStartDate}
-            endDate={endDate}
-            onEndDateChange={setEndDate}
+          <SearchBar
+            options={purchaseRequisitionSearchTypeOptions}
+            onTypeChange={(type) => {
+              setSelectedSearchType(type);
+            }}
+            onKeywordSearch={(keyword) => {
+              setKeyword(keyword);
+              setCurrentPage(1); // 검색 시 페이지 초기화
+            }}
+            defaultType={selectedStatus}
+            placeholder="검색어를 입력하세요"
           />
 
           {/* 구매 요청 작성 버튼 */}
-          <IconButton
-            label="구매 요청 작성"
-            icon="ri-add-line"
-            onClick={() => setShowRequestModal(true)}
-          />
+          <IconButton label="구매 요청 작성" icon="ri-add-line" onClick={handleViewRequestModal} />
         </div>
       </div>
 
@@ -259,16 +266,6 @@ export default function PurchaseRequestListTab() {
           totalPages={totalPages}
           totalElements={pageInfo?.totalElements}
           onPageChange={(page) => setCurrentPage(page)}
-        />
-      )}
-      {/* 구매 요청 작성 모달 */}
-      {showRequestModal && (
-        <PurchaseRequestModal
-          onClose={() => setShowRequestModal(false)}
-          // onSubmit={() => {
-          //   setShowRequestModal(false);
-          //   refetch();
-          // }}
         />
       )}
     </>

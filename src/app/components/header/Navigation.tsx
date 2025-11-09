@@ -1,26 +1,54 @@
 'use client';
 
+import { useRole } from '@/app/hooks/useRole';
+import { FCM, HRM, IM, MM, PP, SD } from '@/lib/role';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const NAV_ITEMS = [
-  { href: '/dashboard', label: '대시보드' },
-  { href: '/purchase', label: '구매관리' },
-  { href: '/sales', label: '영업관리' },
-  { href: '/inventory', label: '재고관리' },
-  { href: '/finance', label: '재무관리' },
-  { href: '/hrm', label: '인적자원관리' },
-  { href: '/production', label: '생산관리' },
+  {
+    href: '/dashboard',
+    label: '대시보드',
+    roles: ['ALL_ADMIN', ...MM, ...HRM, ...FCM, ...IM, ...PP, ...SD, 'CUSTOMER_ADMIN'],
+  },
+  {
+    href: '/purchase',
+    label: '구매관리',
+    roles: ['ALL_ADMIN', ...MM, ...SD, ...IM, ...PP, 'CUSTOMER_ADMIN'],
+  },
+  {
+    href: '/sales',
+    label: '영업관리',
+    roles: ['ALL_ADMIN', ...MM, ...SD, ...IM, ...PP, 'SUPPLIER_ADMIN'],
+  },
+  { href: '/inventory', label: '재고관리', roles: ['ALL_ADMIN', ...MM, ...SD, ...IM, ...PP] },
+  {
+    href: '/finance',
+    label: '재무관리',
+    roles: ['ALL_ADMIN', ...FCM, 'CUSTOMER_ADMIN', 'SUPPLIER_ADMIN'],
+  },
+  { href: '/hrm', label: '인적자원관리', roles: ['ALL_ADMIN', ...HRM] },
+  { href: '/production', label: '생산관리', roles: ['ALL_ADMIN', ...MM, ...SD, ...IM, ...PP] },
 ] as const;
 
 export default function Navigation() {
   const pathname = usePathname();
+  const role = useRole();
+  // const role = 'ALL_ADMIN';
+  // const role = 'MM_USER';
+  // const role = 'SD_USER';
+  // const role = 'IM_USER';
+  // const role = 'FCM_USER';
+  // const role = 'HRM_USER';
+  // const role = 'PP_USER';
+
+  const accessibleNavItems = NAV_ITEMS.filter((item) => item.roles.includes(role as string));
 
   const isActive = (href: string) => pathname === href;
 
   return (
     <nav className="hidden lg:flex">
-      {NAV_ITEMS.map((item) => (
+      {accessibleNavItems.map((item) => (
         <Link
           key={item.href}
           href={item.href}

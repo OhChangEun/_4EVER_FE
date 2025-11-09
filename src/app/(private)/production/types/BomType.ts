@@ -25,20 +25,32 @@ export interface Process {
   runTime: number;
 }
 
-export interface BomItem {
-  id: string;
-  productCode: string;
-  productName: string;
-  version: string;
-  unit: string;
-  status: BomStatus;
-  createdDate: string;
-  lastModified: string;
-  components: Component[];
-  processes: Process[];
+export interface ItemData {
+  itemId: string;
+  quantity: number;
+  operationId: string;
+  sequence: number;
 }
 
 export type ComponentRow = Component;
 
 export type MaterialSupplierMap = Record<string, string[]>;
 export type SupplierProcessMap = Record<string, string[]>;
+
+// bom 생성 시 body
+export interface BomRequestBody {
+  productName: string;
+  unit: string;
+  items: ItemData[];
+}
+
+// bom 자재 목록 자동 load
+export interface MaterialResponse {
+  productId: string;
+  productName: string;
+  category: string;
+  productNumber: string;
+  uomName: string;
+  unitPrice: number;
+  supplierName: string;
+}

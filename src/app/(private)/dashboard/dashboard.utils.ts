@@ -1,3 +1,5 @@
+import { FCM, HRM, IM, MM, PP, SD } from '@/lib/role';
+
 export const getTabCodeText = (tabCode: string | undefined) => {
   switch (tabCode) {
     case 'PO':
@@ -35,12 +37,6 @@ export const getColorClasses = (color: string) => {
   return colorMap[color as keyof typeof colorMap] || colorMap.blue;
 };
 
-const MM = ['MM_USER', 'MM_ADMIN'];
-const SD = ['SD_USER', 'SD_ADMIN'];
-const IM = ['IM_USER', 'IM_ADMIN'];
-const FCM = ['FCM_USER', 'FCM_ADMIN'];
-const HRM = ['HRM_USER', 'HRM_ADMIN'];
-const PP = ['PP_USER', 'PP_ADMIN'];
 export const allActions = [
   // ------------ 구매 관리 ------------
   {

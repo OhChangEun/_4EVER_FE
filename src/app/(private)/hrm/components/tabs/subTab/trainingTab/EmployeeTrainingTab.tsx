@@ -1,10 +1,6 @@
 'use client';
 
-import {
-  fetchDepartmentsList,
-  fetchPositionsList,
-  fetchTrainingList,
-} from '@/app/(private)/hrm/api/hrm.api';
+import { fetchDepartmentsDropdown, fetchTrainingList } from '@/app/(private)/hrm/api/hrm.api';
 import {
   TrainingListData,
   TrainingRequestParams,
@@ -12,15 +8,25 @@ import {
 import Dropdown from '@/app/components/common/Dropdown';
 import { useModal } from '@/app/components/common/modal/useModal';
 import Pagination from '@/app/components/common/Pagination';
-import { KeyValueItem } from '@/app/types/CommonType';
 import { useQuery } from '@tanstack/react-query';
 import React, { useState, useMemo } from 'react';
 import TrainingDetailModal from '@/app/(private)/hrm/components/modals/TrainingDetailModal';
 import AddEmployeeTrainingModal from '@/app/(private)/hrm/components/modals/AddEmployeeTrainingModal';
+import { useDropdown } from '@/app/hooks/useDropdown';
+import Input from '@/app/components/common/Input';
+import { useDebouncedKeyword } from '@/app/hooks/useDebouncedKeyword';
 
 export default function EmployeeTrainingTab() {
   // --- 모달 출력 ---
   const { openModal } = useModal();
+  const { keyword, handleKeywordChange, debouncedKeyword } = useDebouncedKeyword();
+
+  // 부서 드롭다운
+  const { options: departmentsOptions } = useDropdown(
+    'departmentsDropdown',
+    fetchDepartmentsDropdown,
+    'include',
+  );
 
   // --- 드롭다운 ---
   const [selectedDepartment, setSelectedDepartment] = useState(''); // 부서
@@ -29,37 +35,14 @@ export default function EmployeeTrainingTab() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  const [employeeSearchTerm, setEmployeeSearchTerm] = useState('');
-
-  const {
-    data: departmentsData,
-    isLoading: isDeptLoading,
-    isError: isDeptError,
-  } = useQuery({
-    queryKey: ['departmentsList'],
-    queryFn: fetchDepartmentsList,
-    staleTime: Infinity,
-  });
-
-  const departmentsOptions: KeyValueItem[] = useMemo(() => {
-    const departmentList = departmentsData?.departments ?? [];
-
-    return [
-      { key: '', value: '전체 부서' },
-      ...departmentList.map((item) => ({
-        key: item.departmentId,
-        value: item.departmentName,
-      })),
-    ];
-  }, [departmentsData]);
-
   const trainingQueryParams = useMemo(
     (): TrainingRequestParams => ({
       department: selectedDepartment || undefined,
+      name: debouncedKeyword,
       page: currentPage - 1,
       size: pageSize,
     }),
-    [selectedDepartment, currentPage],
+    [selectedDepartment, debouncedKeyword, currentPage],
   );
 
   const {
@@ -109,20 +92,12 @@ export default function EmployeeTrainingTab() {
             }}
           />
 
-          {/* 직원 이름 검색 */}
-          <div className="relative flex-1 max-w-xs">
-            <input
-              type="text"
-              placeholder="직원 이름 검색..."
-              value={employeeSearchTerm}
-              onChange={(e) => {
-                setEmployeeSearchTerm(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-            <i className="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-          </div>
+          <Input
+            value={keyword}
+            onChange={handleKeywordChange}
+            icon="ri-search-line"
+            placeholder="직원 이름 검색"
+          />
         </div>
       </div>
 
@@ -175,7 +150,7 @@ export default function EmployeeTrainingTab() {
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {training.lastTrainingDate.split('T')[0]}
+                  {training.lastTrainingDate?.split('T')[0]}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div className="flex space-x-2">

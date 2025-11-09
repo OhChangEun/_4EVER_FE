@@ -5,7 +5,6 @@ import AttendanceManagement from '@/app/(private)/hrm/components/tabs/mainTab/At
 import TrainingManagement from '@/app/(private)/hrm/components/tabs/mainTab/TrainingManagement';
 import EmployeesTab from '@/app/(private)/hrm/components/tabs/subTab/employeeTab/EmployeesTab';
 import DepartmentsTab from '@/app/(private)/hrm/components/tabs/subTab/employeeTab/DepartmentsTab';
-import PositionsTab from '@/app/(private)/hrm/components/tabs/subTab/employeeTab/PositionsTab';
 import AttendanceTab from '@/app/(private)/hrm/components/tabs/subTab/attendanceTab/AttendanceTab';
 import LeaveTab from '@/app/(private)/hrm/components/tabs/subTab/attendanceTab/LeaveTab';
 import AvailableProgramTab from '@/app/(private)/hrm/components/tabs/subTab/trainingTab/AvailableProgramTab';
@@ -52,12 +51,6 @@ export const HR_TABS: Tab[] = [
     name: '부서관리',
     icon: 'ri-building-line',
     component: DepartmentsTab,
-  },
-  {
-    id: 'positions',
-    name: '직급관리',
-    icon: 'ri-shield-star-line',
-    component: PositionsTab,
   },
 ];
 

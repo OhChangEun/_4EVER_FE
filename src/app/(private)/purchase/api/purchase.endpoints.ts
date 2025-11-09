@@ -17,6 +17,8 @@ export const PURCHASE_ENDPOINTS = {
 
   // --- 구매 요청 ---
   PURCHASE_REQUISITIONS: `${PURCHASE_BASE_PATH}/purchase-requisitions`, // 구매 요청 목록 조회, 비재고성 자재 구매 요청서 생성
+  STOCK_PURCHASE_REQUISITIONS: `${PURCHASE_BASE_PATH}/stock-purchase-requisitions`, // 재고성 자재 구매 요청서 생성
+
   PURCHASE_REQUISITION_DETAIL: (prId: string) =>
     `${PURCHASE_BASE_PATH}/purchase-requisitions/${prId}`, // 구매 요청서 상세조회, 수정, 삭제
   PURCHASE_REQUISITION_RELEASE: (prId: string) =>
