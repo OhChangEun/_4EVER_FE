@@ -1,6 +1,8 @@
-import axios from 'axios';
 import { SALES_ENDPOINTS, ApiResponse, ApiResponseNoData } from '@/app/types/api';
-import { SalesStatResponse } from '@/app/(private)/sales/types/SalesStatsType';
+import {
+  CustomerSalesStatResponse,
+  SalesStatResponse,
+} from '@/app/(private)/sales/types/SalesStatsType';
 import { Quote, QuoteQueryParams } from '@/app/(private)/sales/types/SalesQuoteListType';
 import { Inventories, QuoteDetail } from '@/app/(private)/sales/types/QuoteDetailModalType';
 import { CustomerDetail } from '@/app/(private)/sales/types/SalesCustomerDetailType';
@@ -16,10 +18,18 @@ import { InventoryCheckRes } from './types/QuoteReviewModalType';
 import { CustomerEditData, CustomerResponse } from './types/CustomerEditModalType';
 import { Page } from '@/app/types/Page';
 import { ItemResponse, NewOrderRequest } from './types/NewOrderModalType';
+import axios from '@/lib/axiosInstance';
 
 // ----------------------- 통계 지표 -----------------------
 export const getSalesStats = async (): Promise<SalesStatResponse> => {
   const res = await axios.get<ApiResponse<SalesStatResponse>>(SALES_ENDPOINTS.STATS);
+  return res.data.data;
+};
+
+export const getCustomerSalesStats = async (): Promise<CustomerSalesStatResponse> => {
+  const res = await axios.get<ApiResponse<CustomerSalesStatResponse>>(
+    SALES_ENDPOINTS.CSUTOMER_STATISTICS,
+  );
   return res.data.data;
 };
 
