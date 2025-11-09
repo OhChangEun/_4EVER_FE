@@ -61,8 +61,12 @@ export default async function SalesPage() {
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* 페이지 헤더 */}
           <StatSection
-            title="영업관리"
-            subTitle="주문 및 고객 관리 시스템"
+            title={role === 'CUSTOMER_ADMIN' ? '구매 관리' : '영업관리'}
+            subTitle={
+              role === 'CUSTOMER_ADMIN'
+                ? '주문, 견적 및 고객 관리 시스템'
+                : '주문 및 고객 관리 시스템'
+            }
             statsData={salesStatsData}
           />
           {/* 탭 콘텐츠 */}
