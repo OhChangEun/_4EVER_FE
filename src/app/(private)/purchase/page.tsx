@@ -20,8 +20,15 @@ import {
   fetchSupplierStatusDropdown,
 } from '@/app/(private)/purchase/api/purchase.api';
 import { PurchaseReqParams } from '@/app/(private)/purchase/types/PurchaseApiRequestType';
+import { cookies } from 'next/headers';
 
 export default async function PurchasePage() {
+  const cookieStore = await cookies();
+  const role = cookieStore.get('role')?.value ?? null;
+
+  console.log(role);
+
+  const isSupplier = role === 'SUPPLIER_ADMIN';
   const queryClient = getQueryClient();
 
   const initialParams: PurchaseReqParams = {
@@ -88,8 +95,8 @@ export default async function PurchasePage() {
           {purchaseStatsData ? (
             //구매 관리 주요 지표
             <StatSection
-              title="구매 및 조달 관리"
-              subTitle="구매 요청부터 발주까지 전체 프로세스 관리"
+              title={isSupplier ? '영업관리' : '구매 및 조달 관리'} // 공급사인 경우 분기
+              subTitle={isSupplier ? '발주서 관리' : '구매 요청부터 발주까지 전체 프로세스 관리'} // 공급사인 경우 분기
               statsData={purchaseStatsData}
             />
           ) : (
