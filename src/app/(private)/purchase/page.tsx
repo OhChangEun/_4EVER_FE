@@ -7,7 +7,7 @@ import {
   mapPurchaseStatsToCards,
   mapSupplierPurchaseStatsToCards,
 } from '@/app/(private)/purchase/services/purchase.service';
-import { PURCHASE_TABS } from '@/app/(private)/purchase/constants';
+import { PURCHASE_TABS, SUPPLIER_PURCHASE_TABS } from '@/app/(private)/purchase/constants';
 import TabNavigation from '@/app/components/common/TabNavigation';
 import StatSection from '@/app/components/common/StatSection';
 import ErrorMessage from '@/app/components/common/ErrorMessage';
@@ -117,9 +117,14 @@ export default async function PurchasePage() {
             <ErrorMessage message={'구매 통계 데이터를 불러오는데 실패했습니다.'} />
           )}
 
-          {/* 구매 관리 탭 / 발주서 탭 / 공급업체 탭  */}
           <Suspense fallback={<div>Loading...</div>}>
-            <TabNavigation tabs={PURCHASE_TABS} />
+            {isSupplier ? (
+              //  구매 관리 탭 / 발주서 탭 / 공급업체 탭
+              <TabNavigation tabs={SUPPLIER_PURCHASE_TABS} />
+            ) : (
+              // 발주서 탭
+              <TabNavigation tabs={PURCHASE_TABS} />
+            )}
           </Suspense>
         </main>
       </div>

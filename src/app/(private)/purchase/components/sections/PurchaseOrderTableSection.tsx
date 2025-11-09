@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { PurchaseOrder } from '@/app/(private)/purchase/types/PurchaseOrderType';
+import { useRole } from '@/app/hooks/useRole';
 
 export interface PurchaseOrderTableProps {
   currentOrders: PurchaseOrder[];
@@ -15,6 +16,9 @@ export default function PurchaseOrderTable({
   handleApprove,
   handleReject,
 }: PurchaseOrderTableProps) {
+  const role = useRole();
+  const isSupplier = role === 'SUPPLIER_ADMIN';
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full">
@@ -78,7 +82,7 @@ export default function PurchaseOrderTable({
                   >
                     <i className="ri-eye-line"></i>
                   </button>
-                  {order.statusCode === 'PENDING' && (
+                  {isSupplier && order.statusCode === 'PENDING' && (
                     <>
                       <button
                         onClick={() => handleApprove(order.purchaseOrderId)}
