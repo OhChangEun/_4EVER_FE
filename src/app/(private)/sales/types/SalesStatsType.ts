@@ -5,4 +5,8 @@ interface SalesStat {
   new_orders_count: Stat;
 }
 
+interface CustomerStat {
+  quotation_count: Stat;
+}
 export type SalesStatResponse = StatResponse<SalesStat>;
+export type CustomerSalesStatResponse = StatResponse<CustomerStat>;
