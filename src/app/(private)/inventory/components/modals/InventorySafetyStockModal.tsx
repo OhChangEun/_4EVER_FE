@@ -35,15 +35,15 @@ const InventorySafetyStockModal = ({
     mutationFn: PatchSafetyStock,
 
     onMutate: async (variables) => {
-      await queryClient.cancelQueries({ queryKey: ['customerDetail', $selectedStock.itemId] });
+      await queryClient.cancelQueries({ queryKey: ['inventoryDetail', $selectedStock.itemId] });
 
       const previousData = queryClient.getQueryData<{ data: InventoryDetailResponse }>([
-        'customerDetail',
+        'inventoryDetail',
         $selectedStock.itemId,
       ]);
 
       queryClient.setQueryData<{ data: InventoryDetailResponse }>(
-        ['customerDetail', $selectedStock.itemId],
+        ['inventoryDetail', $selectedStock.itemId],
         (oldData) => {
           if (!oldData) return oldData;
 
@@ -62,7 +62,7 @@ const InventorySafetyStockModal = ({
 
     onError: (err, variables, context) => {
       if (context?.previousData) {
-        queryClient.setQueryData(['customerDetail', $selectedStock.itemId], context.previousData);
+        queryClient.setQueryData(['inventoryDetail', $selectedStock.itemId], context.previousData);
       }
       alert(`등록 중 오류가 발생했습니다. ${err}`);
     },
@@ -73,7 +73,7 @@ const InventorySafetyStockModal = ({
     },
 
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['customerDetail', $selectedStock.itemId] });
+      queryClient.invalidateQueries({ queryKey: ['inventoryDetail', $selectedStock.itemId] });
     },
   });
   return (

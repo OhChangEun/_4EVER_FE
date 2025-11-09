@@ -68,7 +68,7 @@ const InventoryDetailModal = ({
     isLoading,
     isError,
   } = useQuery<InventoryDetailResponse>({
-    queryKey: ['customerDetail', $selectedItemId],
+    queryKey: ['inventoryDetail', $selectedItemId],
     queryFn: () => getInventoryDetail($selectedItemId),
     enabled: !!$selectedItemId,
   });
