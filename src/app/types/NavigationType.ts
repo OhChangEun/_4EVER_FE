@@ -5,4 +5,5 @@ export interface Tab {
   name: string;
   icon?: string;
   component: ComponentType;
+  roles?: string[];
 }

@@ -187,7 +187,7 @@ const InventoryDetailModal = ({
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">최종 수정:</span>
                   <span className="text-sm font-medium text-gray-900">
-                    {inventoryDetailRes?.lastModified.slice(0, 10) ?? ''}
+                    {inventoryDetailRes?.lastModified?.slice(0, 10) ?? ''}
                   </span>
                 </div>
               </div>
