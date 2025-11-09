@@ -105,7 +105,7 @@ const InventoryMoveModal = ({ $setShowMoveModal, $selectedStock }: InventoryMove
     },
 
     onSuccess: (data) => {
-      alert(`${data.status} : ${data.message}`);
+      alert(`재고가 이동되었습니다.`);
       $setShowMoveModal(false);
     },
 
