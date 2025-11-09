@@ -2,32 +2,80 @@
 
 import { FormEvent, useState } from 'react';
 import { InventorySafetyStockModalProps } from '../../types/InventorySafetyStockModalType';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { PatchSafetyStock } from '../../inventory.api';
+import { InventoryDetailResponse } from '../../types/InventoryDetailModalType';
 
 const InventorySafetyStockModal = ({
   $setShowSafetyStockModal,
   $selectedStock,
 }: InventorySafetyStockModalProps) => {
+  const queryClient = useQueryClient();
   const [newSafetyStock, setNewSafetyStock] = useState<number>(0);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     editSafetyStock({ itemId: $selectedStock?.itemId as string, safetyStock: newSafetyStock });
   };
+  // 낙관적 업데이트x
+  // const { mutate: editSafetyStock } = useMutation({
+  //   mutationFn: PatchSafetyStock,
+  //   onSuccess: (data) => {
+  //     alert(`${data.status} : ${data.message}
+  //     `);
+  //     $setShowSafetyStockModal(false);
+  //   },
+  //   onError: (error) => {
+  //     alert(` 등록 중 오류가 발생했습니다. ${error}`);
+  //   },
+  // });
 
+  // 낙관적 업데이트
   const { mutate: editSafetyStock } = useMutation({
     mutationFn: PatchSafetyStock,
+
+    onMutate: async (variables) => {
+      await queryClient.cancelQueries({ queryKey: ['customerDetail', $selectedStock.itemId] });
+
+      const previousData = queryClient.getQueryData<{ data: InventoryDetailResponse }>([
+        'customerDetail',
+        $selectedStock.itemId,
+      ]);
+
+      queryClient.setQueryData<{ data: InventoryDetailResponse }>(
+        ['customerDetail', $selectedStock.itemId],
+        (oldData) => {
+          if (!oldData) return oldData;
+
+          return {
+            ...oldData,
+            data: {
+              ...oldData.data,
+              safetyStock: variables.safetyStock,
+            },
+          };
+        },
+      );
+
+      return { previousData };
+    },
+
+    onError: (err, variables, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(['customerDetail', $selectedStock.itemId], context.previousData);
+      }
+      alert(`등록 중 오류가 발생했습니다. ${err}`);
+    },
+
     onSuccess: (data) => {
-      alert(`${data.status} : ${data.message}
-      `);
+      alert(`${data.status} : ${data.message}`);
       $setShowSafetyStockModal(false);
     },
-    onError: (error) => {
-      alert(` 등록 중 오류가 발생했습니다. ${error}`);
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['customerDetail', $selectedStock.itemId] });
     },
   });
-
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
