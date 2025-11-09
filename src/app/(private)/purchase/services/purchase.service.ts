@@ -1,5 +1,8 @@
 // services/purchase.ts
-import { PurchaseStatResponse } from '@/app/(private)/purchase/types/PurchaseStatsType';
+import {
+  PurchaseStatResponse,
+  SupplierPurchaseStatResponse,
+} from '@/app/(private)/purchase/types/PurchaseStatsType';
 import { createStatCard } from '@/lib/CreateStatCard';
 import { StatCardType } from '@/app/types/StatType';
 
@@ -17,23 +20,28 @@ export const mapPurchaseStatsToCards = (
           '건',
         ),
         createStatCard(
-          '구매 승인 대기',
-          stats.purchaseApprovalPendingCount.value,
-          stats.purchaseApprovalPendingCount.delta_rate,
-          '건',
-        ),
-        createStatCard(
           '발주 금액',
           stats.purchaseOrderAmount.value,
           stats.purchaseOrderAmount.delta_rate,
           '₩',
         ),
-        createStatCard(
-          '발주 승인 대기',
-          stats.purchaseOrderApprovalPendingCount.value,
-          stats.purchaseOrderApprovalPendingCount.delta_rate,
-          '건',
-        ),
+      ];
+
+      acc[period] = cards;
+      return acc;
+    },
+    {} as Record<string, StatCardType[]>,
+  );
+};
+
+// 변환 함수
+export const mapSupplierPurchaseStatsToCards = (
+  data: SupplierPurchaseStatResponse,
+): Record<string, StatCardType[]> => {
+  return Object.entries(data).reduce(
+    (acc, [period, stats]) => {
+      const cards: StatCardType[] = [
+        createStatCard('발주 건수', stats.orderCount.value, stats.orderCount.delta_rate, '건'),
       ];
 
       acc[period] = cards;

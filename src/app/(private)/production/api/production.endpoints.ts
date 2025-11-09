@@ -36,7 +36,7 @@ export const PRODUCTION_ENDPOINTS = {
   QUOTATION_CONFIRM: `${PRODUCTION_BASE_PATH}/quotations/confirm`, // 제안 납기 확정
 
   // PP 통계
-  STATISTICS: `${PRODUCTION_BASE_PATH}/statistics`, // PP 통계 조회
+  STATISTICS: `${PRODUCTION_BASE_PATH}/statistic`, // PP 통계 조회
 
   // 드롭다운 관련
   MPS_TOGGLE_PRODUCTS: `${PRODUCTION_BASE_PATH}/mps/boms/toggle`,

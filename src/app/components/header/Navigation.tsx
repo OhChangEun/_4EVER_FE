@@ -14,12 +14,12 @@ const NAV_ITEMS = [
   {
     href: '/purchase',
     label: '구매관리',
-    roles: ['ALL_ADMIN', ...MM, ...SD, ...IM, ...PP, 'CUSTOMER_ADMIN'],
+    roles: ['ALL_ADMIN', ...MM, ...SD, ...IM, ...PP, 'SUPPLIER_ADMIN'],
   },
   {
     href: '/sales',
     label: '영업관리',
-    roles: ['ALL_ADMIN', ...MM, ...SD, ...IM, ...PP, 'SUPPLIER_ADMIN'],
+    roles: ['ALL_ADMIN', ...MM, ...SD, ...IM, ...PP, 'CUSTOMER_ADMIN'],
   },
   { href: '/inventory', label: '재고관리', roles: ['ALL_ADMIN', ...MM, ...SD, ...IM, ...PP] },
   {
@@ -34,6 +34,7 @@ const NAV_ITEMS = [
 export default function Navigation() {
   const pathname = usePathname();
   const role = useRole();
+
   // const role = 'ALL_ADMIN';
   // const role = 'MM_USER';
   // const role = 'SD_USER';
@@ -42,7 +43,22 @@ export default function Navigation() {
   // const role = 'HRM_USER';
   // const role = 'PP_USER';
 
-  const accessibleNavItems = NAV_ITEMS.filter((item) => item.roles.includes(role as string));
+  // role에 따라 label 변경
+  const accessibleNavItems = NAV_ITEMS.filter((item) => item.roles.includes(role as string)).map(
+    (item) => {
+      let label = item.label;
+
+      if (role === 'SUPPLIER_ADMIN' && item.href === '/purchase') {
+        label = '영업관리'; // SUPPLIER_ADMIN이면 구매관리 -> 영업관리
+      }
+
+      if (role === 'CUSTOMER_ADMIN' && item.href === '/sales') {
+        label = '구매관리'; // CUSTOMER_ADMIN이면 영업관리 -> 구매관리
+      }
+
+      return { ...item, label };
+    },
+  );
 
   const isActive = (href: string) => pathname === href;
 

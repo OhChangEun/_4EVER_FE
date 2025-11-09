@@ -6,7 +6,6 @@ import { STAT_PERIODS } from '@/app/(private)/purchase/constants';
 import PageTitle from '@/app/components/common/PageTitle';
 import StatCardList from '@/app/components/statCard/StatCardList';
 import SlidingNavBar from './SlidingNavBar';
-import { useRole } from '@/app/hooks/useRole';
 
 interface StatSectionProps {
   title: string;
