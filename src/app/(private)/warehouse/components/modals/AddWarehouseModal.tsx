@@ -97,7 +97,7 @@ const AddWarehouseModal = ({ $setShowAddModal }: AddWarehouseModalProps) => {
     },
 
     onSuccess: (data) => {
-      alert(`${data.status} : ${data.message}`);
+      alert(`창고 등록이 완료되었습니다.`);
       $setShowAddModal(false);
     },
 
