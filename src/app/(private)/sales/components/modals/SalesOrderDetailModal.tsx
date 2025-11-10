@@ -172,16 +172,6 @@ const SalesOrderDetailModal = ({ $onClose, $selectedSalesOrderId }: SalesOrderDe
                   </div>
                 )}
               </div>
-
-              {/* 모달 푸터 */}
-              <div className="flex justify-end space-x-3 p-6 border-t border-gray-200">
-                <button
-                  onClick={$onClose}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 whitespace-nowrap cursor-pointer"
-                >
-                  닫기
-                </button>
-              </div>
             </>
           )}
         </div>
