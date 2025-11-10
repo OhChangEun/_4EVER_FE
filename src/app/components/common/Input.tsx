@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 
 // InputLabel 컴포넌트 분리 (같은 파일에 정의한다고 가정)
 interface InputLabelProps {
@@ -92,6 +92,7 @@ export default function Input({
   onChange,
   ...props
 }: InputProps) {
+  const [isFocused, setIsFocused] = useState(false);
   const inputId = id;
 
   const base = ' w-full text-gray-800 focus:outline-none transition-colors placeholder-gray-300';
@@ -197,6 +198,8 @@ export default function Input({
           disabled={disabled}
           required={required}
           onChange={handleChange}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
           {...(type !== 'tel' ? { maxLength } : {})}
           {...props}
         />
