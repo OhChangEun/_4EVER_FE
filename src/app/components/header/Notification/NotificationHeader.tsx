@@ -1,3 +1,5 @@
+import Button from '../../common/Button';
+
 interface NotificationHeaderProps {
   notificationCount: number;
   onReadAll: () => void;
@@ -9,19 +11,14 @@ export default function NotificationHeader({
   onReadAll,
 }: NotificationHeaderProps) {
   return (
-    <div className="px-5 py-3 border-b border-gray-200">
+    <div className="pl-5 pr-2.5 py-3 border-b border-gray-200">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <i className="pt-0.5 ri-notification-3-fill text-blue-300"></i>
-          <h3 className="text-sm font-bold text-gray-700">알림</h3>
+          <i className="text-lg pt-1 ri-notification-3-fill text-blue-500"></i>
+          <h3 className="text-[17px] font-semibold text-gray-700">알림</h3>
         </div>
         {notificationCount > 0 && (
-          <button
-            onClick={onReadAll}
-            className="pt-1 text-xs text-gray-500 hover:text-blue-600 transition-colors font-medium cursor-pointer"
-          >
-            전체 읽음
-          </button>
+          <Button label="전체 읽음" size="sm" variant="ghost" onClick={onReadAll} />
         )}
       </div>
     </div>

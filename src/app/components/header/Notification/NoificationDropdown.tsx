@@ -123,13 +123,10 @@ export default function NotificationDropdown() {
               ref={refs.setFloating}
               style={floatingStyles}
               {...getFloatingProps()}
-              className="w-96 bg-white rounded-xl shadow-xl border border-gray-200 z-50 overflow-hidden"
+              className="w-96 h-80 bg-white rounded-xl shadow-xl border border-gray-200 z-50 overflow-hidden"
             >
               <NotificationHeader notificationCount={unreadCount} onReadAll={handleReadAll} />
-              <NotificationList
-                notifications={notifications}
-                onNotificationClick={handleNotificationClick}
-              />
+              <NotificationList notifications={[]} onNotificationClick={handleNotificationClick} />
               {pageInfo && (
                 <NotificationPagination page={pageInfo} onPageChange={handlePageChange} />
               )}
