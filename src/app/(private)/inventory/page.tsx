@@ -38,12 +38,11 @@ export default async function InventoryPage() {
     ],
     queryFn: () =>
       getInventoryList({
+        statusCode: 'ALL',
+        type: '',
+        keyword: '',
         page: 0,
         size: 60,
-        statusCode: 'ALL',
-        category: '',
-        warehouse: '',
-        itemName: '',
       }),
   });
 

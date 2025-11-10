@@ -2,6 +2,7 @@ import {
   InventoryQueryParams,
   InventoryResponse,
 } from '@/app/(private)/inventory/types/InventoryListType';
+import { InventoryQueryParamForWarehouse } from './useWarehouseClusters';
 
 export type ViewMode = 'overview' | 'warehouse';
 
@@ -32,7 +33,7 @@ export interface WarehouseCluster {
   items: VisualizerItem[];
 }
 
-export const DEFAULT_QUERY: InventoryQueryParams = {
+export const DEFAULT_QUERY: InventoryQueryParamForWarehouse = {
   page: 0,
   size: 80,
   statusCode: 'ALL',
