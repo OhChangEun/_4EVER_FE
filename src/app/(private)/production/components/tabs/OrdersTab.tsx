@@ -118,27 +118,10 @@ export default function OrdersTab() {
     mrpConvert(body);
   };
 
-  const getAvailableStatusBadge = (status: string) => {
-    const statusConfig: Record<string, { bg: string; text: string }> = {
-      충분: { bg: 'bg-green-100', text: 'text-green-800' },
-      부족: { bg: 'bg-red-100', text: 'text-red-800' },
-      보통: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
-    };
-    const config = statusConfig[status] || statusConfig['보통'];
-    return (
-      <span
-        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.bg} ${config.text}`}
-      >
-        {status}
-      </span>
-    );
-  };
-
   return (
     <>
-      <div className="flex justify-between items-center p-4 border-b border-gray-200">
-        <h2 className="text-md font-semibold text-gray-900">순소요 - 무엇이 얼마나 부족한가?</h2>
-        <div className="flex gap-4 justify-end items-center">
+      <div className="flex justify-end items-center p-4 border-b border-gray-200">
+        <div className="flex gap-4 items-center">
           <Dropdown
             placeholder="견적 선택"
             items={mrpQuotationOptions}
@@ -250,7 +233,9 @@ export default function OrdersTab() {
                   <td className="px-4 py-3 text-sm text-gray-900">
                     {item.consumptionQuantity.toLocaleString()}
                   </td>
-                  <td className="px-4 py-3">{getAvailableStatusBadge(item.availableStatusCode)}</td>
+                  <td className="px-4 py-3">
+                    <StatusLabel $statusCode={item.availableStatusCode} />
+                  </td>
                   <td className="px-4 py-3 text-sm">
                     {item.shortageQuantity > 0 ? (
                       <span className="text-red-600 font-medium">

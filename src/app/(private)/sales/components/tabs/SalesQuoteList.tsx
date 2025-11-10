@@ -25,12 +25,14 @@ import Input from '@/app/components/common/Input';
 import IconButton from '@/app/components/common/IconButton';
 import Dropdown from '@/app/components/common/Dropdown';
 import SearchBar from '@/app/components/common/SearchBar';
+import { useModal } from '@/app/components/common/modal/useModal';
 
 const SalesQuoteList = () => {
+  const { openModal } = useModal();
+
   const [searchTerm, setSearchTerm] = useState('');
   const [searchType, setSearchType] = useState('quotationNumber');
   const [statusFilter, setStatusFilter] = useState<QuoteStatus>('ALL');
-  const [showQuoteModal, setShowQuoteModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [selectedQuotes, setSelectedQuotes] = useState<number[]>([]);
   const [selectedQuotationId, setSelectedQuotationId] = useState<string>('');
@@ -69,7 +71,10 @@ const SalesQuoteList = () => {
 
   const handleViewQuote = (quote: Quote) => {
     setSelectedQuotationId(quote.quotationId);
-    setShowQuoteModal(true);
+    openModal(QuoteDetailModal, {
+      title: `견적서 상세보기-${quote.quotationNumber}`,
+      $selectedQuotationId: quote.quotationId,
+    });
   };
 
   const handleCheckboxChange = (quotationId: string) => {
@@ -77,13 +82,14 @@ const SalesQuoteList = () => {
   };
   const handleViewReview = () => {
     setShowReviewModal(true);
+    openModal(QuoteReviewModal, {
+      title: '견적 검토 요청',
+      $selectedQuotationId: selectedQuotationId,
+    });
   };
 
   const role = useRole();
   const quoteOptions = getQuoteSearchKeywordOptions(role as string);
-  useEffect(() => {
-    console.log(debouncedSearchTerm);
-  }, [searchTerm]);
 
   return (
     <>
@@ -217,25 +223,6 @@ const SalesQuoteList = () => {
             totalPages={totalPages}
             totalElements={pageInfo?.totalElements}
             onPageChange={(page) => setCurrentPage(page)}
-          />
-        )}
-
-        {/* 견적서 상세보기 모달 */}
-        {showQuoteModal && (
-          <QuoteDetailModal
-            $onClose={() => {
-              setShowQuoteModal(false);
-            }}
-            $selectedQuotationId={selectedQuotationId}
-          />
-        )}
-
-        {showReviewModal && (
-          <QuoteReviewModal
-            $onClose={() => {
-              setShowReviewModal(false);
-            }}
-            $selectedQuotationId={selectedQuotationId}
           />
         )}
       </div>

@@ -150,9 +150,8 @@ export default function MesTab() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-gray-900">제조실행시스템 (MES) 현황</h2>
-        <div className="flex gap-3 justify-end">
+      <div className="flex items-center justify-end">
+        <div className="flex gap-3">
           <Dropdown
             placeholder="견적 선택"
             items={mrpQuotationOptions}

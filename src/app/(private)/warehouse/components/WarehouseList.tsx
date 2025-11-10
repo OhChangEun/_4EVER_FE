@@ -12,24 +12,32 @@ import ManageWarehouseModal from './modals/ManageWarehouseModal';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
 import Warehouse3DModal from './warehouseVisualizer/components/Warehouse3DModal';
 import IconButton from '@/app/components/common/IconButton';
+import { useModal } from '@/app/components/common/modal/useModal';
 
 const WarehouseList = () => {
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showDetailModal, setShowDetailModal] = useState(false);
+  const { openModal } = useModal();
   const [showManageModal, setShowManageModal] = useState(false);
   const [show3DModal, setShow3DModal] = useState(false);
   const [selectedWarehouseId, setSelectedWarehouseId] = useState<string>('');
   const [selectedWarehouseName, setSelectedWarehouseName] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(1);
 
-  const handleWarehouseDetail = (warehouseId: string) => {
+  const handleWarehouseDetail = (warehouseId: string, warehouseName: string) => {
     setSelectedWarehouseId(warehouseId);
-    setShowDetailModal(true);
+    openModal(WarehouseDetailModal, {
+      title: '창고 상세 정보',
+      $handleWarehouseManage: handleWarehouseManage,
+      $selectedWarehouseId: warehouseId,
+      $selectedWarehouseName: warehouseName,
+    });
   };
 
-  const handleWarehouseManage = (warehouseId: string) => {
+  const handleWarehouseManage = (warehouseId: string, warehouseName: string) => {
     setSelectedWarehouseId(warehouseId);
-    setShowManageModal(true);
+    openModal(ManageWarehouseModal, {
+      title: `창고 관리 - ${warehouseName}`,
+      $selectedWarehouseId: warehouseId,
+    });
   };
 
   const handleWarehouse3D = (warehouseId: string, warehouseName: string) => {
@@ -67,7 +75,9 @@ const WarehouseList = () => {
           <IconButton
             icon="ri-add-line mr-1"
             label="창고 추가"
-            onClick={() => setShowAddModal(true)}
+            onClick={() => {
+              openModal(AddWarehouseModal, { title: '새 창고 추가' });
+            }}
           />
         </div>
       </div>
@@ -121,7 +131,9 @@ const WarehouseList = () => {
                   variant="outline"
                   label="상세보기"
                   icon="ri-eye-line"
-                  onClick={() => handleWarehouseDetail(warehouse.warehouseId)}
+                  onClick={() =>
+                    handleWarehouseDetail(warehouse.warehouseId, warehouse.warehouseName)
+                  }
                   className="w-[32%]"
                 />
                 <IconButton
@@ -134,7 +146,9 @@ const WarehouseList = () => {
                 <IconButton
                   label="관리"
                   icon="ri-edit-line mr-1"
-                  onClick={() => handleWarehouseManage(warehouse.warehouseId)}
+                  onClick={() =>
+                    handleWarehouseManage(warehouse.warehouseId, warehouse.warehouseName)
+                  }
                   className="w-[34%]"
                 />
               </div>
@@ -148,26 +162,6 @@ const WarehouseList = () => {
           totalPages={totalPages}
           totalElements={pageInfo?.totalElements}
           onPageChange={(page) => setCurrentPage(page)}
-        />
-      )}
-
-      {/* 창고 추가 모달 */}
-      {showAddModal && <AddWarehouseModal $setShowAddModal={setShowAddModal} />}
-
-      {/* 창고 상세보기 모달 */}
-      {showDetailModal && (
-        <WarehouseDetailModal
-          $handleWarehouseManage={handleWarehouseManage}
-          $selectedWarehouseId={selectedWarehouseId}
-          $setShowDetailModal={setShowDetailModal}
-        />
-      )}
-
-      {/* 창고 관리 모달 */}
-      {showManageModal && (
-        <ManageWarehouseModal
-          $setShowManageModal={setShowManageModal}
-          $selectedWarehouseId={selectedWarehouseId}
         />
       )}
 

@@ -28,17 +28,19 @@ import InventoryPurchaseRequestModal from '../modals/InventoryPurchaseRequestMod
 
 const InventoryList = () => {
   const { openModal } = useModal();
-
   const [showAddModal, setShowAddModal] = useState(false);
   const [searchType, setSearchType] = useState('warehouse');
-  const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [searchTerm, setSearchTerm] = useState('');
 
   const handleItemDetail = (itemId: string) => {
     setSelectedItemId(itemId);
-    setShowDetailModal(true);
+    openModal(InventoryDetailModal, {
+      title: '재고 이동 기록',
+      $selectedItemId: itemId,
+      $setSelectedItemId: setSelectedItemId,
+    });
   };
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -117,7 +119,9 @@ const InventoryList = () => {
                 <IconButton
                   icon="ri-add-line mr-1"
                   label="원자재 추가"
-                  onClick={() => setShowAddModal(true)}
+                  onClick={() => {
+                    openModal(AddInventoryModal, { title: '원자재 추가' });
+                  }}
                 />
               </div>
             </div>
@@ -134,17 +138,10 @@ const InventoryList = () => {
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <input
-                      type="checkbox"
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      // onChange={}
-                    />
-                  </th>
                   {INVENTORY_TABLE_HEADERS.map((header) => (
                     <th
                       key={header}
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
                       {header}
                     </th>
@@ -154,15 +151,7 @@ const InventoryList = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {inventories.map((inventory) => (
                   <tr key={inventory.itemId} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <input
-                        type="checkbox"
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        // checked={selectedItems.includes(item.id)}
-                        // onChange={() => toggleSelectItem(item.id)}
-                      />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-4 whitespace-nowrap">
                       <div>
                         <div className="text-sm font-medium text-gray-900">
                           {inventory.itemName}
@@ -170,39 +159,49 @@ const InventoryList = () => {
                         <div className="text-sm text-gray-500">{inventory.itemNumber}</div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-4 whitespace-nowrap">
                       <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
                         {inventory.category}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
                         {inventory.currentStock.toLocaleString()} {inventory.uomName}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">
+                        {inventory.forShipmentStock.toLocaleString()} {inventory.uomName}
+                      </div>
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">
+                        {inventory.reservedStock.toLocaleString()} {inventory.uomName}
+                      </div>
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-500">
                         {inventory.safetyStock.toLocaleString()} {inventory.uomName}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
                         ₩{inventory.unitPrice.toLocaleString()}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
                         ₩{inventory.totalAmount.toLocaleString()}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">{inventory.warehouseName}</div>
                       <div className="text-sm text-gray-500">{inventory.warehouseType}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-4 whitespace-nowrap">
                       <StatusLabel $statusCode={inventory.statusCode} />
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
                       <button
                         onClick={() => handleItemDetail(inventory.itemId)}
                         className="text-blue-600 hover:text-blue-900 cursor-pointer"
@@ -225,16 +224,6 @@ const InventoryList = () => {
             onPageChange={(page) => setCurrentPage(page)}
           />
         )}
-        {/* 재고 상세보기 모달 */}
-        {showDetailModal && (
-          <InventoryDetailModal
-            $selectedItemId={selectedItemId}
-            $setSelectedItemId={setSelectedItemId}
-            $setShowDetailModal={setShowDetailModal}
-          />
-        )}
-        {/* 원자재 추가 모달 */}
-        {showAddModal && <AddInventoryModal $setShowAddModal={setShowAddModal} />}
       </div>
     </div>
   );

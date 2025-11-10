@@ -45,7 +45,3 @@ export interface CreateCustomerResponse {
   createdAt: string;
   updatedAt: string;
 }
-
-export interface NewCustomerModalProps {
-  $onClose: () => void;
-}

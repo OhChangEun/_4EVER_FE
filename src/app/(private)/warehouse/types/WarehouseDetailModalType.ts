@@ -1,7 +1,9 @@
-export interface WarehouseDetailModalProps {
-  $handleWarehouseManage: (id: string) => void;
+import { ModalProps } from '@/app/components/common/modal/types';
+
+export interface WarehouseDetailModalProps extends ModalProps {
+  $handleWarehouseManage: (id: string, name: string) => void;
   $selectedWarehouseId: string;
-  $setShowDetailModal: (show: boolean) => void;
+  $selectedWarehouseName: string;
 }
 
 export interface WarehouseDetailResponse {
