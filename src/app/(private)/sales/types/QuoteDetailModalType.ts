@@ -1,7 +1,7 @@
 import { QuoteStatus } from '@/app/(private)/sales/types/SalesQuoteListType';
+import { ModalProps } from '@/app/components/common/modal/types';
 
-export interface QuoteDetailModalProps {
-  $onClose: () => void;
+export interface QuoteDetailModalProps extends ModalProps {
   $selectedQuotationId: string;
 }
 

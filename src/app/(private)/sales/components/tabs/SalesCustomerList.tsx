@@ -7,7 +7,6 @@ import {
   CustomerQueryParams,
   CustomerStatus,
 } from '@/app/(private)/sales/types/SalesCustomerListType';
-import CustomerEditModal from '../modals/CustomerEditModal';
 import { useQuery } from '@tanstack/react-query';
 import { getCustomerList } from '../../sales.api';
 import { useDebounce } from 'use-debounce';
@@ -23,19 +22,19 @@ import StatusLabel from '@/app/components/common/StatusLabel';
 import IconButton from '@/app/components/common/IconButton';
 import SearchBar from '@/app/components/common/SearchBar';
 import Dropdown from '@/app/components/common/Dropdown';
+import { useModal } from '@/app/components/common/modal/useModal';
 
 const CustomerList = () => {
+  const { openModal } = useModal();
   const [searchTerm, setSearchTerm] = useState('');
   const [searchType, setSearchType] = useState('customerName');
   const [statusFilter, setStatusFilter] = useState<CustomerStatus>('ALL');
-  const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedCustomerId, setSelectedCustomerId] = useState<string>('');
-  const [showCustomerModal, setShowCustomerModal] = useState(false);
   const [debouncedSearchTerm] = useDebounce(searchTerm, 200);
   const [currentPage, setCurrentPage] = useState(1);
 
   const handleCustomerRegisterClick = () => {
-    setShowCustomerModal(true);
+    openModal(NewCustomerModal, { title: '신규 고객 등록' });
   };
 
   const queryParams = useMemo(
@@ -63,7 +62,11 @@ const CustomerList = () => {
 
   const handleViewClick = (id: string) => {
     setSelectedCustomerId(id);
-    setShowDetailModal(true);
+    openModal(CustomerDetailModal, {
+      title: '고객 상세 정보',
+      $selectedCustomerId: id,
+      $setEditFormData: setEditFormData,
+    });
   };
 
   const [showEditModal, setShowEditModal] = useState(false);
@@ -185,29 +188,6 @@ const CustomerList = () => {
           onPageChange={(page) => setCurrentPage(page)}
         />
       )}
-
-      {/* 고객 상세보기 모달 */}
-      {showDetailModal && (
-        <CustomerDetailModal
-          $setShowDetailModal={setShowDetailModal}
-          $selectedCustomerId={selectedCustomerId}
-          $setShowEditModal={setShowEditModal}
-          $setEditFormData={setEditFormData}
-        />
-      )}
-
-      {/* 고객 수정 모달 */}
-      {showEditModal && (
-        <CustomerEditModal
-          $onClose={() => setShowEditModal(false)}
-          $editFormData={editFormData}
-          $setEditFormData={setEditFormData}
-          $setShowDetailModal={setShowDetailModal}
-        />
-      )}
-
-      {/* 신규 고객 추가 모달 */}
-      {showCustomerModal && <NewCustomerModal $onClose={() => setShowCustomerModal(false)} />}
     </>
   );
 };
