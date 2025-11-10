@@ -165,7 +165,6 @@ export default function PurchaseOrderListTab() {
             onTypeChange={(type) => {
               setSelectedSearchType(type);
             }}
-            currentKeyword={keyword}
             onKeywordSearch={(keyword) => {
               setKeyword(keyword);
               setCurrentPage(0); // 검색 시 페이지 초기화
