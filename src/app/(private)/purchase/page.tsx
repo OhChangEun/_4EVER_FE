@@ -12,6 +12,7 @@ import TabNavigation from '@/app/components/common/TabNavigation';
 import StatSection from '@/app/components/common/StatSection';
 import ErrorMessage from '@/app/components/common/ErrorMessage';
 import {
+  fetchPurchaseOrderList,
   fetchPurchaseOrderSearchTypeDropdown,
   fetchPurchaseOrderStatusDropdown,
   fetchPurchaseReqList,
@@ -23,7 +24,10 @@ import {
   fetchSupplierSearchTypeDropdown,
   fetchSupplierStatusDropdown,
 } from '@/app/(private)/purchase/api/purchase.api';
-import { PurchaseReqParams } from '@/app/(private)/purchase/types/PurchaseApiRequestType';
+import {
+  FetchPurchaseOrderParams,
+  PurchaseReqParams,
+} from '@/app/(private)/purchase/types/PurchaseApiRequestType';
 import { cookies } from 'next/headers';
 import { StatCardType } from '@/app/types/StatType';
 
@@ -34,57 +38,85 @@ export default async function PurchasePage() {
   const isSupplier = role === 'SUPPLIER_ADMIN';
   const queryClient = getQueryClient();
 
-  const initialParams: PurchaseReqParams = {
-    statusCode: '',
-    type: '',
-    keyword: '',
-    startDate: '',
-    endDate: '',
-    page: 0,
-    size: 10,
-  };
-  await Promise.all([
-    // 구매요청 탭
-    queryClient.prefetchQuery({
-      queryKey: ['purchaseRequests', initialParams],
-      queryFn: () => fetchPurchaseReqList(initialParams),
-    }),
+  if (!isSupplier) {
+    const initialPurchaseReqParams: PurchaseReqParams = {
+      statusCode: '',
+      type: '',
+      keyword: '',
+      startDate: '',
+      endDate: '',
+      page: 0,
+      size: 10,
+    };
 
-    // --- 드롭다운 prefetch ---
-    // 구매요청
-    queryClient.prefetchQuery({
-      queryKey: ['purchaseRequisitionSearchTypeDropdown'],
-      queryFn: fetchPurchaseRequisitionSearchTypeDropdown,
-    }),
-    queryClient.prefetchQuery({
-      queryKey: ['purchaseRequisitionStatusDropdown'],
-      queryFn: fetchPurchaseRequisitionStatusDropdown,
-    }),
+    await Promise.all([
+      // 구매요청 탭
+      queryClient.prefetchQuery({
+        queryKey: ['purchaseRequests', initialPurchaseReqParams],
+        queryFn: () => fetchPurchaseReqList(initialPurchaseReqParams),
+      }),
+      // --- 드롭다운 prefetch ---
+      // 구매요청
+      queryClient.prefetchQuery({
+        queryKey: ['purchaseRequisitionSearchTypeDropdown'],
+        queryFn: fetchPurchaseRequisitionSearchTypeDropdown,
+      }),
+      queryClient.prefetchQuery({
+        queryKey: ['purchaseRequisitionStatusDropdown'],
+        queryFn: fetchPurchaseRequisitionStatusDropdown,
+      }),
+      // 발주서
+      queryClient.prefetchQuery({
+        queryKey: ['purchaseOrderSearchTypeDropdown'],
+        queryFn: fetchPurchaseOrderSearchTypeDropdown,
+      }),
+      queryClient.prefetchQuery({
+        queryKey: ['purchaseOrderStatusDropdown'],
+        queryFn: fetchPurchaseOrderStatusDropdown,
+      }),
+      // 공급업체
+      queryClient.prefetchQuery({
+        queryKey: ['supplierCategoryDropdown'],
+        queryFn: fetchSupplierCategoryDropdown,
+      }),
+      queryClient.prefetchQuery({
+        queryKey: ['supplierSearchTypeDropdown'],
+        queryFn: fetchSupplierSearchTypeDropdown,
+      }),
+      queryClient.prefetchQuery({
+        queryKey: ['supplierStatusDropdown'],
+        queryFn: fetchSupplierStatusDropdown,
+      }),
+    ]);
+  } else {
+    // SUPPLIER_ADMIN인 경우
+    const initialPurchaseOrderParams: FetchPurchaseOrderParams = {
+      statusCode: 'ALL',
+      type: '',
+      keyword: '',
+      page: 0,
+      size: 10,
+      startDate: '',
+      endDate: '',
+    };
 
-    // 발주서
-    queryClient.prefetchQuery({
-      queryKey: ['purchaseOrderSearchTypeDropdown'],
-      queryFn: fetchPurchaseOrderSearchTypeDropdown,
-    }),
-    queryClient.prefetchQuery({
-      queryKey: ['purchaseOrderStatusDropdown'],
-      queryFn: fetchPurchaseOrderStatusDropdown,
-    }),
-
-    // 공급업체
-    queryClient.prefetchQuery({
-      queryKey: ['supplierCategoryDropdown'],
-      queryFn: fetchSupplierCategoryDropdown,
-    }),
-    queryClient.prefetchQuery({
-      queryKey: ['supplierSearchTypeDropdown'],
-      queryFn: fetchSupplierSearchTypeDropdown,
-    }),
-    queryClient.prefetchQuery({
-      queryKey: ['supplierStatusDropdown'],
-      queryFn: fetchSupplierStatusDropdown,
-    }),
-  ]);
+    await Promise.all([
+      // 발주서 목록 prefetch
+      queryClient.prefetchQuery({
+        queryKey: ['purchaseOrders', initialPurchaseOrderParams],
+        queryFn: () => fetchPurchaseOrderList(initialPurchaseOrderParams),
+      }),
+      // 발주서 드롭다운 prefetch
+      queryClient.prefetchQuery({
+        queryKey: ['purchaseOrderSearchTypeDropdown'],
+        queryFn: fetchPurchaseOrderSearchTypeDropdown,
+      }),
+      queryClient.prefetchQuery({
+        queryKey: ['purchaseOrderStatusDropdown'],
+        queryFn: fetchPurchaseOrderStatusDropdown,
+      }),
+    ]);
+  }
 
   const dehydratedState = dehydrate(queryClient);
 

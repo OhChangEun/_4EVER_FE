@@ -6,12 +6,10 @@ export interface PurchaseReqParams extends PageRequest, KeywordRequest, DateRequ
   statusCode?: string;
 }
 
-export interface FetchPurchaseOrderParams extends PageRequest {
-  category?: string;
-  status?: string;
-  searchKeyword?: string;
-  orderDateFrom?: string;
-  orderDateTo?: string;
+export interface FetchPurchaseOrderParams extends PageRequest, DateRequest {
+  type?: string;
+  statusCode?: string;
+  keyword?: string;
 }
 
 // 화면에서 관리용 (id 포함)
