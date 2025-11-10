@@ -5,9 +5,9 @@ import { useRole } from '@/app/hooks/useRole';
 import { useState } from 'react';
 import { ActionCard } from './ActionCard';
 import { allActions } from '../dashboard.utils';
+import { useModal } from '@/app/components/common/modal/useModal';
 
 const QuickActions = () => {
-  const [showNewOrderModal, setShowNewOrderModal] = useState(false);
   const role = useRole();
   // const role = 'ALL_ADMIN';
   // const role = 'MM_USER';
@@ -26,15 +26,9 @@ const QuickActions = () => {
 
       <div className="space-y-3 ">
         {visibleActions.map((action, index) => (
-          <ActionCard key={index} {...action} $setShowNewOrderModal={setShowNewOrderModal} />
+          <ActionCard key={index} {...action} />
         ))}
       </div>
-      {showNewOrderModal && (
-        <NewOrderModal
-          $showNewOrderModal={showNewOrderModal}
-          $setShowNewOrderModal={setShowNewOrderModal}
-        />
-      )}
     </div>
   );
 };
