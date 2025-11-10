@@ -130,7 +130,7 @@ const ShippingManagementList = () => {
                           setShowShipDetailModal(true);
                           openModal(ShippingDetailModal, {
                             title: `주문 상세 - ${production.salesOrderNumber}`,
-                            $selectedItemId: production.salesOrderId,
+                            $selectedOrderId: production.salesOrderId,
                             $selectedSubTab: selectedSubTab,
                           });
                         }}

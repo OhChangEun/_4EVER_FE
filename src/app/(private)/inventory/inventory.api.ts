@@ -10,7 +10,11 @@ import {
   ReadyToShipListResponse,
 } from './types/ShippingManagementListType';
 import { ReceivedListResponse } from './types/ReceivingManagementListType';
-import { markAsReadyToShipResponse, ShippingDetailResponse } from './types/ShippingDetailModalType';
+import {
+  markAsReadyRequest,
+  markAsReadyToShipResponse,
+  ShippingDetailResponse,
+} from './types/ShippingDetailModalType';
 import {
   AddInventoryItemsRequest,
   AddInventoryItemsToggleResponse,
@@ -141,10 +145,12 @@ export const getReadyToShipDetail = async (itemId: string): Promise<ShippingDeta
 };
 
 export const patchMarkAsReadyToShip = async (
-  itemId: string,
+  orderId: string,
+  payload: markAsReadyRequest,
 ): Promise<markAsReadyToShipResponse> => {
   const res = await axios.patch<ApiResponse<markAsReadyToShipResponse>>(
-    INVENTORY_ENDPOINTS.MARKAS_READY_TO_SHIP_DETAIL(itemId),
+    INVENTORY_ENDPOINTS.MARKAS_READY_TO_SHIP_DETAIL(orderId),
+    payload,
   );
   return res.data.data;
 };

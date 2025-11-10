@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
+  markAsReadyRequest,
   markAsReadyToShipResponse,
   OrderItemsType,
   ShippingDetailModalProps,
@@ -18,7 +19,7 @@ import {
 const ShippingDetailModal = ({
   onClose,
   $selectedSubTab,
-  $selectedItemId,
+  $selectedOrderId,
 }: ShippingDetailModalProps) => {
   const getShippingDetailBySubTab = (subTab: string, id: string) => {
     switch (subTab) {
@@ -36,9 +37,9 @@ const ShippingDetailModal = ({
     isLoading,
     isError,
   } = useQuery<ShippingDetailResponse>({
-    queryKey: ['shippingDetail', $selectedItemId],
-    queryFn: () => getShippingDetailBySubTab($selectedSubTab, $selectedItemId),
-    enabled: !!$selectedItemId,
+    queryKey: ['shippingDetail', $selectedOrderId],
+    queryFn: () => getShippingDetailBySubTab($selectedSubTab, $selectedOrderId),
+    enabled: !!$selectedOrderId,
   });
 
   const [errorModal, setErrorModal] = useState(false);
@@ -49,13 +50,13 @@ const ShippingDetailModal = ({
   const { mutate: markAsReadyToShip, isPending } = useMutation<
     markAsReadyToShipResponse,
     Error,
-    { id: string }
+    { orderId: string; itemIds: markAsReadyRequest }
   >({
-    mutationFn: ({ id }) => patchMarkAsReadyToShip(id),
+    mutationFn: ({ orderId, itemIds }) => patchMarkAsReadyToShip(orderId, itemIds),
     onSuccess: (data) => {
       //   console.log(data);
       alert('출고 준비 완료로 상태가 변경되었습니다.');
-      onClose;
+      onClose();
     },
     onError: (error) => {
       alert(`고객 등록 중 오류가 발생했습니다. ${error}`);
@@ -114,7 +115,12 @@ const ShippingDetailModal = ({
           </button>
           <button
             onClick={() => {
-              markAsReadyToShip({ id: $selectedItemId });
+              markAsReadyToShip({
+                orderId: $selectedOrderId,
+                itemIds: {
+                  itemIds: shippingDetailRes?.orderItems.map((item) => item.itemId) ?? [],
+                },
+              });
             }}
             className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium cursor-pointer"
           >

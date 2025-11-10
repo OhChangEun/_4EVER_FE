@@ -78,8 +78,8 @@ export const INVENTORY_ENDPOINTS = {
   PRODUCTIONDETAIL: (itemId: string) => `${INVENTORY_BASE_PATH}/sales-orders/production/${itemId}`,
   READY_TO_SHIP_DETAIL: (itemId: string) =>
     `${INVENTORY_BASE_PATH}/sales-orders/ready-to-ship/${itemId}`,
-  MARKAS_READY_TO_SHIP_DETAIL: (itemId: string) =>
-    `${INVENTORY_BASE_PATH}/sales-orders/${itemId}/status`,
+  MARKAS_READY_TO_SHIP_DETAIL: (orderId: string) =>
+    `${INVENTORY_BASE_PATH}/sales-orders/${orderId}/status`,
   ADD_MATERIALS: `${INVENTORY_BASE_PATH}/iv/items`,
   MATERIALS_LIST: `${INVENTORY_BASE_PATH}/iv/items/info`,
   EDIT_SAFETY_STOCK: (itemId: string, safetyStock: number) =>

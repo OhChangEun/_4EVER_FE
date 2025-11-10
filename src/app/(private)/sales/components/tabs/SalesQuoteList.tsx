@@ -193,7 +193,7 @@ const SalesQuoteList = () => {
                       {quote.dueDate}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {quote.totalAmount?.toLocaleString()}원
+                      ₩{quote.totalAmount.toLocaleString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       <StatusLabel $statusCode={quote.statusCode} />
