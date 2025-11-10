@@ -22,7 +22,6 @@ import {
 import NotificationHeader from './NotificationHeader';
 import NotificationPagination from './NotificationPagination';
 import NotificationList from './NotificationList';
-import { useNotificationSSE } from './useNotificationSSE';
 import ErrorMessage from '../../common/ErrorMessage';
 
 export default function NotificationDropdown() {
@@ -30,9 +29,6 @@ export default function NotificationDropdown() {
   const [currentPage, setCurrentPage] = useState(0);
   const [sseUnreadCount, setSseUnreadCount] = useState<number | null>(null);
   const ITEMS_PER_PAGE = 3;
-
-  // TODO: 실제 userId로 교체 필요
-  const userId = '019a2581-dd40-7cc8-b450-39df10062ec0';
 
   const { refs, floatingStyles, context } = useFloating({
     open: isOpen,
@@ -54,21 +50,21 @@ export default function NotificationDropdown() {
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ['notificationList'],
-    queryFn: fetchNotifications,
+    queryKey: ['notificationList', currentPage],
+    queryFn: () => fetchNotifications(currentPage, ITEMS_PER_PAGE),
   });
 
-  // SSE 연결 (실시간 알림)
-  const { error } = useNotificationSSE({
-    enabled: true,
-    onAlarm: (alarm) => {
-      console.log('New alarm received:', alarm);
-      // 토스트 알림 등 추가 처리 가능
-    },
-    onUnreadCountChange: (count) => {
-      setSseUnreadCount(count);
-    },
-  });
+  // // SSE 연결 (실시간 알림)
+  // const { error } = useNotificationSSE({
+  //   enabled: true,
+  //   onAlarm: (alarm) => {
+  //     console.log('New alarm received:', alarm);
+  //     // 토스트 알림 등 추가 처리 가능
+  //   },
+  //   onUnreadCountChange: (count) => {
+  //     setSseUnreadCount(count);
+  //   },
+  // });
 
   // 알림 전체 읽기
   const { mutate: readAll } = useMutation({
@@ -129,19 +125,13 @@ export default function NotificationDropdown() {
               {...getFloatingProps()}
               className="w-96 bg-white rounded-xl shadow-xl border border-gray-200 z-50 overflow-hidden"
             >
-              {error ? (
-                <ErrorMessage message={error} />
-              ) : (
-                <>
-                  <NotificationHeader notificationCount={unreadCount} onReadAll={handleReadAll} />
-                  <NotificationList
-                    notifications={notifications}
-                    onNotificationClick={handleNotificationClick}
-                  />
-                  {pageInfo && notifications.length > ITEMS_PER_PAGE && (
-                    <NotificationPagination page={pageInfo} onPageChange={handlePageChange} />
-                  )}
-                </>
+              <NotificationHeader notificationCount={unreadCount} onReadAll={handleReadAll} />
+              <NotificationList
+                notifications={notifications}
+                onNotificationClick={handleNotificationClick}
+              />
+              {pageInfo && (
+                <NotificationPagination page={pageInfo} onPageChange={handlePageChange} />
               )}
             </div>
           </FloatingFocusManager>

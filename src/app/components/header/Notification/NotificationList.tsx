@@ -7,14 +7,15 @@ interface NotificationListProps {
 
 const getSourceConfig = (source: NotificationData['source']) => {
   const configs = {
-    PR: { color: 'bg-blue-500', icon: 'ri-file-list-3-line', label: '구매요청' },
+    PR: { color: 'bg-blue-500', icon: 'ri-file-list-3-line', label: '구매' },
     SD: { color: 'bg-green-500', icon: 'ri-shopping-cart-line', label: '판매' },
     IM: { color: 'bg-yellow-500', icon: 'ri-inbox-line', label: '재고' },
     FCM: { color: 'bg-purple-500', icon: 'ri-building-line', label: '시설' },
     HRM: { color: 'bg-pink-500', icon: 'ri-user-line', label: '인사' },
     PP: { color: 'bg-indigo-500', icon: 'ri-factory-line', label: '생산' },
-    CUS: { color: 'bg-cyan-500', icon: 'ri-customer-service-2-line', label: '고객' },
-    SUP: { color: 'bg-orange-500', icon: 'ri-truck-line', label: '공급업체' },
+    CUS: { color: 'bg-cyan-500', icon: 'ri-customer-service-2-line', label: '고객사' },
+    SUP: { color: 'bg-orange-500', icon: 'ri-truck-line', label: '공급사' },
+    UNKNOWN: { color: 'bg-green-500', icon: 'ri-shopping-cart-line', label: '알 수 없음' },
   };
   return configs[source];
 };
@@ -51,6 +52,7 @@ export default function NotificationList({
     <div className="max-h-96 overflow-y-auto">
       {notifications.map((notfication) => {
         const config = getSourceConfig(notfication.source);
+
         return (
           <div
             key={notfication.notificationId}

@@ -4,8 +4,13 @@ import { ApiResponse } from '@/app/types/api';
 import axios from '../axiosInstance';
 
 // 알림 목록 조회
-export const fetchNotifications = async (): Promise<NotificationListResponse> => {
-  const res = await axios.get<ApiResponse<NotificationListResponse>>(NOTIFICATION_ENDPOINTS.LIST);
+export const fetchNotifications = async (
+  page: number,
+  size: number,
+): Promise<NotificationListResponse> => {
+  const res = await axios.get<ApiResponse<NotificationListResponse>>(
+    `${NOTIFICATION_ENDPOINTS.LIST}?page=${page}&size=${size}`,
+  );
   return res.data.data;
 };
 
@@ -26,6 +31,6 @@ export const readAllNotifications = async () => {
 };
 
 // SSE 구독
-export const subscribeNotifications = () => {
-  return new EventSource(NOTIFICATION_ENDPOINTS.SUBSCRIBE);
+export const subscribeNotifications = (userId: string) => {
+  return new EventSource(NOTIFICATION_ENDPOINTS.SUBSCRIBE(userId));
 };
