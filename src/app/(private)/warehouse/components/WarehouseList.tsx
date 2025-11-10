@@ -25,6 +25,7 @@ const WarehouseList = () => {
   const handleWarehouseDetail = (warehouseId: string, warehouseName: string) => {
     setSelectedWarehouseId(warehouseId);
     openModal(WarehouseDetailModal, {
+      width: '900px',
       title: '창고 상세 정보',
       $handleWarehouseManage: handleWarehouseManage,
       $selectedWarehouseId: warehouseId,
@@ -35,6 +36,7 @@ const WarehouseList = () => {
   const handleWarehouseManage = (warehouseId: string, warehouseName: string) => {
     setSelectedWarehouseId(warehouseId);
     openModal(ManageWarehouseModal, {
+      width: '600px',
       title: `창고 관리 - ${warehouseName}`,
       $selectedWarehouseId: warehouseId,
     });
@@ -76,7 +78,7 @@ const WarehouseList = () => {
             icon="ri-add-line mr-1"
             label="창고 추가"
             onClick={() => {
-              openModal(AddWarehouseModal, { title: '새 창고 추가' });
+              openModal(AddWarehouseModal, { width: '700px', title: '새 창고 추가' });
             }}
           />
         </div>

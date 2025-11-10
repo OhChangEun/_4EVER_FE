@@ -163,6 +163,7 @@ const CustomerDetailModal = ({
             onClick={() => {
               // $setEditFormData(customer!);
               openModal(CustomerEditModal, {
+                width: '900px',
                 title: '고객 정보 수정',
                 $editFormData: customer ?? null,
                 $setEditFormData: $setEditFormData,

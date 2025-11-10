@@ -61,6 +61,7 @@ const SalesOrderList = () => {
   const handleViewOrder = (id: string) => {
     setSelectedSalesOrderId(id);
     openModal(SalesOrderDetailModal, {
+      width: '900px',
       title: `주문 상세 정보`,
       $selectedSalesOrderId: id,
     });

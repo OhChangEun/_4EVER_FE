@@ -34,7 +34,7 @@ const CustomerList = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const handleCustomerRegisterClick = () => {
-    openModal(NewCustomerModal, { title: '신규 고객 등록' });
+    openModal(NewCustomerModal, { width: '1190px', title: '신규 고객 등록' });
   };
 
   const queryParams = useMemo(
@@ -63,6 +63,8 @@ const CustomerList = () => {
   const handleViewClick = (id: string) => {
     setSelectedCustomerId(id);
     openModal(CustomerDetailModal, {
+      width: '900px',
+      height: '1050px',
       title: '고객 상세 정보',
       $selectedCustomerId: id,
       $setEditFormData: setEditFormData,

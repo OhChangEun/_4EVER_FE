@@ -109,6 +109,7 @@ const InvoiceList = () => {
     setSelectedInvoiceId(id);
     openModal(InvoiceDetailModal, {
       title: '전표 상세 정보',
+      width: '900px',
       $selectedInvoiceId: id,
       $setSelectedInvoiceId: setSelectedInvoiceId,
     });

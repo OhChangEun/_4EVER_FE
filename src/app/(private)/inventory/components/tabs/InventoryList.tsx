@@ -38,6 +38,8 @@ const InventoryList = () => {
     setSelectedItemId(itemId);
     openModal(InventoryDetailModal, {
       title: '재고 이동 기록',
+      width: '1000px',
+      height: '1600px',
       $selectedItemId: itemId,
       $setSelectedItemId: setSelectedItemId,
     });
@@ -120,7 +122,7 @@ const InventoryList = () => {
                   icon="ri-add-line mr-1"
                   label="원자재 추가"
                   onClick={() => {
-                    openModal(AddInventoryModal, { title: '원자재 추가' });
+                    openModal(AddInventoryModal, { title: '원자재 추가', width: '700px' });
                   }}
                 />
               </div>

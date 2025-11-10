@@ -72,6 +72,8 @@ const SalesQuoteList = () => {
   const handleViewQuote = (quote: Quote) => {
     setSelectedQuotationId(quote.quotationId);
     openModal(QuoteDetailModal, {
+      width: '900px',
+      height: '600px',
       title: `견적서 상세보기-${quote.quotationNumber}`,
       $selectedQuotationId: quote.quotationId,
     });
@@ -83,6 +85,7 @@ const SalesQuoteList = () => {
   const handleViewReview = () => {
     setShowReviewModal(true);
     openModal(QuoteReviewModal, {
+      width: '900px',
       title: '견적 검토 요청',
       $selectedQuotationId: selectedQuotationId,
     });

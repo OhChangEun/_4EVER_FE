@@ -129,6 +129,7 @@ const ShippingManagementList = () => {
                         onClick={() => {
                           setShowShipDetailModal(true);
                           openModal(ShippingDetailModal, {
+                            width: '900px',
                             title: `주문 상세 - ${production.salesOrderNumber}`,
                             $selectedOrderId: production.salesOrderId,
                             $selectedSubTab: selectedSubTab,

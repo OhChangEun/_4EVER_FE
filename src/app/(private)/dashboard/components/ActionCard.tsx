@@ -21,7 +21,7 @@ export const ActionCard = ({ title, description, icon, color, href }: ActionCard
     if (title === '신규 견적서 작성') {
       e.preventDefault(); // 페이지 이동 막기
 
-      openModal(NewOrderModal, { title: '신규 견적 요청' });
+      openModal(NewOrderModal, { title: '신규 견적 요청', width: '900px' });
     }
   };
   return (
