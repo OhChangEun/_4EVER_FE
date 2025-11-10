@@ -23,18 +23,22 @@ import Button from '@/app/components/common/Button';
 import IconButton from '@/app/components/common/IconButton';
 import Dropdown from '@/app/components/common/Dropdown';
 import SearchBar from '@/app/components/common/SearchBar';
+import { useModal } from '@/app/components/common/modal/useModal';
 
 const InventoryList = () => {
-  const [showAddModal, setShowAddModal] = useState(false);
+  const { openModal } = useModal();
   const [searchType, setSearchType] = useState('warehouse');
-  const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [searchTerm, setSearchTerm] = useState('');
 
   const handleItemDetail = (itemId: string) => {
     setSelectedItemId(itemId);
-    setShowDetailModal(true);
+    openModal(InventoryDetailModal, {
+      title: '재고 이동 기록',
+      $selectedItemId: itemId,
+      $setSelectedItemId: setSelectedItemId,
+    });
   };
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -102,7 +106,9 @@ const InventoryList = () => {
                 <IconButton
                   icon="ri-add-line mr-1"
                   label="원자재 추가"
-                  onClick={() => setShowAddModal(true)}
+                  onClick={() => {
+                    openModal(AddInventoryModal, { title: '원자재 추가' });
+                  }}
                 />
               </div>
             </div>
@@ -210,16 +216,6 @@ const InventoryList = () => {
             onPageChange={(page) => setCurrentPage(page)}
           />
         )}
-        {/* 재고 상세보기 모달 */}
-        {showDetailModal && (
-          <InventoryDetailModal
-            $selectedItemId={selectedItemId}
-            $setSelectedItemId={setSelectedItemId}
-            $setShowDetailModal={setShowDetailModal}
-          />
-        )}
-        {/* 원자재 추가 모달 */}
-        {showAddModal && <AddInventoryModal $setShowAddModal={setShowAddModal} />}
       </div>
     </div>
   );

@@ -1,7 +1,8 @@
-export interface ShippingDetailModalProps {
+import { ModalProps } from '@/app/components/common/modal/types';
+
+export interface ShippingDetailModalProps extends ModalProps {
   $selectedSubTab: string;
   $selectedItemId: string;
-  $setShowShipDetailModal: (show: boolean) => void;
 }
 
 export interface ShippingDetailResponse {
