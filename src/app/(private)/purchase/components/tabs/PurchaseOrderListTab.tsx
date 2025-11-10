@@ -21,6 +21,7 @@ import { useModal } from '@/app/components/common/modal/useModal';
 import SearchBar from '@/app/components/common/SearchBar';
 import { useDebounce } from 'use-debounce';
 import { FetchPurchaseOrderParams } from '../../types/PurchaseApiRequestType';
+import { useRole } from '@/app/hooks/useRole';
 
 export default function PurchaseOrderListTab() {
   const { openModal } = useModal();
@@ -48,6 +49,9 @@ export default function PurchaseOrderListTab() {
   const [endDate, setEndDate] = useState('');
 
   const queryClient = getQueryClient();
+
+  const role = useRole();
+  const isSupplier = role === 'SUPPLIER_ADMIN';
 
   const queryParams = useMemo(
     (): FetchPurchaseOrderParams => ({
@@ -107,11 +111,8 @@ export default function PurchaseOrderListTab() {
     },
   });
 
-  if (isLoading) return <p>불러오는 중...</p>;
-  if (isError || !orderData) return <p>데이터를 불러오지 못했습니다.</p>;
-
-  const orders = orderData.content || [];
-  const pageInfo = orderData.page;
+  const orders = orderData?.content || []; // optional chaining으로 안전하게 처리
+  const pageInfo = orderData?.page;
   const totalPages = pageInfo?.totalPages ?? 1;
 
   const handleApprove = (poId: string) => {
@@ -170,20 +171,28 @@ export default function PurchaseOrderListTab() {
               setCurrentPage(0); // 검색 시 페이지 초기화
             }}
             placeholder="검색어를 입력하세요"
+            disabled={isSupplier}
           />
         </div>
 
         {/* 상태 필터 */}
       </div>
 
-      {/* 테이블 컴포넌트 */}
-      <PurchaseOrderTable
-        currentOrders={orders}
-        handleViewDetail={handleViewDetail}
-        handleApprove={handleApprove}
-        handleReject={handleReject}
-        handleDelivery={handleDelivery}
-      />
+      <div className="overflow-x-auto">
+        {isLoading ? (
+          <div className="text-center py-8 text-gray-500">불러오는 중...</div>
+        ) : isError ? (
+          <div className="text-center py-8 text-red-500">데이터를 불러오지 못했습니다.</div>
+        ) : (
+          <PurchaseOrderTable
+            currentOrders={orders}
+            handleViewDetail={handleViewDetail}
+            handleApprove={handleApprove}
+            handleReject={handleReject}
+            handleDelivery={handleDelivery}
+          />
+        )}
+      </div>
 
       {isError || isLoading ? null : (
         <Pagination

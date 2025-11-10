@@ -11,6 +11,7 @@ interface DropdownProps<T extends string = string> {
   className?: string;
   autoSelectFirst?: boolean;
   size?: 'sm' | 'md'; // 'sm' 또는 'md' 사이즈 추가
+  disabled?: boolean;
 }
 
 export default function Dropdown<T extends string = string>({
@@ -21,6 +22,7 @@ export default function Dropdown<T extends string = string>({
   placeholder,
   autoSelectFirst = false,
   size = 'md', // 기본값을 'md'로 설정
+  disabled = false,
 }: DropdownProps<T>) {
   const [open, setOpen] = useState(false);
 
@@ -32,6 +34,12 @@ export default function Dropdown<T extends string = string>({
 
   const selectedItem = items.find((item) => item.key === value);
   const displayLabel = !value || value === '' ? placeholder : (selectedItem?.value ?? placeholder);
+
+  const handleSelect = (key: string) => {
+    if (disabled) return;
+    onChange?.(key as T);
+    setOpen(false);
+  };
 
   // 외부 클릭 감지
   useEffect(() => {
@@ -53,11 +61,6 @@ export default function Dropdown<T extends string = string>({
     }
   }, [autoSelectFirst, items, value, onChange]);
 
-  const handleSelect = (key: string) => {
-    onChange?.(key as T);
-    setOpen(false); // 닫기
-  };
-
   const isSelected = value && value !== '' && value !== 'ALL';
 
   // size에 따른 스타일 클래스 정의
@@ -74,16 +77,21 @@ export default function Dropdown<T extends string = string>({
       <div ref={refs.setReference}>
         <button
           type="button"
-          onClick={() => setOpen((prev) => !prev)}
-          className={`font-medium focus:outline-none transition cursor-pointer whitespace-nowrap
+          onClick={() => {
+            if (disabled) return;
+            setOpen((prev) => !prev);
+          }}
+          className={`font-medium focus:outline-none transition whitespace-nowrap
                     ${buttonSizeClass} 
                     ${
-                      //
-                      isSelected
-                        ? 'bg-blue-100 text-blue-500 hover:bg-blue-200/70'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      disabled
+                        ? 'bg-gray-100 text-gray-300'
+                        : isSelected
+                          ? 'bg-blue-100 text-blue-500 hover:bg-blue-200/70 cursor-pointer'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 cursor-pointer'
                     }
                   `}
+          disabled={disabled}
         >
           <span>{displayLabel}</span>
           <span className="pl-2">
@@ -93,7 +101,7 @@ export default function Dropdown<T extends string = string>({
       </div>
 
       {/* 드롭다운 리스트 */}
-      {open && (
+      {open && !disabled && (
         <FloatingPortal>
           <ul
             ref={refs.setFloating}
