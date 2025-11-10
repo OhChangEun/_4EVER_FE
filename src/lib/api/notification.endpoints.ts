@@ -8,5 +8,5 @@ export const NOTIFICATION_ENDPOINTS = {
   COUNT: `${NOTIFICATION_BASE_PATH}/count`, // 알림 개수 조회
   LIST: `${NOTIFICATION_BASE_PATH}/list`, // 알림 목록 조회
   READ_LIST: `${NOTIFICATION_BASE_PATH}/list/read`, // 알림 읽음 처리(목록)
-  SUBSCRIBE: (userId: string) => `${NOTIFICATION_BASE_PATH}/subscribe/${userId}`, // 알림 구독 요청
+  SUBSCRIBE: `${NOTIFICATION_BASE_PATH}/subscribe`, // 알림 구독 요청
 };

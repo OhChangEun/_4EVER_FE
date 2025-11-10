@@ -83,7 +83,7 @@ export default function NotificationDropdown() {
     },
   });
 
-  const notifications = notificationData?.items ?? [];
+  const notifications = notificationData?.content ?? [];
   const pageInfo = notificationData?.page;
 
   // 읽지 않은 알림 개수 (SSE가 우선, 없으면 로컬 계산)
@@ -123,10 +123,13 @@ export default function NotificationDropdown() {
               ref={refs.setFloating}
               style={floatingStyles}
               {...getFloatingProps()}
-              className="w-96 h-80 bg-white rounded-xl shadow-xl border border-gray-200 z-50 overflow-hidden"
+              className="w-96 h-100 bg-white rounded-xl shadow-xl border border-gray-200 z-50 overflow-hidden"
             >
               <NotificationHeader notificationCount={unreadCount} onReadAll={handleReadAll} />
-              <NotificationList notifications={[]} onNotificationClick={handleNotificationClick} />
+              <NotificationList
+                notifications={notifications}
+                onNotificationClick={handleNotificationClick}
+              />
               {pageInfo && (
                 <NotificationPagination page={pageInfo} onPageChange={handlePageChange} />
               )}

@@ -29,8 +29,3 @@ export const readNotification = async (id: string) => {
 export const readAllNotifications = async () => {
   await axios.patch(NOTIFICATION_ENDPOINTS.READ_ALL);
 };
-
-// SSE 구독
-export const subscribeNotifications = (userId: string) => {
-  return new EventSource(NOTIFICATION_ENDPOINTS.SUBSCRIBE(userId));
-};

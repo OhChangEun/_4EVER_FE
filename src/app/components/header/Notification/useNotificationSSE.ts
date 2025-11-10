@@ -56,7 +56,7 @@ export function useNotificationSSE({
     // };
 
     const connectSSE = async () => {
-      const url = NOTIFICATION_ENDPOINTS.SUBSCRIBE(userId);
+      const url = NOTIFICATION_ENDPOINTS.SUBSCRIBE;
       console.info('[SSE] Connecting to:', url);
 
       try {
