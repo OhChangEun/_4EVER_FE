@@ -20,6 +20,9 @@ import {
 } from '@/app/(private)/sales/constant';
 import Pagination from '@/app/components/common/Pagination';
 import StatusLabel from '@/app/components/common/StatusLabel';
+import IconButton from '@/app/components/common/IconButton';
+import SearchBar from '@/app/components/common/SearchBar';
+import Dropdown from '@/app/components/common/Dropdown';
 
 const CustomerList = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -73,60 +76,30 @@ const CustomerList = () => {
   const totalPages = pageInfo?.totalPages ?? 1;
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 mt-6">
+    <>
       {/* 헤더 */}
-      <div className="p-6 border-b border-gray-200">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">고객 관리</h2>
-          <button
-            onClick={handleCustomerRegisterClick}
-            className="px-4 py-2 bg-[#2563EB] text-white font-medium rounded-lg hover:bg-blue-600 transition-colors duration-200 cursor-pointer whitespace-nowrap flex items-center space-x-2"
-          >
-            <i className="ri-user-add-line"></i>
-            <span>고객 등록</span>
-          </button>
-        </div>
-
-        {/* 필터 및 검색 */}
-        <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
-          <select
-            value={searchType}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSearchType(e.target.value)}
-            className="bg-white px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-8"
-          >
-            {CUSTOMER_SEARCH_KEYWORD_OPTIONS.map(({ key, value }) => (
-              <option key={key} value={key}>
-                {value}
-              </option>
-            ))}
-          </select>
-          <select
-            value={statusFilter}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-              setStatusFilter(e.target.value as CustomerStatus)
-            }
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
-          >
-            {CUSTOMER_STATUS_OPTIONS.map(({ key, value }) => (
-              <option key={key} value={key}>
-                {value}
-              </option>
-            ))}
-          </select>
-          <div className="flex-1 max-w-md">
-            <div className="relative">
-              <i className="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-              <input
-                type="text"
-                placeholder="고객명, 담당자명, 고객코드로 검색..."
-                value={searchTerm}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-              />
-            </div>
-          </div>
-          <div className="flex items-center space-x-2"></div>
-        </div>
+      <div className="border-b border-gray-200 flex justify-end items-center gap-4  py-2">
+        <Dropdown
+          placeholder="전체 상태"
+          items={CUSTOMER_STATUS_OPTIONS}
+          value={statusFilter}
+          onChange={(status: string) => setStatusFilter(status as CustomerStatus)}
+          autoSelectFirst
+        />
+        <SearchBar
+          options={CUSTOMER_SEARCH_KEYWORD_OPTIONS}
+          onTypeChange={(type: string) => setSearchType(type)}
+          onKeywordSearch={(keyword) => {
+            setSearchTerm(keyword);
+            setCurrentPage(1);
+          }}
+          placeholder="검색어를 입력하세요"
+        />
+        <IconButton
+          icon="ri-user-add-line"
+          onClick={handleCustomerRegisterClick}
+          label="고객 등록"
+        />
       </div>
 
       {/* 테이블 */}
@@ -235,7 +208,7 @@ const CustomerList = () => {
 
       {/* 신규 고객 추가 모달 */}
       {showCustomerModal && <NewCustomerModal $onClose={() => setShowCustomerModal(false)} />}
-    </div>
+    </>
   );
 };
 

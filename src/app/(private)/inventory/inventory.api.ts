@@ -30,12 +30,11 @@ export const getInventoryList = async (
   params?: InventoryQueryParams,
 ): Promise<{ data: InventoryResponse[]; pageData: Page }> => {
   const query = new URLSearchParams({
-    ...(params?.category && { category: params.category }),
-    ...(params?.warehouse && { warehouse: params.warehouse }),
-    ...(params?.statusCode && { statusCode: params.statusCode }),
-    ...(params?.itemName && { itemName: params.itemName }),
     ...(params?.page && { page: String(params.page) }),
     ...(params?.size && { size: String(params.size) }),
+    ...(params?.type && { type: String(params.type) }),
+    ...(params?.keyword && { keyword: String(params.keyword) }),
+    ...(params?.statusCode && { statusCode: params.statusCode }),
   }).toString();
 
   const res = await axios.get<ApiResponse<{ content: InventoryResponse[]; page: Page }>>(
