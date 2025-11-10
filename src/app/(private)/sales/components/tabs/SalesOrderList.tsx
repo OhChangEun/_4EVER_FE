@@ -15,6 +15,10 @@ import {
 import Pagination from '@/app/components/common/Pagination';
 import StatusLabel from '@/app/components/common/StatusLabel';
 import { useRole } from '@/app/hooks/useRole';
+import DateRangePicker from '@/app/components/common/DateRangePicker';
+import Input from '@/app/components/common/Input';
+import Dropdown from '@/app/components/common/Dropdown';
+import SearchBar from '@/app/components/common/SearchBar';
 
 const SalesOrderList = () => {
   const [showOrderDetailModal, setShowOrderDetailModal] = useState(false);
@@ -64,76 +68,33 @@ const SalesOrderList = () => {
   const orderOptions = getOrderSearchKeywordOptions(role as string);
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 mt-6">
+    <>
       {/* 헤더 */}
-      <div className="p-6 border-b border-gray-200">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">주문 품목</h3>
-        </div>
-
-        {/* 필터링 및 검색 */}
-        <div className="flex flex-wrap items-center gap-4">
-          {/* 날짜 필터 */}
-          <div className="flex items-center space-x-2">
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStartDate(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="시작날짜"
-            />
-            <span className="text-gray-500">~</span>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEndDate(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="끝날짜"
-            />
-          </div>
-          {/* 상태 필터 */}
-          <select
+      <div className="border-b border-gray-200 flex justify-between items-center gap-4 py-2">
+        {/* 날짜 필터 */}
+        <DateRangePicker
+          startDate={startDate}
+          onStartDateChange={setStartDate}
+          endDate={endDate}
+          onEndDateChange={setEndDate}
+        />
+        <div className="flex gap-2">
+          <Dropdown
+            placeholder="전체 상태"
+            items={ORDER_STATUS_OPTIONS}
             value={statusFilter}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-              setStatusFilter(e.target.value as OrderStatus)
-            }
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8"
-          >
-            {ORDER_STATUS_OPTIONS.map(({ key, value }) => (
-              <option key={key} value={key}>
-                {value}
-              </option>
-            ))}
-          </select>
-          <select
-            value={searchType}
-            disabled={role === 'CUSTOMER_ADMIN'}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSearchType(e.target.value)}
-            // className="bg-white px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-8"
-            className={`bg-white px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-8 ${role === 'CUSTOMER_ADMIN' ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'border-gray-300 text-gray-900'}`}
-          >
-            {orderOptions.map(({ key, value }) => (
-              <option key={key} value={key}>
-                {value}
-              </option>
-            ))}
-          </select>
-
-          {/* 검색 */}
-          <div className="flex-1 max-w-md">
-            <div className="relative">
-              <i className="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-                placeholder={
-                  role === 'CUSTOMER_ADMIN' ? '주문번호로 검색' : '주문번호, 고객명, 담당자로 검색'
-                }
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
+            onChange={(status: string) => setStatusFilter(status as OrderStatus)}
+            autoSelectFirst
+          />
+          <SearchBar
+            options={orderOptions}
+            onTypeChange={(type: string) => setSearchType(type)}
+            onKeywordSearch={(keyword) => {
+              setSearchTerm(keyword);
+              setCurrentPage(1);
+            }}
+            placeholder="검색어를 입력하세요"
+          />
         </div>
       </div>
 
@@ -220,7 +181,7 @@ const SalesOrderList = () => {
           $selectedSalesOrderId={selectedSalesOrderId}
         />
       )}
-    </div>
+    </>
   );
 };
 

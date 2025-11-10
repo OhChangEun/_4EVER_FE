@@ -12,6 +12,7 @@ import { ApiResponseNoData } from '@/app/types/api';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
 import { Page } from '@/app/types/Page';
 import { WarehouseListResponse } from '../../types/WarehouseListType';
+import Button from '@/app/components/common/Button';
 
 const AddWarehouseModal = ({ $setShowAddModal }: AddWarehouseModalProps) => {
   const queryClient = useQueryClient();
@@ -225,7 +226,7 @@ const AddWarehouseModal = ({ $setShowAddModal }: AddWarehouseModalProps) => {
             ></textarea>
           </div>
 
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-3 pt-4 justify-end">
             <button
               type="button"
               onClick={() => $setShowAddModal(false)}
@@ -233,13 +234,14 @@ const AddWarehouseModal = ({ $setShowAddModal }: AddWarehouseModalProps) => {
             >
               취소
             </button>
-            <button
+            <Button type="submit" label="새 창고 추가" onClick={handleSubmit} className="w-[50%]" />
+            {/* <button
               type="submit"
               onClick={handleSubmit}
               className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium cursor-pointer"
             >
               추가
-            </button>
+            </button> */}
           </div>
         </form>
       </div>

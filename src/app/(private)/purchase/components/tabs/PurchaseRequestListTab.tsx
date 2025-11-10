@@ -166,7 +166,6 @@ export default function PurchaseRequestListTab() {
               setKeyword(keyword);
               setCurrentPage(1); // 검색 시 페이지 초기화
             }}
-            defaultType={selectedStatus}
             placeholder="검색어를 입력하세요"
           />
 
@@ -228,22 +227,26 @@ export default function PurchaseRequestListTab() {
                       >
                         <i className="ri-eye-line"></i>
                       </button>
-                      <>
-                        <button
-                          onClick={() => handleApprove(request.purchaseRequisitionId)}
-                          className="text-green-600 hover:text-green-900 cursor-pointer"
-                          title="승인"
-                        >
-                          <i className="ri-check-line"></i>
-                        </button>
-                        <button
-                          onClick={() => handleReject(request.purchaseRequisitionId)}
-                          className="text-red-600 hover:text-red-900 cursor-pointer"
-                          title="반려"
-                        >
-                          <i className="ri-close-line"></i>
-                        </button>
-                      </>
+
+                      {/* 구매 요청 상태가 대기중일 때 */}
+                      {request.statusCode === 'PENDING' && (
+                        <>
+                          <button
+                            onClick={() => handleApprove(request.purchaseRequisitionId)}
+                            className="text-green-600 hover:text-green-900 cursor-pointer"
+                            title="승인"
+                          >
+                            <i className="ri-check-line"></i>
+                          </button>
+                          <button
+                            onClick={() => handleReject(request.purchaseRequisitionId)}
+                            className="text-red-600 hover:text-red-900 cursor-pointer"
+                            title="반려"
+                          >
+                            <i className="ri-close-line"></i>
+                          </button>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>

@@ -20,6 +20,11 @@ import { QUOTE_STATUS_OPTIONS } from '@/app/(private)/sales/constant';
 import Pagination from '@/app/components/common/Pagination';
 import StatusLabel from '@/app/components/common/StatusLabel';
 import { useRole } from '@/app/hooks/useRole';
+import DateRangePicker from '@/app/components/common/DateRangePicker';
+import Input from '@/app/components/common/Input';
+import IconButton from '@/app/components/common/IconButton';
+import Dropdown from '@/app/components/common/Dropdown';
+import SearchBar from '@/app/components/common/SearchBar';
 
 const SalesQuoteList = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -81,88 +86,40 @@ const SalesQuoteList = () => {
   }, [searchTerm]);
 
   return (
-    <div className="space-y-6 mt-6">
+    <>
       {/* 헤더 및 필터 */}
       <div className="flex flex-col space-y-4">
-        {/* 날짜 필터링 */}
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <label className="text-sm font-medium text-gray-700">시작날짜:</label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStartDate(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
-            />
-          </div>
-          <div className="flex items-center space-x-2">
-            <label className="text-sm font-medium text-gray-700">끝날짜:</label>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEndDate(e.target.value)}
-              className="bg-white px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-            />
-          </div>
-        </div>
-
-        {/* 검색 및 필터 */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <DateRangePicker
+            startDate={startDate}
+            onStartDateChange={setStartDate}
+            endDate={endDate}
+            onEndDateChange={setEndDate}
+          />
           <div className="flex items-center space-x-4">
-            <select
+            <Dropdown
+              placeholder="전체 상태"
+              items={QUOTE_STATUS_OPTIONS}
               value={statusFilter}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                setStatusFilter(e.target.value as QuoteStatus)
-              }
-              className="bg-white px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-8"
-            >
-              {QUOTE_STATUS_OPTIONS.map(({ key, value }) => (
-                <option key={key} value={key}>
-                  {value}
-                </option>
-              ))}
-            </select>
-            <select
-              value={searchType}
-              disabled={role === 'CUSTOMER_ADMIN'}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSearchType(e.target.value)}
-              // className="bg-white px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-8"
-              className={`bg-white px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-8 ${role === 'CUSTOMER_ADMIN' ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'border-gray-300 text-gray-900'}`}
-            >
-              {quoteOptions.map(({ key, value }) => (
-                <option key={key} value={key}>
-                  {value}
-                </option>
-              ))}
-            </select>
-            <div className="relative">
-              <i className="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-              <input
-                type="text"
-                placeholder={
-                  role === 'CUSTOMER_ADMIN' ? '견적번호로 검색' : '견적번호, 고객명, 담당자로 검색'
-                }
-                value={searchTerm}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-80 bg-white"
-              />
-            </div>
+              onChange={(status: string) => setStatusFilter(status as QuoteStatus)}
+              autoSelectFirst
+            />
+            <SearchBar
+              options={quoteOptions}
+              onTypeChange={(type: string) => setSearchType(type)}
+              onKeywordSearch={(keyword) => {
+                setSearchTerm(keyword);
+                setCurrentPage(1);
+              }}
+              placeholder="검색어를 입력하세요"
+            />
+            <IconButton
+              icon="ri-add-line"
+              label="견적 검토 요청"
+              onClick={handleViewReview}
+              disabled={selectedQuotationId === ''}
+            />
           </div>
-
-          {/* <IconButton icon="ri-add-line" label="견적 검토 요청" /> */}
-          <button
-            onClick={handleViewReview}
-            disabled={selectedQuotationId === ''}
-            className={`px-4 py-2 font-medium rounded-lg transition-colors duration-200 whitespace-nowrap flex items-center space-x-2
-    ${
-      !selectedQuotationId
-        ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
-        : 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer'
-    }`}
-          >
-            <i className="ri-add-line"></i>
-            <span>견적 검토 요청</span>
-          </button>
         </div>
       </div>
 
@@ -282,7 +239,7 @@ const SalesQuoteList = () => {
           />
         )}
       </div>
-    </div>
+    </>
   );
 };
 
