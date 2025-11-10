@@ -48,10 +48,15 @@ export const STATUS_TEXT_MAP: Record<string, string> = {
 
   TECHNICAL_TRAINING: '기술 교육',
   BASIC_TRAINING: '기본 교육',
+
+  CONVERTED: '전환 전',
+  NOT_CONVERTED: '전환 완료',
 };
 
 // 상태 색상 매핑
 export const STATUS_COLOR_MAP: Record<string, string> = {
+  CONVERTED: 'bg-blue-100 text-blue-700 border-blue-300',
+  NOT_CONVERTED: 'bg-blue-100 text-blue-700 border-blue-300',
   TECHNICAL_TRAINING: 'bg-blue-100 text-blue-700 border-blue-300',
   BASIC_TRAINING: 'bg-blue-100 text-blue-700 border-blue-300',
 

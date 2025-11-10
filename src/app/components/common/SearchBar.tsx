@@ -14,6 +14,7 @@ interface SearchBarProps {
   /** placeholder (선택 사항) */
   placeholder?: string;
   autoSelectFirst?: boolean;
+  disabled?: boolean;
 }
 
 export default function SearchBar({
@@ -22,6 +23,7 @@ export default function SearchBar({
   onKeywordSearch,
   autoSelectFirst = true,
   placeholder = '검색어 입력',
+  disabled,
 }: SearchBarProps) {
   const [selectedType, setSelectedType] = useState('');
   const [keyword, setKeyword] = useState('');
@@ -45,6 +47,7 @@ export default function SearchBar({
         value={selectedType}
         onChange={handleTypeChange}
         autoSelectFirst={autoSelectFirst}
+        disabled={disabled}
       />
       <Input
         value={keyword}

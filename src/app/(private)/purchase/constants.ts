@@ -104,6 +104,7 @@ export const SUPPLIERS = [
 export const PURCHASE_LIST_TABLE_HEADERS = [
   '요청번호',
   '요청자',
+  '부서',
   '요청일',
   '총 금액',
   '상태',

@@ -159,8 +159,8 @@ export default function OrdersTab() {
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <tr className="whitespace-nowrap text-center">
+                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   <input
                     type="checkbox"
                     checked={selectedRequirements.length === orderItems.length}
@@ -168,44 +168,44 @@ export default function OrdersTab() {
                     className="rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
                   />
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   자재
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   소요 수량
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   가용 재고
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   소모량
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   가용 재고 상태
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   부족 재고
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   자재 유형
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   구매 권장일
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   예상 도착일
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   공급사
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   전환 상태
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {orderItems.map((item) => (
-                <tr key={item.itemId} className="hover:bg-gray-50">
+                <tr key={item.itemId} className="hover:bg-gray-50 whitespace-nowrap truncate">
                   <td className="px-4 py-3">
                     {item.convertStatus !== 'NOT_CONVERTED' ? (
                       <input
@@ -245,7 +245,10 @@ export default function OrdersTab() {
                       0
                     )}
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-900">{item.itemType}</td>
+                  <td className="px-4 py-3 text-sm text-gray-900">
+                    <StatusLabel $statusCode={item.itemType} />
+                  </td>
+
                   <td className="px-4 py-3 text-sm text-gray-900">
                     {item.procurementStartDate || '-'}
                   </td>
@@ -254,7 +257,7 @@ export default function OrdersTab() {
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-900">{item.supplierCompanyName}</td>
                   <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                    {item.convertStatus}
+                    <StatusLabel $statusCode={item.convertStatus} />
                   </td>
                 </tr>
               ))}
