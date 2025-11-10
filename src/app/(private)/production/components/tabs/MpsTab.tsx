@@ -112,8 +112,6 @@ export default function MpsTab() {
 
   return (
     <>
-      <h3 className="text-lg font-semibold text-gray-900">주생산계획 (MPS)</h3>
-
       <div className="flex justify-between gap-4">
         <Dropdown
           placeholder="제품 선택"

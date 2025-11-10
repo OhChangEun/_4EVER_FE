@@ -20,6 +20,7 @@ import { useDropdown } from '@/app/hooks/useDropdown';
 import { useDebouncedKeyword } from '@/app/hooks/useDebouncedKeyword';
 import Input from '@/app/components/common/Input';
 import CalendarButton from '@/app/components/common/CalendarButton';
+import StatusLabel from '@/app/components/common/StatusLabel';
 
 export default function AttendanceTab() {
   // --- 모달 출력 ---
@@ -176,19 +177,7 @@ export default function AttendanceTab() {
                   {formatMinutesToHourMin(attend.overtimeMinutes)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span
-                    className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      attend.statusCode === '정상'
-                        ? 'bg-green-100 text-green-800'
-                        : attend.statusCode === '지각'
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : attend.statusCode === '휴가'
-                            ? 'bg-blue-100 text-blue-800'
-                            : 'bg-red-100 text-red-800'
-                    }`}
-                  >
-                    {attend.statusCode}
-                  </span>
+                  <StatusLabel $statusCode={attend.statusCode} />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button

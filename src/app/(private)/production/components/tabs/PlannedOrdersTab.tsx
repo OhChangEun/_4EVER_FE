@@ -18,6 +18,7 @@ import Pagination from '@/app/components/common/Pagination';
 import { useModal } from '@/app/components/common/modal/useModal';
 import MrpPurchaseRequestModal from '@/app/(private)/production/components/modals/MrpPurchaseRequestModal';
 import { useDropdown } from '@/app/hooks/useDropdown';
+import StatusLabel from '@/app/components/common/StatusLabel';
 
 export default function PlannedOrdersTab() {
   const { openModal } = useModal();
@@ -105,10 +106,7 @@ export default function PlannedOrdersTab() {
   };
   return (
     <>
-      <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-        <h4 className="text-md font-semibold text-gray-900">
-          계획 주문 - 무엇을 언제 발주 지시할까?
-        </h4>
+      <div className="p-4 border-b border-gray-200 flex items-center justify-end">
         <div className="flex items-center gap-3">
           <Dropdown
             placeholder="견적 선택"
@@ -202,7 +200,9 @@ export default function PlannedOrdersTab() {
                     {order.quantity.toLocaleString()}
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-900">{order.procurementStartDate}</td>
-                  <td className="px-4 py-3">{order.status}</td>
+                  <td className="px-4 py-3">
+                    <StatusLabel $statusCode={order.status} />
+                  </td>
                 </tr>
               ))}
             </tbody>
