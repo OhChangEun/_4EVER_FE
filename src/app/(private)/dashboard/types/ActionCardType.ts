@@ -4,5 +4,4 @@ export interface ActionCardProps {
   icon: string;
   color: string;
   href: string;
-  $setShowNewOrderModal: (show: boolean) => void;
 }

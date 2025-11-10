@@ -15,10 +15,9 @@ export interface InventoryResponse {
 }
 
 export interface InventoryQueryParams {
-  category?: string;
-  warehouse?: string;
   statusCode?: string;
-  itemName?: string;
+  type?: string;
+  keyword?: string;
   page?: number;
   size?: number;
 }

@@ -137,16 +137,6 @@ const QuoteDetailModal = ({ $onClose, $selectedQuotationId }: QuoteDetailModalPr
                 </table>
               </div>
             </div>
-
-            {/* 버튼 */}
-            <div className="flex gap-3 pt-6 border-t border-gray-200">
-              <button
-                onClick={$onClose}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium cursor-pointer whitespace-nowrap"
-              >
-                닫기
-              </button>
-            </div>
           </div>
         </div>
       </div>

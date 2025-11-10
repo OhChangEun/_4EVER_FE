@@ -5,7 +5,16 @@ import { getInventoryList } from '@/app/(private)/inventory/inventory.api';
 import { buildCluster, SAMPLE_INVENTORY } from './clusters';
 import { InventoryQueryParams } from '@/app/(private)/inventory/types/InventoryListType';
 
-const createQueryParams = (filter?: WarehouseFilter): InventoryQueryParams => {
+export interface InventoryQueryParamForWarehouse {
+  statusCode?: string;
+  page?: number;
+  size?: number;
+  category?: string;
+  warehouse?: string;
+  itemName: string;
+}
+
+const createQueryParams = (filter?: WarehouseFilter): InventoryQueryParamForWarehouse => {
   return {
     page: 0,
     size: filter?.warehouseId ? 120 : DEFAULT_QUERY.size,

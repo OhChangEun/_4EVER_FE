@@ -7,6 +7,7 @@ import { getCustomerDetail } from '../../sales.api';
 import { useQuery } from '@tanstack/react-query';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
 import StatusLabel from '@/app/components/common/StatusLabel';
+import Button from '@/app/components/common/Button';
 
 const CustomerDetailModal = ({
   $setShowDetailModal,
@@ -172,22 +173,14 @@ const CustomerDetailModal = ({
             </div>
 
             {/* 버튼 */}
-            <div className="flex gap-3 pt-6 border-t border-gray-200">
-              <button
-                onClick={() => $setShowDetailModal(false)}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium cursor-pointer whitespace-nowrap"
-              >
-                닫기
-              </button>
-              <button
+            <div className="flex gap-3 pt-6 border-t border-gray-200 flex justify-end">
+              <Button
+                label="수정"
                 onClick={() => {
                   $setEditFormData(customer!);
                   $setShowEditModal(true);
                 }}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium cursor-pointer whitespace-nowrap"
-              >
-                수정
-              </button>
+              />
             </div>
           </div>
         </div>
