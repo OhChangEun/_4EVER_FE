@@ -100,7 +100,6 @@ export default function PlannedOrdersTab() {
     openModal(MrpPurchaseRequestModal, {
       title: '자재 구매 요청',
       orders: selectedOrdersData, // 전체 데이터를 넘김
-      editable: false,
       onConfirm: () => setSelectedOrders([]),
     });
   };
