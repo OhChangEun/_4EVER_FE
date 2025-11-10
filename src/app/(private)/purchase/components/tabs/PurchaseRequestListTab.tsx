@@ -28,6 +28,7 @@ import { useDropdown } from '@/app/hooks/useDropdown';
 import { formatDateTime } from '@/app/utils/date';
 import SearchBar from '@/app/components/common/SearchBar';
 import { useDebounce } from 'use-debounce';
+import StatusLabel from '@/app/components/common/StatusLabel';
 // import CalendarButton from '@/app/components/common/Calendar';
 
 export default function PurchaseRequestListTab() {
@@ -214,9 +215,7 @@ export default function PurchaseRequestListTab() {
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">{request.totalAmount}원</td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 py-1 rounded-full text-xs font-medium">
-                      {request.statusCode}
-                    </span>
+                    <StatusLabel $statusCode={request.statusCode} />
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">
                     <div className="flex items-center justify-center space-x-2">
@@ -227,22 +226,26 @@ export default function PurchaseRequestListTab() {
                       >
                         <i className="ri-eye-line"></i>
                       </button>
-                      <>
-                        <button
-                          onClick={() => handleApprove(request.purchaseRequisitionId)}
-                          className="text-green-600 hover:text-green-900 cursor-pointer"
-                          title="승인"
-                        >
-                          <i className="ri-check-line"></i>
-                        </button>
-                        <button
-                          onClick={() => handleReject(request.purchaseRequisitionId)}
-                          className="text-red-600 hover:text-red-900 cursor-pointer"
-                          title="반려"
-                        >
-                          <i className="ri-close-line"></i>
-                        </button>
-                      </>
+
+                      {/* 구매 요청 상태가 대기중일 때 */}
+                      {request.statusCode === 'PENDING' && (
+                        <>
+                          <button
+                            onClick={() => handleApprove(request.purchaseRequisitionId)}
+                            className="text-green-600 hover:text-green-900 cursor-pointer"
+                            title="승인"
+                          >
+                            <i className="ri-check-line"></i>
+                          </button>
+                          <button
+                            onClick={() => handleReject(request.purchaseRequisitionId)}
+                            className="text-red-600 hover:text-red-900 cursor-pointer"
+                            title="반려"
+                          >
+                            <i className="ri-close-line"></i>
+                          </button>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>

@@ -13,6 +13,8 @@ import { useMemo, useState } from 'react';
 import { PageRequest } from '@/app/types/Page';
 import Button from '@/app/components/common/Button';
 import Input from '@/app/components/common/Input';
+import StatusLabel from '@/app/components/common/StatusLabel';
+import { formatDateTime } from '@/app/utils/date';
 
 export default function BomTab() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -56,8 +58,7 @@ export default function BomTab() {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900">BOM 목록</h3>
+      <div className="flex items-center justify-end">
         <IconButton label="BOM 생성" icon="ri-add-line" onClick={handleCreate} />
       </div>
 
@@ -112,9 +113,11 @@ export default function BomTab() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {bom.version}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">{bom.statusCode}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <StatusLabel $statusCode={bom.statusCode} />
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {bom.lastModifiedAt}
+                      {formatDateTime(bom.lastModifiedAt)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <Button

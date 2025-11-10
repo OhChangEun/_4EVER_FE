@@ -79,7 +79,7 @@ export const postApporvePurchaseReq = async (prId: string) => {
 export const postRejectPurchaseReq = async (prId: string, body: string) => {
   const res = await axios.post<ApiResponse<null>>(
     `${PURCHASE_ENDPOINTS.PURCHASE_REQUISITION_REJECT(prId)}`,
-    { body },
+    { comment: body },
   );
   return res.data;
 };
@@ -120,19 +120,9 @@ export const createStockPurchaseRequest = async (data: StockPurchaseRequestBody)
 export const fetchPurchaseOrderList = async (
   params: FetchPurchaseOrderParams,
 ): Promise<PurchaseOrderListResponse> => {
-  const { page = 0, size = 10, status, orderDateFrom, orderDateTo } = params;
-
   const res = await axios.get<ApiResponse<PurchaseOrderListResponse>>(
     `${PURCHASE_ENDPOINTS.PURCHASE_ORDERS}`,
-    {
-      params: {
-        page,
-        size,
-        ...(status && { status }),
-        ...(orderDateFrom && { orderDateFrom }),
-        ...(orderDateTo && { orderDateTo }),
-      },
-    },
+    { params },
   );
   // console.log(res.data.data);
   return res.data.data;
@@ -151,6 +141,14 @@ export const postRejectPurchaseOrder = async (poId: string, body: string) => {
   const res = await axios.post<ApiResponse<null>>(
     `${PURCHASE_ENDPOINTS.PURCHASE_ORDER_REJECT(poId)},`,
     { body },
+  );
+  return res.data;
+};
+
+// 승인된 발주서 배송
+export const postDeliveryStartOrder = async (purchaseOrderId: string) => {
+  const res = await axios.post<ApiResponse<null>>(
+    `${PURCHASE_ENDPOINTS.PURCHASE_ORDER_DELIVERY(purchaseOrderId)}`,
   );
   return res.data;
 };
