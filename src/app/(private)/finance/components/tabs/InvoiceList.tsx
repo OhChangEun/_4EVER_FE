@@ -22,6 +22,7 @@ import { useRole } from '@/app/hooks/useRole';
 import IconButton from '@/app/components/common/IconButton';
 import Button from '@/app/components/common/Button';
 import Dropdown from '@/app/components/common/Dropdown';
+import { useModal } from '@/app/components/common/modal/useModal';
 
 const InvoiceList = () => {
   const searchParams = useSearchParams();
@@ -36,6 +37,10 @@ const InvoiceList = () => {
 
   const [statusFilter, setStatusFilter] = useState<InvoiceStatus>('ALL');
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    setSelectedInvoiceId('');
+  }, [currentTab]);
 
   const queryParams = useMemo(
     () => ({
@@ -75,6 +80,7 @@ const InvoiceList = () => {
   const invoices = invoiceReq?.data ?? [];
   const pageInfo = invoiceReq?.pageData;
   const totalPages = pageInfo?.totalPages ?? 1;
+  const { openModal } = useModal();
 
   const mutationFn =
     currentTab === 'sales'
@@ -94,8 +100,12 @@ const InvoiceList = () => {
 
   // ----------------------------------------------------------
   const handleViewDetail = (id: string) => {
-    setShowDetailModal(true);
     setSelectedInvoiceId(id);
+    openModal(InvoiceDetailModal, {
+      title: '전표 상세 정보',
+      $selectedInvoiceId: id,
+      $setSelectedInvoiceId: setSelectedInvoiceId,
+    });
   };
   const handleSelectVoucher = (voucherId: string, checked: boolean) => {
     if (checked) {
@@ -227,13 +237,13 @@ const InvoiceList = () => {
       )}
 
       {/* 전표 상세 모달 */}
-      {showDetailModal && (
+      {/* {showDetailModal && (
         <InvoiceDetailModal
           $setShowDetailModal={setShowDetailModal}
           $selectedInvoiceId={selectedInvoiceId}
           $setSelectedInvoiceId={setSelectedInvoiceId}
         />
-      )}
+      )} */}
     </>
   );
 };
