@@ -28,7 +28,7 @@ export const HRM_ENDPOINTS = {
   EMPLOYEE_DETAIL: (employeeId: string) => `${HRM_BASE_PATH}/employee/${employeeId}`, // 직원 상세 조회, 수정
 
   // 직원 가입
-  EMPLOYEE_SIGNUP: `${HRM_BASE_PATH}/signup`, // 신규 직원 등록
+  EMPLOYEE_SIGNUP: `${HRM_BASE_PATH}/employee/signup`, // 신규 직원 등록
 
   // 휴가
   LEAVE_REQUESTS: `${HRM_BASE_PATH}/leave-request`, // 휴가 신청 목록 조회

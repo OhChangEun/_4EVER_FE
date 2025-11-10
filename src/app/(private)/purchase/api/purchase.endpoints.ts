@@ -14,6 +14,7 @@ export const PURCHASE_ENDPOINTS = {
 
   // --- 통계 ---
   STATISTICS: `${PURCHASE_BASE_PATH}/statistics`, // MM 통계 조회
+  SUPPLIER_ORDERS_STATISTICS: `${PURCHASE_BASE_PATH}/supplier/orders/statistics`, // 공급사 발주서 통계 조회
 
   // --- 구매 요청 ---
   PURCHASE_REQUISITIONS: `${PURCHASE_BASE_PATH}/purchase-requisitions`, // 구매 요청 목록 조회, 비재고성 자재 구매 요청서 생성

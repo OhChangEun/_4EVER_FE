@@ -38,6 +38,7 @@ export const SALES_ENDPOINTS = {
   ANALYTICS: `${SALES_BASE_PATH}/analytics/sales`,
   NEW_ORDER: `${SALES_BASE_PATH}/quotations`,
   NEW_QUOTE_ITEM_TOGGLE: `${INVENTORY_BASE_PATH}/product/item/toggle`,
+  CSUTOMER_STATISTICS: `${SALES_BASE_PATH}/quotations/customer/count`,
 } as const;
 
 // ----------------------- FINANCE -----------------------
@@ -53,6 +54,8 @@ export const FINANCE_ENDPOINTS = {
     `${FINANCE_BASE_PATH}/invoice/ap/receivable/request?invoiceId=${invoiceId}`,
   SALES_INVOICE_COMPLETE: (invoiceId: string) =>
     `${FINANCE_BASE_PATH}/invoice/ar/${invoiceId}/receivable/complete`,
+  CUSTOMER_STATISTICS: `${FINANCE_BASE_PATH}/statistics/customer/total-purchases`,
+  SUPPLIER_STATISTICS: `${FINANCE_BASE_PATH}/statistics/supplier/total-sales`,
 } as const;
 
 // ----------------------- DASHBOARD -----------------------

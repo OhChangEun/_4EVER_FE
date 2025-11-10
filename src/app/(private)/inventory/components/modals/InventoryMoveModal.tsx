@@ -1,6 +1,6 @@
 'use client';
 
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getWarehouseInfo, postStockMovement } from '../../inventory.api';
 import { useEffect, useMemo, useState } from 'react';
 import { InventoryMoveModalProps } from '../../types/InventoryMoveModalType';
@@ -9,8 +9,10 @@ import {
   WarehouseToggleResponse,
 } from '../../types/AddInventoryModalType';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
+import { InventoryDetailResponse } from '../../types/InventoryDetailModalType';
 
 const InventoryMoveModal = ({ $setShowMoveModal, $selectedStock }: InventoryMoveModalProps) => {
+  const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
     fromWarehouseId: $selectedStock.warehouseId,
     toWarehouseId: '',
@@ -48,16 +50,67 @@ const InventoryMoveModal = ({ $setShowMoveModal, $selectedStock }: InventoryMove
     queryFn: ({ queryKey }) => getWarehouseInfo(queryKey[1] as WarehouseToggleQueryParams),
     enabled: !!$selectedStock.itemId,
   });
+  // 낙관적 업데이트x
+  // const { mutate: moveStock } = useMutation({
+  //   mutationFn: postStockMovement,
+  //   onSuccess: (data) => {
+  //     alert(`${data.status} : ${data.message}
+  //     `);
+  //     $setShowMoveModal(false);
+  //   },
+  //   onError: () => {
+  //     alert(` 등록 중 오류가 발생했습니다.`);
+  //   },
+  // });
 
+  // 낙관적 업데이트
   const { mutate: moveStock } = useMutation({
     mutationFn: postStockMovement,
+    onMutate: async (newMovement) => {
+      await queryClient.cancelQueries({ queryKey: ['inventoryDetail', $selectedStock?.itemId] });
+
+      const previousData = queryClient.getQueryData<InventoryDetailResponse[]>([
+        'inventoryDetail',
+        queryParams,
+      ]);
+
+      if (previousData) {
+        const updatedData = previousData.map((warehouse) => {
+          // 출발 창고 재고 감소
+          if (warehouse.warehouseId === newMovement.fromWarehouseId) {
+            return {
+              ...warehouse,
+              currentStock: warehouse.currentStock - newMovement.stockQuantity,
+            };
+          }
+          // 도착 창고 재고 증가
+          if (warehouse.warehouseId === newMovement.toWarehouseId) {
+            return {
+              ...warehouse,
+              currentStock: warehouse?.currentStock + newMovement.stockQuantity,
+            };
+          }
+          return warehouse;
+        });
+        queryClient.setQueryData(['inventoryDetail', $selectedStock?.itemId], updatedData);
+      }
+      return { previousData };
+    },
+
+    onError: (error, _newMovement, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(['inventoryDetail', $selectedStock?.itemId], context.previousData);
+      }
+      alert(`재고 이동 중 오류가 발생했습니다. ${error}`);
+    },
+
     onSuccess: (data) => {
-      alert(`${data.status} : ${data.message}
-      `);
+      alert(`재고가 이동되었습니다.`);
       $setShowMoveModal(false);
     },
-    onError: () => {
-      alert(` 등록 중 오류가 발생했습니다.`);
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['inventoryDetail', $selectedStock?.itemId] });
     },
   });
 

@@ -10,7 +10,6 @@ export interface Product {
 }
 
 export interface NewOrderRequest {
-  dueDate: string;
   items: NewOrderItem[];
   note?: string;
 }
