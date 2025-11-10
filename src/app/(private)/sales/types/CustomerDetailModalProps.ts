@@ -1,8 +1,7 @@
 import { CustomerDetail } from '@/app/(private)/sales/types/SalesCustomerDetailType';
+import { ModalProps } from '@/app/components/common/modal/types';
 
-export interface CustomerDetailModalProps {
-  $setShowDetailModal: React.Dispatch<React.SetStateAction<boolean>>;
+export interface CustomerDetailModalProps extends ModalProps {
   $selectedCustomerId: string;
-  $setShowEditModal: (show: boolean) => void;
   $setEditFormData: React.Dispatch<React.SetStateAction<CustomerDetail | null>>;
 }

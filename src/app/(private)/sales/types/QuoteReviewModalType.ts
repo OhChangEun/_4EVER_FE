@@ -1,3 +1,5 @@
+import { ModalProps } from '@/app/components/common/modal/types';
+
 export interface Quote {
   id: string;
   customer: string;
@@ -26,7 +28,6 @@ export interface InventoryCheckRes {
   inventoryCheckTime: string;
 }
 
-export interface QuoteReviewModalProps {
-  $onClose: () => void;
+export interface QuoteReviewModalProps extends ModalProps {
   $selectedQuotationId: string;
 }
