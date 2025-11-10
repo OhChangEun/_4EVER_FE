@@ -205,10 +205,10 @@ export default function PurchaseRequestListTab() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     <div className="flex flex-col">
                       <span>{request.purchaseRequisitionNumber}</span>
-                      <span>{request.departmentName}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">{request.requesterName}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{request.departmentName}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">
                     {formatDateTime(request.requestDate)}
                   </td>

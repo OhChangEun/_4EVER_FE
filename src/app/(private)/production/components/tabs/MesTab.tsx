@@ -196,10 +196,10 @@ export default function MesTab() {
                     key={order.mesId}
                     className="bg-white border border-gray-200/80 rounded-xl p-4 transition duration-200"
                   >
-                    <div className="min-w-[180px] flex justify-between gap-8">
+                    <div className="flex justify-between gap-8">
                       {/* 상단: MES 번호, 제품 정보 및 상태 */}
-                      <div className="flex flex-col gap-2">
-                        <div className="flex items-center ">
+                      <div className="max-w-[184px] flex flex-col gap-2">
+                        <div className="flex items-center gap-1">
                           {getStatusBadge(order.status)}
                           <IconButton
                             label="공정 상세 보기"
@@ -232,7 +232,7 @@ export default function MesTab() {
                         </div>
                       </div>
 
-                      <div className="flex-1 rounded-xl bg-gray-100 p-4">
+                      <div className="flex-1 rounded-xl bg-gray-100 px-6 p-4">
                         <div className="flex items-center h-full">
                           {/* 공정 순서 (세로 방향) */}
                           <div
@@ -287,7 +287,7 @@ export default function MesTab() {
                           </div>
 
                           {/* 진행률 바 */}
-                          <div className="flex-1 ml-10 p-2 pb-8">
+                          <div className="flex-1 ml-4 p-2 pb-8">
                             <div>
                               <div className="flex items-center justify-end mb-0.5">
                                 <span className="text-lg font-bold text-blue-600">
