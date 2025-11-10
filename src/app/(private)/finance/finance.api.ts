@@ -1,14 +1,30 @@
-import axios from 'axios';
-
 import { FINANCE_ENDPOINTS, ApiResponse, ApiResponseNoData } from '@/app/types/api';
-import { FinanceStatResponse } from '@/app/(private)/finance/types/FinanceStatsType';
+import {
+  CustomerSupplierStatResponse,
+  FinanceStatResponse,
+} from '@/app/(private)/finance/types/FinanceStatsType';
 import { InvoiceListRes, InvoiceQueryParams } from './types/InvoiceListType';
 import { InvoicetDetailRes } from './types/InvoiceDetailModalType';
 import { Page } from '@/app/types/Page';
+import axios from '@/lib/axiosInstance';
 
 // ----------------------- 통계 지표 -----------------------
 export const getFinanceStats = async (): Promise<ApiResponse<FinanceStatResponse>> => {
   const res = await axios.get<ApiResponse<FinanceStatResponse>>(FINANCE_ENDPOINTS.STATISTICS);
+  return res.data;
+};
+
+export const getCustomerStats = async (): Promise<ApiResponse<CustomerSupplierStatResponse>> => {
+  const res = await axios.get<ApiResponse<CustomerSupplierStatResponse>>(
+    FINANCE_ENDPOINTS.CUSTOMER_STATISTICS,
+  );
+  return res.data;
+};
+
+export const getSupplierStats = async (): Promise<ApiResponse<CustomerSupplierStatResponse>> => {
+  const res = await axios.get<ApiResponse<CustomerSupplierStatResponse>>(
+    FINANCE_ENDPOINTS.SUPPLIER_STATISTICS,
+  );
   return res.data;
 };
 

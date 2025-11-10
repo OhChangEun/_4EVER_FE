@@ -33,6 +33,7 @@ export default function Dropdown<T extends string = string>({
   const selectedItem = items.find((item) => item.key === value);
   const displayLabel = !value || value === '' ? placeholder : (selectedItem?.value ?? placeholder);
 
+  // 외부 클릭 감지
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as Node;
@@ -44,6 +45,13 @@ export default function Dropdown<T extends string = string>({
 
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [open, refs]);
+
+  // items가 로드 되고, 값이 비어있을 때 자동으로 첫번째 선택
+  useEffect(() => {
+    if (autoSelectFirst && items.length > 0 && !value) {
+      onChange?.(items[0].key as T);
+    }
+  }, [autoSelectFirst, items, value, onChange]);
 
   const handleSelect = (key: string) => {
     onChange?.(key as T);

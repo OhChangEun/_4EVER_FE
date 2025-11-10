@@ -5,7 +5,13 @@ import { dehydrate } from '@tanstack/react-query';
 import { PRODUCTION_TABS } from '@/app/(private)/production/constants';
 import StatSection from '@/app/components/common/StatSection';
 import {
-  fetchMpsProducts,
+  fetchMesStatusDropdown,
+  fetchMpsBomDropdown,
+  fetchMrpAvailableStatusDropdown,
+  fetchMrpPlannedOrderQuotationsDropdown,
+  fetchMrpPlannedOrderStatusDropdown,
+  fetchMrpQuotationsDropdown,
+  fetchOperationDropdown,
   fetchProductionStats,
   fetchQuotationList,
 } from '@/app/(private)/production/api/production.api';
@@ -13,7 +19,6 @@ import ErrorMessage from '@/app/components/common/ErrorMessage';
 import { mapProductionStatsToCards } from '@/app/(private)/production/services/production.service';
 import Providers from '@/app/providers';
 import { FetchQuotationParams } from '@/app/(private)/production/types/QuotationApiType';
-import Input from '@/app/components/common/Input';
 
 export default async function ProductionPage() {
   const queryClient = getQueryClient();
@@ -22,8 +27,8 @@ export default async function ProductionPage() {
   const initialQuotationParams: FetchQuotationParams = {
     page: 0,
     size: 10,
-    stockStatusCode: 'ALL',
     statusCode: 'ALL',
+    availableStatusCode: 'ALL',
     startDate: undefined,
     endDate: undefined,
   };
@@ -36,10 +41,61 @@ export default async function ProductionPage() {
     }),
 
     // --- 드롭 다운 prefetch ---
+    // // 가용재고 상태 드롭다운
+    // queryClient.prefetchQuery({
+    //   queryKey: ['availableStatusDropdown'],
+    //   queryFn: fetchAvailableStatusDropdown,
+    // }),
+    // // 견적 상태 드롭다운
+    // queryClient.prefetchQuery({
+    //   queryKey: ['quotationsStatusDropdown'],
+    //   queryFn: fetchQuotationStatusDropdown,
+    // }),
     // MPS 제품 드롭다운 prefetch
     queryClient.prefetchQuery({
-      queryKey: ['mpsProductsDropdown'],
-      queryFn: fetchMpsProducts,
+      queryKey: ['mpsBomsDropdown'],
+      queryFn: fetchMpsBomDropdown,
+    }),
+    // // 자재 드롭다운
+    // queryClient.prefetchQuery({
+    //   queryKey: ['productsDropdown'],
+    //   queryFn: fetchProductDropdown,
+    // }),
+
+    // 공정 드롭다운
+    queryClient.prefetchQuery({
+      queryKey: ['operationsDropdown'],
+      queryFn: fetchOperationDropdown,
+    }),
+
+    // mrp 순소요 - 견적 드롭다운
+    queryClient.prefetchQuery({
+      queryKey: ['mrpQuotationsDropdown'],
+      queryFn: fetchMrpQuotationsDropdown,
+    }),
+
+    // mrp 순소요 - 가용 재고 상태 드롭다운
+    queryClient.prefetchQuery({
+      queryKey: ['mrpAvailableStatusDropdown'],
+      queryFn: fetchMrpAvailableStatusDropdown,
+    }),
+
+    // mrp 계획주문 - 견적 드롭다운
+    queryClient.prefetchQuery({
+      queryKey: ['mrpPlannedOrderQuotationsDropdown'],
+      queryFn: fetchMrpPlannedOrderQuotationsDropdown,
+    }),
+
+    // mrp 계획주문 - 상태 드롭다운
+    queryClient.prefetchQuery({
+      queryKey: ['mrpPlannedOrderStatusDropdown'],
+      queryFn: fetchMrpPlannedOrderStatusDropdown,
+    }),
+
+    // mes 상태 드롭다운
+    queryClient.prefetchQuery({
+      queryKey: ['mesStatusDropdown'],
+      queryFn: fetchMesStatusDropdown,
     }),
   ]);
 
@@ -64,15 +120,6 @@ export default async function ProductionPage() {
           )}
 
           <Suspense fallback={<div>Loading..</div>}>
-            <Input
-              icon="ri-search-line"
-              label="사용자 이름"
-              inputSize="md"
-              placeholder="이름을 입력하세요"
-              disabled
-              required
-              // error="에러"
-            />
             <TabNavigation tabs={PRODUCTION_TABS} />
           </Suspense>
         </main>

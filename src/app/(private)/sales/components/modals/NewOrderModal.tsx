@@ -14,7 +14,6 @@ import ModalStatusBox from '@/app/components/common/ModalStatusBox';
 
 const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderModalProps) => {
   const [newOrderItems, setNewOrderItems] = useState<NewOrderRequest>({
-    dueDate: '',
     items: [
       {
         itemId: '',
@@ -92,7 +91,6 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
     $setShowNewOrderModal(false);
 
     setNewOrderItems({
-      dueDate: '',
       items: [
         {
           itemId: '',
@@ -108,7 +106,6 @@ const NewOrderModal = ({ $showNewOrderModal, $setShowNewOrderModal }: NewOrderMo
     e.preventDefault();
     $setShowNewOrderModal(false);
     setNewOrderItems({
-      dueDate: '',
       items: [
         {
           itemId: '',

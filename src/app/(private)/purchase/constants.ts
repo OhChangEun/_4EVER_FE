@@ -73,6 +73,15 @@ export const PURCHASE_TABS: Tab[] = [
   },
 ];
 
+export const SUPPLIER_PURCHASE_TABS: Tab[] = [
+  {
+    id: 'orders',
+    name: '발주서',
+    icon: 'ri-shopping-bag-3-line',
+    component: PurchaseOrderListTab,
+  },
+];
+
 // 공급사
 export const SUPPLIERS = [
   '대한철강',

@@ -97,7 +97,7 @@ export default function Input({
   const base = ' w-full text-gray-800 focus:outline-none transition-colors placeholder-gray-300';
 
   const variants = {
-    default: 'border border-gray-300 focus:border-gray-500 bg-white',
+    default: 'border border-gray-300 focus:border-blue-500 bg-white',
     outline: 'border border-blue-500 bg-transparent focus:ring focus:ring-blue-500',
   };
 
@@ -183,7 +183,9 @@ export default function Input({
       <div className="relative flex items-center">
         {icon && !disabled && (
           <i
-            className={`${icon} absolute left-2.5 z-10 text-gray-500 text-base pointer-events-none`}
+            className={`${icon} absolute left-2.5 z-1 text-base pointer-events-none transition-colors ${
+              isFocused ? 'text-blue-500' : 'text-gray-400'
+            }`}
           />
         )}
         <input

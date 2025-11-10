@@ -20,7 +20,7 @@ export default function Button({
     outline: 'font-normal border border-blue-500 text-blue-500 bg-transparent hover:bg-blue-50',
     whiteOutline: 'bg-white font-normal border border-gray-300 text-gray-500/70 hover:bg-gray-50',
     ghost: 'bg-transparent text-blue-600 hover:bg-blue-100',
-    soft: 'bg-blue-100 font-semibold text-blue-500 hover:bg-blue-200/70',
+    soft: 'bg-blue-100 font-medium text-blue-500 hover:bg-blue-200/70',
   };
 
   const sizes = {

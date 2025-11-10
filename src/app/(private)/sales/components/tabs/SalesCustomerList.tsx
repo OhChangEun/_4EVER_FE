@@ -56,6 +56,7 @@ const CustomerList = () => {
 
   const customers = customerRes?.data ?? [];
   const pageInfo = customerRes?.pageData;
+  console.log(pageInfo);
 
   const handleViewClick = (id: string) => {
     setSelectedCustomerId(id);
@@ -203,7 +204,7 @@ const CustomerList = () => {
       </div>
 
       {/* 페이지네이션 */}
-      {isError || !isLoading ? null : (
+      {!isLoading && !isError && customers.length > 0 && (
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}

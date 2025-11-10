@@ -43,9 +43,8 @@ const QuoteReviewModal = ({ $onClose, $selectedQuotationId }: QuoteReviewModalPr
   });
 
   const haveToCheckItems: Inventories[] =
-    quote?.items.map(({ itemId, itemName, quantity }) => ({
+    quote?.items.map(({ itemId, quantity }) => ({
       itemId,
-      itemName,
       requiredQuantity: quantity,
     })) ?? [];
 

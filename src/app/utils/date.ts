@@ -41,8 +41,7 @@ export const formatDate = (date: Date | null): string | null => {
 // YYYY-MM-DD → ISO
 export const toISOString = (dateStr: string): string => {
   const date = new Date(dateStr);
-  if (isNaN(date.getTime())) {
-    throw new Error(`Invalid date STRING: ${dateStr}`);
-  }
+  if (isNaN(date.getTime())) return '';
+
   return date.toISOString();
 };

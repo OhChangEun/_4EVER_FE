@@ -11,17 +11,17 @@ export const mapProductionStatsToCards = (
       const cards: StatCardType[] = [
         createStatCard(
           '생산중인 품목',
-          stats.production_in_progress.value,
-          stats.production_in_progress.delta_rate,
+          stats.production_in.value,
+          stats.production_in.delta_rate,
           '건',
         ),
         createStatCard(
-          '이번 달에 생산이 들어간 품목',
+          '생산 완료된 품목',
           stats.production_completed.value,
           stats.production_completed.delta_rate,
           '건',
         ),
-        createStatCard('완료된 생산', stats.bom_count.value, stats.bom_count.delta_rate, '건'),
+        createStatCard('Bom 개수', stats.bom_count.value, stats.bom_count.delta_rate, '건'),
       ];
 
       acc[period] = cards;

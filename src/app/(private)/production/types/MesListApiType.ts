@@ -1,3 +1,5 @@
+import { Page } from '@/app/types/Page';
+
 // MES 개별 항목
 export interface MesSummaryItem {
   mesId: string;
@@ -9,7 +11,7 @@ export interface MesSummaryItem {
   quotationId: string;
   quotationNumber: string;
   status: string; // 예: "IN_PROGRESS", "PLANNED"
-  currentOperation: string; // 예: "OP30"
+  currentOperation: number; // 예: "OP30"
   startDate: string; // 예: "2024-01-15"
   endDate: string; // 예: "2024-02-10"
   progressRate: number; // 진행률 (예: 65)
@@ -18,11 +20,8 @@ export interface MesSummaryItem {
 
 // MES 목록 응답 (페이지네이션 포함)
 export interface MesListResponse {
-  size: number; // 페이지당 데이터 개수
-  totalPages: number;
-  page: number; // 현재 페이지 번호
   content: MesSummaryItem[]; // MES 항목 리스트
-  totalElements: number; // 전체 항목
+  page: Page;
 }
 
 export interface FetchMesListParams {

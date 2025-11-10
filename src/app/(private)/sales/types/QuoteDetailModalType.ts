@@ -28,6 +28,6 @@ interface Item {
 
 export interface Inventories {
   itemId: string;
-  itemName: string;
+
   requiredQuantity: number;
 }

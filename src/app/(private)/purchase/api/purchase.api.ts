@@ -1,6 +1,8 @@
-import axios from 'axios';
 import { ApiResponse } from '@/app/types/api';
-import { PurchaseStatResponse } from '@/app/(private)/purchase/types/PurchaseStatsType';
+import {
+  PurchaseStatResponse,
+  SupplierPurchaseStatResponse,
+} from '@/app/(private)/purchase/types/PurchaseStatsType';
 import {
   PurchaseOrderDetailResponse,
   PurchaseOrderListResponse,
@@ -19,11 +21,12 @@ import {
   FetchPurchaseOrderParams,
   PurchaseReqParams,
   FetchSupplierListParams,
-  PurchaseRequestItemBody,
   PurchaseRequestBody,
+  StockPurchaseRequestBody,
 } from '@/app/(private)/purchase/types/PurchaseApiRequestType';
 import { PURCHASE_ENDPOINTS } from '@/app/(private)/purchase/api/purchase.endpoints';
 import { KeyValueItem } from '@/app/types/CommonType';
+import axios from '@/lib/axiosInstance';
 
 // 구매 관리 지표
 export const fetchPurchaseStats = async (): Promise<PurchaseStatResponse | null> => {
@@ -38,6 +41,19 @@ export const fetchPurchaseStats = async (): Promise<PurchaseStatResponse | null>
     return null;
   }
 };
+
+export const fetchSupplierOrdersPurchaseStats =
+  async (): Promise<SupplierPurchaseStatResponse | null> => {
+    try {
+      const res = await axios.get<ApiResponse<SupplierPurchaseStatResponse>>(
+        `${PURCHASE_ENDPOINTS.SUPPLIER_ORDERS_STATISTICS}`,
+      );
+      return res.data.data;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  };
 
 // 구매 요청 목록
 export const fetchPurchaseReqList = async (
@@ -80,12 +96,21 @@ export const fetchPurchaseReqDetail = async (
   return res.data.data;
 };
 
-// 구매 요청 등록
+// 비재고성 구매 요청 등록
 export const createPurchaseRequest = async (
   data: PurchaseRequestBody,
 ): Promise<ApiResponse<null>> => {
   const res = await axios.post<ApiResponse<null>>(
     `${PURCHASE_ENDPOINTS.PURCHASE_REQUISITIONS}`,
+    data,
+  );
+  return res.data;
+};
+
+// 재고성 구매 요청 등록
+export const createStockPurchaseRequest = async (data: StockPurchaseRequestBody) => {
+  const res = await axios.post<ApiResponse<null>>(
+    `${PURCHASE_ENDPOINTS.STOCK_PURCHASE_REQUISITIONS}?requesterId=internel3`,
     data,
   );
   return res.data;
