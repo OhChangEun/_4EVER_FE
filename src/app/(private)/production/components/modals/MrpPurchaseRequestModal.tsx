@@ -18,14 +18,12 @@ interface ItemWithQuantity extends ItemResponse {
 interface PurchaseRequestModalProps extends ModalProps {
   orders: MrpPlannedOrderList[];
   onConfirm: () => void;
-  editable?: boolean;
 }
 
 export default function MrpPurchaseRequestModal({
   orders,
   onConfirm,
   onClose,
-  editable = true,
 }: PurchaseRequestModalProps) {
   const [editableOrders, setEditableOrders] = useState<ItemWithQuantity[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -61,7 +59,6 @@ export default function MrpPurchaseRequestModal({
     },
   });
 
-  // 컴포넌트 마운트 시 데이터 조회
   useEffect(() => {
     const itemIds = orders.map((o) => o.itemId);
     if (itemIds.length > 0) fetchItemsInfo(itemIds);
@@ -81,35 +78,9 @@ export default function MrpPurchaseRequestModal({
     },
   });
 
-  // 수량 변경 핸들러
-  const handleQuantityChange = (index: number, newQuantity: number) => {
-    const updatedOrders = [...editableOrders];
-    const order = updatedOrders[index];
-    updatedOrders[index] = {
-      ...order,
-      quantity: newQuantity,
-      totalPrice: newQuantity * order.unitPrice,
-    };
-    setEditableOrders(updatedOrders);
-  };
-
-  // 구매 요청 확정
-  const handleConfirm = () => {
-    const requestBody: StockPurchaseRequestBody = {
-      items: editableOrders.map((order) => ({
-        productId: order.itemId,
-        quantity: order.quantity,
-        mrpRunId: order.mrpRunId,
-      })),
-    };
-
-    createStockPurchase(requestBody);
-  };
-
   // 총 금액 계산
   const totalAmount = editableOrders.reduce((sum, order) => sum + order.totalPrice, 0);
 
-  // 로딩 중
   if (isLoading) {
     return (
       <div className="min-w-3xl flex justify-center items-center p-8">
@@ -118,7 +89,6 @@ export default function MrpPurchaseRequestModal({
     );
   }
 
-  // 렌더링
   return (
     <div className="min-w-3xl">
       {/* 요약 영역 */}
@@ -167,25 +137,13 @@ export default function MrpPurchaseRequestModal({
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200 text-center">
-              {editableOrders.map((order, index) => (
+              {editableOrders.map((order) => (
                 <tr key={order.itemId} className="hover:bg-gray-50">
                   <td className="px-4 py-3 text-sm font-medium text-blue-600">
                     {order.quotationNumber}
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-900">{order.itemName}</td>
-                  <td className="px-4 py-3">
-                    {editable ? (
-                      <input
-                        type="number"
-                        value={order.quantity}
-                        min={0}
-                        className="w-20 px-2 py-1 border border-gray-300 rounded text-sm text-right"
-                        onChange={(e) => handleQuantityChange(index, parseInt(e.target.value) || 0)}
-                      />
-                    ) : (
-                      order.quantity.toLocaleString()
-                    )}
-                  </td>
+                  <td className="px-4 py-3">{order.quantity.toLocaleString()}</td>
                   <td className="px-4 py-3 text-sm text-gray-900">
                     ₩{order.unitPrice.toLocaleString()}
                   </td>
@@ -202,7 +160,19 @@ export default function MrpPurchaseRequestModal({
 
       {/* 버튼 영역 */}
       <div className="flex justify-end pt-2 pb-6">
-        <Button label="구매 요청 확정" onClick={handleConfirm} disabled={isPending} />
+        <Button
+          label="구매 요청 확정"
+          onClick={() =>
+            createStockPurchase({
+              items: editableOrders.map((order) => ({
+                productId: order.itemId,
+                quantity: order.quantity,
+                mrpRunId: order.mrpRunId,
+              })),
+            })
+          }
+          disabled={isPending}
+        />
       </div>
     </div>
   );
