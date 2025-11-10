@@ -35,7 +35,8 @@ export const PURCHASE_ENDPOINTS = {
   PURCHASE_ORDER_REJECT: (poId: string) => `${PURCHASE_BASE_PATH}/purchase-orders/${poId}/reject`, // 발주서 반려
   PURCHASE_ORDER_DETAIL: (purchaseId: string) =>
     `${PURCHASE_BASE_PATH}/purchase-orders/${purchaseId}`, // 발주서 상세 조회
-
+  PURCHASE_ORDER_DELIVERY: (purchaseOrderId: string) =>
+    `${PURCHASE_BASE_PATH}/${purchaseOrderId}/start-delivery`, // 배송 시작
   // --- 공급업체 ---
   SUPPLIER: `${PURCHASE_BASE_PATH}/supplier`, // 공급업체 목록 조회, 등록
   SUPPLIER_DETAIL: (supplierId: string) => `${PURCHASE_BASE_PATH}/supplier/${supplierId}`, // 공급업체 상세 조회, 수정
