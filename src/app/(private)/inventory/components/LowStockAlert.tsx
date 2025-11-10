@@ -4,13 +4,9 @@ import Link from 'next/link';
 import { LowStockItemResponse } from '../../low-stock/types/LowStockAlertType';
 import { useQuery } from '@tanstack/react-query';
 import { getLowStockItems } from '../inventory.api';
-import IconButton from '@/app/components/common/IconButton';
+import Button from '@/app/components/common/Button';
 
-interface LowStockAlertProps {
-  handleOrderRequest: () => void;
-}
-
-export default function LowStockAlert({ handleOrderRequest }: LowStockAlertProps) {
+export default function LowStockAlert() {
   const {
     data: lowStockRes,
     isLoading,
@@ -34,10 +30,7 @@ export default function LowStockAlert({ handleOrderRequest }: LowStockAlertProps
             </span>
           </div>
           <Link href="/low-stock">
-            <button className="flex items-center text-sm text-blue-600 hover:text-blue-500 cursor-pointer font-medium">
-              전체 보기
-              <i className="ri-arrow-right-line ml-1"></i>
-            </button>
+            <Button label="전체 보기 →" size="sm" variant="ghost" />
           </Link>
         </div>
       </div>
@@ -100,16 +93,6 @@ export default function LowStockAlert({ handleOrderRequest }: LowStockAlertProps
               </div>
             </div>
           ))}
-
-        {!isLoading && !isError && lowStockCount > 0 && (
-          <div className="flex justify-end">
-            <IconButton
-              label="발주 요청 생성"
-              icon="ri-shopping-cart-line"
-              onClick={handleOrderRequest}
-            />
-          </div>
-        )}
       </div>
     </div>
   );

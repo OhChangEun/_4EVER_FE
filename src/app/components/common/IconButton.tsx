@@ -17,7 +17,7 @@ export default function IconButton({
     'inline-flex items-center justify-center rounded-lg focus:outline-none transition cursor-pointer whitespace-nowrap';
 
   const variants = {
-    primary: 'bg-blue-500 font-semibold text-white hover:opacity-85',
+    primary: 'bg-blue-500 font-medium text-white hover:opacity-85',
     secondary: 'bg-gray-100 font-medium text-gray-700 hover:bg-gray-200',
     outline: 'font-normal border border-blue-500 text-blue-500 bg-transparent hover:bg-blue-50',
     whiteOutline: 'bg-white font-normal border border-gray-300 text-gray-500/70 hover:bg-gray-50',
