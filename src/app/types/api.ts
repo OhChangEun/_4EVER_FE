@@ -54,6 +54,10 @@ export const FINANCE_ENDPOINTS = {
     `${FINANCE_BASE_PATH}/invoice/ap/receivable/request?invoiceId=${invoiceId}`,
   SALES_INVOICE_COMPLETE: (invoiceId: string) =>
     `${FINANCE_BASE_PATH}/invoice/ar/${invoiceId}/receivable/complete`,
+  SUPPLIER_AP_COMPLETE: (invoiceId: string) =>
+    `${FINANCE_BASE_PATH}/invoice/ap/${invoiceId}/payable/complete`,
+  // SUPPLIER_AP_COMPLETE: (invoiceId: string) =>
+  //   `${FINANCE_BASE_PATH}/invoice/ap/${invoiceId}/payable/complete`,
   CUSTOMER_STATISTICS: `${FINANCE_BASE_PATH}/statistics/customer/total-purchases`,
   SUPPLIER_STATISTICS: `${FINANCE_BASE_PATH}/statistics/supplier/total-sales`,
 } as const;

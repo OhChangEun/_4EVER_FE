@@ -12,6 +12,7 @@ import {
   getSalesInvoicesList,
   postApInvoice,
   postArInvoice,
+  postSupplierApInvoice,
 } from '@/app/(private)/finance/finance.api';
 import Pagination from '@/app/components/common/Pagination';
 import { useSearchParams } from 'next/navigation';
@@ -82,11 +83,12 @@ const InvoiceList = () => {
   const pageInfo = invoiceReq?.pageData;
   const totalPages = pageInfo?.totalPages ?? 1;
   const { openModal } = useModal();
-
   const mutationFn =
-    currentTab === 'sales'
-      ? () => postArInvoice(selectedInvoiceId)
-      : () => postApInvoice(selectedInvoiceId);
+    role === 'SUPPLIER_ADMIN'
+      ? () => postSupplierApInvoice(selectedInvoiceId)
+      : currentTab === 'sales'
+        ? () => postArInvoice(selectedInvoiceId)
+        : () => postApInvoice(selectedInvoiceId);
 
   const { mutate: sendReq } = useMutation({
     mutationFn: mutationFn,
@@ -193,7 +195,17 @@ const InvoiceList = () => {
                     <input
                       type="checkbox"
                       checked={selectedInvoiceId === invoice.invoiceId}
-                      disabled={invoice.statusCode === 'PAID'}
+                      disabled={
+                        currentTab === 'sales'
+                          ? invoice.statusCode === 'PAID' || invoice.statusCode === 'UNPAID'
+                          : currentTab === 'purchase'
+                            ? role === 'SUPPLIER_ADMIN'
+                              ? invoice.statusCode === 'PAID' || invoice.statusCode === 'UNPAID'
+                              : role === 'CUSTOMER_ADMIN'
+                                ? invoice.statusCode === 'PAID' || invoice.statusCode === 'PENDING'
+                                : invoice.statusCode === 'PAID' || invoice.statusCode === 'PENDING'
+                            : false
+                      }
                       onChange={(e) => handleSelectVoucher(invoice.invoiceId, e.target.checked)}
                       className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />

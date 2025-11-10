@@ -65,6 +65,13 @@ export const postArInvoice = async (invoiceId: string): Promise<ApiResponseNoDat
   return res.data;
 };
 
+export const postSupplierApInvoice = async (invoiceId: string): Promise<ApiResponseNoData> => {
+  const res = await axios.post<ApiResponseNoData>(
+    FINANCE_ENDPOINTS.SUPPLIER_AP_COMPLETE(invoiceId),
+  );
+  return res.data;
+};
+
 // ----------------------- 매출 전표(AS) -----------------------
 export const getSalesInvoicesList = async (
   params?: InvoiceQueryParams,
