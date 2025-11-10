@@ -6,7 +6,7 @@ import {
   VOUCHER_STATUS_OPTIONS,
 } from '@/app/(private)/finance/constants';
 import { InvoiceStatus } from '@/app/(private)/finance/types/InvoiceListType';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   getPurchaseInvoicesList,
   getSalesInvoicesList,
@@ -26,6 +26,7 @@ import { useModal } from '@/app/components/common/modal/useModal';
 
 const InvoiceList = () => {
   const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
   const role = useRole();
   // const role = 'CUSTOMER_ADMIN';
   // const role = 'SUPPLIER_ADMIN';
@@ -90,11 +91,14 @@ const InvoiceList = () => {
   const { mutate: sendReq } = useMutation({
     mutationFn: mutationFn,
     onSuccess: (data) => {
-      alert(`${data.status} : ${data.message}
-        `);
+      alert(`${data.message}`);
     },
     onError: (error) => {
       alert(` 등록 중 오류가 발생했습니다. ${error}`);
+    },
+    onSettled: () => {
+      const key = currentTab === 'sales' ? 'salesInvoiceList' : 'purchaseInvoiceList';
+      queryClient.invalidateQueries({ queryKey: [key] });
     },
   });
 
@@ -189,6 +193,7 @@ const InvoiceList = () => {
                     <input
                       type="checkbox"
                       checked={selectedInvoiceId === invoice.invoiceId}
+                      disabled={invoice.statusCode === 'PAID'}
                       onChange={(e) => handleSelectVoucher(invoice.invoiceId, e.target.checked)}
                       className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
@@ -235,15 +240,6 @@ const InvoiceList = () => {
           onPageChange={(page) => setCurrentPage(page)}
         />
       )}
-
-      {/* 전표 상세 모달 */}
-      {/* {showDetailModal && (
-        <InvoiceDetailModal
-          $setShowDetailModal={setShowDetailModal}
-          $selectedInvoiceId={selectedInvoiceId}
-          $setSelectedInvoiceId={setSelectedInvoiceId}
-        />
-      )} */}
     </>
   );
 };
