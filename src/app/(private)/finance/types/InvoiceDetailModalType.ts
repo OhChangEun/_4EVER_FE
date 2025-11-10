@@ -1,5 +1,6 @@
-export interface InvoiceDetailModalProps {
-  $setShowDetailModal: (show: boolean) => void;
+import { ModalProps } from '@/app/components/common/modal/types';
+
+export interface InvoiceDetailModalProps extends ModalProps {
   $selectedInvoiceId: string;
   $setSelectedInvoiceId: (id: string) => void;
 }

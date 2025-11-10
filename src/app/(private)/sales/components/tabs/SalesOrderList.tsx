@@ -19,9 +19,10 @@ import DateRangePicker from '@/app/components/common/DateRangePicker';
 import Input from '@/app/components/common/Input';
 import Dropdown from '@/app/components/common/Dropdown';
 import SearchBar from '@/app/components/common/SearchBar';
+import { useModal } from '@/app/components/common/modal/useModal';
 
 const SalesOrderList = () => {
-  const [showOrderDetailModal, setShowOrderDetailModal] = useState(false);
+  const { openModal } = useModal();
   const [selectedSalesOrderId, setSelectedSalesOrderId] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
   const [searchType, setSearchType] = useState('salesOrderNumber');
@@ -59,7 +60,10 @@ const SalesOrderList = () => {
 
   const handleViewOrder = (id: string) => {
     setSelectedSalesOrderId(id);
-    setShowOrderDetailModal(true);
+    openModal(SalesOrderDetailModal, {
+      title: `주문 상세 정보`,
+      $selectedSalesOrderId: id,
+    });
   };
 
   const totalPages = pageInfo?.totalPages ?? 1;
@@ -171,14 +175,6 @@ const SalesOrderList = () => {
           totalPages={totalPages}
           totalElements={pageInfo?.totalElements}
           onPageChange={(page) => setCurrentPage(page)}
-        />
-      )}
-      {showOrderDetailModal && (
-        <SalesOrderDetailModal
-          $onClose={() => {
-            setShowOrderDetailModal(false);
-          }}
-          $selectedSalesOrderId={selectedSalesOrderId}
         />
       )}
     </>

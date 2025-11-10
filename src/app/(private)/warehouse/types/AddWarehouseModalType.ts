@@ -1,7 +1,3 @@
-export interface AddWarehouseModalProps {
-  $setShowAddModal: (show: boolean) => void;
-}
-
 export interface AddWarehouseRequest {
   warehouseName: string;
   warehouseType: string;

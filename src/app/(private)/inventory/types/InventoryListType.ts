@@ -4,6 +4,8 @@ export interface InventoryResponse {
   itemName: string;
   category: string;
   currentStock: number;
+  forShipmentStock: number;
+  reservedStock: number;
   safetyStock: number;
   uomName: string;
   unitPrice: number;

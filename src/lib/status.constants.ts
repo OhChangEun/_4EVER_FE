@@ -48,7 +48,6 @@ export const STATUS_TEXT_MAP: Record<string, string> = {
 
   TECHNICAL_TRAINING: '기술 교육',
   BASIC_TRAINING: '기본 교육',
-
   CONVERTED: '전환 전',
   NOT_CONVERTED: '전환 완료',
 };

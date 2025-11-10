@@ -9,7 +9,9 @@ import StatusLabel from '@/app/components/common/StatusLabel';
 import Pagination from '@/app/components/common/Pagination';
 import ShippingDetailModal from '../modals/ShippingDetailModal';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
+import { useModal } from '@/app/components/common/modal/useModal';
 const ShippingManagementList = () => {
+  const { openModal } = useModal();
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedSubTab, setSelectedSubTab] = useState('producing');
   const [showShipDetailModal, setShowShipDetailModal] = useState(false);
@@ -126,7 +128,11 @@ const ShippingManagementList = () => {
                       <button
                         onClick={() => {
                           setShowShipDetailModal(true);
-                          setSelectedItemId(production.salesOrderId);
+                          openModal(ShippingDetailModal, {
+                            title: `주문 상세 - ${production.salesOrderNumber}`,
+                            $selectedOrderId: production.salesOrderId,
+                            $selectedSubTab: selectedSubTab,
+                          });
                         }}
                         className="text-blue-600 hover:text-blue-800 cursor-pointer"
                         title="상세보기"
@@ -147,13 +153,6 @@ const ShippingManagementList = () => {
             totalPages={totalPages}
             totalElements={pageInfo?.totalElements}
             onPageChange={(page) => setCurrentPage(page)}
-          />
-        )}
-        {showShipDetailModal && (
-          <ShippingDetailModal
-            $selectedSubTab={selectedSubTab}
-            $selectedItemId={selectedItemId}
-            $setShowShipDetailModal={setShowShipDetailModal}
           />
         )}
       </div>

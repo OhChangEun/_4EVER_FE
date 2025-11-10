@@ -1,7 +1,3 @@
-export interface AddInventoryModalProps {
-  $setShowAddModal: (show: boolean) => void;
-}
-
 export interface AddInventoryItemsToggleResponse {
   itemId: string;
   unitPrice: number;
