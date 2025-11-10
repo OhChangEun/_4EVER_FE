@@ -24,6 +24,7 @@ import Pagination from '@/app/components/common/Pagination';
 import DateRangePicker from '@/app/components/common/DateRangePicker';
 import { useModal } from '@/app/components/common/modal/useModal';
 import { useDropdown } from '@/app/hooks/useDropdown';
+import StatusLabel from '@/app/components/common/StatusLabel';
 
 export default function QuotationTab() {
   const { openModal, removeAllModals } = useModal();
@@ -196,8 +197,13 @@ export default function QuotationTab() {
   return (
     <>
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900">견적 관리</h3>
-        <div className="flex items-center">
+        <DateRangePicker
+          startDate={startDate}
+          endDate={endDate}
+          onStartDateChange={handleStartDateChange}
+          onEndDateChange={handleEndDateChange}
+        />
+        <div className="flex items-end">
           <div className="flex gap-3 pr-5">
             <Dropdown
               placeholder="전체 가용재고"
@@ -216,12 +222,6 @@ export default function QuotationTab() {
                 setSelectedQuotationsStatus(status);
                 setCurrentPage(1); // 필터 변경 시 첫 페이지로
               }}
-            />
-            <DateRangePicker
-              startDate={startDate}
-              endDate={endDate}
-              onStartDateChange={handleStartDateChange}
-              onEndDateChange={handleEndDateChange}
             />
           </div>
           <IconButton
@@ -312,7 +312,9 @@ export default function QuotationTab() {
                   <td className="px-4 py-3 text-sm text-gray-900">{quote.requestDate}</td>
                   <td className="px-4 py-3">{quote.availableStatus}</td>
                   <td className="px-4 py-3 text-sm text-gray-900">{quote.dueDate || '-'}</td>
-                  <td className="px-4 py-3">{quote.statusCode}</td>
+                  <td className="px-4 py-3">
+                    <StatusLabel $statusCode={quote.statusCode} />
+                  </td>
                 </tr>
               ))}
               {quotationDataList.length === 0 && (

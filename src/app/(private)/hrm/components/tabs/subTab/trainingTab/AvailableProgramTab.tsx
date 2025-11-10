@@ -10,6 +10,7 @@ import React, { useState, useMemo } from 'react';
 import ProgramDetailModal from '@/app/(private)/hrm/components/modals/ProgramDetailModal';
 import AddTrainingModal from '@/app/(private)/hrm/components/modals/AddProgramModal';
 import EditProgramModal from '../../../modals/ProgramEditModal';
+import StatusLabel from '@/app/components/common/StatusLabel';
 
 export default function AvailableProgramTab() {
   // --- 모달 출력 ---
@@ -71,12 +72,10 @@ export default function AvailableProgramTab() {
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h4 className="text-lg font-semibold text-gray-900 mb-1">{program.programName}</h4>
-                <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
-                  {program.category}
-                </span>
+                <StatusLabel $statusCode={program.category} />
               </div>
               <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full">
-                {program.statusCode}
+                <StatusLabel $statusCode={program.statusCode} />
               </span>
             </div>
             <div className="space-y-3 mb-4">

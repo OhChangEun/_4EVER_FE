@@ -4,6 +4,7 @@ import { PurchaseOrder } from '@/app/(private)/purchase/types/PurchaseOrderType'
 import { useRole } from '@/app/hooks/useRole';
 import { formatDateTime } from '@/app/utils/date';
 import IconButton from '@/app/components/common/IconButton';
+import StatusLabel from '@/app/components/common/StatusLabel';
 
 export interface PurchaseOrderTableProps {
   currentOrders: PurchaseOrder[];
@@ -75,7 +76,7 @@ export default function PurchaseOrderTable({
               <td className="py-3 px-4 text-sm text-gray-500">{formatDateTime(order.orderDate)}</td>
               <td className="py-3 px-4 text-sm text-gray-500">{formatDateTime(order.dueDate)}</td>
               <td className="py-3 px-4">
-                <span className="px-2 py-1 rounded text-xs font-medium">{order.statusCode}</span>
+                <StatusLabel $statusCode={order.statusCode} />
               </td>
               <td className="py-3 px-4 text-center">
                 <div className="flex items-center justify-center space-x-2">
