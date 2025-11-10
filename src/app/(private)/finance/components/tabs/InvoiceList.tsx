@@ -19,6 +19,8 @@ import TableStatusBox from '@/app/components/common/TableStatusBox';
 import InvoiceDetailModal from '@/app/(private)/finance/components/modals/InvoiceDetailModal';
 import StatusLabel from '@/app/components/common/StatusLabel';
 import { useRole } from '@/app/hooks/useRole';
+import IconButton from '@/app/components/common/IconButton';
+import Button from '@/app/components/common/Button';
 
 const InvoiceList = () => {
   const searchParams = useSearchParams();
@@ -137,17 +139,11 @@ const InvoiceList = () => {
             </select>
           </div>
 
-          <button
+          <Button
+            label="미수 처리 신청"
             onClick={handleReceivableComplete}
             disabled={selectedInvoiceId ? false : true}
-            className={`px-4 py-2 rounded-lg transition-colors font-medium text-sm whitespace-nowrap cursor-pointer ${
-              selectedInvoiceId
-                ? 'bg-green-600 text-white hover:bg-green-700'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }`}
-          >
-            미수 처리 신청
-          </button>
+          />
         </div>
       </div>
 
