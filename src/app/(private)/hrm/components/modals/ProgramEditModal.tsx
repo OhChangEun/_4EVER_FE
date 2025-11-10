@@ -84,7 +84,7 @@ export default function EditProgramModal({
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">상태</label>
         <Dropdown
-          placeholder="전체 상태"
+          placeholder="모집 상태 선택"
           items={statusData ?? []}
           value={selectedProgramStatus}
           onChange={setSelectedProgramStatus}
