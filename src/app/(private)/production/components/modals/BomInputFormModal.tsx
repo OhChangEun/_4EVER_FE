@@ -32,6 +32,7 @@ import {
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { getQueryClient } from '@/lib/queryClient';
 import { BomRequestBody } from '../../types/BomType';
+import Input from '@/app/components/common/Input';
 
 interface BomInputFormModalProps extends ModalProps {
   editMode?: boolean;
@@ -175,12 +176,7 @@ function SortableRow({ item, onMaterialChange, onItemChange, onRemove }: Sortabl
         <i className="ri-draggable text-gray-400"></i>
       </td>
       <td className="px-3 py-2">
-        <input
-          type="number"
-          className="w-20 px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50 text-center"
-          value={item.sequence}
-          disabled
-        />
+        <Input type="number" value={item.sequence} disabled />
       </td>
       <td className="px-3 py-2 w-40">
         <Dropdown
@@ -194,49 +190,27 @@ function SortableRow({ item, onMaterialChange, onItemChange, onRemove }: Sortabl
         />
       </td>
       <td className="px-3 py-2">
-        <input
-          type="text"
-          className="w-32 px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50"
-          value={materialInfo?.productNumber || ''}
-          disabled
-        />
+        <Input type="text" value={materialInfo?.productNumber || ''} disabled />
       </td>
       <td className="px-3 py-2">
-        <input
-          type="text"
-          className="w-24 px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50"
-          value={materialInfo?.category || ''}
-          disabled
-        />
+        <Input type="text" value={materialInfo?.category || ''} disabled />
       </td>
       <td className="px-3 py-2">
-        <input
-          type="text"
-          className="w-32 px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50"
-          value={materialInfo?.supplierName || ''}
-          disabled
-        />
+        <Input type="text" value={materialInfo?.supplierName || ''} disabled />
       </td>
       <td className="px-3 py-2">
-        <input
-          type="text"
-          className="w-16 px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50"
-          value={materialInfo?.uomName || ''}
-          disabled
-        />
+        <Input type="text" value={materialInfo?.uomName || ''} disabled />
       </td>
       <td className="px-3 py-2">
-        <input
+        <Input
           type="text"
-          className="w-24 px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50 text-right"
           value={materialInfo?.unitPrice ? materialInfo?.unitPrice.toLocaleString() + '원' : ''}
           disabled
         />
       </td>
       <td className="px-3 py-2">
-        <input
+        <Input
           type="number"
-          className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
           value={item.quantity}
           onChange={(e) => onItemChange(item.id, 'quantity', Number(e.target.value))}
           min="1"
@@ -368,10 +342,9 @@ export default function BomInputFormModal({ editMode = false, onClose }: BomInpu
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="flex justify-between gap-3">
           <div className="flex-1">
-            <h4 className="text-md font-semibold text-gray-900 mb-4">제품명</h4>
-            <input
+            <Input
+              label="제품명"
               type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
               placeholder="휴대폰"
               value={productName}
               onChange={(e) => setProductName(e.target.value)}
@@ -380,10 +353,9 @@ export default function BomInputFormModal({ editMode = false, onClose }: BomInpu
           </div>
 
           <div className="flex-1">
-            <h4 className="text-md font-semibold text-gray-900 mb-4">단위</h4>
-            <input
+            <Input
+              label="단위"
               type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
               placeholder="EA"
               value={unit}
               onChange={(e) => setUnit(e.target.value)}
@@ -398,7 +370,7 @@ export default function BomInputFormModal({ editMode = false, onClose }: BomInpu
             <IconButton
               type="button"
               icon="ri-add-line"
-              variant="outline"
+              variant="soft"
               size="sm"
               onClick={handleAddRow}
             />

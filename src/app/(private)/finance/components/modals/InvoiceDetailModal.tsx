@@ -12,6 +12,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getPurchaseInvoiceDetail, getSalesInvoiceDetail } from '../../finance.api';
 import { useSearchParams } from 'next/navigation';
 import StatusLabel from '@/app/components/common/StatusLabel';
+import { useRole } from '@/app/hooks/useRole';
 
 const InvoiceDetailModal = ({
   $setShowDetailModal,
@@ -24,13 +25,23 @@ const InvoiceDetailModal = ({
   };
   const searchParams = useSearchParams();
   const currentTab = searchParams.get('tab') || 'sales';
+  const role = useRole();
+
+  // const queryFn =
+  //   currentTab === 'sales'
+  //     ? () => getSalesInvoiceDetail($selectedInvoiceId)
+  //     : () => {
+  //         return getPurchaseInvoiceDetail($selectedInvoiceId);
+  //       };
 
   const queryFn =
     currentTab === 'sales'
-      ? () => getSalesInvoiceDetail($selectedInvoiceId)
-      : () => {
-          return getPurchaseInvoiceDetail($selectedInvoiceId);
-        };
+      ? role === 'SUPPLIER_ADMIN'
+        ? () => getPurchaseInvoiceDetail($selectedInvoiceId)
+        : () => getSalesInvoiceDetail($selectedInvoiceId)
+      : role === 'SUPPLIER_ADMIN'
+        ? () => getSalesInvoiceDetail($selectedInvoiceId)
+        : () => getPurchaseInvoiceDetail($selectedInvoiceId);
 
   const {
     data: invoiceRes,

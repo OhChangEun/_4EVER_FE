@@ -156,6 +156,7 @@ export default function EmployeeRegisterModal({ onClose }: ModalProps) {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">생년월일</label>
           <CalendarButton
+            maxDate={new Date()}
             selectedDate={formData.birthDate}
             onDateChange={(date) => setFormData((prev) => ({ ...prev, birthDate: date || '' }))}
           />

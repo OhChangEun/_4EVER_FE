@@ -1,6 +1,6 @@
 'use client';
 
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   EditWarehouseRequest,
   ManageWarehouseModalProps,
@@ -17,6 +17,8 @@ import { getStatusText } from '@/lib/status.constants';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
 import { WarehouseManagerInfoResponse } from '../../types/AddWarehouseModalType';
 import { ApiResponseNoData } from '@/app/types/api';
+import { WarehouseListResponse } from '../../types/WarehouseListType';
+import { Page } from '@/app/types/Page';
 
 interface ManageWarehouseRequest {
   warehouseName: string;
@@ -35,6 +37,7 @@ const ManageWarehouseModal = ({
   $setShowManageModal,
   $selectedWarehouseId,
 }: ManageWarehouseModalProps) => {
+  const queryClient = useQueryClient();
   const [formData, setFormData] = useState<ManageWarehouseRequest>({
     warehouseName: '',
     warehouseNumber: '',
@@ -92,17 +95,65 @@ const ManageWarehouseModal = ({
     queryFn: getWarehouseManagerInfo,
   });
 
+  // const { mutate: editWarehouse } = useMutation<
+  //   ApiResponseNoData,
+  //   Error,
+  //   { warehouseId: string; payload: EditWarehouseRequest }
+  // >({
+  //   mutationFn: patchManageWarehouse,
+  //   onSuccess: (data) => {
+  //     alert(`${data.status} : ${data.message}`);
+  //   },
+  //   onError: (error) => {
+  //     alert(`창고 수정 중 오류가 발생했습니다. ${error}`);
+  //   },
+  // });
+
   const { mutate: editWarehouse } = useMutation<
     ApiResponseNoData,
     Error,
-    { warehouseId: string; payload: EditWarehouseRequest }
+    {
+      warehouseId: string;
+      payload: EditWarehouseRequest;
+    },
+    { previousData?: { data: WarehouseListResponse[]; pageData: Page } }
   >({
     mutationFn: patchManageWarehouse,
-    onSuccess: (data) => {
-      alert(`${data.status} : ${data.message}`);
+
+    onMutate: async (newWarehouse) => {
+      await queryClient.cancelQueries({ queryKey: ['warehouseList'] });
+
+      const previousData = queryClient.getQueryData<{
+        data: WarehouseListResponse[];
+        pageData: Page;
+      }>(['warehouseList']);
+
+      queryClient.setQueryData<{ data: WarehouseListResponse[]; pageData: Page }>(
+        ['warehouseList'],
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            data: [newWarehouse as unknown as WarehouseListResponse, ...oldData.data],
+          };
+        },
+      );
+
+      return { previousData };
     },
-    onError: (error) => {
+
+    onError: (error, _variables, context) => {
+      if (context?.previousData) queryClient.setQueryData(['warehouseList'], context.previousData);
       alert(`창고 수정 중 오류가 발생했습니다. ${error}`);
+    },
+
+    onSuccess: (data) => {
+      alert(`창고 수정이 완료되었습니다.`);
+      $setShowManageModal(false);
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['warehouseList'] });
     },
   });
 

@@ -8,11 +8,14 @@ import {
   WarehouseToggleQueryParams,
   WarehouseToggleResponse,
 } from '../../types/AddInventoryModalType';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getItemInfo, getWarehouseInfo, postAddMaterial } from '../../inventory.api';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
+import { InventoryResponse } from '../../types/InventoryListType';
+import { Page } from '@/app/types/Page';
 
 const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
+  const queryClient = useQueryClient();
   const [selectedItem, setSelectedItem] = useState<AddInventoryItemsToggleResponse | null>(null);
 
   const [formData, setFormData] = useState<AddInventoryItemsRequest>({
@@ -67,15 +70,56 @@ const AddInventoryModal = ({ $setShowAddModal }: AddInventoryModalProps) => {
     enabled: !!formData.itemId,
   });
 
-  const { mutate: addMaterial } = useMutation({
+  // 낙관적 업데이트x
+  // const { mutate: addMaterial } = useMutation({
+  //   mutationFn: postAddMaterial,
+  //   onSuccess: (data) => {
+  //     alert(`${data.status} : ${data.message}
+  //     `);
+  //     $setShowAddModal(false);
+  //   },
+  //   onError: (error) => {
+  //     alert(` 자재 등록 중 오류가 발생했습니다. ${error}`);
+  //   },
+  // });
+  const { mutate: addMaterial, isPending: isAddingMaterial } = useMutation({
     mutationFn: postAddMaterial,
-    onSuccess: (data) => {
-      alert(`${data.status} : ${data.message}
-      `);
+
+    onMutate: async (newMaterial) => {
+      await queryClient.cancelQueries({ queryKey: ['inventoryList'] });
+
+      const previousData = queryClient.getQueryData<{ data: InventoryResponse[]; pageData: Page }>([
+        'inventoryList',
+      ]);
+
+      queryClient.setQueryData<{ data: InventoryResponse[]; pageData: Page }>(
+        ['inventoryList'],
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            data: [newMaterial as unknown as InventoryResponse, ...oldData.data],
+          };
+        },
+      );
+
+      return { previousData };
+    },
+
+    onError: (error, _newMaterial, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(['inventoryList'], context.previousData);
+      }
+      alert(`원자재 등록 중 오류가 발생했습니다. ${error}`);
+    },
+
+    onSuccess: () => {
+      alert('원자재가 성공적으로 등록되었습니다.');
       $setShowAddModal(false);
     },
-    onError: (error) => {
-      alert(` 자재 등록 중 오류가 발생했습니다. ${error}`);
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['inventoryList'] });
     },
   });
 

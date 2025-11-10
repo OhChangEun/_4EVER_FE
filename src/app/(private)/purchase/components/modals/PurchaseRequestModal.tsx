@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { PURCHASE_REQUEST_TABLE_HEADERS, SUPPLIERS } from '@/app/(private)/purchase/constants';
 import IconButton from '@/app/components/common/IconButton';
 import Button from '@/app/components/common/Button';
+import Input from '@/app/components/common/Input';
 import { useMutation } from '@tanstack/react-query';
 import { createPurchaseRequest } from '@/app/(private)/purchase/api/purchase.api';
 import DropdownInputModal from '@/app/components/common/DropdownInputModal';
@@ -13,6 +14,7 @@ import {
   PurchaseRequestItem,
 } from '@/app/(private)/purchase/types/PurchaseApiRequestType';
 import { toISOString } from '@/app/utils/date';
+import CalendarButton from '@/app/components/common/CalendarButton';
 
 export default function PurchaseRequestModal({ onClose }: ModalProps) {
   const [requestItems, setRequestItems] = useState<PurchaseRequestItem[]>([
@@ -139,31 +141,28 @@ export default function PurchaseRequestModal({ onClose }: ModalProps) {
     <form onSubmit={handleSubmitRequest} className="p-6 space-y-6">
       {/* 요청 정보 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">요청 부서</label>
-          <input
-            type="text"
-            value="생산팀"
-            readOnly
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 text-sm"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">요청일</label>
-          <input
-            type="text"
-            value={new Date().toISOString().split('T')[0]}
-            readOnly
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 text-sm"
-          />
-        </div>
+        <Input label="요청 부서" value="생산팀" readOnly disabled />
+        <Input
+          label="요청일"
+          type="text"
+          value={new Date().toISOString().split('T')[0]}
+          readOnly
+          disabled
+        />
       </div>
 
       {/* 구매 품목 목록 */}
       <div>
         <div className="flex items-center justify-between mb-4">
           <h4 className="text-lg font-semibold text-gray-900">구매 품목 목록</h4>
-          <IconButton type="button" label="품목 추가" icon="ri-add-line" onClick={addRequestItem} />
+          <IconButton
+            type="button"
+            variant="soft"
+            label="품목 추가"
+            size="sm"
+            icon="ri-add-line"
+            onClick={addRequestItem}
+          />
         </div>
 
         <div className="overflow-x-auto">
@@ -185,45 +184,41 @@ export default function PurchaseRequestModal({ onClose }: ModalProps) {
               {requestItems.map((item) => (
                 <tr key={item.id}>
                   <td className="px-4 py-3">
-                    <input
+                    <Input
                       type="text"
                       value={item.itemName}
                       onChange={(e) => updateRequestItem(item.id, 'itemName', e.target.value)}
-                      className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
                       placeholder="품목명 입력"
                       required
                     />
                   </td>
                   <td className="px-4 py-3">
-                    <input
+                    <Input
                       type="number"
-                      value={item.quantity}
+                      value={item.quantity || ''}
                       onChange={(e) =>
                         updateRequestItem(item.id, 'quantity', Number(e.target.value))
                       }
-                      className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
                       placeholder="수량"
                       required
                     />
                   </td>
                   <td className="px-4 py-3">
-                    <input
+                    <Input
                       type="text"
                       value={item.uomName}
                       onChange={(e) => updateRequestItem(item.id, 'uomName', e.target.value)}
-                      className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
                       placeholder="EA, KG 등"
                       required
                     />
                   </td>
                   <td className="px-4 py-3">
-                    <input
+                    <Input
                       type="number"
-                      value={item.expectedUnitPrice}
+                      value={item.expectedUnitPrice || ''}
                       onChange={(e) =>
                         updateRequestItem(item.id, 'expectedUnitPrice', Number(e.target.value))
                       }
-                      className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
                       placeholder="단가"
                       required
                     />
@@ -232,31 +227,25 @@ export default function PurchaseRequestModal({ onClose }: ModalProps) {
                     ₩{calculateItemTotal(item.quantity, item.expectedUnitPrice).toLocaleString()}
                   </td>
                   <td className="px-4 py-3">
-                    <input
+                    <Input
                       type="text"
-                      value={item.preferredSupplierName}
+                      value={item.preferredSupplierName || ''}
                       onChange={(e) =>
                         updateRequestItem(item.id, 'preferredSupplierName', e.target.value)
                       }
-                      list={`suppliers-${item.id}`}
-                      className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
                       placeholder="공급업체 입력"
                       required
                     />
-                    <datalist id={`suppliers-${item.id}`}>
-                      {SUPPLIERS.map((supplier) => (
-                        <option key={supplier} value={supplier} />
-                      ))}
-                    </datalist>
                   </td>
                   <td className="px-4 py-3">
-                    <input
-                      type="date"
-                      value={item.dueDate}
-                      onChange={(e) => updateRequestItem(item.id, 'dueDate', e.target.value)}
-                      className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                      required
-                    />
+                    <td className="px-4 py-3">
+                      <CalendarButton
+                        minDate={new Date()}
+                        selectedDate={item.dueDate || null}
+                        onDateChange={(date) => updateRequestItem(item.id, 'dueDate', date || '')}
+                        placeholder="납기일 선택"
+                      />
+                    </td>
                   </td>
                   <td className="px-4 py-3">
                     <DropdownInputModal
