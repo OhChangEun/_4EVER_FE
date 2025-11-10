@@ -94,7 +94,13 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
             <div className="fixed inset-0 z-[999] bg-black/50" />
             {/* 각 모달 */}
             {modals.map(({ id, Component, props }) => (
-              <ModalContainer key={id} title={props.title} onClose={props.onClose}>
+              <ModalContainer
+                key={id}
+                title={props.title}
+                onClose={props.onClose}
+                width={props.width}
+                height={props.height}
+              >
                 <Component {...props} />
               </ModalContainer>
             ))}
