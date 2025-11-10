@@ -43,8 +43,8 @@ const SalesChart = () => {
 
   const queryParams = useMemo(
     () => ({
-      start: startDate || '',
-      end: endDate || '',
+      startDate: startDate || '',
+      endDate: endDate || '',
     }),
     [startDate, endDate],
   );
