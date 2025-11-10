@@ -6,12 +6,15 @@ import {
   AddWarehouseRequest,
   WarehouseManagerInfoResponse,
 } from '../../types/AddWarehouseModalType';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getWarehouseManagerInfo, postAddWarehouse } from '../../warehouse.api';
 import { ApiResponseNoData } from '@/app/types/api';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
+import { Page } from '@/app/types/Page';
+import { WarehouseListResponse } from '../../types/WarehouseListType';
 
 const AddWarehouseModal = ({ $setShowAddModal }: AddWarehouseModalProps) => {
+  const queryClient = useQueryClient();
   const [formData, setFormData] = useState<AddWarehouseRequest>({
     warehouseName: '',
     warehouseType: '',
@@ -47,16 +50,59 @@ const AddWarehouseModal = ({ $setShowAddModal }: AddWarehouseModalProps) => {
     queryKey: ['getWarehouseManagerInfo'],
     queryFn: getWarehouseManagerInfo,
   });
+  // 낙관적 업데이트x
+  // const { mutate: addWarehouse } = useMutation<ApiResponseNoData, Error, AddWarehouseRequest>({
+  //   mutationFn: postAddWarehouse,
+  //   onSuccess: (data) => {
+  //     alert(`${data.status} : ${data.message}
+  //     `);
+  //     $setShowAddModal(false);
+  //   },
+  //   onError: (error) => {
+  //     alert(` 자재 등록 중 오류가 발생했습니다. ${error}`);
+  //   },
+  // });
 
-  const { mutate: addWarehouse } = useMutation<ApiResponseNoData, Error, AddWarehouseRequest>({
+  // 낙관적 업데이트
+  const { mutate: addWarehouse } = useMutation({
     mutationFn: postAddWarehouse,
+
+    onMutate: async (newWarehouse) => {
+      await queryClient.cancelQueries({ queryKey: ['warehouseList'] });
+
+      const previousData = queryClient.getQueryData<{
+        data: WarehouseListResponse[];
+        pageData: Page;
+      }>(['warehouseList']);
+
+      queryClient.setQueryData<{ data: WarehouseListResponse[]; pageData: Page }>(
+        ['warehouseList'],
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            data: [newWarehouse as unknown as WarehouseListResponse, ...oldData.data],
+          };
+        },
+      );
+
+      return { previousData };
+    },
+
+    onError: (error, _newWarehouse, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(['warehouseList'], context.previousData);
+      }
+      alert(`창고 등록 중 오류가 발생했습니다. ${error}`);
+    },
+
     onSuccess: (data) => {
-      alert(`${data.status} : ${data.message}
-      `);
+      alert(`창고 등록이 완료되었습니다.`);
       $setShowAddModal(false);
     },
-    onError: (error) => {
-      alert(` 자재 등록 중 오류가 발생했습니다. ${error}`);
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['warehouseList'] });
     },
   });
 

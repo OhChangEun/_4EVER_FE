@@ -8,8 +8,8 @@ import {
   CustomerResponse,
 } from '@/app/(private)/sales/types/CustomerEditModalType';
 import { CustomerStatus } from '../../types/SalesCustomerListType';
-import { useMutation } from '@tanstack/react-query';
-import { putCustomer } from '../../sales.api';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { patchCustomer } from '../../sales.api';
 
 const CustomerEditModal = ({
   $onClose,
@@ -17,6 +17,7 @@ const CustomerEditModal = ({
   $setEditFormData,
   $setShowDetailModal,
 }: CustomerEditModalProps) => {
+  const queryClient = useQueryClient();
   useEffect(() => {
     console.log($editFormData);
   }, [$editFormData]);
@@ -31,9 +32,9 @@ const CustomerEditModal = ({
     detailAddress: '',
     statusCode: '',
     manager: {
-      managerName: '',
-      managerPhone: '',
-      managerEmail: '',
+      name: '',
+      mobile: '',
+      email: '',
     },
     note: '',
   };
@@ -53,9 +54,9 @@ const CustomerEditModal = ({
       statusCode: $editFormData.statusCode,
       note: $editFormData.note,
       manager: {
-        managerName: $editFormData.manager.managerName,
-        managerPhone: $editFormData.manager.managerPhone,
-        managerEmail: $editFormData.manager.managerEmail,
+        name: $editFormData.manager.managerName,
+        mobile: $editFormData.manager.managerPhone,
+        email: $editFormData.manager.managerEmail,
       },
     };
 
@@ -64,18 +65,50 @@ const CustomerEditModal = ({
     $onClose();
     $setEditFormData(null);
   };
+
+  // 낙관적 업데이트 x
+  // const { mutate: editCustomer, isPending } = useMutation<
+  //   CustomerResponse,
+  //   Error,
+  //   { id: string; data: CustomerEditData }
+  // >({
+  //   mutationFn: ({ id, data }) => putCustomer(id, data),
+  //   onSuccess: (data) => {
+  //     alert(`고객 정보가 성공적으로 수정되었습니다.`);
+  //     $onClose();
+  //   },
+  //   onError: (error) => {
+  //     alert(`고객 수정 중 오류가 발생했습니다.`);
+  //   },
+  // });
+
+  // 낙관적 업데이트
   const { mutate: editCustomer, isPending } = useMutation<
     CustomerResponse,
     Error,
     { id: string; data: CustomerEditData }
   >({
-    mutationFn: ({ id, data }) => putCustomer(id, data),
-    onSuccess: (data) => {
-      alert(`고객 정보가 성공적으로 수정되었습니다.`);
-      $onClose();
+    mutationFn: ({ id, data }) => patchCustomer(id, data),
+
+    // 요청 직전에 낙관적 업데이트 X (수정 성공 시만 반영)
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ['customerDetail'] });
     },
+
+    // 성공 시: 알림 + 모달 닫기 + 최신 데이터 갱신
+    onSuccess: (data) => {
+      alert('고객 정보가 성공적으로 수정되었습니다.');
+      $onClose();
+      queryClient.invalidateQueries({ queryKey: ['customerDetail'] });
+    },
+
     onError: (error) => {
       alert(`고객 수정 중 오류가 발생했습니다.`);
+    },
+
+    // 성공,실패 상관없이 서버 데이터로 최신화
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['customerDetail'] });
     },
   });
 
@@ -155,23 +188,6 @@ const CustomerEditModal = ({
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                     />
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      사업자번호
-                    </label>
-                    <input
-                      type="text"
-                      value={$editFormData.businessNumber}
-                      onChange={(e) =>
-                        updateEditFormData(
-                          'businessNumber',
-                          e.target.value.replace(/[^0-9\-]/g, ''),
-                        )
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                    />
-                  </div>
                 </div>
 
                 <div className="space-y-4">
@@ -200,13 +216,19 @@ const CustomerEditModal = ({
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                     />
                   </div>
-
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">이메일</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      사업자번호
+                    </label>
                     <input
-                      type="email"
-                      value={$editFormData.customerEmail}
-                      onChange={(e) => updateEditFormData('customerEmail', e.target.value)}
+                      type="text"
+                      value={$editFormData.businessNumber}
+                      onChange={(e) =>
+                        updateEditFormData(
+                          'businessNumber',
+                          e.target.value.replace(/[^0-9\-]/g, ''),
+                        )
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                     />
                   </div>
@@ -296,8 +318,9 @@ const CustomerEditModal = ({
                     <input
                       type="number"
                       value={$editFormData.totalOrders}
-                      onChange={(e) => updateEditFormData('totalOrders', Number(e.target.value))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                      readOnly
+                      // onChange={(e) => updateEditFormData('totalOrders', Number(e.target.value))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed"
                     />
                   </div>
 
@@ -308,10 +331,11 @@ const CustomerEditModal = ({
                     <input
                       type="number"
                       value={$editFormData.totalTransactionAmount}
-                      onChange={(e) =>
-                        updateEditFormData('totalTransactionAmount', Number(e.target.value))
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                      readOnly
+                      // onChange={(e) =>
+                      //   updateEditFormData('totalTransactionAmount', Number(e.target.value))
+                      // }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed"
                     />
                   </div>
                 </div>
@@ -346,9 +370,16 @@ const CustomerEditModal = ({
                     handleEditSave;
                   }}
                   type="submit"
-                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium cursor-pointer whitespace-nowrap"
+                  disabled={isPending}
+                  className={`px-6 py-2 rounded-lg transition-colors font-medium cursor-pointer whitespace-nowrap
+                    ${
+                      isPending
+                        ? 'bg-gray-400 text-white cursor-not-allowed'
+                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                    }`}
+                  // className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium cursor-pointer whitespace-nowrap"
                 >
-                  저장
+                  {isPending ? '수정중...' : '저장'}
                 </button>
               </div>
             </form>

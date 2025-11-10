@@ -38,9 +38,9 @@ export interface CustomerEditData {
   detailAddress: string;
   statusCode: string;
   manager: {
-    managerName: string;
-    managerPhone: string;
-    managerEmail: string;
+    name: string;
+    mobile: string;
+    email: string;
   };
   note: string;
 }
