@@ -16,6 +16,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@floating-ui/react": "^0.27.16",
+    "@microsoft/fetch-event-source": "^2.0.1",
     "@mui/material": "^7.3.5",
     "@mui/x-date-pickers": "^8.17.0",
     "@react-three/drei": "^10.7.6",
