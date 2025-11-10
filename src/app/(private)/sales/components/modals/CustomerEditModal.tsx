@@ -318,8 +318,9 @@ const CustomerEditModal = ({
                     <input
                       type="number"
                       value={$editFormData.totalOrders}
-                      onChange={(e) => updateEditFormData('totalOrders', Number(e.target.value))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                      readOnly
+                      // onChange={(e) => updateEditFormData('totalOrders', Number(e.target.value))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed"
                     />
                   </div>
 
@@ -330,10 +331,11 @@ const CustomerEditModal = ({
                     <input
                       type="number"
                       value={$editFormData.totalTransactionAmount}
-                      onChange={(e) =>
-                        updateEditFormData('totalTransactionAmount', Number(e.target.value))
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                      readOnly
+                      // onChange={(e) =>
+                      //   updateEditFormData('totalTransactionAmount', Number(e.target.value))
+                      // }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed"
                     />
                   </div>
                 </div>
