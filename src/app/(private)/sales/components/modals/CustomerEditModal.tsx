@@ -9,7 +9,7 @@ import {
 } from '@/app/(private)/sales/types/CustomerEditModalType';
 import { CustomerStatus } from '../../types/SalesCustomerListType';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { putCustomer } from '../../sales.api';
+import { patchCustomer } from '../../sales.api';
 
 const CustomerEditModal = ({
   $onClose,
@@ -32,9 +32,9 @@ const CustomerEditModal = ({
     detailAddress: '',
     statusCode: '',
     manager: {
-      managerName: '',
-      managerPhone: '',
-      managerEmail: '',
+      name: '',
+      mobile: '',
+      email: '',
     },
     note: '',
   };
@@ -54,9 +54,9 @@ const CustomerEditModal = ({
       statusCode: $editFormData.statusCode,
       note: $editFormData.note,
       manager: {
-        managerName: $editFormData.manager.managerName,
-        managerPhone: $editFormData.manager.managerPhone,
-        managerEmail: $editFormData.manager.managerEmail,
+        name: $editFormData.manager.managerName,
+        mobile: $editFormData.manager.managerPhone,
+        email: $editFormData.manager.managerEmail,
       },
     };
 
@@ -88,18 +88,18 @@ const CustomerEditModal = ({
     Error,
     { id: string; data: CustomerEditData }
   >({
-    mutationFn: ({ id, data }) => putCustomer(id, data),
+    mutationFn: ({ id, data }) => patchCustomer(id, data),
 
     // 요청 직전에 낙관적 업데이트 X (수정 성공 시만 반영)
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ['customerList'] });
+      await queryClient.cancelQueries({ queryKey: ['customerDetail'] });
     },
 
     // 성공 시: 알림 + 모달 닫기 + 최신 데이터 갱신
     onSuccess: (data) => {
       alert('고객 정보가 성공적으로 수정되었습니다.');
       $onClose();
-      queryClient.invalidateQueries({ queryKey: ['customerList'] });
+      queryClient.invalidateQueries({ queryKey: ['customerDetail'] });
     },
 
     onError: (error) => {
@@ -108,7 +108,7 @@ const CustomerEditModal = ({
 
     // 성공,실패 상관없이 서버 데이터로 최신화
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['customerList'] });
+      queryClient.invalidateQueries({ queryKey: ['customerDetail'] });
     },
   });
 
@@ -188,23 +188,6 @@ const CustomerEditModal = ({
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                     />
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      사업자번호
-                    </label>
-                    <input
-                      type="text"
-                      value={$editFormData.businessNumber}
-                      onChange={(e) =>
-                        updateEditFormData(
-                          'businessNumber',
-                          e.target.value.replace(/[^0-9\-]/g, ''),
-                        )
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                    />
-                  </div>
                 </div>
 
                 <div className="space-y-4">
@@ -233,13 +216,19 @@ const CustomerEditModal = ({
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                     />
                   </div>
-
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">이메일</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      사업자번호
+                    </label>
                     <input
-                      type="email"
-                      value={$editFormData.customerEmail}
-                      onChange={(e) => updateEditFormData('customerEmail', e.target.value)}
+                      type="text"
+                      value={$editFormData.businessNumber}
+                      onChange={(e) =>
+                        updateEditFormData(
+                          'businessNumber',
+                          e.target.value.replace(/[^0-9\-]/g, ''),
+                        )
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                     />
                   </div>

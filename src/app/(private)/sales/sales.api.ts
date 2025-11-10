@@ -152,11 +152,11 @@ export const postCustomer = async (customer: CustomerData): Promise<ServerRespon
   return res.data.data;
 };
 
-export const putCustomer = async (
+export const patchCustomer = async (
   customerId: string,
   customer: CustomerEditData,
 ): Promise<CustomerResponse> => {
-  const res = await axios.put<ApiResponse<CustomerResponse>>(
+  const res = await axios.patch<ApiResponse<CustomerResponse>>(
     SALES_ENDPOINTS.EDIT_CUSTOMER(customerId),
     customer,
   );
