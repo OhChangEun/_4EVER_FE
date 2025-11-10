@@ -26,7 +26,7 @@ export default function EditProgramModal({
     isLoading: statusLoading,
     isError: errorLoading,
   } = useQuery({
-    queryKey: ['attendanceStatusDropdown'],
+    queryKey: ['programStatusDropdown'],
     queryFn: fetchProgramStatusDropdown,
     staleTime: Infinity,
   });

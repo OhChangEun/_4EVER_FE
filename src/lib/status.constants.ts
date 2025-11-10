@@ -54,10 +54,16 @@ export const STATUS_TEXT_MAP: Record<string, string> = {
 
   PAYROLL_PAID: '지급완료',
   PAYROLL_UNPAID: '미지급',
+
+  ANNUAL: '연차',
+  SEAK: '병가',
 };
 
 // 상태 색상 매핑
 export const STATUS_COLOR_MAP: Record<string, string> = {
+  ANNUAL: 'bg-blue-100 text-blue-700 border-blue-300',
+  SEAK: 'bg-blue-100 text-blue-700 border-blue-300',
+
   CONVERTED: 'bg-blue-100 text-blue-700 border-blue-300',
   NOT_CONVERTED: 'bg-blue-100 text-blue-700 border-blue-300',
   TECHNICAL_TRAINING: 'bg-blue-100 text-blue-700 border-blue-300',

@@ -10,6 +10,7 @@ import {
   fetchPayrollStatusDropdown,
   fetchPositionsList,
   fetchProgramListDropdown,
+  fetchProgramStatusDropdown,
   fetchTrainingCategoryDropdown,
 } from '@/app/(private)/hrm/api/hrm.api';
 import { mapHrmStatsToCards } from '@/app/(private)/hrm/services/hrm.service';
@@ -81,6 +82,12 @@ export default async function HrmPage() {
     queryClient.prefetchQuery({
       queryKey: ['programListDropdown'],
       queryFn: fetchProgramListDropdown,
+    }),
+
+    // 교육 프로그램 모집 상태 드롭다운
+    queryClient.prefetchQuery({
+      queryKey: ['programStatusDropdown'],
+      queryFn: fetchProgramStatusDropdown,
     }),
   ]);
   const dehydratedState = dehydrate(queryClient);

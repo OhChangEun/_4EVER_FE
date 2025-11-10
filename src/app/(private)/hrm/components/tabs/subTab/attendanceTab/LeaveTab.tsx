@@ -11,6 +11,7 @@ import Dropdown from '@/app/components/common/Dropdown';
 import Input from '@/app/components/common/Input';
 import { useModal } from '@/app/components/common/modal/useModal';
 import Pagination from '@/app/components/common/Pagination';
+import StatusLabel from '@/app/components/common/StatusLabel';
 import { useDebouncedKeyword } from '@/app/hooks/useDebouncedKeyword';
 import { useDropdown } from '@/app/hooks/useDropdown';
 import { getQueryClient } from '@/lib/queryClient';
@@ -154,7 +155,7 @@ export default function LeaveTab() {
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {leave.leaveType}
+                  <StatusLabel $statusCode={leave.leaveType} />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {leave.startDate.split('T')[0]}
