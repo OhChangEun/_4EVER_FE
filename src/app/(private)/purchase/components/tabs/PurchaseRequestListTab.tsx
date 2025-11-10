@@ -166,7 +166,6 @@ export default function PurchaseRequestListTab() {
               setKeyword(keyword);
               setCurrentPage(1); // 검색 시 페이지 초기화
             }}
-            defaultType={selectedStatus}
             placeholder="검색어를 입력하세요"
           />
 

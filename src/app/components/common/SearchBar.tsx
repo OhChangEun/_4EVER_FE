@@ -11,20 +11,19 @@ interface SearchBarProps {
   /** 검색 실행 시 호출되는 콜백 */
   onTypeChange: (type: string) => void;
   onKeywordSearch: (keyword: string) => void;
-  /** 초기 선택 타입 (선택 사항) */
-  defaultType?: string;
   /** placeholder (선택 사항) */
   placeholder?: string;
+  autoSelectFirst?: boolean;
 }
 
 export default function SearchBar({
   options,
   onTypeChange,
   onKeywordSearch,
-  defaultType = '',
+  autoSelectFirst = true,
   placeholder = '검색어 입력',
 }: SearchBarProps) {
-  const [selectedType, setSelectedType] = useState(defaultType);
+  const [selectedType, setSelectedType] = useState('');
   const [keyword, setKeyword] = useState('');
 
   const handleTypeChange = (type: string) => {
@@ -45,6 +44,7 @@ export default function SearchBar({
         items={options}
         value={selectedType}
         onChange={handleTypeChange}
+        autoSelectFirst={autoSelectFirst}
       />
       <Input
         value={keyword}
