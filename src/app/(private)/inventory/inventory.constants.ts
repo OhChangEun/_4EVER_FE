@@ -32,6 +32,8 @@ export const INVENTORY_TABLE_HEADERS = [
   '품목',
   '카테고리',
   '현재재고',
+  '예약',
+  '출고대기',
   '안전재고',
   '단가',
   '총 가치',
