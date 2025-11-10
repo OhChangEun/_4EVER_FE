@@ -51,6 +51,9 @@ export const STATUS_TEXT_MAP: Record<string, string> = {
 
   CONVERTED: '전환 전',
   NOT_CONVERTED: '전환 완료',
+
+  PAYROLL_PAID: '지급완료',
+  PAYROLL_UNPAID: '미지급',
 };
 
 // 상태 색상 매핑
