@@ -79,7 +79,7 @@ export const postApporvePurchaseReq = async (prId: string) => {
 export const postRejectPurchaseReq = async (prId: string, body: string) => {
   const res = await axios.post<ApiResponse<null>>(
     `${PURCHASE_ENDPOINTS.PURCHASE_REQUISITION_REJECT(prId)}`,
-    { body },
+    { comment: body },
   );
   return res.data;
 };

@@ -19,8 +19,12 @@ import AddInventoryModal from '../modals/AddInventoryModal';
 import Link from 'next/link';
 import { Page } from '@/app/types/Page';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
+import { useModal } from '@/app/components/common/modal/useModal';
+import InventoryPurchaseRequestModal from '../modals/InventoryPurchaseRequestModal';
 
 const InventoryList = () => {
+  const { openModal } = useModal();
+
   const [showAddModal, setShowAddModal] = useState(false);
   const [searchType, setSearchType] = useState('category');
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -86,10 +90,21 @@ const InventoryList = () => {
   const pageInfo = InventoryRes?.pageData;
   const totalPages = pageInfo?.totalPages ?? 1;
 
+  console.log(inventories);
+  const handleViewPurchaseRequestModal = () => {
+    openModal(InventoryPurchaseRequestModal, {
+      title: '재고 구매 요청',
+      items: inventories, // 전체 또는 필터된 inventories 전달
+      onConfirm: () => {
+        // 구매 요청 완료 후 처리
+      },
+    });
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <LowStockAlert />
+        <LowStockAlert handleOrderRequest={handleViewPurchaseRequestModal} />
         <StockMovement />
       </div>
       <div className="bg-white rounded-lg border border-gray-200 mt-6">
