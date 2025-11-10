@@ -20,6 +20,7 @@ import {
 } from '@/app/(private)/sales/constant';
 import Pagination from '@/app/components/common/Pagination';
 import StatusLabel from '@/app/components/common/StatusLabel';
+import IconButton from '@/app/components/common/IconButton';
 
 const CustomerList = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -78,13 +79,11 @@ const CustomerList = () => {
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900">고객 관리</h2>
-          <button
+          <IconButton
+            icon="ri-user-add-line"
             onClick={handleCustomerRegisterClick}
-            className="px-4 py-2 bg-[#2563EB] text-white font-medium rounded-lg hover:bg-blue-600 transition-colors duration-200 cursor-pointer whitespace-nowrap flex items-center space-x-2"
-          >
-            <i className="ri-user-add-line"></i>
-            <span>고객 등록</span>
-          </button>
+            label="고객 등록"
+          />
         </div>
 
         {/* 필터 및 검색 */}

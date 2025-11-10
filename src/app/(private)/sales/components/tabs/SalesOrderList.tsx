@@ -15,6 +15,8 @@ import {
 import Pagination from '@/app/components/common/Pagination';
 import StatusLabel from '@/app/components/common/StatusLabel';
 import { useRole } from '@/app/hooks/useRole';
+import DateRangePicker from '@/app/components/common/DateRangePicker';
+import Input from '@/app/components/common/Input';
 
 const SalesOrderList = () => {
   const [showOrderDetailModal, setShowOrderDetailModal] = useState(false);
@@ -74,23 +76,12 @@ const SalesOrderList = () => {
         {/* 필터링 및 검색 */}
         <div className="flex flex-wrap items-center gap-4">
           {/* 날짜 필터 */}
-          <div className="flex items-center space-x-2">
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStartDate(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="시작날짜"
-            />
-            <span className="text-gray-500">~</span>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEndDate(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="끝날짜"
-            />
-          </div>
+          <DateRangePicker
+            startDate={startDate}
+            onStartDateChange={setStartDate}
+            endDate={endDate}
+            onEndDateChange={setEndDate}
+          />
           {/* 상태 필터 */}
           <select
             value={statusFilter}
@@ -120,20 +111,16 @@ const SalesOrderList = () => {
           </select>
 
           {/* 검색 */}
-          <div className="flex-1 max-w-md">
-            <div className="relative">
-              <i className="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-                placeholder={
-                  role === 'CUSTOMER_ADMIN' ? '주문번호로 검색' : '주문번호, 고객명, 담당자로 검색'
-                }
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
+
+          <Input
+            icon="ri-search-line"
+            type="text"
+            value={searchTerm}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+            placeholder={
+              role === 'CUSTOMER_ADMIN' ? '주문번호로 검색' : '주문번호, 고객명, 담당자로 검색'
+            }
+          />
         </div>
       </div>
 
