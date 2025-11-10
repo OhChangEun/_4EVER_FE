@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { LowStockItemResponse } from '../../low-stock/types/LowStockAlertType';
 import { useQuery } from '@tanstack/react-query';
 import { getLowStockItems } from '../inventory.api';
+import IconButton from '@/app/components/common/IconButton';
 
 export default function LowStockAlert() {
   const {
@@ -97,9 +98,7 @@ export default function LowStockAlert() {
             </div>
           ))}
 
-        <button className="w-full mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed">
-          <i className="ri-shopping-cart-line mr-2"></i>발주 요청 생성
-        </button>
+        <IconButton icon="ri-shopping-cart-line mr-2" label="발주 요청 생성" className="w-full" />
       </div>
     </div>
   );

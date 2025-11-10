@@ -12,6 +12,7 @@ import { getInventoryDetail, postStockMovement } from '../../inventory.api';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
 import StatusLabel from '@/app/components/common/StatusLabel';
 import { FormatDate, getMovementColor, getMovementIcon } from '../../inventory.utils';
+import IconButton from '@/app/components/common/IconButton';
 
 const InventoryDetailModal = ({
   $selectedItemId,
@@ -251,27 +252,26 @@ const InventoryDetailModal = ({
               </div>
             </div>
 
-            <div className="mt-6 flex gap-3">
-              <button
+            <div className="mt-6 flex gap-2 ">
+              <IconButton
+                variant="green"
+                icon="ri-arrow-left-right-line"
+                label="재고 이동"
                 onClick={() => {
                   //   $setShowDetailModal(false);
                   handleStockMove(inventoryDetailRes?.itemId ?? '');
                 }}
-                className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium cursor-pointer"
-              >
-                <i className="ri-arrow-left-right-line mr-1"></i>
-                재고 이동
-              </button>
-              <button
+                className="w-[49%]"
+              />
+              <IconButton
+                icon="ri-edit-line mr-1"
+                label="안전 재고 수정"
                 onClick={() => {
                   // $setShowDetailModal(false);
                   handleSafetyStockEdit();
                 }}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium cursor-pointer"
-              >
-                <i className="ri-edit-line mr-1"></i>
-                안전 재고 수정
-              </button>
+                className="w-[51%]"
+              />
             </div>
           </div>
         </div>

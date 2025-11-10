@@ -21,6 +21,7 @@ import StatusLabel from '@/app/components/common/StatusLabel';
 import { useRole } from '@/app/hooks/useRole';
 import IconButton from '@/app/components/common/IconButton';
 import Button from '@/app/components/common/Button';
+import Dropdown from '@/app/components/common/Dropdown';
 
 const InvoiceList = () => {
   const searchParams = useSearchParams();
@@ -113,7 +114,7 @@ const InvoiceList = () => {
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
+    <>
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-2">
           <i className="ri-shopping-cart-line text-blue-600 text-lg"></i>
@@ -123,23 +124,16 @@ const InvoiceList = () => {
         </div>
 
         <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <label className="text-sm text-gray-600">상태:</label>
-
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as InvoiceStatus)}
-              className="px-3 py-1 border border-gray-300 rounded-md text-sm cursor-pointer pr-8"
-            >
-              {VOUCHER_STATUS_OPTIONS.map(({ key, value }) => (
-                <option key={key} value={key}>
-                  {value}
-                </option>
-              ))}
-            </select>
-          </div>
+          <Dropdown
+            placeholder="전체 상태"
+            items={VOUCHER_STATUS_OPTIONS}
+            value={statusFilter}
+            onChange={(status: string) => setStatusFilter(status as InvoiceStatus)}
+            autoSelectFirst
+          />
 
           <Button
+            variant="green"
             label="미수 처리 신청"
             onClick={handleReceivableComplete}
             disabled={selectedInvoiceId ? false : true}
@@ -240,7 +234,7 @@ const InvoiceList = () => {
           $setSelectedInvoiceId={setSelectedInvoiceId}
         />
       )}
-    </div>
+    </>
   );
 };
 
