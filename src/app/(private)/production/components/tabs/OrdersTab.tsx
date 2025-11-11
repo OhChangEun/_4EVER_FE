@@ -2,7 +2,7 @@
 import { useMemo, useState } from 'react';
 import Dropdown from '@/app/components/common/Dropdown';
 import Button from '@/app/components/common/Button';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   fetchMrpAvailableStatusDropdown,
   fetchMrpOrdersList,
@@ -56,7 +56,7 @@ export default function OrdersTab() {
     isLoading,
     isError,
   } = useQuery<MrpOrdersListResponse>({
-    queryKey: ['ordersList', queryParams],
+    queryKey: ['mrpOrdersList', queryParams],
     queryFn: ({ queryKey }) => fetchMrpOrdersList(queryKey[1] as FetchMrpOrdersListParams),
     staleTime: 1000,
   });
@@ -83,11 +83,13 @@ export default function OrdersTab() {
 
   // 계획 주문 전환 mutation
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const { mutate: mrpConvert } = useMutation({
     mutationFn: (body: MrpOrdersConvertReqeustBody) => postMrpConvert(body),
     onSuccess: () => {
       alert('계획 주문 전환이 완료되었습니다.');
+      queryClient.invalidateQueries({ queryKey: ['mrpOrdersList'] });
       router.push('/production?tab=mrp&subTab=orders');
     },
     onError: (error) => {

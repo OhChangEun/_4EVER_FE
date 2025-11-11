@@ -17,7 +17,7 @@ import {
   fetchQuotationStatusDropdown,
   fetchAvailableStatusDropdown, // API 함수 추가
 } from '@/app/(private)/production/api/production.api';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { FetchQuotationSimulationParams } from '@/app/(private)/production/types/QuotationSimulationApiType';
 import { QuotationPreviewResponse } from '@/app/(private)/production/types/QuotationPreviewApiType'; // 타입은 여전히 필요
 import Pagination from '@/app/components/common/Pagination';
@@ -25,6 +25,7 @@ import DateRangePicker from '@/app/components/common/DateRangePicker';
 import { useModal } from '@/app/components/common/modal/useModal';
 import { useDropdown } from '@/app/hooks/useDropdown';
 import StatusLabel from '@/app/components/common/StatusLabel';
+import { getQueryClient } from '@/lib/queryClient';
 
 export default function QuotationTab() {
   const { openModal, removeAllModals } = useModal();
@@ -80,7 +81,7 @@ export default function QuotationTab() {
   const totalPages = quotationListData?.page?.totalPages || 1;
   const totalElements = quotationListData?.page?.totalElements || 0;
 
-  // 2. 시뮬레이션 쿼리
+  const queryClient = useQueryClient();
   const { mutate: simulationQuotations, isPending: simulationPending } = useMutation({
     mutationFn: (params: FetchQuotationSimulationParams) => fetchQuotationSimulationResult(params),
     onSuccess: (data) => {
@@ -96,6 +97,8 @@ export default function QuotationTab() {
       } else {
         alert('시뮬레이션 결과가 없습니다.');
       }
+
+      queryClient.invalidateQueries({ queryKey: ['quotationList'] });
     },
     onError: (error) => {
       console.error('시뮬레이션 실패:', error);
@@ -108,6 +111,8 @@ export default function QuotationTab() {
     onSuccess: () => {
       alert('제안납기를 확정하였습니다.');
       removeAllModals(); // 모든 탭 닫기
+
+      queryClient.invalidateQueries({ queryKey: ['quotationList'] });
     },
     onError: (error) => {
       console.error('제안납기 확정 실패:', error);
@@ -310,7 +315,9 @@ export default function QuotationTab() {
                     {quote.requestQuantity}EA
                   </td> */}
                   <td className="px-4 py-3 text-sm text-gray-900">{quote.requestDate}</td>
-                  <td className="px-4 py-3">{quote.availableStatus}</td>
+                  <td className="px-4 py-3">
+                    <StatusLabel $statusCode={quote.availableStatus} />
+                  </td>
                   <td className="px-4 py-3 text-sm text-gray-900">{quote.dueDate || '-'}</td>
                   <td className="px-4 py-3">
                     <StatusLabel $statusCode={quote.statusCode} />

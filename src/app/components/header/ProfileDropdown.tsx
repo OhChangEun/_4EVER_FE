@@ -147,14 +147,6 @@ export default function ProfileDropdown() {
               <i className="ri-user-settings-line mr-3 text-gray-400"></i>
               프로필 설정
             </Link>
-            <Link
-              href="/settings"
-              className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              <i className="ri-settings-3-line mr-3 text-gray-400"></i>
-              시스템 설정
-            </Link>
             <hr className="my-1 border-gray-200" />
             <button
               onClick={handleLogout}

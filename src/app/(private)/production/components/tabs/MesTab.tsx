@@ -80,7 +80,7 @@ export default function MesTab() {
   };
 
   const handleShowProcessDetail = (mesId: string) => {
-    openModal(ProcessDetailModal, { title: 'MES 현황', mesId: mesId });
+    openModal(ProcessDetailModal, { title: 'MES 현황', mesId: mesId, height: '800px' });
   };
 
   const getOperationStatus = (

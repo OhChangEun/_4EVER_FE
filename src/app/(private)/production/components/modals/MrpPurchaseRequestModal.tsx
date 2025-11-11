@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Button from '@/app/components/common/Button';
 import { ModalProps } from '@/app/components/common/modal/types';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { StockPurchaseRequestBody } from '@/app/(private)/purchase/types/PurchaseApiRequestType';
 import { createStockPurchaseRequest } from '@/app/(private)/purchase/api/purchase.api';
 import { postItemsInfo } from '../../api/production.api';
@@ -27,6 +27,8 @@ export default function MrpPurchaseRequestModal({
 }: PurchaseRequestModalProps) {
   const [editableOrders, setEditableOrders] = useState<ItemWithQuantity[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const queryClient = useQueryClient();
 
   // 아이템 상세 정보 조회
   const { mutate: fetchItemsInfo } = useMutation({
@@ -69,6 +71,9 @@ export default function MrpPurchaseRequestModal({
     mutationFn: (data: StockPurchaseRequestBody) => createStockPurchaseRequest(data),
     onSuccess: () => {
       alert('자재 구매 요청이 완료되었습니다.');
+
+      queryClient.invalidateQueries({ queryKey: ['mrpPlannedOrders'] });
+
       onConfirm();
       onClose();
     },

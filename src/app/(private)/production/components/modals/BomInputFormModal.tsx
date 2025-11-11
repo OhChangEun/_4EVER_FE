@@ -29,10 +29,11 @@ import {
   fetchProduction,
   postBomItem,
 } from '../../api/production.api';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getQueryClient } from '@/lib/queryClient';
 import { BomRequestBody } from '../../types/BomType';
 import Input from '@/app/components/common/Input';
+import StatusLabel from '@/app/components/common/StatusLabel';
 
 interface BomInputFormModalProps extends ModalProps {
   editMode?: boolean;
@@ -186,17 +187,22 @@ function SortableRow({ item, onMaterialChange, onItemChange, onRemove }: Sortabl
             onMaterialChange(item.id, selectedMaterialId);
             loadMaterialData(selectedMaterialId);
           }}
-          placeholder="선택"
+          placeholder="자재 선택"
         />
       </td>
       <td className="px-3 py-2">
         <Input type="text" value={materialInfo?.productNumber || ''} disabled />
       </td>
       <td className="px-3 py-2">
-        <Input type="text" value={materialInfo?.category || ''} disabled />
+        <StatusLabel $statusCode={materialInfo?.category ?? ''} />
+        {/* <Input type="text" value={materialInfo?.category || ''} disabled /> */}
       </td>
       <td className="px-3 py-2">
-        <Input type="text" value={materialInfo?.supplierName || ''} disabled />
+        <Input
+          type="text"
+          value={materialInfo?.category === 'ITEM' ? '4Ever' : materialInfo?.supplierName || ''}
+          disabled
+        />
       </td>
       <td className="px-3 py-2">
         <Input type="text" value={materialInfo?.uomName || ''} disabled />
@@ -221,7 +227,7 @@ function SortableRow({ item, onMaterialChange, onItemChange, onRemove }: Sortabl
           items={operationOptions}
           value={item.operationId}
           onChange={(value) => onItemChange(item.id, 'operationId', value)}
-          placeholder="선택"
+          placeholder="공정 선택"
         />
       </td>
       <td className="px-3 py-2">
@@ -238,7 +244,7 @@ function SortableRow({ item, onMaterialChange, onItemChange, onRemove }: Sortabl
 }
 
 export default function BomInputFormModal({ editMode = false, onClose }: BomInputFormModalProps) {
-  const queryClient = getQueryClient();
+  const queryClient = useQueryClient();
   const [productName, setProductName] = useState('');
   const [unit, setUnit] = useState('');
   const [bomItems, setBomItems] = useState<BomItem[]>([]);
@@ -376,7 +382,7 @@ export default function BomInputFormModal({ editMode = false, onClose }: BomInpu
             />
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto h-[440px] rounded-lg overflow-scroll border border-gray-300">
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}

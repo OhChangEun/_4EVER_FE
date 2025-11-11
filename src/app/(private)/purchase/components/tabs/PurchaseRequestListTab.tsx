@@ -87,10 +87,14 @@ export default function PurchaseRequestListTab() {
     mutationFn: (prId: string) => postApporvePurchaseReq(prId),
     onSuccess: () => {
       alert('구매 요청 승인 완료되었습니다.');
-      queryClient.invalidateQueries({ queryKey: ['purchaseRequests'] }); // 목록 새로고침
     },
     onError: (error) => {
       alert(`구매 요청 승인 중 오류가 발생했습니다. ${error}`);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        predicate: (q) => q.queryKey[0] === 'purchaseRequests',
+      });
     },
   });
 
@@ -99,10 +103,14 @@ export default function PurchaseRequestListTab() {
     mutationFn: (prId: string) => postRejectPurchaseReq(prId, ''),
     onSuccess: () => {
       alert('반려 처리되었습니다.');
-      queryClient.invalidateQueries({ queryKey: ['purchaseRequests'] });
     },
     onError: (error) => {
       alert(`반려 처리 중 오류가 발생했습니다. ${error}`);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        predicate: (q) => q.queryKey[0] === 'purchaseRequests',
+      });
     },
   });
 

@@ -45,7 +45,7 @@ export default function BomTab() {
   const pageInfo = bomResponse?.page;
 
   const handleCreate = () => {
-    openModal(BomInputFormModal, { title: 'BOM 생성' });
+    openModal(BomInputFormModal, { title: 'BOM 생성', width: '1200px', height: '800px' });
   };
 
   const handleViewDetail = (bomId: string) => {
@@ -55,10 +55,6 @@ export default function BomTab() {
       width: '800px',
       height: '700px',
     });
-  };
-
-  const handleEdit = () => {
-    openModal(BomInputFormModal, { title: 'BOM 수정', editMode: true });
   };
 
   return (
@@ -131,7 +127,7 @@ export default function BomTab() {
                         size="sm"
                         onClick={() => handleViewDetail(bom.bomId)}
                       />
-                      <Button label="수정" variant="ghost" size="sm" onClick={() => handleEdit()} />
+                      {/* <Button label="수정" variant="ghost" size="sm" onClick={() => handleEdit()} /> */}
                     </td>
                   </tr>
                 ))

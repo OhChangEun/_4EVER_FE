@@ -60,10 +60,16 @@ export const STATUS_TEXT_MAP: Record<string, string> = {
   SICK: '병가',
 
   INCOMPLETED: '미완료',
+
+  INITIAL: '신청전',
+  REQUEST_APPROVED: '요청 승인',
+  ORDER_APPROVED: '발주서 승인',
 };
 
 // 상태 색상 매핑
 export const STATUS_COLOR_MAP: Record<string, string> = {
+  REQUEST_APPROVED: 'bg-green-100 text-green-700 border-green-300',
+  ORDER_APPROVED: 'bg-green-100 text-green-700 border-green-300',
   PAYROLL_PAID: 'bg-green-100 text-green-700 border-green-300',
   PAYROLL_UNPAID: 'bg-red-100 text-red-700 border-red-300',
 
