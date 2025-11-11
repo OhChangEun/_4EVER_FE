@@ -15,12 +15,11 @@ import StatusLabel from '@/app/components/common/StatusLabel';
 import { useDebouncedKeyword } from '@/app/hooks/useDebouncedKeyword';
 import { useDropdown } from '@/app/hooks/useDropdown';
 import { getQueryClient } from '@/lib/queryClient';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 export default function LeaveTab() {
   // --- 모달 출력 ---
-  const { openModal } = useModal();
   const { keyword, handleKeywordChange, debouncedKeyword } = useDebouncedKeyword();
 
   // 부서 드롭다운
@@ -47,7 +46,7 @@ export default function LeaveTab() {
     [selectedDepartment, debouncedKeyword, currentPage],
   );
 
-  const queryClient = getQueryClient();
+  const queryClient = useQueryClient();
   const {
     data: leaveData,
     isLoading,

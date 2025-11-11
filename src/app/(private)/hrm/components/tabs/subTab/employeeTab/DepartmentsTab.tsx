@@ -8,7 +8,7 @@ import { DepartmentEditModal } from '../../../modals/DepartmentEditModal';
 import IconButton from '@/app/components/common/IconButton';
 
 export default function DepartmentsTab() {
-  const { openModal } = useModal();
+  const { openModal, removeAllModals } = useModal();
 
   // 부서 데이터
   const {
@@ -29,11 +29,13 @@ export default function DepartmentsTab() {
       title: '부서 상세보기',
       departments: dept,
       onEdit: () => handleEditDepartmentDetail(dept),
+      width: '600px',
     });
   };
 
   // 부서 수정 모달창
   const handleEditDepartmentDetail = (dept: DepartmentsData) => {
+    removeAllModals();
     openModal(DepartmentEditModal, { title: '부서정보 수정', departments: dept });
   };
 

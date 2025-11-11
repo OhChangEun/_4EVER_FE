@@ -7,7 +7,7 @@ import Input from '@/app/components/common/Input';
 import CalendarButton from '@/app/components/common/CalendarButton';
 import LoadingMessage from '@/app/components/common/LoadingMessage';
 import { useState } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   fetchDepartmentsDropdown,
   fetchPositionsDropdown,
@@ -43,6 +43,7 @@ export default function EmployeeRegisterModal({ onClose }: ModalProps) {
     enabled: !!selectedDepartment,
   });
 
+  const queryClient = useQueryClient();
   const { mutate: registerEmployee, isPending: isRegistering } = useMutation({
     mutationFn: (body: EmployeeRegisterRequest) => postEmployeeRegister(body),
     onSuccess: () => {
@@ -58,6 +59,8 @@ export default function EmployeeRegisterModal({ onClose }: ModalProps) {
         baseAddress: '',
         detailAddress: '',
       });
+
+      queryClient.invalidateQueries({ queryKey: ['employeesList'] });
       onClose();
     },
     onError: (error) => {

@@ -50,7 +50,7 @@ export default function EmployeeTrainingTab() {
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ['payrollList', trainingQueryParams],
+    queryKey: ['trainingList', trainingQueryParams],
     queryFn: () => fetchTrainingList(trainingQueryParams),
   });
 
