@@ -8,6 +8,7 @@ export interface LeaveListData {
   endDate: string;
   numberOfLeaveDays: number;
   remainingLeaveDays: number;
+  status: string;
 }
 
 export interface EmployeeSummary {

@@ -124,9 +124,9 @@ export const fetchTrainingList = async (
 };
 
 // 직원 교육 상세 조회
-export const fetchTrainingDetail = async (payrollId: string): Promise<TrainingDetailResponse> => {
+export const fetchTrainingDetail = async (employeeId: string): Promise<TrainingDetailResponse> => {
   const res = await axios.get<ApiResponse<TrainingDetailResponse>>(
-    `${HRM_ENDPOINTS.TRAINING_EMPLOYEE_DETAIL(payrollId)}`,
+    `${HRM_ENDPOINTS.TRAINING_EMPLOYEE_DETAIL(employeeId)}`,
   );
   return res.data.data;
 };

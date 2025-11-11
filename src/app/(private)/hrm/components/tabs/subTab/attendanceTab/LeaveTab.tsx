@@ -64,7 +64,7 @@ export default function LeaveTab() {
     mutationFn: (requestId: string) => postLeaveRelease(requestId),
     onSuccess: () => {
       alert('승인이 완료되었습니다.');
-      queryClient.invalidateQueries({ queryKey: ['leaveList'] });
+      queryClient.invalidateQueries({ queryKey: ['leaveList'], exact: false });
     },
     onError: (error) => {
       alert(`휴가 승인 중 오류가 발생했습니다. ${error}`);
@@ -75,7 +75,7 @@ export default function LeaveTab() {
     mutationFn: (requestId: string) => postLeaveReject(requestId),
     onSuccess: () => {
       alert('반료되었습니다.');
-      queryClient.invalidateQueries({ queryKey: ['leaveList'] });
+      queryClient.invalidateQueries({ queryKey: ['leaveList'], exact: false });
     },
     onError: (error) => {
       alert(`휴가 반려 중 오류가 발생했습니다. ${error}`);
@@ -170,22 +170,27 @@ export default function LeaveTab() {
                   {leave.remainingLeaveDays}일
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => handleApprove(leave.leaveRequestId)}
-                      className="text-green-600 hover:text-green-900 cursor-pointer"
-                      title="승인"
-                    >
-                      <i className="ri-check-line"></i>
-                    </button>
-                    <button
-                      onClick={() => handleReject(leave.leaveRequestId)}
-                      className="text-red-600 hover:text-red-900 cursor-pointer"
-                      title="반려"
-                    >
-                      <i className="ri-close-line"></i>
-                    </button>
-                  </div>
+                  {/* 휴가 승인 대기중일 때만 */}
+                  {leave.status === 'PENDING' ? (
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleApprove(leave.leaveRequestId)}
+                        className="text-green-600 hover:text-green-900 cursor-pointer"
+                        title="승인"
+                      >
+                        <i className="ri-check-line"></i>
+                      </button>
+                      <button
+                        onClick={() => handleReject(leave.leaveRequestId)}
+                        className="text-red-600 hover:text-red-900 cursor-pointer"
+                        title="반려"
+                      >
+                        <i className="ri-close-line"></i>
+                      </button>
+                    </div>
+                  ) : (
+                    <StatusLabel $statusCode={leave.status} />
+                  )}
                 </td>
               </tr>
             ))}

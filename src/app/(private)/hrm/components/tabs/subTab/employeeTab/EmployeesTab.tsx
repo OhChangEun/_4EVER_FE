@@ -18,6 +18,7 @@ import EmployeeRegisterModal from '@/app/(private)/hrm/components/modals/Employe
 import { useDropdown } from '@/app/hooks/useDropdown';
 import { useDebouncedKeyword } from '@/app/hooks/useDebouncedKeyword';
 import Input from '@/app/components/common/Input';
+import Button from '@/app/components/common/Button';
 
 export default function EmployeesTab() {
   const { keyword, handleKeywordChange, debouncedKeyword } = useDebouncedKeyword();
@@ -135,7 +136,7 @@ export default function EmployeesTab() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {employees.map((employee) => (
-                <tr key={employee.employeeId} className="hover:bg-gray-50 text-center">
+                <tr key={employee.employeeId} className="text-center">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
                       <div className="text-sm font-medium text-gray-900">{employee.name}</div>
@@ -157,12 +158,12 @@ export default function EmployeesTab() {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button
+                    <Button
+                      label="상세보기"
+                      size="sm"
+                      variant="ghost"
                       onClick={() => handleViewEmployeeDetail(employee)}
-                      className="text-blue-600 hover:text-blue-900 cursor-pointer"
-                    >
-                      상세보기
-                    </button>
+                    />
                   </td>
                 </tr>
               ))}

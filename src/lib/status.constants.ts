@@ -64,7 +64,7 @@ export const STATUS_COLOR_MAP: Record<string, string> = {
   PAYROLL_PAID: 'bg-green-100 text-green-700 border-green-300',
   PAYROLL_UNPAID: 'bg-red-100 text-red-700 border-red-300',
 
-  ANNUAL: 'bg-blue-100 text-blue-700 border-blue-300',
+  ANNUAL: 'bg-green-100 text-green-700 border-green-300',
   SICK: 'bg-blue-100 text-blue-700 border-blue-300',
 
   CONVERTED: 'bg-blue-100 text-blue-700 border-blue-300',
