@@ -1,24 +1,33 @@
 // tabs/LeaveTab.tsx
 'use client';
 import {
-  fetchDepartmentsList,
+  fetchDepartmentsDropdown,
   fetchLeaveList,
-  fetchPositionsList,
   postLeaveReject,
   postLeaveRelease,
 } from '@/app/(private)/hrm/api/hrm.api';
 import { LeaveRequestParams } from '@/app/(private)/hrm/types/HrmLeaveApiType';
 import Dropdown from '@/app/components/common/Dropdown';
+import Input from '@/app/components/common/Input';
 import { useModal } from '@/app/components/common/modal/useModal';
 import Pagination from '@/app/components/common/Pagination';
-import { KeyValueItem } from '@/app/types/CommonType';
+import StatusLabel from '@/app/components/common/StatusLabel';
+import { useDebouncedKeyword } from '@/app/hooks/useDebouncedKeyword';
+import { useDropdown } from '@/app/hooks/useDropdown';
 import { getQueryClient } from '@/lib/queryClient';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 export default function LeaveTab() {
   // --- 모달 출력 ---
-  const { openModal } = useModal();
+  const { keyword, handleKeywordChange, debouncedKeyword } = useDebouncedKeyword();
+
+  // 부서 드롭다운
+  const { options: departmentsOptions } = useDropdown(
+    'departmentsDropdown',
+    fetchDepartmentsDropdown,
+    'include',
+  );
 
   // --- 드롭다운 ---
   const [selectedDepartment, setSelectedDepartment] = useState(''); // 부서
@@ -27,40 +36,17 @@ export default function LeaveTab() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  const [employeeSearchTerm, setEmployeeSearchTerm] = useState('');
-
-  const {
-    data: departmentsData,
-    isLoading: isDeptLoading,
-    isError: isDeptError,
-  } = useQuery({
-    queryKey: ['departmentsList'],
-    queryFn: fetchDepartmentsList,
-    staleTime: Infinity,
-  });
-
-  const departmentsOptions: KeyValueItem[] = useMemo(() => {
-    const departmentList = departmentsData?.departments ?? [];
-
-    return [
-      { key: '', value: '전체 부서' },
-      ...departmentList.map((item) => ({
-        key: item.departmentId,
-        value: item.departmentName,
-      })),
-    ];
-  }, [departmentsData]);
-
   const leaveQueryParams = useMemo(
     (): LeaveRequestParams => ({
       department: selectedDepartment || undefined,
+      name: debouncedKeyword,
       page: currentPage - 1,
       size: pageSize,
     }),
-    [selectedDepartment, currentPage, pageSize],
+    [selectedDepartment, debouncedKeyword, currentPage],
   );
 
-  const queryClient = getQueryClient();
+  const queryClient = useQueryClient();
   const {
     data: leaveData,
     isLoading,
@@ -77,7 +63,7 @@ export default function LeaveTab() {
     mutationFn: (requestId: string) => postLeaveRelease(requestId),
     onSuccess: () => {
       alert('승인이 완료되었습니다.');
-      queryClient.invalidateQueries({ queryKey: ['leaveList'] });
+      queryClient.invalidateQueries({ queryKey: ['leaveList'], exact: false });
     },
     onError: (error) => {
       alert(`휴가 승인 중 오류가 발생했습니다. ${error}`);
@@ -85,10 +71,10 @@ export default function LeaveTab() {
   });
 
   const { mutate: rejectLeave } = useMutation({
-    mutationFn: (reuqestId: string) => postLeaveReject(reuqestId),
+    mutationFn: (requestId: string) => postLeaveReject(requestId),
     onSuccess: () => {
       alert('반료되었습니다.');
-      queryClient.invalidateQueries({ queryKey: ['leaveList'] });
+      queryClient.invalidateQueries({ queryKey: ['leaveList'], exact: false });
     },
     onError: (error) => {
       alert(`휴가 반려 중 오류가 발생했습니다. ${error}`);
@@ -121,20 +107,12 @@ export default function LeaveTab() {
             }}
           />
 
-          {/* 직원 이름 검색 */}
-          <div className="relative flex-1 max-w-xs">
-            <input
-              type="text"
-              placeholder="직원 이름 검색..."
-              value={employeeSearchTerm}
-              onChange={(e) => {
-                setEmployeeSearchTerm(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-            <i className="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-          </div>
+          <Input
+            value={keyword}
+            onChange={handleKeywordChange}
+            icon="ri-search-line"
+            placeholder="직원 이름 검색"
+          />
         </div>
       </div>
       <div className="overflow-x-auto">
@@ -176,7 +154,7 @@ export default function LeaveTab() {
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {leave.leaveType}
+                  <StatusLabel $statusCode={leave.leaveType} />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {leave.startDate.split('T')[0]}
@@ -191,22 +169,27 @@ export default function LeaveTab() {
                   {leave.remainingLeaveDays}일
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => handleApprove(leave.leaveRequestId)}
-                      className="text-green-600 hover:text-green-900 cursor-pointer"
-                      title="승인"
-                    >
-                      <i className="ri-check-line"></i>
-                    </button>
-                    <button
-                      onClick={() => handleReject(leave.leaveRequestId)}
-                      className="text-red-600 hover:text-red-900 cursor-pointer"
-                      title="반려"
-                    >
-                      <i className="ri-close-line"></i>
-                    </button>
-                  </div>
+                  {/* 휴가 승인 대기중일 때만 */}
+                  {leave.status === 'PENDING' ? (
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleApprove(leave.leaveRequestId)}
+                        className="text-green-600 hover:text-green-900 cursor-pointer"
+                        title="승인"
+                      >
+                        <i className="ri-check-line"></i>
+                      </button>
+                      <button
+                        onClick={() => handleReject(leave.leaveRequestId)}
+                        className="text-red-600 hover:text-red-900 cursor-pointer"
+                        title="반려"
+                      >
+                        <i className="ri-close-line"></i>
+                      </button>
+                    </div>
+                  ) : (
+                    <StatusLabel $statusCode={leave.status} />
+                  )}
                 </td>
               </tr>
             ))}

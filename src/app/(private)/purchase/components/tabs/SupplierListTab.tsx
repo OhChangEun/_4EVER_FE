@@ -19,6 +19,7 @@ import Dropdown from '@/app/components/common/Dropdown';
 import Pagination from '@/app/components/common/Pagination';
 import { useModal } from '@/app/components/common/modal/useModal';
 import { useDropdown } from '@/app/hooks/useDropdown';
+import StatusLabel from '@/app/components/common/StatusLabel';
 
 export default function SupplierListTab() {
   const { openModal } = useModal();
@@ -77,7 +78,7 @@ export default function SupplierListTab() {
   const totalPages = pageInfo?.totalPages ?? 1;
 
   const handleViewAddSupplier = () => {
-    openModal(SupplierFormModal, { title: '공급업체 등록' });
+    openModal(SupplierFormModal, { title: '공급업체 등록', height: '800px' });
   };
 
   const handleViewDetail = (supplierId: string) => {
@@ -181,7 +182,7 @@ export default function SupplierListTab() {
                     {supplierInfo.deliveryLeadTime}일
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span>{supplierInfo.supplierStatusCode}</span>
+                    <StatusLabel $statusCode={supplierInfo.supplierStatusCode} />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     <div className="flex space-x-2">

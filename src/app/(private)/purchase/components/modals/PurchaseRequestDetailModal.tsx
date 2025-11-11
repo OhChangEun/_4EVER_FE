@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
 import { ModalProps } from '@/app/components/common/modal/types';
 import { formatDateTime } from '@/app/utils/date';
+import StatusLabel from '@/app/components/common/StatusLabel';
 
 export interface PurchaseRequestDetailModalProps extends ModalProps {
   purchaseId: string;
@@ -76,7 +77,7 @@ export default function PurchaseRequestDetailModal({
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">상태</label>
-              <span className="px-2 py-1 rounded text-xs font-medium">{request.statusCode}</span>
+              <StatusLabel $statusCode={request.statusCode} />
             </div>
           </div>
         </div>

@@ -6,27 +6,43 @@ import {
   VOUCHER_STATUS_OPTIONS,
 } from '@/app/(private)/finance/constants';
 import { InvoiceStatus } from '@/app/(private)/finance/types/InvoiceListType';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   getPurchaseInvoicesList,
   getSalesInvoicesList,
   postApInvoice,
   postArInvoice,
+  postSupplierApInvoice,
 } from '@/app/(private)/finance/finance.api';
 import Pagination from '@/app/components/common/Pagination';
 import { useSearchParams } from 'next/navigation';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
 import InvoiceDetailModal from '@/app/(private)/finance/components/modals/InvoiceDetailModal';
 import StatusLabel from '@/app/components/common/StatusLabel';
+import { useRole } from '@/app/hooks/useRole';
+import IconButton from '@/app/components/common/IconButton';
+import Button from '@/app/components/common/Button';
+import Dropdown from '@/app/components/common/Dropdown';
+import { useModal } from '@/app/components/common/modal/useModal';
 
 const InvoiceList = () => {
   const searchParams = useSearchParams();
-  const currentTab = searchParams.get('tab') || 'sales';
+  const queryClient = useQueryClient();
+  const role = useRole();
+  // const role = 'CUSTOMER_ADMIN';
+  // const role = 'SUPPLIER_ADMIN';
+  const defaultTab =
+    role === 'SUPPLIER_ADMIN' ? 'sales' : role === 'CUSTOMER_ADMIN' ? 'purchase' : 'sales';
+  const currentTab = searchParams.get('tab') || defaultTab;
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<string>('');
 
   const [statusFilter, setStatusFilter] = useState<InvoiceStatus>('ALL');
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    setSelectedInvoiceId('');
+  }, [currentTab]);
 
   const queryParams = useMemo(
     () => ({
@@ -66,27 +82,37 @@ const InvoiceList = () => {
   const invoices = invoiceReq?.data ?? [];
   const pageInfo = invoiceReq?.pageData;
   const totalPages = pageInfo?.totalPages ?? 1;
-
+  const { openModal } = useModal();
   const mutationFn =
-    currentTab === 'sales'
-      ? () => postArInvoice(selectedInvoiceId)
-      : () => postApInvoice(selectedInvoiceId);
+    role === 'SUPPLIER_ADMIN'
+      ? () => postSupplierApInvoice(selectedInvoiceId)
+      : currentTab === 'sales'
+        ? () => postArInvoice(selectedInvoiceId)
+        : () => postApInvoice(selectedInvoiceId);
 
   const { mutate: sendReq } = useMutation({
     mutationFn: mutationFn,
     onSuccess: (data) => {
-      alert(`${data.status} : ${data.message}
-        `);
+      alert(`${data.message}`);
     },
     onError: (error) => {
       alert(` 등록 중 오류가 발생했습니다. ${error}`);
+    },
+    onSettled: () => {
+      const key = currentTab === 'sales' ? 'salesInvoiceList' : 'purchaseInvoiceList';
+      queryClient.invalidateQueries({ queryKey: [key] });
     },
   });
 
   // ----------------------------------------------------------
   const handleViewDetail = (id: string) => {
-    setShowDetailModal(true);
     setSelectedInvoiceId(id);
+    openModal(InvoiceDetailModal, {
+      title: '전표 상세 정보',
+      width: '900px',
+      $selectedInvoiceId: id,
+      $setSelectedInvoiceId: setSelectedInvoiceId,
+    });
   };
   const handleSelectVoucher = (voucherId: string, checked: boolean) => {
     if (checked) {
@@ -105,7 +131,7 @@ const InvoiceList = () => {
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
+    <>
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-2">
           <i className="ri-shopping-cart-line text-blue-600 text-lg"></i>
@@ -115,33 +141,20 @@ const InvoiceList = () => {
         </div>
 
         <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <label className="text-sm text-gray-600">상태:</label>
+          <Dropdown
+            placeholder="전체 상태"
+            items={VOUCHER_STATUS_OPTIONS}
+            value={statusFilter}
+            onChange={(status: string) => setStatusFilter(status as InvoiceStatus)}
+            autoSelectFirst
+          />
 
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as InvoiceStatus)}
-              className="px-3 py-1 border border-gray-300 rounded-md text-sm cursor-pointer pr-8"
-            >
-              {VOUCHER_STATUS_OPTIONS.map(({ key, value }) => (
-                <option key={key} value={key}>
-                  {value}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <button
+          <Button
+            variant="green"
+            label="미수 처리 신청"
             onClick={handleReceivableComplete}
             disabled={selectedInvoiceId ? false : true}
-            className={`px-4 py-2 rounded-lg transition-colors font-medium text-sm whitespace-nowrap cursor-pointer ${
-              selectedInvoiceId
-                ? 'bg-green-600 text-white hover:bg-green-700'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }`}
-          >
-            미수 처리 신청
-          </button>
+          />
         </div>
       </div>
 
@@ -183,6 +196,17 @@ const InvoiceList = () => {
                     <input
                       type="checkbox"
                       checked={selectedInvoiceId === invoice.invoiceId}
+                      disabled={
+                        currentTab === 'sales'
+                          ? invoice.statusCode === 'PAID' || invoice.statusCode === 'UNPAID'
+                          : currentTab === 'purchase'
+                            ? role === 'SUPPLIER_ADMIN'
+                              ? invoice.statusCode === 'PAID' || invoice.statusCode === 'UNPAID'
+                              : role === 'CUSTOMER_ADMIN'
+                                ? invoice.statusCode === 'PAID' || invoice.statusCode === 'PENDING'
+                                : invoice.statusCode === 'PAID' || invoice.statusCode === 'PENDING'
+                            : false
+                      }
                       onChange={(e) => handleSelectVoucher(invoice.invoiceId, e.target.checked)}
                       className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
@@ -229,16 +253,7 @@ const InvoiceList = () => {
           onPageChange={(page) => setCurrentPage(page)}
         />
       )}
-
-      {/* 전표 상세 모달 */}
-      {showDetailModal && (
-        <InvoiceDetailModal
-          $setShowDetailModal={setShowDetailModal}
-          $selectedInvoiceId={selectedInvoiceId}
-          $setSelectedInvoiceId={setSelectedInvoiceId}
-        />
-      )}
-    </div>
+    </>
   );
 };
 

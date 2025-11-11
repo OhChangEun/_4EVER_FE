@@ -8,7 +8,13 @@ import { Period } from '@/app/types/StatType';
 
 export type SupplierCategory = 'ALL' | 'MATERIAL' | 'PARTS' | 'ETC';
 export type SupplierStatus = 'ALL' | 'ACTIVE' | 'INACTIVE';
-export type PurchaseOrderStatus = 'ALL' | 'APPROVED' | 'PENDING' | 'REJECTED' | 'DELIVERED';
+export type PurchaseOrderStatus =
+  | 'ALL'
+  | 'APPROVAL'
+  | 'PENDING'
+  | 'REJECTED'
+  | 'DELIVERING'
+  | 'DELIVERED';
 export type PurchaseReqStatus = 'ALL' | 'APPROVED' | 'PENDING' | 'REJECTED';
 
 // 구매 기간 필터링
@@ -28,13 +34,14 @@ export const PURCHASE_REQ_STATUS: KeyValueItem<PurchaseReqStatus>[] = [
 ];
 
 // 발주 상태 필터링
-export const PURCHASE_ORDER_STATUS: KeyValueItem<PurchaseOrderStatus>[] = [
-  { key: 'ALL', value: '전체' },
-  { key: 'APPROVED', value: '승인' },
-  { key: 'PENDING', value: '대기' },
-  { key: 'REJECTED', value: '반려' },
-  { key: 'DELIVERED', value: '배송중' },
-];
+// export const PURCHASE_ORDER_STATUS: KeyValueItem<PurchaseOrderStatus>[] = [
+//   { key: 'ALL', value: '전체' },
+//   { key: 'APPROVAL', value: '승인' },
+//   { key: 'PENDING', value: '대기' },
+//   { key: 'REJECTED', value: '반려' },
+//   { key: 'DELIVERING', value: '배송중' },
+//   { key: 'DELIVERED', value: '배송완료' },
+// ];
 
 // 공급 카테고리 필터링
 export const SUPPLIER_CATEGORY_ITEMS: KeyValueItem<SupplierCategory>[] = [
@@ -73,6 +80,15 @@ export const PURCHASE_TABS: Tab[] = [
   },
 ];
 
+export const SUPPLIER_PURCHASE_TABS: Tab[] = [
+  {
+    id: 'orders',
+    name: '발주서',
+    icon: 'ri-shopping-bag-3-line',
+    component: PurchaseOrderListTab,
+  },
+];
+
 // 공급사
 export const SUPPLIERS = [
   '대한철강',
@@ -88,6 +104,7 @@ export const SUPPLIERS = [
 export const PURCHASE_LIST_TABLE_HEADERS = [
   '요청번호',
   '요청자',
+  '부서',
   '요청일',
   '총 금액',
   '상태',

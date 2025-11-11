@@ -5,6 +5,7 @@ export interface PayrollRequestParams extends PageRequest {
   month: number;
   name?: string;
   department?: string;
+  statusCode?: string;
 }
 
 export interface EmployeeSummary {

@@ -12,8 +12,8 @@ const ProfileHeader = ({ $isEditing, $setIsEditing }: ProfileHeaderProps) => {
             <Link href="/dashboard" className="text-gray-500 hover:text-gray-700 cursor-pointer">
               <i className="ri-arrow-left-line text-xl"></i>
             </Link>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">내 프로필</h1>
+            <div className="pl-2">
+              <h1 className="text-xl font-bold text-gray-900">내 프로필</h1>
               <p className="text-sm text-gray-500">개인 정보 및 근무 현황</p>
             </div>
           </div>

@@ -1,8 +1,8 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { AttendanceRecordsResponse, RequestVacation, TodayAttendResponse } from '../ProfileType';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   getAttendaceRecords,
   getTodayAttendance,
@@ -12,7 +12,8 @@ import {
 } from '../profile.api';
 
 export default function AttendanceRecord() {
-  const [currentStatus, setCurrentStatus] = useState('출근');
+  const queryClient = useQueryClient();
+  const [currentStatus, setCurrentStatus] = useState('');
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
   const [leaveForm, setLeaveForm] = useState<RequestVacation>({
     leaveType: 'ANNUAL',
@@ -21,10 +22,10 @@ export default function AttendanceRecord() {
   });
 
   const handleCheckInOut = () => {
-    if (currentStatus === '출근') {
-      checkOut();
-    } else {
+    if (currentStatus === '출근전') {
       checkIn();
+    } else {
+      checkOut();
     }
   };
 
@@ -50,26 +51,28 @@ export default function AttendanceRecord() {
   const { mutate: checkIn } = useMutation({
     mutationFn: patchCheckIn,
     onSuccess: (data) => {
-      alert(`${data.status} : ${data.message}
-        `);
       setCurrentStatus('출근');
       alert('출근 처리가 완료되었습니다.');
     },
     onError: (error) => {
       alert(`출근 처리 중 오류가 발생했습니다. ${error}`);
     },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['todayAttendance'] });
+    },
   });
 
   const { mutate: checkOut } = useMutation({
     mutationFn: patchCheckout,
     onSuccess: (data) => {
-      alert(`${data.status} : ${data.message}
-        `);
       setCurrentStatus('퇴근');
       alert('퇴근 처리가 완료되었습니다.');
     },
     onError: (error) => {
       alert(`퇴근 처리 중 오류가 발생했습니다. ${error}`);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['todayAttendance'] });
     },
   });
 
@@ -88,6 +91,11 @@ export default function AttendanceRecord() {
     queryKey: ['todayAttendance'],
     queryFn: getTodayAttendance,
   });
+
+  useEffect(() => {
+    setCurrentStatus(todayAttendanceRes?.status as string);
+    console.log(todayAttendanceRes?.status);
+  }, [todayAttendanceRes]);
 
   const { data: AttendanceRecordsRes } = useQuery<AttendanceRecordsResponse[]>({
     queryKey: ['attendanceRecord'],
@@ -165,16 +173,16 @@ export default function AttendanceRecord() {
       todayAttendanceRes?.status === '퇴근완료'
         ? 'bg-gray-400 text-white cursor-not-allowed'
         : todayAttendanceRes?.status === '출근전'
-          ? 'bg-red-600 text-white hover:bg-red-700'
-          : 'bg-green-600 text-white hover:bg-green-700'
+          ? 'bg-green-600 text-white hover:bg-green-700'
+          : 'bg-red-600 text-white hover:bg-red-700'
     }
   `}
             >
               {todayAttendanceRes?.status === '퇴근완료'
                 ? '퇴근완료'
                 : todayAttendanceRes?.status === '출근전'
-                  ? '퇴근하기'
-                  : '출근하기'}
+                  ? '출근하기'
+                  : '퇴근하기'}
             </button>
           </div>
 

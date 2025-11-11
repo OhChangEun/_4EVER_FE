@@ -2,27 +2,42 @@
 import { useState, useMemo } from 'react';
 import Button from '@/app/components/common/Button';
 import Dropdown from '@/app/components/common/Dropdown';
-import {
-  MRP_PLANNED_ORDER_STATUS_OPTIONS,
-  MrpPlannedOrderStatus,
-} from '@/app/(private)/production/constants';
+import { MrpPlannedOrderStatus } from '@/app/(private)/production/constants';
 import { useQuery } from '@tanstack/react-query';
-import { fetchMrpPlannedOrdersList } from '@/app/(private)/production/api/production.api';
+import {
+  fetchMrpPlannedOrderQuotationsDropdown,
+  fetchMrpPlannedOrdersList,
+  fetchMrpPlannedOrderStatusDropdown,
+} from '@/app/(private)/production/api/production.api';
 import {
   FetchMrpPlannedOrdersListParams,
   MrpPlannedOrdersListResponse,
 } from '@/app/(private)/production/types/MrpPlannedOrdersListApiType';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
 import Pagination from '@/app/components/common/Pagination';
-import MrpPlannedOrderDetailModal from '@/app/(private)/production/components/modals/MrpPlannedOrderDetailModal';
 import { useModal } from '@/app/components/common/modal/useModal';
 import MrpPurchaseRequestModal from '@/app/(private)/production/components/modals/MrpPurchaseRequestModal';
+import { useDropdown } from '@/app/hooks/useDropdown';
+import StatusLabel from '@/app/components/common/StatusLabel';
 
 export default function PlannedOrdersTab() {
   const { openModal } = useModal();
 
+  // mrp 계획주문 견적 드롭다운
+  const { options: mrpQuotationOptions } = useDropdown(
+    'mrpPlannedOrderQuotationsDropdown',
+    fetchMrpPlannedOrderQuotationsDropdown,
+  );
+
+  // mrp 계획주문 상태 드롭다운
+  const { options: mrpStatusOptions } = useDropdown(
+    'mrpPlannedOrderStatusDropdown',
+    fetchMrpPlannedOrderStatusDropdown,
+  );
+
   // 드롭다운 상태
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
+  const [selectedQutations, setSelectedQutations] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<MrpPlannedOrderStatus>('ALL');
 
   // 페이지네이션 상태
@@ -32,11 +47,12 @@ export default function PlannedOrdersTab() {
   // 쿼리 파라미터 객체 생성
   const queryParams = useMemo(
     (): FetchMrpPlannedOrdersListParams => ({
-      statusCode: selectedStatus,
+      status: selectedStatus,
+      quotationId: selectedQutations,
       page: currentPage - 1,
       size: pageSize,
     }),
-    [selectedStatus, currentPage],
+    [selectedStatus, selectedQutations, currentPage],
   );
 
   // API 호출
@@ -58,10 +74,16 @@ export default function PlannedOrdersTab() {
   const totalPages = pageInfo?.totalPages ?? 1;
 
   const handleSelectAllOrders = () => {
-    if (selectedOrders.length === plannedOrders.length) {
+    // 선택 가능한 주문만 필터링 (INITIAL, REJECTED 제외)
+    const selectableOrders = plannedOrders
+      .filter((order) => order.status === 'INITIAL' || order.status === 'REJECTED')
+      .map((order) => order.mrpRunId);
+
+    // 이미 모두 선택된 경우 해제, 아니면 전체 선택
+    if (selectedOrders.length === selectableOrders.length) {
       setSelectedOrders([]);
     } else {
-      setSelectedOrders(plannedOrders.map((order) => order.mrpId));
+      setSelectedOrders(selectableOrders);
     }
   };
 
@@ -71,47 +93,33 @@ export default function PlannedOrdersTab() {
     );
   };
 
-  const handleShowDetail = (mrpId: string) => {
-    const id = openModal(MrpPlannedOrderDetailModal, { title: '계획주문 상세', mrpId: mrpId });
-    console.log(id);
-  };
-
   const handlePurchaseRequest = () => {
-    console.log('자재구매 요청:', selectedOrders);
-
-    // 선택된 주문들을 필터링하여 모달에 전달
-    const selectedOrdersData = plannedOrders
-      .filter((order) => selectedOrders.includes(order.mrpId))
-      .map((order) => ({
-        id: order.mrpId,
-        referenceQuote: order.quotationNumber,
-        material: order.itemName,
-        quantity: order.quantity,
-        unitPrice: 15000, // 목업 데이터 (실제로는 API에서 가져와야 함)
-        totalPrice: order.quantity * 15000, // 목업 계산
-        supplier: '(주)공급업체', // 목업 데이터
-        deliveryDate: order.procurementStartDate,
-        status: 'PLANNED' as const,
-      }));
+    const selectedOrdersData = plannedOrders.filter((order) =>
+      selectedOrders.includes(order.mrpRunId),
+    );
 
     openModal(MrpPurchaseRequestModal, {
       title: '자재 구매 요청',
-      orders: selectedOrdersData,
-      editable: true,
-      onConfirm: () => setSelectedOrders([]), // 선택 초기화
+      orders: selectedOrdersData, // 전체 데이터를 넘김
+      onConfirm: () => setSelectedOrders([]),
     });
   };
-
   return (
     <>
-      <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-        <h4 className="text-md font-semibold text-gray-900">
-          계획 주문 - 무엇을 언제 발주 지시할까?
-        </h4>
+      <div className="p-4 border-b border-gray-200 flex items-center justify-end">
         <div className="flex items-center gap-3">
           <Dropdown
-            placeholder="전체 부서"
-            items={MRP_PLANNED_ORDER_STATUS_OPTIONS}
+            placeholder="견적 선택"
+            items={mrpQuotationOptions}
+            value={selectedQutations}
+            onChange={(quotation: string) => {
+              setSelectedQutations(quotation);
+              setCurrentPage(1);
+            }}
+          />
+          <Dropdown
+            placeholder="전체 상태"
+            items={mrpStatusOptions}
             value={selectedStatus}
             onChange={(status: MrpPlannedOrderStatus) => {
               setSelectedStatus(status);
@@ -158,26 +166,31 @@ export default function PlannedOrdersTab() {
                   수량
                 </th>
                 <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  조달 시작일
+                  구매 권장일
                 </th>
                 <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   상태
-                </th>
-                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  작업
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {plannedOrders.map((order) => (
-                <tr key={order.mrpId} className="hover:bg-gray-50 text-center">
+                <tr key={order.mrpRunId} className="hover:bg-gray-50 text-center">
                   <td className="px-4 py-3">
-                    <input
-                      type="checkbox"
-                      checked={selectedOrders.includes(order.mrpId)}
-                      onChange={() => handleOrderSelection(order.mrpId)}
-                      className="rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
-                    />
+                    {order.status === 'INITIAL' || order.status === 'REJECTED' ? (
+                      <input
+                        type="checkbox"
+                        checked={selectedOrders.includes(order.mrpRunId)}
+                        onChange={() => handleOrderSelection(order.mrpRunId)}
+                        className="rounded border-gray-300 cursor-pointer"
+                      />
+                    ) : (
+                      <input
+                        type="checkbox"
+                        className="rounded border-gray-300 text-gray-300"
+                        disabled
+                      />
+                    )}
                   </td>
                   <td className="px-4 py-3 text-sm font-medium text-blue-600">
                     {order.quotationNumber}
@@ -187,15 +200,8 @@ export default function PlannedOrdersTab() {
                     {order.quantity.toLocaleString()}
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-900">{order.procurementStartDate}</td>
-                  <td className="px-4 py-3">{order.statusCode}</td>
                   <td className="px-4 py-3">
-                    <button
-                      className="text-blue-600 hover:text-blue-800 cursor-pointer"
-                      title="상세보기"
-                      onClick={() => handleShowDetail(order.mrpId)}
-                    >
-                      <i className="ri-eye-line"></i>
-                    </button>
+                    <StatusLabel $statusCode={order.status} />
                   </td>
                 </tr>
               ))}

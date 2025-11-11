@@ -4,18 +4,36 @@ import { OrderStatus } from '@/app/(private)/sales/types/SalesOrderListType';
 import { CustomerStatus } from '@/app/(private)/sales/types/SalesCustomerListType';
 
 // 견적 검색 키워드 옵션
-export const QOUTE_SEARCH_KEYWORD_OPTIONS: KeyValueItem<string>[] = [
-  { key: 'quotationNumber', value: '견적번호' },
-  { key: 'customerName', value: '고객명' },
-  { key: 'managerName', value: '담당자' },
-] as const;
+export const getQuoteSearchKeywordOptions = (role: string) => {
+  const options: KeyValueItem<string>[] = [
+    { key: 'quotationNumber', value: '견적번호' },
+    { key: 'customerName', value: '고객명' },
+    { key: 'managerName', value: '담당자' },
+  ];
+
+  const keysToRemove: Record<string, string[]> = {
+    CUSTOMER_ADMIN: ['customerName', 'managerName'],
+  };
+  const removeKeys = keysToRemove[role] ?? [];
+
+  return options.filter((option) => !removeKeys.includes(option.key));
+};
 
 // 견적 검색 키워드 옵션
-export const ORDER_SEARCH_KEYWORD_OPTIONS: KeyValueItem<string>[] = [
-  { key: 'salesOrderNumber', value: '주문번호' },
-  { key: 'customerName', value: '고객명' },
-  { key: 'managerName', value: '담당자' },
-] as const;
+export const getOrderSearchKeywordOptions = (role: string) => {
+  const options: KeyValueItem<string>[] = [
+    { key: 'salesOrderNumber', value: '주문번호' },
+    { key: 'customerName', value: '고객명' },
+    { key: 'managerName', value: '담당자' },
+  ];
+
+  const keysToRemove: Record<string, string[]> = {
+    CUSTOMER_ADMIN: ['customerName', 'managerName'],
+  };
+  const removeKeys = keysToRemove[role] ?? [];
+
+  return options.filter((option) => !removeKeys.includes(option.key));
+};
 
 // 고객 검색 키워드 옵션
 export const CUSTOMER_SEARCH_KEYWORD_OPTIONS: KeyValueItem<string>[] = [

@@ -11,6 +11,7 @@ import { ManageMentCommonQueryParams } from '../../types/ShippingManagementListT
 import StatusLabel from '@/app/components/common/StatusLabel';
 import Pagination from '@/app/components/common/Pagination';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
+import DateRangePicker from '@/app/components/common/DateRangePicker';
 const ReceivingManagementList = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -86,18 +87,11 @@ const ReceivingManagementList = () => {
           {selectedSubTab === 'received' && (
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                />
-                <span className="text-gray-500">~</span>
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                <DateRangePicker
+                  startDate={startDate}
+                  endDate={endDate}
+                  onStartDateChange={setStartDate}
+                  onEndDateChange={setEndDate}
                 />
               </div>
             </div>

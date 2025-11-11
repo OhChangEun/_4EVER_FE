@@ -6,4 +6,9 @@ interface FinanceStat {
   total_sales: Stat;
 }
 
+interface CustomerSupplierStat {
+  total_amount: Stat;
+}
+
 export type FinanceStatResponse = StatResponse<FinanceStat>;
+export type CustomerSupplierStatResponse = StatResponse<CustomerSupplierStat>;

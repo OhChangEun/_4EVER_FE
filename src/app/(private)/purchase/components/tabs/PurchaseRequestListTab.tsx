@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import PurchaseRequestModal from '@/app/(private)/purchase/components/modals/PurchaseRequestModal';
 import PurchaseRequestDetailModal from '@/app/(private)/purchase/components/modals/PurchaseRequestDetailModal';
 import {
@@ -26,6 +26,10 @@ import { PurchaseReqParams } from '@/app/(private)/purchase/types/PurchaseApiReq
 import { useModal } from '@/app/components/common/modal/useModal';
 import { useDropdown } from '@/app/hooks/useDropdown';
 import { formatDateTime } from '@/app/utils/date';
+import SearchBar from '@/app/components/common/SearchBar';
+import { useDebounce } from 'use-debounce';
+import StatusLabel from '@/app/components/common/StatusLabel';
+// import CalendarButton from '@/app/components/common/Calendar';
 
 export default function PurchaseRequestListTab() {
   const { openModal } = useModal();
@@ -45,7 +49,7 @@ export default function PurchaseRequestListTab() {
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [selectedSearchType, setSelectedSearchType] = useState<string>('');
   const [keyword, setKeyword] = useState<string>('');
-  const [showRequestModal, setShowRequestModal] = useState(false);
+  const [debouncedKeyword] = useDebounce(keyword, 200);
 
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -53,22 +57,21 @@ export default function PurchaseRequestListTab() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  const queryClient = getQueryClient();
+  const queryClient = useQueryClient();
 
   const queryParams = useMemo(
     (): PurchaseReqParams => ({
       statusCode: selectedStatus,
       type: selectedSearchType,
-      keyword: keyword,
-      startDate: startDate,
-      endDate: endDate,
+      keyword: debouncedKeyword,
+      startDate,
+      endDate,
       page: currentPage - 1,
       size: pageSize,
     }),
-    [selectedStatus, selectedSearchType, keyword, startDate, endDate, currentPage],
+    [selectedStatus, selectedSearchType, debouncedKeyword, startDate, endDate, currentPage],
   );
 
-  // React Query로 요청 목록 가져오기
   const {
     data: requestData,
     isLoading,
@@ -84,7 +87,7 @@ export default function PurchaseRequestListTab() {
     mutationFn: (prId: string) => postApporvePurchaseReq(prId),
     onSuccess: () => {
       alert('구매 요청 승인 완료되었습니다.');
-      queryClient.invalidateQueries({ queryKey: ['purchaseRequests'] }); // 목록 새로고침
+      queryClient.invalidateQueries({ queryKey: ['purchaseRequests'] });
     },
     onError: (error) => {
       alert(`구매 요청 승인 중 오류가 발생했습니다. ${error}`);
@@ -115,6 +118,13 @@ export default function PurchaseRequestListTab() {
     });
   };
 
+  const handleViewRequestModal = () => {
+    openModal(PurchaseRequestModal, {
+      title: '구매 요청 작성',
+      height: '800px',
+    });
+  };
+
   const handleApprove = (prId: string) => {
     if (confirm('해당 요청을 승인하시겠습니까?')) {
       approvePurchaseRequest(prId);
@@ -131,7 +141,13 @@ export default function PurchaseRequestListTab() {
     <>
       {/* 필터 헤더 */}
       <div className="pb-4 border-b border-gray-200 flex justify-between items-center">
-        <h3 className="text-lg font-semibold text-gray-900">구매 요청 목록</h3>
+        {/* <CalendarButton /> */}
+        <DateRangePicker
+          startDate={startDate}
+          onStartDateChange={setStartDate}
+          endDate={endDate}
+          onEndDateChange={setEndDate}
+        />
         <div className="flex items-center space-x-4">
           <Dropdown
             placeholder="전체 상태"
@@ -142,29 +158,21 @@ export default function PurchaseRequestListTab() {
               setCurrentPage(1);
             }}
           />
-          <Dropdown
-            placeholder="검색 타입"
-            items={purchaseRequisitionSearchTypeOptions}
-            value={selectedSearchType}
-            onChange={(type: string): void => {
-              setSelectedSearchType(type);
-              setCurrentPage(1);
-            }}
-          />
 
-          <DateRangePicker
-            startDate={startDate}
-            onStartDateChange={setStartDate}
-            endDate={endDate}
-            onEndDateChange={setEndDate}
+          <SearchBar
+            options={purchaseRequisitionSearchTypeOptions}
+            onTypeChange={(type) => {
+              setSelectedSearchType(type);
+            }}
+            onKeywordSearch={(keyword) => {
+              setKeyword(keyword);
+              setCurrentPage(1); // 검색 시 페이지 초기화
+            }}
+            placeholder="검색어를 입력하세요"
           />
 
           {/* 구매 요청 작성 버튼 */}
-          <IconButton
-            label="구매 요청 작성"
-            icon="ri-add-line"
-            onClick={() => setShowRequestModal(true)}
-          />
+          <IconButton label="구매 요청 작성" icon="ri-add-line" onClick={handleViewRequestModal} />
         </div>
       </div>
 
@@ -199,18 +207,16 @@ export default function PurchaseRequestListTab() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     <div className="flex flex-col">
                       <span>{request.purchaseRequisitionNumber}</span>
-                      <span>{request.departmentName}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">{request.requesterName}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{request.departmentName}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">
                     {formatDateTime(request.requestDate)}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">{request.totalAmount}원</td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 py-1 rounded-full text-xs font-medium">
-                      {request.statusCode}
-                    </span>
+                    <StatusLabel $statusCode={request.statusCode} />
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">
                     <div className="flex items-center justify-center space-x-2">
@@ -221,22 +227,26 @@ export default function PurchaseRequestListTab() {
                       >
                         <i className="ri-eye-line"></i>
                       </button>
-                      <>
-                        <button
-                          onClick={() => handleApprove(request.purchaseRequisitionId)}
-                          className="text-green-600 hover:text-green-900 cursor-pointer"
-                          title="승인"
-                        >
-                          <i className="ri-check-line"></i>
-                        </button>
-                        <button
-                          onClick={() => handleReject(request.purchaseRequisitionId)}
-                          className="text-red-600 hover:text-red-900 cursor-pointer"
-                          title="반려"
-                        >
-                          <i className="ri-close-line"></i>
-                        </button>
-                      </>
+
+                      {/* 구매 요청 상태가 대기중일 때 */}
+                      {request.statusCode === 'PENDING' && (
+                        <>
+                          <button
+                            onClick={() => handleApprove(request.purchaseRequisitionId)}
+                            className="text-green-600 hover:text-green-900 cursor-pointer"
+                            title="승인"
+                          >
+                            <i className="ri-check-line"></i>
+                          </button>
+                          <button
+                            onClick={() => handleReject(request.purchaseRequisitionId)}
+                            className="text-red-600 hover:text-red-900 cursor-pointer"
+                            title="반려"
+                          >
+                            <i className="ri-close-line"></i>
+                          </button>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -259,16 +269,6 @@ export default function PurchaseRequestListTab() {
           totalPages={totalPages}
           totalElements={pageInfo?.totalElements}
           onPageChange={(page) => setCurrentPage(page)}
-        />
-      )}
-      {/* 구매 요청 작성 모달 */}
-      {showRequestModal && (
-        <PurchaseRequestModal
-          onClose={() => setShowRequestModal(false)}
-          // onSubmit={() => {
-          //   setShowRequestModal(false);
-          //   refetch();
-          // }}
         />
       )}
     </>

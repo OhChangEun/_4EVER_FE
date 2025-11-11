@@ -1,12 +1,17 @@
 import React from 'react';
 
 import { PurchaseOrder } from '@/app/(private)/purchase/types/PurchaseOrderType';
+import { useRole } from '@/app/hooks/useRole';
+import { formatDateTime } from '@/app/utils/date';
+import IconButton from '@/app/components/common/IconButton';
+import StatusLabel from '@/app/components/common/StatusLabel';
 
 export interface PurchaseOrderTableProps {
   currentOrders: PurchaseOrder[];
   handleViewDetail: (orderId: string) => void;
   handleApprove: (orderId: string) => void;
   handleReject: (orderId: string) => void;
+  handleDelivery: (orderId: string) => void;
 }
 
 export default function PurchaseOrderTable({
@@ -14,7 +19,11 @@ export default function PurchaseOrderTable({
   handleViewDetail,
   handleApprove,
   handleReject,
+  handleDelivery,
 }: PurchaseOrderTableProps) {
+  const role = useRole();
+  const isSupplier = role === 'SUPPLIER_ADMIN';
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full">
@@ -64,10 +73,10 @@ export default function PurchaseOrderTable({
                 {order.itemsSummary}
               </td>
               <td className="py-3 px-4 text-sm font-medium text-gray-900">{order.totalAmount}</td>
-              <td className="py-3 px-4 text-sm text-gray-500">{order.orderDate}</td>
-              <td className="py-3 px-4 text-sm text-gray-500">{order.dueDate}</td>
+              <td className="py-3 px-4 text-sm text-gray-500">{formatDateTime(order.orderDate)}</td>
+              <td className="py-3 px-4 text-sm text-gray-500">{formatDateTime(order.dueDate)}</td>
               <td className="py-3 px-4">
-                <span className="px-2 py-1 rounded text-xs font-medium">{order.statusCode}</span>
+                <StatusLabel $statusCode={order.statusCode} />
               </td>
               <td className="py-3 px-4 text-center">
                 <div className="flex items-center justify-center space-x-2">
@@ -78,7 +87,7 @@ export default function PurchaseOrderTable({
                   >
                     <i className="ri-eye-line"></i>
                   </button>
-                  {order.statusCode === 'PENDING' && (
+                  {isSupplier && order.statusCode === 'PENDING' && (
                     <>
                       <button
                         onClick={() => handleApprove(order.purchaseOrderId)}
@@ -95,6 +104,15 @@ export default function PurchaseOrderTable({
                         <i className="ri-close-line"></i>
                       </button>
                     </>
+                  )}
+
+                  {isSupplier && order.statusCode === 'APPROVAL' && (
+                    <IconButton
+                      size="sm"
+                      variant="soft"
+                      icon="ri-truck-line"
+                      onClick={() => handleDelivery(order.purchaseOrderId)}
+                    />
                   )}
                 </div>
               </td>

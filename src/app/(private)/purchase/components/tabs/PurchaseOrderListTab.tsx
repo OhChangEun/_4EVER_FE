@@ -9,6 +9,7 @@ import {
   fetchPurchaseOrderSearchTypeDropdown,
   fetchPurchaseOrderStatusDropdown,
   postApprovePurchaseOrder,
+  postDeliveryStartOrder,
   postRejectPurchaseOrder,
 } from '@/app/(private)/purchase/api/purchase.api';
 import Dropdown from '@/app/components/common/Dropdown';
@@ -17,6 +18,10 @@ import { getQueryClient } from '@/lib/queryClient';
 import Pagination from '@/app/components/common/Pagination';
 import { useDropdown } from '@/app/hooks/useDropdown';
 import { useModal } from '@/app/components/common/modal/useModal';
+import SearchBar from '@/app/components/common/SearchBar';
+import { useDebounce } from 'use-debounce';
+import { FetchPurchaseOrderParams } from '../../types/PurchaseApiRequestType';
+import { useRole } from '@/app/hooks/useRole';
 
 export default function PurchaseOrderListTab() {
   const { openModal } = useModal();
@@ -34,6 +39,8 @@ export default function PurchaseOrderListTab() {
 
   const [selectedStatus, setSelectedStatus] = useState('ALL');
   const [selectedSearchType, setSelectedSearchType] = useState('');
+  const [keyword, setKeyword] = useState<string>('');
+  const [debouncedKeyword] = useDebounce(keyword, 200);
 
   const [currentPage, setCurrentPage] = useState<number>(0); // 0부터 시작
   const pageSize = 10;
@@ -43,14 +50,20 @@ export default function PurchaseOrderListTab() {
 
   const queryClient = getQueryClient();
 
+  const role = useRole();
+  const isSupplier = role === 'SUPPLIER_ADMIN';
+
   const queryParams = useMemo(
-    () => ({
+    (): FetchPurchaseOrderParams => ({
       statusCode: selectedStatus || undefined,
-      type: selectedSearchType || undefined,
+      type: selectedSearchType,
+      keyword: debouncedKeyword, // "" 대신 undefined
       page: currentPage,
       size: pageSize,
+      startDate: startDate,
+      endDate: endDate,
     }),
-    [currentPage, selectedStatus, selectedSearchType],
+    [currentPage, selectedStatus, selectedSearchType, debouncedKeyword, startDate, endDate],
   );
 
   const {
@@ -87,11 +100,19 @@ export default function PurchaseOrderListTab() {
     },
   });
 
-  if (isLoading) return <p>불러오는 중...</p>;
-  if (isError || !orderData) return <p>데이터를 불러오지 못했습니다.</p>;
+  const { mutate: deliveryPurhcaseOrder } = useMutation({
+    mutationFn: (poId: string) => postDeliveryStartOrder(poId),
+    onSuccess: () => {
+      alert('배송이 시작되었습니다.');
+      queryClient.invalidateQueries({ queryKey: ['purchaseOrders"'] });
+    },
+    onError: (error) => {
+      alert(`배송 시작 처리 중 오류가 발생했습니다. ${error}`);
+    },
+  });
 
-  const orders = orderData.content || [];
-  const pageInfo = orderData.page;
+  const orders = orderData?.content || []; // optional chaining으로 안전하게 처리
+  const pageInfo = orderData?.page;
   const totalPages = pageInfo?.totalPages ?? 1;
 
   const handleApprove = (poId: string) => {
@@ -106,60 +127,73 @@ export default function PurchaseOrderListTab() {
     }
   };
 
+  const handleDelivery = (poId: string) => {
+    if (confirm('배송을 시작하시겠습니까?')) {
+      deliveryPurhcaseOrder(poId);
+    }
+  };
+
   // 상세 보기 모달 핸들러
   const handleViewDetail = (purchaseId: string): void => {
     openModal(PurchaseOrderDetailModal, {
       title: '발주서 상세정보',
       purchaseId: purchaseId,
+      width: '800px',
     });
   };
 
   return (
     <>
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center space-x-2">
-          <i className="ri-file-list-3-line text-blue-600 text-lg"></i>
-          <h3 className="text-lg font-semibold text-gray-900">발주서 목록</h3>
-        </div>
+        <DateRangePicker
+          startDate={startDate}
+          onStartDateChange={setStartDate}
+          endDate={endDate}
+          onEndDateChange={setEndDate}
+        />
 
         <div className="flex items-center gap-3">
           <Dropdown
             placeholder="전체 상태"
             items={purchaseOrderStatusOptions}
-            value={selectedSearchType}
-            onChange={(searchType: string) => {
-              setSelectedSearchType(searchType);
-              setCurrentPage(1); // 첫 페이지로
-            }}
-          />
-          <Dropdown
-            placeholder="검색 타입"
-            items={purchaseOrderSearchTypeOptions}
             value={selectedStatus}
             onChange={(status: string) => {
               setSelectedStatus(status);
-              setCurrentPage(1); // 첫 페이지로
+              setCurrentPage(0); // 첫 페이지로
             }}
           />
-
-          <DateRangePicker
-            startDate={startDate}
-            onStartDateChange={setStartDate}
-            endDate={endDate}
-            onEndDateChange={setEndDate}
+          <SearchBar
+            options={purchaseOrderSearchTypeOptions}
+            onTypeChange={(type) => {
+              setSelectedSearchType(type);
+            }}
+            onKeywordSearch={(keyword) => {
+              setKeyword(keyword);
+              setCurrentPage(0); // 검색 시 페이지 초기화
+            }}
+            placeholder="검색어를 입력하세요"
+            disabled={isSupplier}
           />
         </div>
 
         {/* 상태 필터 */}
       </div>
 
-      {/* 테이블 컴포넌트 */}
-      <PurchaseOrderTable
-        currentOrders={orders}
-        handleViewDetail={handleViewDetail}
-        handleApprove={handleApprove}
-        handleReject={handleReject}
-      />
+      <div className="overflow-x-auto">
+        {isLoading ? (
+          <div className="text-center py-8 text-gray-500">불러오는 중...</div>
+        ) : isError ? (
+          <div className="text-center py-8 text-red-500">데이터를 불러오지 못했습니다.</div>
+        ) : (
+          <PurchaseOrderTable
+            currentOrders={orders}
+            handleViewDetail={handleViewDetail}
+            handleApprove={handleApprove}
+            handleReject={handleReject}
+            handleDelivery={handleDelivery}
+          />
+        )}
+      </div>
 
       {isError || isLoading ? null : (
         <Pagination

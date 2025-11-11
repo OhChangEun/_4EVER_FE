@@ -1,6 +1,7 @@
-export interface ManageWarehouseModalProps {
+import { ModalProps } from '@/app/components/common/modal/types';
+
+export interface ManageWarehouseModalProps extends ModalProps {
   $selectedWarehouseId: string;
-  $setShowManageModal: (show: boolean) => void;
 }
 
 export interface EditWarehouseRequest {

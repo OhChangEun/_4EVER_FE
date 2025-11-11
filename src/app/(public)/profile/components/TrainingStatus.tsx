@@ -1,6 +1,6 @@
 'use client';
 
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { TrainingResponse } from '../ProfileType';
 import {
@@ -12,6 +12,7 @@ import {
 import StatusLabel from '@/app/components/common/StatusLabel';
 
 const TrainingStatus = () => {
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('progress');
   const getTrainingCategoryText = (status: string) => {
     switch (status) {
@@ -40,12 +41,13 @@ const TrainingStatus = () => {
   const { mutate: registerTraining } = useMutation({
     mutationFn: postTraining,
     onSuccess: (data) => {
-      alert(`${data.status} : ${data.message}
-        `);
       alert('교육 신청이 완료되었습니다.');
     },
     onError: (error) => {
       alert(`교육 신청 중 오류가 발생했습니다. ${error}`);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['training'] });
     },
   });
 

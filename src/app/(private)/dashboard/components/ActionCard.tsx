@@ -1,20 +1,27 @@
 import Link from 'next/link';
 import { getColorClasses } from '../dashboard.utils';
 import { ActionCardProps } from '../types/ActionCardType';
+import { useModal } from '@/app/components/common/modal/useModal';
+import NewOrderModal from '../../sales/components/modals/NewOrderModal';
 
-export const ActionCard = ({
-  title,
-  description,
-  icon,
-  color,
-  href,
-  $setShowNewOrderModal,
-}: ActionCardProps) => {
+export const ActionCard = ({ title, description, icon, color, href }: ActionCardProps) => {
+  const { openModal } = useModal();
+
+  // {
+  //   showNewOrderModal && (
+  //     <NewOrderModal
+  //       $showNewOrderModal={showNewOrderModal}
+  //       $setShowNewOrderModal={setShowNewOrderModal}
+  //     />
+  //   );
+  // }
+
   const colors = getColorClasses(color);
   const handleClick = (e: React.MouseEvent) => {
     if (title === '신규 견적서 작성') {
       e.preventDefault(); // 페이지 이동 막기
-      $setShowNewOrderModal(true); // 모달 열기
+
+      openModal(NewOrderModal, { title: '신규 견적 요청', width: '900px' });
     }
   };
   return (

@@ -45,10 +45,44 @@ export const STATUS_TEXT_MAP: Record<string, string> = {
   입고: '입고',
   출고: '출고',
   이동: '이동',
+
+  TECHNICAL_TRAINING: '기술 교육',
+  BASIC_TRAINING: '기본 교육',
+
+  CONVERTED: '전환 완료',
+  NOT_REQUIRED: '전환 불필요',
+  NOT_CONVERTED: '전환 전',
+
+  PAYROLL_PAID: '지급완료',
+  PAYROLL_UNPAID: '미지급',
+
+  ANNUAL: '연차',
+  SICK: '병가',
+
+  INCOMPLETED: '미완료',
+
+  INITIAL: '신청전',
+  REQUEST_APPROVED: '요청 승인',
+  ORDER_APPROVED: '발주서 승인',
 };
 
 // 상태 색상 매핑
 export const STATUS_COLOR_MAP: Record<string, string> = {
+  REQUEST_APPROVED: 'bg-green-100 text-green-700 border-green-300',
+  ORDER_APPROVED: 'bg-green-100 text-green-700 border-green-300',
+  PAYROLL_PAID: 'bg-green-100 text-green-700 border-green-300',
+  PAYROLL_UNPAID: 'bg-red-100 text-red-700 border-red-300',
+
+  ANNUAL: 'bg-green-100 text-green-700 border-green-300',
+  SICK: 'bg-blue-100 text-blue-700 border-blue-300',
+
+  CONVERTED: 'bg-green-100 text-green-700 border-green-300',
+  NOT_REQUIRED: 'bg-gray-100 text-gray-700 border-gray-300',
+  NOT_CONVERTED: 'bg-blue-100 text-blue-700 border-blue-300',
+
+  TECHNICAL_TRAINING: 'bg-blue-100 text-blue-700 border-blue-300',
+  BASIC_TRAINING: 'bg-blue-100 text-blue-700 border-blue-300',
+
   APPROVED: 'bg-green-100 text-green-700 border-green-300',
   APPROVAL: 'bg-green-100 text-green-700 border-green-300',
   ACTIVE: 'bg-green-100 text-green-700 border-green-300',

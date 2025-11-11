@@ -11,24 +11,35 @@ import WarehouseDetailModal from './modals/WarehouseDetailModal';
 import ManageWarehouseModal from './modals/ManageWarehouseModal';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
 import Warehouse3DModal from './warehouseVisualizer/components/Warehouse3DModal';
+import IconButton from '@/app/components/common/IconButton';
+import { useModal } from '@/app/components/common/modal/useModal';
 
 const WarehouseList = () => {
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showDetailModal, setShowDetailModal] = useState(false);
+  const { openModal } = useModal();
   const [showManageModal, setShowManageModal] = useState(false);
   const [show3DModal, setShow3DModal] = useState(false);
   const [selectedWarehouseId, setSelectedWarehouseId] = useState<string>('');
   const [selectedWarehouseName, setSelectedWarehouseName] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(1);
 
-  const handleWarehouseDetail = (warehouseId: string) => {
+  const handleWarehouseDetail = (warehouseId: string, warehouseName: string) => {
     setSelectedWarehouseId(warehouseId);
-    setShowDetailModal(true);
+    openModal(WarehouseDetailModal, {
+      width: '900px',
+      title: '창고 상세 정보',
+      $handleWarehouseManage: handleWarehouseManage,
+      $selectedWarehouseId: warehouseId,
+      $selectedWarehouseName: warehouseName,
+    });
   };
 
-  const handleWarehouseManage = (warehouseId: string) => {
+  const handleWarehouseManage = (warehouseId: string, warehouseName: string) => {
     setSelectedWarehouseId(warehouseId);
-    setShowManageModal(true);
+    openModal(ManageWarehouseModal, {
+      width: '600px',
+      title: `창고 관리 - ${warehouseName}`,
+      $selectedWarehouseId: warehouseId,
+    });
   };
 
   const handleWarehouse3D = (warehouseId: string, warehouseName: string) => {
@@ -63,13 +74,13 @@ const WarehouseList = () => {
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900">창고 목록</h2>
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer text-sm font-medium whitespace-nowrap"
-          >
-            <i className="ri-add-line mr-1"></i>
-            창고 추가
-          </button>
+          <IconButton
+            icon="ri-add-line mr-1"
+            label="창고 추가"
+            onClick={() => {
+              openModal(AddWarehouseModal, { width: '700px', title: '새 창고 추가' });
+            }}
+          />
         </div>
       </div>
       {isLoading ? (
@@ -118,27 +129,30 @@ const WarehouseList = () => {
               </div>
 
               <div className="flex flex-col gap-2 pt-3 border-t border-gray-200 sm:flex-row">
-                <button
-                  onClick={() => handleWarehouseDetail(warehouse.warehouseId)}
-                  className="flex-1 px-3 py-2 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
-                >
-                  <i className="ri-eye-line mr-1"></i>
-                  상세보기
-                </button>
-                <button
+                <IconButton
+                  variant="outline"
+                  label="상세보기"
+                  icon="ri-eye-line"
+                  onClick={() =>
+                    handleWarehouseDetail(warehouse.warehouseId, warehouse.warehouseName)
+                  }
+                  className="w-[32%]"
+                />
+                <IconButton
+                  variant="outline"
+                  label="3D 보기"
+                  icon="ri-box-3-line"
                   onClick={() => handleWarehouse3D(warehouse.warehouseId, warehouse.warehouseName)}
-                  className="flex-1 px-3 py-2 text-sm border border-blue-200 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer"
-                >
-                  <i className="ri-cube-3-line mr-1"></i>
-                  3D 보기
-                </button>
-                <button
-                  onClick={() => handleWarehouseManage(warehouse.warehouseId)}
-                  className="flex-1 px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
-                >
-                  <i className="ri-edit-line mr-1"></i>
-                  관리
-                </button>
+                  className="w-[31%]"
+                />
+                <IconButton
+                  label="관리"
+                  icon="ri-edit-line mr-1"
+                  onClick={() =>
+                    handleWarehouseManage(warehouse.warehouseId, warehouse.warehouseName)
+                  }
+                  className="w-[34%]"
+                />
               </div>
             </div>
           ))}
@@ -150,26 +164,6 @@ const WarehouseList = () => {
           totalPages={totalPages}
           totalElements={pageInfo?.totalElements}
           onPageChange={(page) => setCurrentPage(page)}
-        />
-      )}
-
-      {/* 창고 추가 모달 */}
-      {showAddModal && <AddWarehouseModal $setShowAddModal={setShowAddModal} />}
-
-      {/* 창고 상세보기 모달 */}
-      {showDetailModal && (
-        <WarehouseDetailModal
-          $handleWarehouseManage={handleWarehouseManage}
-          $selectedWarehouseId={selectedWarehouseId}
-          $setShowDetailModal={setShowDetailModal}
-        />
-      )}
-
-      {/* 창고 관리 모달 */}
-      {showManageModal && (
-        <ManageWarehouseModal
-          $setShowManageModal={setShowManageModal}
-          $selectedWarehouseId={selectedWarehouseId}
         />
       )}
 

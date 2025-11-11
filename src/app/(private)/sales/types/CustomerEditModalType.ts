@@ -1,10 +1,9 @@
 import { CustomerDetail } from '@/app/(private)/sales/types/SalesCustomerDetailType';
+import { ModalProps } from '@/app/components/common/modal/types';
 
-export interface CustomerEditModalProps {
-  $onClose: () => void;
+export interface CustomerEditModalProps extends ModalProps {
   $editFormData: CustomerDetail | null;
   $setEditFormData: React.Dispatch<React.SetStateAction<CustomerDetail | null>>;
-  $setShowDetailModal: (show: boolean) => void;
 }
 
 export interface CustomerResponse {
@@ -38,9 +37,9 @@ export interface CustomerEditData {
   detailAddress: string;
   statusCode: string;
   manager: {
-    managerName: string;
-    managerPhone: string;
-    managerEmail: string;
+    name: string;
+    mobile: string;
+    email: string;
   };
   note: string;
 }

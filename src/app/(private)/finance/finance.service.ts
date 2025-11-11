@@ -1,7 +1,7 @@
 // services/purchase.ts
 import { createStatCard } from '@/lib/CreateStatCard';
 import { StatCardType } from '@/app/types/StatType';
-import { FinanceStatResponse } from './types/FinanceStatsType';
+import { CustomerSupplierStatResponse, FinanceStatResponse } from './types/FinanceStatsType';
 
 // 변환 함수
 export const mapFinanceStatsToCards = (
@@ -18,6 +18,23 @@ export const mapFinanceStatsToCards = (
           '₩',
         ),
         createStatCard('순이익', stats.net_profit.value, stats.net_profit.delta_rate, '₩'),
+      ];
+
+      acc[period] = cards;
+      return acc;
+    },
+    {} as Record<string, StatCardType[]>,
+  );
+};
+
+export const mapCustomerSupplierStatsToCards = (
+  data: CustomerSupplierStatResponse,
+): Record<string, StatCardType[]> => {
+  if (!data) return {};
+  return Object.entries(data).reduce(
+    (acc, [period, stats]) => {
+      const cards: StatCardType[] = [
+        createStatCard('매입 금액', stats.total_amount.value, stats.total_amount.delta_rate, '₩'),
       ];
 
       acc[period] = cards;

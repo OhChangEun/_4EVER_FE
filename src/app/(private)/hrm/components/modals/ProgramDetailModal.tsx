@@ -2,6 +2,7 @@ import { ModalProps } from '@/app/components/common/modal/types';
 import { fetchProgramDetail } from '../../api/hrm.api';
 import { useQuery } from '@tanstack/react-query';
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
+import StatusLabel from '@/app/components/common/StatusLabel';
 
 interface ProgramDetailModalProps extends ModalProps {
   programId: string;
@@ -33,7 +34,7 @@ export default function ProgramDetailModal({ programId }: ProgramDetailModalProp
                   <strong>교육명:</strong> {program.programName}
                 </div>
                 <div>
-                  <strong>카테고리:</strong> {program.category}
+                  <strong>카테고리:</strong> <StatusLabel $statusCode={program.category} />
                 </div>
                 <div>
                   <strong>교육 시간:</strong> {program.trainingHour}시간
@@ -45,7 +46,7 @@ export default function ProgramDetailModal({ programId }: ProgramDetailModalProp
                   <strong>시작일:</strong> {program.startDate}
                 </div>
                 <div>
-                  <strong>상태:</strong> {program.statusCode}
+                  <strong>상태:</strong> <StatusLabel $statusCode={program.statusCode} />
                 </div>
               </div>
             </div>
@@ -78,7 +79,7 @@ export default function ProgramDetailModal({ programId }: ProgramDetailModalProp
                         <span
                           className={'inline-flex px-2 py-1 text-xs font-semibold rounded-full'}
                         >
-                          {employee.statusCode}
+                          <StatusLabel $statusCode={employee.statusCode} />
                         </span>
                       </div>
                     </div>

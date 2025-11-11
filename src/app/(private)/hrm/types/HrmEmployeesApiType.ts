@@ -23,22 +23,11 @@ export interface EmployeeListResponse {
 
 // 응답 요청시 request params
 export interface EmployeeListRequestParams extends PageRequest {
-  department?: string;
+  departmentId?: string;
   name?: string;
 }
 
 export interface EmployeeRegisterRequest {
-  name: string;
-  departmentId: number;
-  positionId: number;
-  email: string;
-  phoneNumber: string;
-  hireDate: string;
-  birthDate: string;
-  address: string;
-}
-
-export interface EmployeeRegistRequest {
   name: string;
   departmentId: string;
   positionId: string;
@@ -46,10 +35,8 @@ export interface EmployeeRegistRequest {
   phoneNumber: string;
   hireDate: string;
   birthDate: string;
-  gender: string;
-  address: string;
-  academicHistory: string;
-  careerHistory: string;
+  baseAddress: string;
+  detailAddress: string;
 }
 
 export interface EmployeeUpdateRequest {

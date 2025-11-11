@@ -13,18 +13,26 @@ import { useDebounce } from 'use-debounce';
 import QuoteReviewModal from '../modals/QuoteReviewModal';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
 import {
-  QOUTE_SEARCH_KEYWORD_OPTIONS,
+  getQuoteSearchKeywordOptions,
   QUOTE_LIST_TABLE_HEADERS,
 } from '@/app/(private)/sales/constant';
 import { QUOTE_STATUS_OPTIONS } from '@/app/(private)/sales/constant';
 import Pagination from '@/app/components/common/Pagination';
 import StatusLabel from '@/app/components/common/StatusLabel';
+import { useRole } from '@/app/hooks/useRole';
+import DateRangePicker from '@/app/components/common/DateRangePicker';
+import Input from '@/app/components/common/Input';
+import IconButton from '@/app/components/common/IconButton';
+import Dropdown from '@/app/components/common/Dropdown';
+import SearchBar from '@/app/components/common/SearchBar';
+import { useModal } from '@/app/components/common/modal/useModal';
 
 const SalesQuoteList = () => {
+  const { openModal } = useModal();
+
   const [searchTerm, setSearchTerm] = useState('');
   const [searchType, setSearchType] = useState('quotationNumber');
   const [statusFilter, setStatusFilter] = useState<QuoteStatus>('ALL');
-  const [showQuoteModal, setShowQuoteModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [selectedQuotes, setSelectedQuotes] = useState<number[]>([]);
   const [selectedQuotationId, setSelectedQuotationId] = useState<string>('');
@@ -63,7 +71,12 @@ const SalesQuoteList = () => {
 
   const handleViewQuote = (quote: Quote) => {
     setSelectedQuotationId(quote.quotationId);
-    setShowQuoteModal(true);
+    openModal(QuoteDetailModal, {
+      width: '900px',
+      height: '600px',
+      title: `견적서 상세보기-${quote.quotationNumber}`,
+      $selectedQuotationId: quote.quotationId,
+    });
   };
 
   const handleCheckboxChange = (quotationId: string) => {
@@ -71,91 +84,51 @@ const SalesQuoteList = () => {
   };
   const handleViewReview = () => {
     setShowReviewModal(true);
+    openModal(QuoteReviewModal, {
+      width: '900px',
+      title: '견적 검토 요청',
+      $selectedQuotationId: selectedQuotationId,
+    });
   };
 
-  useEffect(() => {
-    console.log(debouncedSearchTerm);
-  }, [searchTerm]);
+  const role = useRole();
+  const quoteOptions = getQuoteSearchKeywordOptions(role as string);
 
   return (
-    <div className="space-y-6 mt-6">
+    <>
       {/* 헤더 및 필터 */}
       <div className="flex flex-col space-y-4">
-        {/* 날짜 필터링 */}
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <label className="text-sm font-medium text-gray-700">시작날짜:</label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStartDate(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
-            />
-          </div>
-          <div className="flex items-center space-x-2">
-            <label className="text-sm font-medium text-gray-700">끝날짜:</label>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEndDate(e.target.value)}
-              className="bg-white px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-            />
-          </div>
-        </div>
-
-        {/* 검색 및 필터 */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <DateRangePicker
+            startDate={startDate}
+            onStartDateChange={setStartDate}
+            endDate={endDate}
+            onEndDateChange={setEndDate}
+          />
           <div className="flex items-center space-x-4">
-            <select
+            <Dropdown
+              placeholder="전체 상태"
+              items={QUOTE_STATUS_OPTIONS}
               value={statusFilter}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                setStatusFilter(e.target.value as QuoteStatus)
-              }
-              className="bg-white px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-8"
-            >
-              {QUOTE_STATUS_OPTIONS.map(({ key, value }) => (
-                <option key={key} value={key}>
-                  {value}
-                </option>
-              ))}
-            </select>
-            <select
-              value={searchType}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSearchType(e.target.value)}
-              className="bg-white px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-8"
-            >
-              {QOUTE_SEARCH_KEYWORD_OPTIONS.map(({ key, value }) => (
-                <option key={key} value={key}>
-                  {value}
-                </option>
-              ))}
-            </select>
-            <div className="relative">
-              <i className="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-              <input
-                type="text"
-                placeholder="견적번호, 고객명, 담당자로 검색..."
-                value={searchTerm}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-80 bg-white"
-              />
-            </div>
+              onChange={(status: string) => setStatusFilter(status as QuoteStatus)}
+              autoSelectFirst
+            />
+            <SearchBar
+              options={quoteOptions}
+              onTypeChange={(type: string) => setSearchType(type)}
+              onKeywordSearch={(keyword) => {
+                setSearchTerm(keyword);
+                setCurrentPage(1);
+              }}
+              placeholder="검색어를 입력하세요"
+            />
+            <IconButton
+              icon="ri-add-line"
+              label="견적 검토 요청"
+              onClick={handleViewReview}
+              disabled={selectedQuotationId === ''}
+            />
           </div>
-
-          {/* <IconButton icon="ri-add-line" label="견적 검토 요청" /> */}
-          <button
-            onClick={handleViewReview}
-            disabled={selectedQuotationId === ''}
-            className={`px-4 py-2 font-medium rounded-lg transition-colors duration-200 whitespace-nowrap flex items-center space-x-2
-    ${
-      !selectedQuotationId
-        ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
-        : 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer'
-    }`}
-          >
-            <i className="ri-add-line"></i>
-            <span>견적 검토 요청</span>
-          </button>
         </div>
       </div>
 
@@ -223,7 +196,7 @@ const SalesQuoteList = () => {
                       {quote.dueDate}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {quote.totalAmount.toLocaleString()}원
+                      ₩{quote.totalAmount.toLocaleString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       <StatusLabel $statusCode={quote.statusCode} />
@@ -255,27 +228,8 @@ const SalesQuoteList = () => {
             onPageChange={(page) => setCurrentPage(page)}
           />
         )}
-
-        {/* 견적서 상세보기 모달 */}
-        {showQuoteModal && (
-          <QuoteDetailModal
-            $onClose={() => {
-              setShowQuoteModal(false);
-            }}
-            $selectedQuotationId={selectedQuotationId}
-          />
-        )}
-
-        {showReviewModal && (
-          <QuoteReviewModal
-            $onClose={() => {
-              setShowReviewModal(false);
-            }}
-            $selectedQuotationId={selectedQuotationId}
-          />
-        )}
       </div>
-    </div>
+    </>
   );
 };
 

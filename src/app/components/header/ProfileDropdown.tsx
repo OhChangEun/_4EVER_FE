@@ -2,23 +2,61 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { UserProps } from '@/app/components/header/types/UserType';
 import ProfileInfoModal from './ProfileInfoModal';
 import { useRole } from '@/app/hooks/useRole';
 import { useMutation } from '@tanstack/react-query';
 import { logout } from '@/app/(public)/callback/callback.api';
 import { useRouter } from 'next/navigation';
+import { clearAccessToken } from '@/lib/auth/tokenStorage';
+import Cookies from 'js-cookie';
+import { useAuthStore } from '@/store/authStore';
 
-export default function ProfileDropdown({
-  userName = '홍길동',
-  userEmail = 'hong@company.com',
-  userRole = '관리자',
-}: UserProps) {
+export function mapRoleToKorean(role: string | undefined): string {
+  if (!role) return '';
+
+  // 특수 관리자 케이스
+  const specialRoles: Record<string, string> = {
+    ALL_ADMIN: '전사 관리자',
+    CUSTOMER_ADMIN: '고객사 관리자',
+    SUPPLIER_ADMIN: '공급사 관리자',
+  };
+
+  if (specialRoles[role]) return specialRoles[role];
+
+  // 일반 권한: 접두사(부서) + USER/ADMIN
+  const departmentMap: Record<string, string> = {
+    MM: '구매관리',
+    SD: '영업관리',
+    IM: '재고관리',
+    FCM: '재무관리',
+    HRM: '인적자원관리',
+    PP: '생산관리',
+  };
+
+  const [deptCode, position] = role.split('_'); // 예: MM_USER → ['MM', 'USER']
+
+  const departmentName = departmentMap[deptCode];
+  if (!departmentName) return role; // 매칭 안 되면 원본 반환
+
+  if (position === 'USER') return `${departmentName} 부서 사원`;
+  if (position === 'ADMIN') return `${departmentName} 부서 관리자`;
+
+  return role;
+}
+
+export default function ProfileDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isSupOrCusModalOpen, setIsSupOrCusModalOpen] = useState(false);
   const role = useRole();
   const router = useRouter();
+
+  const { userInfo } = useAuthStore();
+  const userName = userInfo?.userName;
+  const userEmail = userInfo?.loginEmail;
+
+  console.log(userEmail);
+
   // 외부 클릭 감지
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -47,9 +85,8 @@ export default function ProfileDropdown({
     onSuccess: () => {
       alert('로그아웃 되었습니다.');
       router.push('/dashboard');
-      localStorage.clear();
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('access_token_expires_at');
+      clearAccessToken();
+      Cookies.remove('role', { path: '/' });
       window.location.reload();
     },
     onError: (error) => {
@@ -78,7 +115,7 @@ export default function ProfileDropdown({
         {/* 이름 & 직급 */}
         <div className="hidden md:block text-left pl-1">
           <div className="text-sm font-medium text-gray-900">{userName}</div>
-          <div className="text-xs text-gray-400">{userRole}</div>
+          <div className="text-xs text-gray-400">{mapRoleToKorean(role)}</div>
         </div>
         <i
           className={`ri-arrow-down-s-line text-lg font-medium transition-transform ${isOpen ? 'rotate-180' : ''}`}
@@ -109,14 +146,6 @@ export default function ProfileDropdown({
             >
               <i className="ri-user-settings-line mr-3 text-gray-400"></i>
               프로필 설정
-            </Link>
-            <Link
-              href="/settings"
-              className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              <i className="ri-settings-3-line mr-3 text-gray-400"></i>
-              시스템 설정
             </Link>
             <hr className="my-1 border-gray-200" />
             <button

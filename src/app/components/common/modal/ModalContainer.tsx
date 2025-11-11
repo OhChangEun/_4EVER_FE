@@ -6,21 +6,28 @@ import { motion, AnimatePresence } from 'framer-motion';
 interface ModalContainerProps {
   children: React.ReactNode;
   title?: string;
+  width?: string;
+  height?: string;
   onClose: () => void;
 }
 
-const ModalContainer = ({ children, title, onClose }: ModalContainerProps) => {
+const ModalContainer = ({ children, title, width, height, onClose }: ModalContainerProps) => {
+  const modalWidth = width || 'auto';
+  const modalHeight = height || 'auto';
+
   return (
     <AnimatePresence>
-      <motion.div
-        className="fixed z-[9999] inset-0 flex items-center justify-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        // onClick={onClose}
-      >
+      <div className="fixed z-[1000] inset-0 flex items-center justify-center pointer-events-auto">
         <motion.div
-          className="border border-gray-100 bg-white rounded-2xl shadow-xl p-6 max-h-[720px] min-w-[400px] min-h-[380px] overflow-scroll relative pointer-events-auto"
+          className=" overflow-auto custom-scroll border border-gray-200 shadow-2xl bg-white rounded-2xl p-6 relative pointer-events-auto"
+          style={{
+            width: modalWidth,
+            height: modalHeight,
+            minWidth: '400px',
+            minHeight: '380px',
+            maxWidth: '1200px',
+            maxHeight: '1200px',
+          }}
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
@@ -39,7 +46,7 @@ const ModalContainer = ({ children, title, onClose }: ModalContainerProps) => {
           {/* 모달 본문 */}
           <div className="pt-6">{children}</div>
         </motion.div>
-      </motion.div>
+      </div>
     </AnimatePresence>
   );
 };

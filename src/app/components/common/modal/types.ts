@@ -4,6 +4,8 @@
 export interface ModalProps {
   id?: string; // 모달의 고유 식별자 (자동 생성됨)
   title?: string;
+  width?: string;
+  height?: string;
   onClose: () => void; // 닫기 이벤트 함수 (필수)
 }
 

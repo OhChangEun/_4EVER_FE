@@ -4,45 +4,31 @@ import DateRangePicker from '@/app/components/common/DateRangePicker';
 import Dropdown from '@/app/components/common/Dropdown';
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { fetchMpsProducts, fetchMpsList } from '@/app/(private)/production/api/production.api';
+import { fetchMpsBomDropdown, fetchMpsList } from '@/app/(private)/production/api/production.api';
 import { MpsListParams, MpsListResponse } from '@/app/(private)/production/types/MpsApiType';
-import { KeyValueItem } from '@/app/types/CommonType';
-import { MpsDropdownResponse } from '@/app/(private)/production/types/DropdownApiType';
+import { useDropdown } from '@/app/hooks/useDropdown';
+import SimplePagination from '@/app/components/common/SimplePagination';
 
 export default function MpsTab() {
-  const [selectedProduct, setSelectedProduct] = useState<string>('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const { options: dropdownOptions } = useDropdown('mpsBomsDropdown', fetchMpsBomDropdown);
 
-  // React Query를 사용하여 MPS 데이터 조회
+  const date = new Date().toISOString().split('T')[0];
+  const [selectedProduct, setSelectedProduct] = useState<string>('');
+  const [startDate, setStartDate] = useState(date);
+  const [endDate, setEndDate] = useState(date);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 7;
+
   const queryParams = useMemo(
     (): MpsListParams => ({
-      productId: selectedProduct,
+      bomId: selectedProduct,
       startDate: startDate,
       endDate: endDate,
+      page: currentPage - 1,
+      size: pageSize,
     }),
-    [selectedProduct, startDate, endDate],
+    [selectedProduct, startDate, endDate, currentPage],
   );
-
-  const {
-    data: dropdownItems = [],
-    isLoading: isDropdownLoading,
-    isError: isDropdownError,
-  } = useQuery<MpsDropdownResponse>({
-    queryKey: ['mpsProductsDropdown'],
-    queryFn: fetchMpsProducts,
-    staleTime: Infinity,
-  });
-
-  // key-value 형태로 변환
-  const productOptions: KeyValueItem[] = useMemo(() => {
-    return [
-      ...dropdownItems.map((item) => ({
-        key: item.productId,
-        value: item.productName,
-      })),
-    ];
-  }, [dropdownItems]);
 
   const {
     data: currentData,
@@ -54,16 +40,17 @@ export default function MpsTab() {
     queryFn: () => fetchMpsList(queryParams),
     enabled: !!startDate && !!endDate,
   });
-  const mpsData = currentData?.content; // 실제 데이터 content로 접근
+
+  const mpsData = currentData?.content || [];
+  const pageInfo = currentData?.page;
 
   const renderTableRow = (
     label: string,
-    dataArray: (number | null)[] = [],
+    dataKey: keyof Omit<MpsListResponse['content'][number], 'week'>,
     isClickable: boolean,
     isHighlight: boolean = false,
   ) => {
-    const mps = currentData?.content; // 내부 데이터로 접근
-    if (!mps) return null;
+    if (!mpsData || mpsData.length === 0) return null;
 
     return (
       <tr className="hover:bg-gray-50">
@@ -74,18 +61,21 @@ export default function MpsTab() {
         >
           {label}
         </td>
-        {mps.periods.map((week, index) => {
-          const value = dataArray[index];
-          const isDemandClickable = isClickable && value && value > 0;
+        {mpsData.map((weekData, index) => {
+          const value = weekData[dataKey];
+          const isDemandClickable = isClickable && typeof value === 'number' && value > 0;
+          const isStartWeek = index === 3;
 
           return (
             <td
               key={`${label}-${index}`}
               className={`border border-gray-300 px-4 py-3 text-center text-sm ${
                 isHighlight ? 'font-semibold text-blue-700 bg-blue-50' : 'text-gray-900'
-              } ${isDemandClickable ? 'cursor-pointer hover:bg-blue-50' : ''}`}
+              } ${isDemandClickable ? 'cursor-pointer hover:bg-blue-50' : ''} ${
+                isStartWeek && !isHighlight ? 'bg-green-50' : ''
+              }`}
             >
-              {value !== null ? value : '-'}
+              {value ?? '-'}
             </td>
           );
         })}
@@ -93,52 +83,16 @@ export default function MpsTab() {
     );
   };
 
-  // 리드 타임 렌더링
-  const renderLeadTimeRow = () => {
-    const mps = currentData?.content;
-    if (!mps) return null;
-
-    const fixedLeadTime = 2; // 임시 리드타임
-
-    return (
-      <tr className="hover:bg-gray-50">
-        <td className="border border-gray-300 px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50">
-          생산 리드 타임
-        </td>
-        {mps.periods.map((_, index) => (
-          <td
-            key={`leadtime-${index}`}
-            className="border border-gray-300 px-4 py-3 text-center text-sm text-gray-900"
-          >
-            {fixedLeadTime}주
-          </td>
-        ))}
-      </tr>
-    );
-  };
-
   return (
     <>
-      <h3 className="text-lg font-semibold text-gray-900">주생산계획 (MPS)</h3>
-
-      {/* 제품 선택 드롭다운 및 날짜 선택 */}
       <div className="flex justify-between gap-4">
-        {isDropdownLoading ? (
-          <div className="w-24 px-4 py-2 rounded-sm bg-gray-100 text-gray-500">
-            제품 목록 로딩 중...
-          </div>
-        ) : isDropdownError ? (
-          <div className="w-64 px-4 py-2 border border-red-300 rounded-lg bg-red-50 text-red-600">
-            제품 목록 로드 실패
-          </div>
-        ) : (
-          <Dropdown
-            placeholder="전체 제품"
-            items={productOptions}
-            value={selectedProduct}
-            onChange={(product: string) => setSelectedProduct(product)}
-          />
-        )}
+        <Dropdown
+          placeholder="제품 선택"
+          items={dropdownOptions}
+          value={selectedProduct}
+          onChange={(product: string) => setSelectedProduct(product)}
+          autoSelectFirst
+        />
         <DateRangePicker
           startDate={startDate}
           onStartDateChange={setStartDate}
@@ -147,7 +101,6 @@ export default function MpsTab() {
         />
       </div>
 
-      {/* 로딩 및 에러 상태 처리 */}
       {isMpsLoading && (
         <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
           <i className="ri-loader-4-line animate-spin text-4xl text-blue-500 mb-4"></i>
@@ -168,8 +121,7 @@ export default function MpsTab() {
         </div>
       )}
 
-      {/* 생산계획 표 (데이터 로드 성공 시) */}
-      {!isMpsLoading && !isMpsError && mpsData ? (
+      {!isMpsLoading && !isMpsError && mpsData.length > 0 ? (
         <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full border-collapse border border-gray-300">
@@ -178,31 +130,30 @@ export default function MpsTab() {
                   <th className="border border-gray-300 px-4 py-3 text-left text-sm font-medium text-gray-900">
                     구분
                   </th>
-                  {mpsData.periods.map((week, index) => (
+                  {mpsData.map((weekData, index) => (
                     <th
                       key={`week-${index}`}
-                      className="border border-gray-300 px-4 py-3 text-center text-sm font-medium text-gray-900"
+                      className={`border border-gray-300 px-4 py-3 text-center text-sm font-medium ${
+                        index === 3 ? 'bg-green-100 text-green-800' : 'text-gray-900'
+                      }`}
                     >
-                      {week}
+                      <div className="flex flex-col items-center gap-1">
+                        <span>{weekData.week}</span>
+                        {index === 3 && (
+                          <span className="text-xs bg-green-600 text-white px-2 py-0.5 rounded-full">
+                            시작날짜
+                          </span>
+                        )}
+                      </div>
                     </th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {/* 1. 수요 (Demand) */}
-                {renderTableRow('수요', mpsData.demand, true)}
-
-                {/* 2. 재고 필요량 */}
-                {renderTableRow('재고 필요량', mpsData.requiredInventory, false)}
-
-                {/* 3. 생산 소요량 */}
-                {renderTableRow('생산 소요량', mpsData.productionNeeded, false)}
-
-                {/* 4. 계획 생산 */}
-                {renderTableRow('계획 생산 (MPS)', mpsData.plannedProduction, false, true)}
-
-                {/* 5. 생산 리드 타임 */}
-                {renderLeadTimeRow()}
+                {renderTableRow('수요', 'demand', true)}
+                {renderTableRow('재고 필요량', 'requiredInventory', false)}
+                {renderTableRow('생산 소요량', 'productionNeeded', false)}
+                {renderTableRow('계획 생산 (MPS)', 'plannedProduction', false, true)}
               </tbody>
             </table>
           </div>
@@ -216,6 +167,12 @@ export default function MpsTab() {
           </div>
         )
       )}
+
+      <SimplePagination
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+        totalPages={pageInfo?.totalPages ?? 1}
+      />
     </>
   );
 }

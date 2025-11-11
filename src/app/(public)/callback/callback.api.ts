@@ -8,6 +8,8 @@ export const getUserInfo = async (): Promise<userInfoResponse> => {
 };
 
 export const logout = async (): Promise<ApiResponseNoData> => {
-  const res = await axios.post<ApiResponseNoData>(USER_ENDPOINTS.LOGOUT);
+  const res = await axios.post<ApiResponseNoData>(USER_ENDPOINTS.LOGOUT, undefined, {
+    withCredentials: true,
+  });
   return res.data;
 };

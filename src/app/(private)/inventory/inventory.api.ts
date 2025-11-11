@@ -10,7 +10,11 @@ import {
   ReadyToShipListResponse,
 } from './types/ShippingManagementListType';
 import { ReceivedListResponse } from './types/ReceivingManagementListType';
-import { markAsReadyToShipResponse, ShippingDetailResponse } from './types/ShippingDetailModalType';
+import {
+  markAsReadyRequest,
+  markAsReadyToShipResponse,
+  ShippingDetailResponse,
+} from './types/ShippingDetailModalType';
 import {
   AddInventoryItemsRequest,
   AddInventoryItemsToggleResponse,
@@ -19,6 +23,7 @@ import {
 } from './types/AddInventoryModalType';
 import { ApiResponse, ApiResponseNoData, INVENTORY_ENDPOINTS } from '@/app/types/api';
 import { Page } from '@/app/types/Page';
+import { ItemResponse } from './types/ItemListType';
 // ----------------------- 재고 통계 -----------------------
 export const getInventoryStats = async (): Promise<InventoryStatResponse> => {
   const res = await axios.get<ApiResponse<InventoryStatResponse>>(INVENTORY_ENDPOINTS.STATS);
@@ -29,12 +34,11 @@ export const getInventoryList = async (
   params?: InventoryQueryParams,
 ): Promise<{ data: InventoryResponse[]; pageData: Page }> => {
   const query = new URLSearchParams({
-    ...(params?.category && { category: params.category }),
-    ...(params?.warehouse && { warehouse: params.warehouse }),
-    ...(params?.statusCode && { statusCode: params.statusCode }),
-    ...(params?.itemName && { itemName: params.itemName }),
     ...(params?.page && { page: String(params.page) }),
     ...(params?.size && { size: String(params.size) }),
+    ...(params?.type && { type: String(params.type) }),
+    ...(params?.keyword && { keyword: String(params.keyword) }),
+    ...(params?.statusCode && { statusCode: params.statusCode }),
   }).toString();
 
   const res = await axios.get<ApiResponse<{ content: InventoryResponse[]; page: Page }>>(
@@ -141,10 +145,12 @@ export const getReadyToShipDetail = async (itemId: string): Promise<ShippingDeta
 };
 
 export const patchMarkAsReadyToShip = async (
-  itemId: string,
+  orderId: string,
+  payload: markAsReadyRequest,
 ): Promise<markAsReadyToShipResponse> => {
   const res = await axios.patch<ApiResponse<markAsReadyToShipResponse>>(
-    INVENTORY_ENDPOINTS.MARKAS_READY_TO_SHIP_DETAIL(itemId),
+    INVENTORY_ENDPOINTS.MARKAS_READY_TO_SHIP_DETAIL(orderId),
+    payload,
   );
   return res.data.data;
 };
@@ -213,3 +219,14 @@ export const postAddMaterial = async (
 
   return res.data;
 };
+
+// 자재 상세 조회
+// export const postItemsInfo = async (body: string[]): Promise<ItemResponse[]> => {
+//   const res = await axios.post<ApiResponse<ItemResponse[]>>(
+//     `${INVENTORY_ENDPOINTS.MATERIALS_LIST}`,
+//     {
+//       itemIds: body,
+//     },
+//   );
+//   return res.data.data;
+// };

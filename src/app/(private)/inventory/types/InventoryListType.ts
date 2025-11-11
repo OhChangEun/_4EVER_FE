@@ -4,6 +4,8 @@ export interface InventoryResponse {
   itemName: string;
   category: string;
   currentStock: number;
+  forShipmentStock: number;
+  reservedStock: number;
   safetyStock: number;
   uomName: string;
   unitPrice: number;
@@ -15,10 +17,9 @@ export interface InventoryResponse {
 }
 
 export interface InventoryQueryParams {
-  category?: string;
-  warehouse?: string;
   statusCode?: string;
-  itemName?: string;
+  type?: string;
+  keyword?: string;
   page?: number;
   size?: number;
 }

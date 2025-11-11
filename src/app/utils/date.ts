@@ -29,14 +29,19 @@ export const formatDateTime = (isoString: string): string => {
   const minutes = String(date.getMinutes()).padStart(2, '0');
   const seconds = String(date.getSeconds()).padStart(2, '0');
 
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  return `${year}-${month}-${day} ${hours}:${minutes}`;
+};
+
+// Date → YYYY-MM-DD
+export const formatDate = (date: Date | null): string | null => {
+  if (!date || isNaN(date.getTime())) return null;
+  return date.toISOString().split('T')[0];
 };
 
 // YYYY-MM-DD → ISO
 export const toISOString = (dateStr: string): string => {
   const date = new Date(dateStr);
-  if (isNaN(date.getTime())) {
-    throw new Error(`Invalid date STRING: ${dateStr}`);
-  }
+  if (isNaN(date.getTime())) return '';
+
   return date.toISOString();
 };
