@@ -49,8 +49,9 @@ export const STATUS_TEXT_MAP: Record<string, string> = {
   TECHNICAL_TRAINING: '기술 교육',
   BASIC_TRAINING: '기본 교육',
 
-  CONVERTED: '전환 전',
-  NOT_CONVERTED: '전환 완료',
+  CONVERTED: '전환 완료',
+  NOT_REQUIRED: '전환 불필요',
+  NOT_CONVERTED: '전환 전',
 
   PAYROLL_PAID: '지급완료',
   PAYROLL_UNPAID: '미지급',
@@ -69,7 +70,8 @@ export const STATUS_COLOR_MAP: Record<string, string> = {
   ANNUAL: 'bg-green-100 text-green-700 border-green-300',
   SICK: 'bg-blue-100 text-blue-700 border-blue-300',
 
-  CONVERTED: 'bg-blue-100 text-blue-700 border-blue-300',
+  CONVERTED: 'bg-green-100 text-green-700 border-green-300',
+  NOT_REQUIRED: 'bg-gray-100 text-gray-700 border-gray-300',
   NOT_CONVERTED: 'bg-blue-100 text-blue-700 border-blue-300',
 
   TECHNICAL_TRAINING: 'bg-blue-100 text-blue-700 border-blue-300',

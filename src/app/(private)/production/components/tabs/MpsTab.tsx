@@ -83,33 +83,6 @@ export default function MpsTab() {
     );
   };
 
-  const renderLeadTimeRow = () => {
-    if (!mpsData || mpsData.length === 0) return null;
-
-    const fixedLeadTime = 2;
-
-    return (
-      <tr className="hover:bg-gray-50">
-        <td className="border border-gray-300 px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50">
-          생산 리드 타임
-        </td>
-        {mpsData.map((_, index) => {
-          const isStartWeek = index === 3;
-          return (
-            <td
-              key={`leadtime-${index}`}
-              className={`border border-gray-300 px-4 py-3 text-center text-sm text-gray-900 ${
-                isStartWeek ? 'bg-green-50' : ''
-              }`}
-            >
-              {fixedLeadTime}주
-            </td>
-          );
-        })}
-      </tr>
-    );
-  };
-
   return (
     <>
       <div className="flex justify-between gap-4">
@@ -181,7 +154,6 @@ export default function MpsTab() {
                 {renderTableRow('재고 필요량', 'requiredInventory', false)}
                 {renderTableRow('생산 소요량', 'productionNeeded', false)}
                 {renderTableRow('계획 생산 (MPS)', 'plannedProduction', false, true)}
-                {renderLeadTimeRow()}
               </tbody>
             </table>
           </div>

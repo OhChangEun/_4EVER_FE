@@ -186,7 +186,7 @@ export default function MesDetail({ mesId }: MesDetailProps) {
               <button
                 onClick={() => startMesMutation.mutate()}
                 disabled={!mesDetail.canStartMes || isProcessing}
-                className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition duration-150"
+                className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition duration-150 whitespace-nowrap"
               >
                 <i className="ri-play-fill mr-1"></i>
                 MES 시작
@@ -194,7 +194,7 @@ export default function MesDetail({ mesId }: MesDetailProps) {
               <button
                 onClick={() => completeMesMutation.mutate()}
                 disabled={!mesDetail.canCompleteMes || isProcessing}
-                className="px-4 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition duration-150"
+                className="px-4 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition duration-150 whitespace-nowrap"
               >
                 <i className="ri-check-line mr-1"></i>
                 MES 완료
