@@ -57,6 +57,8 @@ export const STATUS_TEXT_MAP: Record<string, string> = {
 
   ANNUAL: '연차',
   SICK: '병가',
+
+  INCOMPLETED: '미완료',
 };
 
 // 상태 색상 매핑
