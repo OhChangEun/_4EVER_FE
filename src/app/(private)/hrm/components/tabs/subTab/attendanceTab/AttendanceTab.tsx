@@ -148,9 +148,6 @@ export default function AttendanceTab() {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 상태
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                작업
-              </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -178,14 +175,6 @@ export default function AttendanceTab() {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <StatusLabel $statusCode={attend.statusCode} />
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button
-                    onClick={() => handleEditAttendance(attend)}
-                    className="text-green-600 hover:text-green-900 cursor-pointer"
-                  >
-                    <i className="ri-edit-line"></i>
-                  </button>
                 </td>
               </tr>
             ))}
