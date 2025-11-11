@@ -9,8 +9,8 @@ import { useAuthStore } from '@/store/authStore';
 import Cookies from 'js-cookie';
 import { persistAccessToken } from '@/lib/auth/tokenStorage';
 
-const REDIRECT_URI = 'http://localhost:3000/callback'; // 배포용
-// const REDIRECT_URI = 'https://everp.co.kr/callback'; // 서버용
+// const REDIRECT_URI = 'http://localhost:3000/callback'; // 배포용
+const REDIRECT_URI = 'https://everp.co.kr/callback'; // 서버용
 
 function cleanupPkce() {
   localStorage.removeItem('pkce_verifier');
@@ -52,8 +52,8 @@ export default function CallbackPage() {
 
         const body = new URLSearchParams({
           grant_type: 'authorization_code',
-          client_id: 'everp-spa', // 로컬용
-          // client_id: 'everp', // 배포용
+          // client_id: 'everp-spa', // 로컬용
+          client_id: 'everp', // 배포용
           redirect_uri: REDIRECT_URI,
           code,
           code_verifier: verifier,
@@ -63,7 +63,7 @@ export default function CallbackPage() {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             // 동적으로 키 생성
-            // Authorization: makeBasicAuthHeader('everp', 'super-secret'),
+            Authorization: makeBasicAuthHeader('everp', 'super-secret'),
           },
         });
 
@@ -98,7 +98,7 @@ export default function CallbackPage() {
         cleanupPkce();
 
         if (errMessage === 'invalid_grant') {
-          // startAuthorization('/');
+          startAuthorization('/');
           return;
         }
 

@@ -20,8 +20,8 @@ export default function PrivateGuard({ children }: { children: ReactNode }) {
       if (!token || !expiresAt || Date.now() > expiresAt) {
         clearAccessToken();
         try {
-          // await trySilentRefresh();
-          startAuthorization(window.location.pathname);
+          await trySilentRefresh();
+          // startAuthorization(window.location.pathname);
         } catch {
           startAuthorization(window.location.pathname);
           return;
