@@ -382,7 +382,7 @@ export default function BomInputFormModal({ editMode = false, onClose }: BomInpu
             />
           </div>
 
-          <div className="overflow-x-auto h-[440px] rounded-lg overflow-scroll border border-gray-300">
+          <div className="overflow-x-auto h-[440px] rounded-lg overflow-scroll border border-gray-200">
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}

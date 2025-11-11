@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import PurchaseRequestModal from '@/app/(private)/purchase/components/modals/PurchaseRequestModal';
 import PurchaseRequestDetailModal from '@/app/(private)/purchase/components/modals/PurchaseRequestDetailModal';
 import {
@@ -57,7 +57,7 @@ export default function PurchaseRequestListTab() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  const queryClient = getQueryClient();
+  const queryClient = useQueryClient();
 
   const queryParams = useMemo(
     (): PurchaseReqParams => ({
@@ -87,14 +87,10 @@ export default function PurchaseRequestListTab() {
     mutationFn: (prId: string) => postApporvePurchaseReq(prId),
     onSuccess: () => {
       alert('구매 요청 승인 완료되었습니다.');
+      queryClient.invalidateQueries({ queryKey: ['purchaseRequests'] });
     },
     onError: (error) => {
       alert(`구매 요청 승인 중 오류가 발생했습니다. ${error}`);
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        predicate: (q) => q.queryKey[0] === 'purchaseRequests',
-      });
     },
   });
 
@@ -103,14 +99,10 @@ export default function PurchaseRequestListTab() {
     mutationFn: (prId: string) => postRejectPurchaseReq(prId, ''),
     onSuccess: () => {
       alert('반려 처리되었습니다.');
+      queryClient.invalidateQueries({ queryKey: ['purchaseRequests'] });
     },
     onError: (error) => {
       alert(`반려 처리 중 오류가 발생했습니다. ${error}`);
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        predicate: (q) => q.queryKey[0] === 'purchaseRequests',
-      });
     },
   });
 
@@ -129,6 +121,7 @@ export default function PurchaseRequestListTab() {
   const handleViewRequestModal = () => {
     openModal(PurchaseRequestModal, {
       title: '구매 요청 작성',
+      height: '800px',
     });
   };
 

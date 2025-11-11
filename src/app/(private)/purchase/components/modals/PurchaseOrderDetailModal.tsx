@@ -6,6 +6,8 @@ import { PurchaseOrderDetailResponse } from '@/app/(private)/purchase/types/Purc
 import ModalStatusBox from '@/app/components/common/ModalStatusBox';
 import { useEffect, useState } from 'react';
 import { ModalProps } from '@/app/components/common/modal/types';
+import StatusLabel from '@/app/components/common/StatusLabel';
+import { formatDateTime } from '@/app/utils/date';
 
 export interface PurchaseOrderDetailModalProps extends ModalProps {
   purchaseId: string;
@@ -66,15 +68,15 @@ export default function PurchaseOrderDetailModal({ purchaseId }: PurchaseOrderDe
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">주문일자</label>
-            <div className="text-gray-900">{order.orderDate}</div>
+            <div className="text-gray-900">{formatDateTime(order.orderDate)}</div>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">납기일</label>
-            <div className="text-gray-900">{order.dueDate}</div>
+            <div className="text-gray-900">{formatDateTime(order.dueDate)}</div>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">상태</label>
-            <span className={`px-2 py-1 rounded text-xs font-medium }`}>{order.statusCode}</span>
+            <StatusLabel $statusCode={order.statusCode} />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">총 금액</label>
@@ -99,7 +101,7 @@ export default function PurchaseOrderDetailModal({ purchaseId }: PurchaseOrderDe
             </thead>
             <tbody>
               {order.items.map((item, index) => (
-                <tr key={index} className="border-b text-center">
+                <tr key={index} className="border-b border-gray-200 text-center">
                   <td className="px-4 py-3 text-sm text-gray-900">{item.itemName}</td>
                   <td className="px-4 py-3 text-sm text-gray-900">
                     {item.quantity.toLocaleString()}
@@ -117,8 +119,10 @@ export default function PurchaseOrderDetailModal({ purchaseId }: PurchaseOrderDe
             <tfoot className="bg-gray-50">
               <tr>
                 <td colSpan={5} className="px-4 py-3 text-right font-medium">
-                  <span className="pr-4 text-gray-900">총 금액</span>
-                  <span className="text-2xl text-green-600">₩{order.totalAmount}</span>
+                  <span className="pr-6 text-sm text-gray-900">총 금액</span>
+                  <span className="text-3xl text-green-600">
+                    {order.totalAmount.toLocaleString()}원
+                  </span>
                 </td>
               </tr>
             </tfoot>

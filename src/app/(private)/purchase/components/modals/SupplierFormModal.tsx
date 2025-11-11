@@ -338,7 +338,6 @@ export default function SupplierFormModal({ initialData, onClose }: SupplierForm
                   items={supplierCategoryOptions}
                   value={selectedCategory}
                   onChange={setSelectedCategory}
-                  size="sm"
                 />
               </div>
 
@@ -350,7 +349,6 @@ export default function SupplierFormModal({ initialData, onClose }: SupplierForm
                   items={supplierStatusOptions}
                   value={selectedStatus}
                   onChange={setSelectedStatus}
-                  size="sm"
                 />
               </div>
             </div>

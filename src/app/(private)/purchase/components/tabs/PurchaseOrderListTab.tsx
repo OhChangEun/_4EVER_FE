@@ -138,6 +138,7 @@ export default function PurchaseOrderListTab() {
     openModal(PurchaseOrderDetailModal, {
       title: '발주서 상세정보',
       purchaseId: purchaseId,
+      width: '800px',
     });
   };
 

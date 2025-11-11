@@ -165,14 +165,14 @@ export default function PurchaseRequestModal({ onClose }: ModalProps) {
           />
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full border border-gray-200 rounded-lg">
+        <div className="overflow-x-auto h-[360px] rounded-lg overflow-scroll border border-gray-200">
+          <table className="w-full rounded-lg">
             <thead className="bg-gray-50">
               <tr>
                 {PURCHASE_REQUEST_TABLE_HEADERS.map((label) => (
                   <th
                     key={label}
-                    className="px-4 py-3 text-xs font-medium text-gray-500 uppercase text-center"
+                    className="px-4 py-3 text-xs font-medium text-gray-500 uppercase text-center whitespace-nowrap"
                   >
                     {label}
                   </th>
@@ -238,14 +238,12 @@ export default function PurchaseRequestModal({ onClose }: ModalProps) {
                     />
                   </td>
                   <td className="px-4 py-3">
-                    <td className="px-4 py-3">
-                      <CalendarButton
-                        minDate={new Date()}
-                        selectedDate={item.dueDate || null}
-                        onDateChange={(date) => updateRequestItem(item.id, 'dueDate', date || '')}
-                        placeholder="납기일 선택"
-                      />
-                    </td>
+                    <CalendarButton
+                      minDate={new Date()}
+                      selectedDate={item.dueDate || null}
+                      onDateChange={(date) => updateRequestItem(item.id, 'dueDate', date || '')}
+                      placeholder="납기일 선택"
+                    />
                   </td>
                   <td className="px-4 py-3">
                     <DropdownInputModal

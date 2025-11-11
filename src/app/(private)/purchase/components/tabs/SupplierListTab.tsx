@@ -78,7 +78,7 @@ export default function SupplierListTab() {
   const totalPages = pageInfo?.totalPages ?? 1;
 
   const handleViewAddSupplier = () => {
-    openModal(SupplierFormModal, { title: '공급업체 등록' });
+    openModal(SupplierFormModal, { title: '공급업체 등록', height: '800px' });
   };
 
   const handleViewDetail = (supplierId: string) => {
