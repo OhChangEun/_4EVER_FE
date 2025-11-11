@@ -13,7 +13,10 @@ export const InputLabel = ({ label, required, htmlFor }: InputLabelProps) => {
   if (!label) return null;
 
   return (
-    <label htmlFor={htmlFor} className="text-[13px] text-gray-500 flex items-center mb-1">
+    <label
+      htmlFor={htmlFor}
+      className="text-[13px] text-gray-500 flex items-center mb-1 whitespace-nowrap"
+    >
       {label}
       {required && <span className="pl-1 pt-0 text-red-500">*</span>}
     </label>

@@ -12,16 +12,15 @@ export interface BomComponent {
   componentType: string;
 }
 
-// BOM 레벨 구조 내 아이템
-export interface BomLevelItem {
+// BOM 레벨 구조 노드 (새로운 트리 구조)
+export interface BomLevelStructureNode {
+  id: string;
   code: string;
   name: string;
-  quantity: number;
-}
-
-// 레벨별 구조 (Level 1, Level 2 ...)
-export interface BomLevelStructure {
-  [level: string]: BomLevelItem[];
+  quantity: number | null;
+  unit: string | null;
+  level: number;
+  parentId: string | null;
 }
 
 // 공정(Routing) 정보
@@ -43,6 +42,6 @@ export interface BomDetailResponse {
   statusCode: string; // 예: "활성"
   lastModifiedAt: string;
   components: BomComponent[];
-  levelStructure: BomLevelStructure;
+  levelStructure: BomLevelStructureNode[];
   routing: BomRouting[];
 }

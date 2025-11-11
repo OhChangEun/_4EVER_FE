@@ -16,6 +16,7 @@ import { useDropdown } from '@/app/hooks/useDropdown';
 import { useDebouncedKeyword } from '@/app/hooks/useDebouncedKeyword';
 import Input from '@/app/components/common/Input';
 import StatusLabel from '@/app/components/common/StatusLabel';
+import Button from '@/app/components/common/Button';
 
 export default function PayrollManagement() {
   // --- 모달 출력 ---
@@ -107,17 +108,13 @@ export default function PayrollManagement() {
       title: '급여 상세정보',
       payrollId: payroll.payrollId,
       payStatus: payroll.pay.statusCode,
+      width: '600px',
+      height: '680px',
     });
   };
 
   return (
     <>
-      <div className="border-b border-gray-200 px-2 py-2">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">급여 관리</h3>
-        </div>
-      </div>
-
       <div>
         {/* 필터링 및 검색 */}
         <div className="flex justify-between items-center gap-2 mb-4">
@@ -225,12 +222,12 @@ export default function PayrollManagement() {
                     <StatusLabel $statusCode={payroll.pay.statusCode} />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button
+                    <Button
+                      label="상세보기"
+                      size="sm"
+                      variant="ghost"
                       onClick={() => handleViewPayrollDetail(payroll)}
-                      className="text-blue-600 hover:text-blue-900 cursor-pointer"
-                    >
-                      상세보기
-                    </button>
+                    />
                   </td>
                 </tr>
               ))}

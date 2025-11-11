@@ -72,7 +72,7 @@ export default function LeaveTab() {
   });
 
   const { mutate: rejectLeave } = useMutation({
-    mutationFn: (reuqestId: string) => postLeaveReject(reuqestId),
+    mutationFn: (requestId: string) => postLeaveReject(requestId),
     onSuccess: () => {
       alert('반료되었습니다.');
       queryClient.invalidateQueries({ queryKey: ['leaveList'] });

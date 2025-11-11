@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchPayRollDetail, postPayrollComplete } from '@/app/(private)/hrm/api/hrm.api';
 import Button from '@/app/components/common/Button';
 import { PayRollCompleteRequestParams } from '../../types/HrmPayrollApiType';
+import StatusLabel from '@/app/components/common/StatusLabel';
 
 interface PayrollDetailModalProps extends ModalProps {
   payrollId: string;
@@ -51,17 +52,6 @@ export function PayrollDetailModal({ payrollId, payStatus, onClose }: PayrollDet
   }
 
   const { employee, pay, statusCode, expectedDate } = payrollData;
-
-  const getStatusInfo = (code: string) => {
-    const statusMap: Record<string, { label: string; className: string }> = {
-      PAID: { label: '지급완료', className: 'bg-green-100 text-green-800' },
-      PENDING: { label: '지급대기', className: 'bg-yellow-100 text-yellow-800' },
-      PROCESSING: { label: '처리중', className: 'bg-blue-100 text-blue-800' },
-    };
-    return statusMap[code] || { label: code, className: 'bg-gray-100 text-gray-800' };
-  };
-
-  const statusInfo = getStatusInfo(statusCode);
 
   return (
     <div className="space-y-6">
@@ -155,11 +145,7 @@ export function PayrollDetailModal({ payrollId, payStatus, onClose }: PayrollDet
           </span>
         </div>
         <div className="mt-2">
-          <span
-            className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${statusInfo.className}`}
-          >
-            {statusInfo.label}
-          </span>
+          <StatusLabel $statusCode={statusCode} />
         </div>
       </div>
 
@@ -173,9 +159,9 @@ export function PayrollDetailModal({ payrollId, payStatus, onClose }: PayrollDet
         </div>
       </div>
 
-      {payStatus === 'PENDING' ? (
+      {payStatus === 'PAYROLL_UNPAID' ? (
         <div className="flex justify-end">
-          <Button label="지급완료 처리" onClick={handlePayrollComplete}></Button>
+          <Button label="지급완료 처리" variant="green" onClick={handlePayrollComplete}></Button>
         </div>
       ) : null}
     </div>

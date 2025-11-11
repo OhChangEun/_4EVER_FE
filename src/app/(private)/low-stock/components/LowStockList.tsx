@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { LowStockListQueryParams } from '../types/LowStockListType';
 import StatusLabel from '@/app/components/common/StatusLabel';
@@ -16,6 +16,7 @@ import InventoryPurchaseRequestModal from '../../inventory/components/modals/Inv
 
 export default function LowStockList() {
   const { openModal } = useModal();
+  const selectAllCheckboxRef = useRef<HTMLInputElement>(null);
 
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -43,6 +44,14 @@ export default function LowStockList() {
   const lowStocks = lowStockRes?.data ?? [];
   const pageInfo = lowStockRes?.pageData;
   const totalPages = pageInfo?.totalPages ?? 1;
+
+  // indeterminate 상태 업데이트
+  useEffect(() => {
+    if (selectAllCheckboxRef.current) {
+      selectAllCheckboxRef.current.indeterminate =
+        selectedItems.length > 0 && selectedItems.length < lowStocks.length;
+    }
+  }, [selectedItems, lowStocks]);
 
   const toggleSelectItem = (itemId: string) => {
     setSelectedItems((prev) =>
@@ -78,10 +87,10 @@ export default function LowStockList() {
       }));
 
     openModal(InventoryPurchaseRequestModal, {
+      title: '발주 요청',
       items: selectedItemsData,
-      onSuccess: () => {
-        setSelectedItems([]);
-      },
+      width: '600px',
+      height: '400px',
     });
   };
 
@@ -132,13 +141,11 @@ export default function LowStockList() {
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <input
+                      ref={selectAllCheckboxRef}
                       type="checkbox"
                       className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                       onChange={toggleSelectAll}
                       checked={lowStocks.length > 0 && selectedItems.length === lowStocks.length}
-                      indeterminate={
-                        selectedItems.length > 0 && selectedItems.length < lowStocks.length
-                      }
                     />
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">

@@ -2,6 +2,8 @@ import { BomDetailResponse } from '@/app/(private)/production/types/BomDetailApi
 import { fetchBomDetail } from '../../api/production.api';
 import { useQuery } from '@tanstack/react-query';
 import { ModalProps } from '@/app/components/common/modal/types';
+import BomTreeContainer from '../../BomTreeContainer';
+import { formatDateTime } from '@/app/utils/date';
 
 interface BomDetailModalProps extends ModalProps {
   bomId: string;
@@ -18,32 +20,32 @@ export default function BomDetailModal({ bomId }: BomDetailModalProps) {
     enabled: !!bomId,
   });
 
-  const renderLevelStructure = (levelStructure: BomDetailResponse['levelStructure']) => {
-    return (
-      <div className="space-y-4">
-        {Object.entries(levelStructure).map(([level, items]) => (
-          <div
-            key={level}
-            className="ml-4"
-            style={{ marginLeft: `${parseInt(level.replace('Level ', '')) * 20}px` }}
-          >
-            <div className="text-sm font-medium text-gray-600 mb-2">{level}</div>
-            {items.map((item) => (
-              <div
-                key={item.code}
-                className="flex items-center space-x-2 p-2 bg-gray-50 rounded mb-1"
-              >
-                <i className="ri-arrow-right-s-line text-gray-400"></i>
-                <span className="font-medium">{item.code}</span>
-                <span>{item.name}</span>
-                <span className="text-sm text-gray-500">{item.quantity}</span>
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
-    );
-  };
+  // const renderLevelStructure = (levelStructure: BomDetailResponse['levelStructure']) => {
+  //   return (
+  //     <div className="space-y-4">
+  //       {Object.entries(levelStructure).map(([level, items]) => (
+  //         <div
+  //           key={level}
+  //           className="ml-4"
+  //           style={{ marginLeft: `${parseInt(level.replace('Level ', '')) * 20}px` }}
+  //         >
+  //           <div className="text-sm font-medium text-gray-600 mb-2">{level}</div>
+  //           {items.map((item) => (
+  //             <div
+  //               key={item.code}
+  //               className="flex items-center space-x-2 p-2 bg-gray-50 rounded mb-1"
+  //             >
+  //               <i className="ri-arrow-right-s-line text-gray-400"></i>
+  //               <span className="font-medium">{item.code}</span>
+  //               <span>{item.name}</span>
+  //               <span className="text-sm text-gray-500">{item.quantity}</span>
+  //             </div>
+  //           ))}
+  //         </div>
+  //       ))}
+  //     </div>
+  //   );
+  // };
 
   const getStatusBadge = (status: string) => {
     const statusConfig: Record<string, { label: string; class: string }> = {
@@ -99,7 +101,7 @@ export default function BomDetailModal({ bomId }: BomDetailModalProps) {
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-500">최종 수정일</label>
-                <p className="text-sm text-gray-900">{bomDetail.lastModifiedAt}</p>
+                <p className="text-sm text-gray-900">{formatDateTime(bomDetail.lastModifiedAt)}</p>
               </div>
             </div>
           </div>
@@ -143,8 +145,8 @@ export default function BomDetailModal({ bomId }: BomDetailModalProps) {
 
           {/* 레벨 구조 */}
           <div>
-            <h4 className="text-md font-semibold text-gray-900 mb-4">레벨 구조</h4>
-            {renderLevelStructure(bomDetail.levelStructure)}
+            <h4 className="text-md font-semibold text-gray-900 mb-4">BOM 트리 구조</h4>
+            <BomTreeContainer bomData={bomDetail.levelStructure} />
           </div>
 
           {/* 공정 라우팅 정보 */}

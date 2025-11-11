@@ -92,13 +92,6 @@ export default function InventoryPurchaseRequestModal({
 
   return (
     <>
-      {/* Header */}
-      <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-gray-900">발주 요청</h2>
-        <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
-          <i className="ri-close-line text-2xl"></i>
-        </button>
-      </div>
       {/* Content */}
       <div className="p-6 overflow-y-auto max-h-[calc(90vh-180px)]">
         <div className="space-y-4">
@@ -109,7 +102,7 @@ export default function InventoryPurchaseRequestModal({
 
             return (
               <div key={item.itemId} className="border border-gray-200 rounded-lg p-4">
-                <div className="grid grid-cols-12 gap-4 items-center">
+                <div className="flex justify-between gap-8 items-center">
                   {/* 품목 정보 */}
                   <div className="col-span-4">
                     <div className="text-sm font-medium text-gray-900">{item.itemName}</div>
@@ -136,20 +129,10 @@ export default function InventoryPurchaseRequestModal({
                     label="발주 수량"
                     type="number"
                     min="0"
+                    maxLength={10}
                     value={quantity}
                     onChange={(e) => handleQuantityChange(item.itemId, e.target.value)}
                   />
-                  <div className="flex items-end">
-                    <span className="text-sm text-gray-500 whitespace-nowrap">{item.uomName}</span>
-                  </div>
-
-                  {/* 총액 */}
-                  <div className="col-span-3 text-right">
-                    <div className="text-xs text-gray-500">총액</div>
-                    <div className="text-base font-semibold text-gray-900">
-                      ₩{total.toLocaleString()}
-                    </div>
-                  </div>
                 </div>
               </div>
             );

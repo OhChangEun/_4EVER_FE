@@ -49,7 +49,12 @@ export default function BomTab() {
   };
 
   const handleViewDetail = (bomId: string) => {
-    openModal(BomDetailModal, { title: 'BOM 상세 정보', bomId: bomId });
+    openModal(BomDetailModal, {
+      title: 'BOM 상세 정보',
+      bomId: bomId,
+      width: '800px',
+      height: '700px',
+    });
   };
 
   const handleEdit = () => {
