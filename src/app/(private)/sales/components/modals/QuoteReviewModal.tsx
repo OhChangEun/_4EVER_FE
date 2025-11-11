@@ -51,8 +51,7 @@ const QuoteReviewModal = ({ onClose, $selectedQuotationId }: QuoteReviewModalPro
   const { mutate: quotationConfirmReq } = useMutation({
     mutationFn: (id: string) => postQuotationConfirm(id),
     onSuccess: (data) => {
-      alert(`${data.status} : ${quote?.quotationId}
-          `);
+      alert('검토 요청이 완료되었습니다.');
     },
     onError: (error) => {
       alert(`검토 요청 중 오류가 발생했습니다. ${error}`);
