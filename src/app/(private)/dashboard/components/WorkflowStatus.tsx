@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { DashboardProps } from '../types/DashboardWorkflowType';
 import { getTabCodeText } from '../dashboard.utils';
 import StatusLabel from '@/app/components/common/StatusLabel';
+import { formatDateTime } from '@/app/utils/date';
 
 const WorkflowStatus = ({ $workflowData }: DashboardProps) => {
   const [activeTab, setActiveTab] = useState('first');
@@ -62,7 +63,7 @@ const WorkflowStatus = ({ $workflowData }: DashboardProps) => {
                 </div>
                 <p className="text-sm text-gray-600 mt-1">{workflow.itemNumber}</p>
                 <p className="text-xs text-gray-500 mt-1">
-                  {workflow.name ? workflow.name : '알수없음'} • {workflow.date}
+                  {workflow.name ? workflow.name : '알수없음'} • {formatDateTime(workflow.date)}
                 </p>
               </div>
             </div>
