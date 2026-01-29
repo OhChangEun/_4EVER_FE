@@ -1,7 +1,6 @@
 export interface userInfoResponse {
-  userId: string;
-  userName: string;
-  loginEmail: string;
-  userRole: string;
-  userType: string;
+  id: number;
+  name: string;
+  email: string;
+  role: string;
 }

@@ -4,20 +4,23 @@ import '../styles/globals.css';
 import Providers from '@/app/providers';
 
 const geistSans = Geist({
+  subsets: ['latin'],
   display: 'swap',
   variable: '--font-geist-sans',
 });
 
 const geistMono = Geist_Mono({
+  subsets: ['latin'],
   display: 'swap',
   variable: '--font-geist-mono',
 });
 
-const pacifico = Pacifico({
-  weight: '400',
-  display: 'swap',
-  variable: '--font-pacifico',
-});
+// const pacifico = Pacifico({
+//   weight: '400',
+//   // subsets: ['latin'],
+//   display: 'swap',
+//   variable: '--font-pacifico',
+// });
 
 const notoSansKR = Noto_Sans_KR({
   subsets: ['latin'],
@@ -35,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="ko"
-      className={`${geistSans.variable} ${geistMono.variable} ${pacifico.variable} ${notoSansKR.variable}`}
+      className={`${geistSans.variable} ${geistMono.variable} ${notoSansKR.variable}`}
     >
       <body>
         <Providers>{children}</Providers>

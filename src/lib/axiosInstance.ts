@@ -1,14 +1,13 @@
 import axios from 'axios';
-import Cookies from 'js-cookie';
+import { readStoredToken } from '@/lib/auth/tokenStorage';
 
 async function resolveAccessToken(): Promise<string | null> {
   if (typeof window !== 'undefined') {
-    return Cookies.get('access_token') ?? null;
+    const { token } = readStoredToken();
+    return token;
   }
 
-  const { cookies } = await import('next/headers');
-  const cookieStore = await cookies();
-  return cookieStore.get('access_token')?.value ?? null;
+  return null;
 }
 
 axios.interceptors.request.use(

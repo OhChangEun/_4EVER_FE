@@ -111,9 +111,9 @@ export const WAREHOUSE_ENDPOINTS = {
 
 // ----------------------- USER -----------------------
 export const USER_ENDPOINTS = {
-  LOGIN: 'https://auth.everp.co.kr/oauth2/token',
-  LOGOUT: 'https://auth.everp.co.kr/logout',
-  USER_INFO: `${API_BASE_URL}/user/info`,
+  LOGIN: '/api/login',
+  LOGOUT: '/api/logout',
+  USER_INFO: '/api/me',
   USER_PROFILE_INFO: `${HRM_BASE_PATH}/employees/by-internel-user`,
 };
 

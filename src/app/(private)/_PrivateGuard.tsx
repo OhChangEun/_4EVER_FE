@@ -1,7 +1,6 @@
 'use client';
 
 import { ReactNode, useEffect, useState } from 'react';
-import { trySilentRefresh } from '@/lib/auth/refresh';
 import { startAuthorization } from '@/lib/auth/startAuthorization';
 import { useQuery } from '@tanstack/react-query';
 import { getUserInfo } from '../(public)/callback/callback.api';
@@ -19,13 +18,8 @@ export default function PrivateGuard({ children }: { children: ReactNode }) {
 
       if (!token || !expiresAt || Date.now() > expiresAt) {
         clearAccessToken();
-        try {
-          await trySilentRefresh();
-          // startAuthorization(window.location.pathname);
-        } catch {
-          startAuthorization(window.location.pathname);
-          return;
-        }
+        startAuthorization(window.location.pathname);
+        return;
       }
 
       setReady(true);
@@ -41,7 +35,7 @@ export default function PrivateGuard({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (data) {
       setUserInfo(data);
-      Cookies.set('role', data.userRole.toUpperCase(), { path: '/', sameSite: 'lax' });
+      Cookies.set('role', data.role.toUpperCase(), { path: '/', sameSite: 'lax' });
     }
   }, [data, setUserInfo]);
 

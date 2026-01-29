@@ -10,7 +10,7 @@ import { useNotificationSSE } from './Notification/useNotificationSSE';
 
 function SSEConnector() {
   const { userInfo } = useAuthStore();
-  const enabled = !!userInfo?.userId;
+  const enabled = !!userInfo?.id;
 
   useNotificationSSE({
     enabled: enabled,

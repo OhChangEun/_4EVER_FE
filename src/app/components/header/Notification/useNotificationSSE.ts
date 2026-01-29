@@ -30,7 +30,7 @@ export function useNotificationSSE({
 }: UseNotificationSSEOptions) {
   const { token } = readStoredToken(); // 토큰
   const { userInfo } = useAuthStore();
-  const userId = userInfo?.userId || '';
+  const userId = userInfo?.id ? String(userInfo.id) : '';
 
   const abortControllerRef = useRef<AbortController | null>(null);
   const queryClient = useQueryClient();

@@ -2,7 +2,7 @@
 
 import { QueryClientProvider, HydrationBoundary, DehydratedState } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { QueryClient } from '@tanstack/react-query';
 import { ModalProvider } from './components/common/modal/ModalProvider';
 
@@ -14,6 +14,12 @@ export default function Providers({
   dehydratedState?: DehydratedState | null;
 }) {
   const [queryClient] = useState(() => new QueryClient());
+
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_API_MOCKING === 'enabled') {
+      import('@/mocks').then(({ setupMocks }) => setupMocks());
+    }
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

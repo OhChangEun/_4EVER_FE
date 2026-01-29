@@ -1,108 +1,31 @@
 'use client';
 
 import { useEffect } from 'react';
-import axios from 'axios';
 import { startAuthorization } from '@/lib/auth/startAuthorization';
-import { USER_ENDPOINTS } from '@/app/types/api';
-import { getUserInfo } from './callback.api';
+import { login } from './callback.api';
 import { useAuthStore } from '@/store/authStore';
 import Cookies from 'js-cookie';
 import { persistAccessToken } from '@/lib/auth/tokenStorage';
-
-// const REDIRECT_URI = 'http://localhost:3000/callback'; // 배포용
-const REDIRECT_URI = 'https://everp.co.kr/callback'; // 서버용
-
-function cleanupPkce() {
-  localStorage.removeItem('pkce_verifier');
-  localStorage.removeItem('oauth_state');
-}
-
-// 키 생성 로직 추가
-function makeBasicAuthHeader(clientId: string, clientSecret: string): string {
-  const plain = `${clientId}:${clientSecret}`;
-  const utf8 = new TextEncoder().encode(plain);
-  let binary = '';
-  for (let i = 0; i < utf8.length; i++) binary += String.fromCharCode(utf8[i]);
-  const encoded = btoa(binary);
-  return `Basic ${encoded}`;
-}
 
 export default function CallbackPage() {
   const { setUserInfo } = useAuthStore();
   useEffect(() => {
     (async () => {
       try {
-        const q = new URLSearchParams(window.location.search);
-        const code = q.get('code');
-        const state = q.get('state');
-        const expected = localStorage.getItem('oauth_state');
-
-        console.log('state', state);
-        console.log('expected', expected);
-        console.log(localStorage.getItem('oauth_state'));
-
-        if (!code || !state || !expected || state !== expected) {
-          cleanupPkce();
-          throw new Error('Invalid state or code');
-        }
-
-        const verifier = localStorage.getItem('pkce_verifier');
-        console.log('verify', verifier);
-        if (!verifier) throw new Error('Missing PKCE verifier');
-
-        const body = new URLSearchParams({
-          grant_type: 'authorization_code',
-          // client_id: 'everp-spa', // 로컬용
-          client_id: 'everp', // 배포용
-          redirect_uri: REDIRECT_URI,
-          code,
-          code_verifier: verifier,
-        });
-
-        const res = await axios.post(USER_ENDPOINTS.LOGIN, body.toString(), {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            // 동적으로 키 생성
-            Authorization: makeBasicAuthHeader('everp', 'super-secret'),
-          },
-        });
-
-        const { access_token, expires_in } = res.data;
-
-        persistAccessToken(access_token, expires_in);
-
-        const userInfo = await getUserInfo();
+        const { accessToken, user } = await login();
+        persistAccessToken(accessToken, 60 * 60 * 24);
+        const userInfo = user;
         setUserInfo(userInfo);
-        Cookies.set('role', userInfo.userRole.toUpperCase(), { path: '/', sameSite: 'lax' });
-        cleanupPkce();
+        Cookies.set('role', userInfo.role.toUpperCase(), { path: '/', sameSite: 'lax' });
 
         const returnTo = localStorage.getItem('oauth_return_to') || '/';
         localStorage.removeItem('oauth_return_to');
-        localStorage.removeItem('oauth_state');
 
         window.history.replaceState({}, '', new URL(returnTo, window.location.origin).toString());
         window.location.replace(returnTo);
       } catch (error: unknown) {
-        let errMessage = 'token_exchange_failed';
         alert(error);
-        if (axios.isAxiosError(error)) {
-          errMessage =
-            error.response?.data?.error ||
-            error.response?.data?.message ||
-            error.message ||
-            'token_exchange_failed';
-        } else if (error instanceof Error) {
-          errMessage = error.message;
-        }
-
-        cleanupPkce();
-
-        if (errMessage === 'invalid_grant') {
-          startAuthorization('/');
-          return;
-        }
-
-        throw new Error(errMessage);
+        startAuthorization('/');
       }
     })();
   }, [setUserInfo]);
@@ -125,11 +48,11 @@ export default function CallbackPage() {
           <ul className="space-y-1">
             <li className="flex items-start gap-2">
               <span className="mt-1 text-red-400">•</span>
-              <span>인증 서버에서 토큰을 교환하고 있어요.</span>
+              <span>모의 로그인 토큰을 발급하고 있어요.</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="mt-1 text-red-400">•</span>
-              <span>사용자 정보를 불러와 역할을 확인하는 중입니다.</span>
+              <span>사용자 정보를 설정하고 역할을 확인하는 중입니다.</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="mt-1 text-red-400">•</span>

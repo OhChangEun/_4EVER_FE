@@ -51,9 +51,9 @@ export default function ProfileDropdown() {
   const role = useRole();
   const router = useRouter();
 
-  const { userInfo } = useAuthStore();
-  const userName = userInfo?.userName;
-  const userEmail = userInfo?.loginEmail;
+  const { userInfo, clearUserInfo } = useAuthStore();
+  const userName = userInfo?.name;
+  const userEmail = userInfo?.email;
 
   console.log(userEmail);
 
@@ -86,6 +86,7 @@ export default function ProfileDropdown() {
       alert('로그아웃 되었습니다.');
       router.push('/dashboard');
       clearAccessToken();
+      clearUserInfo();
       Cookies.remove('role', { path: '/' });
       window.location.reload();
     },
