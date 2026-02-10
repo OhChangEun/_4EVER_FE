@@ -16,7 +16,11 @@ export default function Providers({
   const [queryClient] = useState(() => new QueryClient());
 
   useEffect(() => {
-    if (process.env.NEXT_PUBLIC_API_MOCKING === 'enabled') {
+    const shouldMock =
+      process.env.NEXT_PUBLIC_API_MOCKING === 'enabled' ||
+      process.env.NODE_ENV === 'development';
+
+    if (shouldMock) {
       import('@/mocks').then(({ setupMocks }) => setupMocks());
     }
   }, []);

@@ -31,13 +31,14 @@ export function useNotificationSSE({
   const { token } = readStoredToken(); // 토큰
   const { userInfo } = useAuthStore();
   const userId = userInfo?.id ? String(userInfo.id) : '';
+  const sseEnabled = enabled && process.env.NEXT_PUBLIC_SSE_ENABLED === 'true';
 
   const abortControllerRef = useRef<AbortController | null>(null);
   const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!enabled || !userId) {
+    if (!sseEnabled || !userId) {
       console.info('[SSE] Not connecting: enabled is false or userId is missing.', { userId });
 
       // 기존 연결이 있다면 종료합니다.
@@ -129,7 +130,7 @@ export function useNotificationSSE({
       abortController.abort();
       abortControllerRef.current = null;
     };
-  }, [enabled, userId, userInfo, queryClient, onAlarm, onUnreadCountChange]);
+  }, [sseEnabled, userId, userInfo, queryClient, onAlarm, onUnreadCountChange]);
   return {
     disconnect: () => {
       if (abortControllerRef.current) {

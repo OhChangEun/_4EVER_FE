@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono, Noto_Sans_KR, Pacifico } from 'next/font/google';
+import { Geist, Geist_Mono, Noto_Sans_KR } from 'next/font/google';
 import '../styles/globals.css';
-import Providers from '@/app/providers';
 
 const geistSans = Geist({
   subsets: ['latin'],
@@ -15,16 +14,9 @@ const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
 });
 
-// const pacifico = Pacifico({
-//   weight: '400',
-//   // subsets: ['latin'],
-//   display: 'swap',
-//   variable: '--font-pacifico',
-// });
-
 const notoSansKR = Noto_Sans_KR({
   subsets: ['latin'],
-  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+  weight: ['400', '500', '700'],
   variable: '--font-noto-sans-kr',
   display: 'swap',
 });
@@ -40,9 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="ko"
       className={`${geistSans.variable} ${geistMono.variable} ${notoSansKR.variable}`}
     >
-      <body>
-        <Providers>{children}</Providers>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

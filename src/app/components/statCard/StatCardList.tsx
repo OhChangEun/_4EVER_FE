@@ -15,10 +15,11 @@ export default function StatCardList({ stats, period }: StatsGridProps) {
   };
 
   const currentPeriodLabel = comparisonLabelMap[period];
+  const safeStats = stats ?? [];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      {stats.map((stat, index) => (
+      {safeStats.map((stat, index) => (
         <StatCardItem key={index} stat={stat} currentPeriodLabel={currentPeriodLabel} />
       ))}
     </div>

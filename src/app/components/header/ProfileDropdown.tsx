@@ -4,12 +4,11 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import ProfileInfoModal from './ProfileInfoModal';
 import { useRole } from '@/app/hooks/useRole';
-import { useMutation } from '@tanstack/react-query';
-import { logout } from '@/app/(public)/callback/callback.api';
 import { useRouter } from 'next/navigation';
 import { clearAccessToken } from '@/lib/auth/tokenStorage';
 import Cookies from 'js-cookie';
 import { useAuthStore } from '@/store/authStore';
+import { clearLoginId } from '@/lib/auth/simpleLogin';
 
 export function mapRoleToKorean(role: string | undefined): string {
   if (!role) return '';
@@ -75,25 +74,12 @@ export default function ProfileDropdown() {
   }, [isOpen]);
 
   const handleLogout = () => {
-    // 로그아웃 로직
-    console.log('로그아웃');
-    logoutRequest();
+    clearAccessToken();
+    clearUserInfo();
+    clearLoginId();
+    Cookies.remove('role', { path: '/' });
+    router.replace('/login');
   };
-
-  const { mutate: logoutRequest } = useMutation({
-    mutationFn: logout,
-    onSuccess: () => {
-      alert('로그아웃 되었습니다.');
-      router.push('/dashboard');
-      clearAccessToken();
-      clearUserInfo();
-      Cookies.remove('role', { path: '/' });
-      window.location.reload();
-    },
-    onError: (error) => {
-      alert(error);
-    },
-  });
 
   const handleProfile = (e: React.MouseEvent) => {
     if (role === 'SUPPLIER_ADMIN' || role === 'CUSTOMER_ADMIN') {

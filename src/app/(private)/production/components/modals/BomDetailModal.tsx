@@ -2,8 +2,17 @@ import { BomDetailResponse } from '@/app/(private)/production/types/BomDetailApi
 import { fetchBomDetail } from '../../api/production.api';
 import { useQuery } from '@tanstack/react-query';
 import { ModalProps } from '@/app/components/common/modal/types';
-import BomTreeContainer from '../../BomTreeContainer';
 import { formatDateTime } from '@/app/utils/date';
+import dynamic from 'next/dynamic';
+
+const BomTreeContainer = dynamic(() => import('../../BomTreeContainer'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-96 flex items-center justify-center bg-gray-50 rounded-lg">
+      <p className="text-gray-500">BOM 트리를 준비하는 중...</p>
+    </div>
+  ),
+});
 
 interface BomDetailModalProps extends ModalProps {
   bomId: string;

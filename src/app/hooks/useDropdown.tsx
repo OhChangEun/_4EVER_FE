@@ -18,7 +18,8 @@ export const useDropdown = (
   const filteredData = useMemo(() => {
     if (!data) return [];
 
-    let list = [...data];
+    const normalized = Array.isArray(data) ? data : [];
+    let list = [...normalized];
 
     switch (mode) {
       case 'include':

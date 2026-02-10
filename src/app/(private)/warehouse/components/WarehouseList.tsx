@@ -2,6 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { WarehouseListQueryParams } from '../types/WarehouseListType';
 import Pagination from '@/app/components/common/Pagination';
 import { getWarehouseList } from '../warehouse.api';
@@ -10,9 +11,20 @@ import AddWarehouseModal from './modals/AddWarehouseModal';
 import WarehouseDetailModal from './modals/WarehouseDetailModal';
 import ManageWarehouseModal from './modals/ManageWarehouseModal';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
-import Warehouse3DModal from './warehouseVisualizer/components/Warehouse3DModal';
 import IconButton from '@/app/components/common/IconButton';
 import { useModal } from '@/app/components/common/modal/useModal';
+
+const Warehouse3DModal = dynamic(
+  () => import('./warehouseVisualizer/components/Warehouse3DModal'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 text-white">
+        3D 뷰어를 준비하는 중...
+      </div>
+    ),
+  },
+);
 
 const WarehouseList = () => {
   const { openModal } = useModal();

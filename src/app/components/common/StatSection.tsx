@@ -16,7 +16,7 @@ interface StatSectionProps {
 export default function StatSection({ title, subTitle, statsData }: StatSectionProps) {
   const DEFAULT_PERIOD: Period = 'week'; // 이번 주
   const [selectedPeriod, setSelectedPeriod] = useState<Period>(DEFAULT_PERIOD);
-  const stats = statsData[selectedPeriod];
+  const stats = statsData?.[selectedPeriod] ?? [];
   const handlePeriodSelect = (key: string) => {
     setSelectedPeriod(key as Period);
   };
