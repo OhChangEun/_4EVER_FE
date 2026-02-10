@@ -1,13 +1,29 @@
+'use client';
+
 import Link from 'next/link';
 import WarehouseList from './components/WarehouseList';
 import { Suspense } from 'react';
 import StatSection from '@/app/components/common/StatSection';
 import { getWarehouseStats } from './warehouse.api';
 import { mapWarehouseStatsToCards } from './warehouse.service';
+import { useQuery } from '@tanstack/react-query';
 
-export default async function WarehousePage() {
-  const warehouseStats = await getWarehouseStats();
-  const warehouseStatsData = mapWarehouseStatsToCards(warehouseStats);
+export default function WarehousePage() {
+  const { data: warehouseStats, isLoading } = useQuery({
+    queryKey: ['warehouseStats'],
+    queryFn: getWarehouseStats,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div>Loading...</div>
+      </div>
+    );
+  }
+
+  const warehouseStatsData = warehouseStats ? mapWarehouseStatsToCards(warehouseStats) : [];
+
   return (
     <div className="min-h-screen bg-gray-50">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

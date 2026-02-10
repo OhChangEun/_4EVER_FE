@@ -1,14 +1,34 @@
+'use client';
+
 import QuickActions from '@/app/(private)/dashboard/components/QuickActions';
 import WorkflowStatus from '@/app/(private)/dashboard/components/WorkflowStatus';
 import StatSection from '@/app/components/common/StatSection';
 import { getDashboardStats, getWorkflowStatus } from '@/app/(private)/dashboard/dashboard.api';
 import { mapDashboardStatsToCards } from './dashboard.service';
+import { useQuery } from '@tanstack/react-query';
 
-export default async function DashboardPage() {
-  const dashboardStats = await getDashboardStats();
+export default function DashboardPage() {
+  const { data: dashboardStats, isLoading: statsLoading } = useQuery({
+    queryKey: ['dashboardStats'],
+    queryFn: getDashboardStats,
+  });
 
-  const workflowData = await getWorkflowStatus();
-  const dashboardStatsData = mapDashboardStatsToCards(dashboardStats);
+  const { data: workflowData, isLoading: workflowLoading } = useQuery({
+    queryKey: ['workflowStatus'],
+    queryFn: getWorkflowStatus,
+  });
+
+  if (statsLoading || workflowLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div>Loading...</div>
+      </div>
+    );
+  }
+
+  const dashboardStatsData = dashboardStats
+    ? mapDashboardStatsToCards(dashboardStats)
+    : { week: [], month: [], quarter: [], year: [] };
 
   return (
     <div className="min-h-screen">

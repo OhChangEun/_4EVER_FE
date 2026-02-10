@@ -1,3 +1,5 @@
+'use client';
+
 import StatSection from '@/app/components/common/StatSection';
 import { fetchHrmStats } from '@/app/(private)/hrm/api/hrm.api';
 import { mapHrmStatsToCards } from '@/app/(private)/hrm/services/hrm.service';
@@ -5,9 +7,22 @@ import ErrorMessage from '@/app/components/common/ErrorMessage';
 import { Suspense } from 'react';
 import TabNavigation from '@/app/components/common/TabNavigation';
 import { HRM_TABS } from '@/app/(private)/hrm/constants';
+import { useQuery } from '@tanstack/react-query';
 
-export default async function HrmPage() {
-  const data = await fetchHrmStats();
+export default function HrmPage() {
+  const { data, isLoading } = useQuery({
+    queryKey: ['hrmStats'],
+    queryFn: fetchHrmStats,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div>Loading...</div>
+      </div>
+    );
+  }
+
   const hrmStatsData = data ? mapHrmStatsToCards(data ?? {}) : null;
 
   return (

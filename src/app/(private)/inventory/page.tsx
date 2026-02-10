@@ -1,13 +1,28 @@
+'use client';
+
 import StatSection from '@/app/components/common/StatSection';
 import TabNavigation from '@/app/components/common/TabNavigation';
 import { Suspense } from 'react';
 import { getInventoryStats } from '@/app/(private)/inventory/inventory.api';
 import { mapInventoryStatsToCards } from './inventory.service';
 import { INVENTORY_TABS } from '@/app/types/componentConstant';
+import { useQuery } from '@tanstack/react-query';
 
-export default async function InventoryPage() {
-  const inventoryStats = await getInventoryStats();
-  const inventoryStatsData = mapInventoryStatsToCards(inventoryStats);
+export default function InventoryPage() {
+  const { data: inventoryStats, isLoading } = useQuery({
+    queryKey: ['inventoryStats'],
+    queryFn: getInventoryStats,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div>Loading...</div>
+      </div>
+    );
+  }
+
+  const inventoryStatsData = inventoryStats ? mapInventoryStatsToCards(inventoryStats) : [];
 
   return (
     <div className="min-h-screen bg-gray-50">

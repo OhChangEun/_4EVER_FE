@@ -1,3 +1,5 @@
+'use client';
+
 import { Suspense } from 'react';
 import { getCustomerSalesStats, getSalesStats } from '@/app/(private)/sales/sales.api';
 import StatSection from '@/app/components/common/StatSection';
@@ -6,20 +8,32 @@ import {
   mapSalesStatsToCards,
 } from '@/app/(private)/sales/sales.service';
 import SalesTabs from './components/tabs/SalesTabs';
-import { cookies } from 'next/headers';
+import { useRole } from '@/app/hooks/useRole';
+import { useQuery } from '@tanstack/react-query';
 
-export default async function SalesPage() {
-  const cookieStore = await cookies();
-  const role = cookieStore.get('role')?.value ?? null;
+export default function SalesPage() {
+  const role = useRole();
 
-  let res;
-  let salesStatsData;
-  if (role === 'CUSTOMER_ADMIN') {
-    res = await getCustomerSalesStats();
-    salesStatsData = mapCustomerSalesStatsToCards(res);
-  } else {
-    res = await getSalesStats();
-    salesStatsData = mapSalesStatsToCards(res);
+  const { data: salesStatsData, isLoading } = useQuery({
+    queryKey: ['salesStats', role],
+    queryFn: async () => {
+      if (role === 'CUSTOMER_ADMIN') {
+        const res = await getCustomerSalesStats();
+        return mapCustomerSalesStatsToCards(res);
+      } else {
+        const res = await getSalesStats();
+        return mapSalesStatsToCards(res);
+      }
+    },
+    enabled: !!role,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div>Loading...</div>
+      </div>
+    );
   }
 
   return (
@@ -33,7 +47,7 @@ export default async function SalesPage() {
               ? '주문, 견적 및 고객 관리 시스템'
               : '주문 및 고객 관리 시스템'
           }
-          statsData={salesStatsData}
+          statsData={salesStatsData ?? []}
         />
         {/* 탭 콘텐츠 */}
         <Suspense fallback={<div>Loading...</div>}>

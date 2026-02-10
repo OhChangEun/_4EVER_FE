@@ -1,3 +1,5 @@
+'use client';
+
 import { Suspense } from 'react';
 
 import {
@@ -12,29 +14,36 @@ import {
   fetchPurchaseStats,
   fetchSupplierOrdersPurchaseStats,
 } from '@/app/(private)/purchase/api/purchase.api';
-import { cookies } from 'next/headers';
 import { StatCardType } from '@/app/types/StatType';
+import { useRole } from '@/app/hooks/useRole';
+import { useQuery } from '@tanstack/react-query';
 
-export default async function PurchasePage() {
-  const cookieStore = await cookies();
-  const role = cookieStore.get('role')?.value ?? null;
-
+export default function PurchasePage() {
+  const role = useRole();
   const isSupplier = role === 'SUPPLIER_ADMIN';
 
-  let statsData: Record<string, StatCardType[]> | null = null;
+  const { data: statsData, isLoading } = useQuery({
+    queryKey: ['purchaseStats', role],
+    queryFn: async (): Promise<Record<string, StatCardType[]> | null> => {
+      if (isSupplier) {
+        const data = await fetchSupplierOrdersPurchaseStats();
+        return data ? mapSupplierPurchaseStatsToCards(data) : null;
+      } else {
+        const data = await fetchPurchaseStats();
+        return data ? mapPurchaseStatsToCards(data) : null;
+      }
+    },
+    enabled: !!role,
+  });
 
-  // 공급업체 분기
-  if (isSupplier) {
-    const data = await fetchSupplierOrdersPurchaseStats();
-    if (data) {
-      statsData = mapSupplierPurchaseStatsToCards(data);
-    }
-  } else {
-    const data = await fetchPurchaseStats();
-    if (data) {
-      statsData = mapPurchaseStatsToCards(data);
-    }
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div>Loading...</div>
+      </div>
+    );
   }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
