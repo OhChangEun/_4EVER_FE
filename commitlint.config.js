@@ -7,7 +7,7 @@ module.exports = {
       // e.g. "feat(scope): subject (#123)"
       // subject는 소문자/숫자/공백/일부 구두점/한글만 허용(대문자 차단)
       headerPattern:
-        /^(feat|fix|refac|test|chore|docs)(?:\(([a-z0-9_-]+)\))?: ([a-z0-9 가-힣_\-,:()\[\]]+) \(#\d+\)$/u,
+        /^(feat|fix|refac|test|chore|docs)(?:\(([a-z0-9_-]+)\))?: ([a-z0-9 가-힣_\-,:()\[\]]+)$/u,
       headerPatternFlags: 'u',
       headerCorrespondence: ['type', 'scope', 'subject'],
     },
