@@ -16,15 +16,18 @@ import { useQuery } from '@tanstack/react-query';
 export default function FinancePage() {
   const role = useRole();
 
-  const { data: res, isLoading } = useQuery({
+  const { data: financeStatsData, isLoading } = useQuery({
     queryKey: ['financeStats', role],
     queryFn: async () => {
       if (role === 'CUSTOMER_ADMIN') {
-        return await getCustomerStats();
+        const res = await getCustomerStats();
+        return res.success ? mapCustomerSupplierStatsToCards(res.data) : null;
       } else if (role === 'SUPPLIER_ADMIN') {
-        return await getSupplierStats();
+        const res = await getSupplierStats();
+        return res.success ? mapCustomerSupplierStatsToCards(res.data) : null;
       } else {
-        return await getFinanceStats();
+        const res = await getFinanceStats();
+        return res.success ? mapFinanceStatsToCards(res.data) : null;
       }
     },
     enabled: !!role,
@@ -38,17 +41,11 @@ export default function FinancePage() {
     );
   }
 
-  const financeStatsData = res
-    ? role === 'CUSTOMER_ADMIN' || role === 'SUPPLIER_ADMIN'
-      ? mapCustomerSupplierStatsToCards(res.data)
-      : mapFinanceStatsToCards(res.data)
-    : null;
-
   return (
     <div className="min-h-screen bg-gray-50">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* 페이지 헤더 */}
-        {res?.success && financeStatsData ? (
+        {financeStatsData ? (
           <StatSection
             title="재무 관리"
             subTitle="전표 관리 및 재무 현황"

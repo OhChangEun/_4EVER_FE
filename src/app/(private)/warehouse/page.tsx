@@ -22,7 +22,9 @@ export default function WarehousePage() {
     );
   }
 
-  const warehouseStatsData = warehouseStats ? mapWarehouseStatsToCards(warehouseStats) : [];
+  const warehouseStatsData = warehouseStats
+    ? mapWarehouseStatsToCards(warehouseStats)
+    : { week: [], month: [], quarter: [], year: [] };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -33,7 +35,7 @@ export default function WarehousePage() {
           subTitle="창고 현황 및 관리"
           statsData={warehouseStatsData}
         />
-        <div className="w-[100%] flex justify-end ">
+        <div className="w-full flex justify-end">
           <Link
             href="/inventory"
             className="px-4 py-2  text-gray-600 hover:text-gray-900 cursor-pointer"

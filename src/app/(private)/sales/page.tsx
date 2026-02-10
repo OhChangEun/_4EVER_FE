@@ -47,7 +47,7 @@ export default function SalesPage() {
               ? '주문, 견적 및 고객 관리 시스템'
               : '주문 및 고객 관리 시스템'
           }
-          statsData={salesStatsData ?? []}
+          statsData={salesStatsData ?? { week: [], month: [], quarter: [], year: [] }}
         />
         {/* 탭 콘텐츠 */}
         <Suspense fallback={<div>Loading...</div>}>

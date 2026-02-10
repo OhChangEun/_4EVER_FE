@@ -21,7 +21,9 @@ export default function LowStockPage() {
     );
   }
 
-  const lowStockStatsData = lowStockStats ? mapLowStockStatsToCards(lowStockStats) : [];
+  const lowStockStatsData = lowStockStats
+    ? mapLowStockStatsToCards(lowStockStats)
+    : { week: [], month: [], quarter: [], year: [] };
 
   return (
     <div className="min-h-screen bg-gray-50">

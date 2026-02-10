@@ -22,7 +22,9 @@ export default function InventoryPage() {
     );
   }
 
-  const inventoryStatsData = inventoryStats ? mapInventoryStatsToCards(inventoryStats) : [];
+  const inventoryStatsData = inventoryStats
+    ? mapInventoryStatsToCards(inventoryStats)
+    : { week: [], month: [], quarter: [], year: [] };
 
   return (
     <div className="min-h-screen bg-gray-50">
