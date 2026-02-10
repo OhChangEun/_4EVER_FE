@@ -3,11 +3,27 @@ let started = false;
 export async function setupMocks() {
   if (started) return;
   if (typeof window === 'undefined') return;
-  if (process.env.NEXT_PUBLIC_API_MOCKING !== 'enabled') return;
-
-  const { worker } = await import('./browser');
-  await worker.start({
-    onUnhandledRequest: 'warn',
+  
+  const shouldMock = process.env.NEXT_PUBLIC_API_MOCKING === 'enabled';
+  console.log('[MSW] Environment check:', {
+    NEXT_PUBLIC_API_MOCKING: process.env.NEXT_PUBLIC_API_MOCKING,
+    shouldMock,
   });
-  started = true;
+  
+  if (!shouldMock) return;
+
+  try {
+    const { worker } = await import('./browser');
+    await worker.start({
+      serviceWorker: {
+        url: '/mockServiceWorker.js',
+      },
+      onUnhandledRequest: 'warn',
+      quiet: false,
+    });
+    console.log('[MSW] ✅ Mocking enabled');
+    started = true;
+  } catch (error) {
+    console.error('[MSW] ❌ Failed to start:', error);
+  }
 }
