@@ -11,7 +11,6 @@ import {
   postApporvePurchaseReq,
   postRejectPurchaseReq,
 } from '@/app/(private)/purchase/api/purchase.api';
-import { PURCHASE_LIST_TABLE_HEADERS } from '@/app/(private)/purchase/constants';
 import IconButton from '@/app/components/common/IconButton';
 import Dropdown from '@/app/components/common/Dropdown';
 import {
@@ -21,6 +20,7 @@ import {
 import DateRangePicker from '@/app/components/common/DateRangePicker';
 import { getQueryClient } from '@/lib/queryClient';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
+import Table, { TableColumn } from '@/app/components/common/Table';
 import Pagination from '@/app/components/common/Pagination';
 import { PurchaseReqParams } from '@/app/(private)/purchase/types/PurchaseApiRequestType';
 import { useModal } from '@/app/components/common/modal/useModal';
@@ -111,6 +111,8 @@ export default function PurchaseRequestListTab() {
 
   const totalPages = pageInfo?.totalPages ?? 1;
 
+  type RequestItem = (typeof requests)[0];
+
   const handleViewDetail = (request: PurchaseReqResponse): void => {
     openModal(PurchaseRequestDetailModal, {
       title: '구매 요청 상세 정보',
@@ -136,6 +138,73 @@ export default function PurchaseRequestListTab() {
       rejectpurchaseRequest(prId);
     }
   };
+
+  const columns: TableColumn<RequestItem>[] = [
+    {
+      key: 'purchaseRequisitionNumber',
+      label: '구매요청번호',
+      align: 'center',
+      render: (_, r) => (
+        <div className="flex flex-col">
+          <span>{r.purchaseRequisitionNumber}</span>
+        </div>
+      ),
+    },
+    { key: 'requesterName', label: '요청자', align: 'center' },
+    { key: 'departmentName', label: '부서', align: 'center' },
+    {
+      key: 'requestDate',
+      label: '요청일',
+      align: 'center',
+      render: (_, r) => formatDateTime(r.requestDate),
+    },
+    {
+      key: 'totalAmount',
+      label: '총금액',
+      align: 'center',
+      render: (_, r) => `${r.totalAmount}원`,
+    },
+    {
+      key: 'statusCode',
+      label: '상태',
+      align: 'center',
+      render: (_, r) => <StatusLabel $statusCode={r.statusCode} />,
+    },
+    {
+      key: 'action',
+      label: '작업',
+      align: 'center',
+      render: (_, r) => (
+        <div className="flex items-center justify-center space-x-2">
+          <button
+            onClick={() => handleViewDetail(r)}
+            className="w-8 h-8 flex items-center justify-center text-blue-500 hover:bg-blue-50 rounded cursor-pointer"
+            title="상세보기"
+          >
+            <i className="ri-eye-line"></i>
+          </button>
+          {r.statusCode === 'PENDING' && (
+            <>
+              <button
+                onClick={() => handleApprove(r.purchaseRequisitionId)}
+                className="text-green-600 hover:text-green-900 cursor-pointer"
+                title="승인"
+              >
+                <i className="ri-check-line"></i>
+              </button>
+              <button
+                onClick={() => handleReject(r.purchaseRequisitionId)}
+                className="text-red-600 hover:text-red-900 cursor-pointer"
+                title="반려"
+              >
+                <i className="ri-close-line"></i>
+              </button>
+            </>
+          )}
+        </div>
+      ),
+    },
+  ];
 
   return (
     <>
@@ -185,81 +254,13 @@ export default function PurchaseRequestListTab() {
             $type="error"
             $message="구매 요청 목록을 불러오는 중 오류가 발생했습니다."
           />
-        ) : !requests || requests.length === 0 ? (
-          <TableStatusBox $type="empty" $message="구매 요청 정보가 없습니다." />
         ) : (
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                {PURCHASE_LIST_TABLE_HEADERS.map((header) => (
-                  <th
-                    key={header}
-                    className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center"
-                  >
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {requests.map((request) => (
-                <tr key={request.purchaseRequisitionId} className="hover:bg-gray-50 text-center">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    <div className="flex flex-col">
-                      <span>{request.purchaseRequisitionNumber}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{request.requesterName}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{request.departmentName}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
-                    {formatDateTime(request.requestDate)}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{request.totalAmount}원</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <StatusLabel $statusCode={request.statusCode} />
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
-                    <div className="flex items-center justify-center space-x-2">
-                      <button
-                        onClick={() => handleViewDetail(request)}
-                        className="w-8 h-8 flex items-center justify-center text-blue-500 hover:bg-blue-50 rounded cursor-pointer"
-                        title="상세보기"
-                      >
-                        <i className="ri-eye-line"></i>
-                      </button>
-
-                      {/* 구매 요청 상태가 대기중일 때 */}
-                      {request.statusCode === 'PENDING' && (
-                        <>
-                          <button
-                            onClick={() => handleApprove(request.purchaseRequisitionId)}
-                            className="text-green-600 hover:text-green-900 cursor-pointer"
-                            title="승인"
-                          >
-                            <i className="ri-check-line"></i>
-                          </button>
-                          <button
-                            onClick={() => handleReject(request.purchaseRequisitionId)}
-                            className="text-red-600 hover:text-red-900 cursor-pointer"
-                            title="반려"
-                          >
-                            <i className="ri-close-line"></i>
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {requests.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500 text-sm">
-                    구매 요청이 없습니다.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+          <Table
+            columns={columns}
+            data={requests}
+            keyExtractor={(row) => row.purchaseRequisitionId}
+            emptyMessage="구매 요청 정보가 없습니다."
+          />
         )}
       </div>
 

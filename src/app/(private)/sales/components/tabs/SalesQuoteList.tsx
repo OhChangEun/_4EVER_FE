@@ -12,11 +12,8 @@ import { getQuoteList } from '@/app/(private)/sales/sales.api';
 import { useDebounce } from 'use-debounce';
 import QuoteReviewModal from '../modals/QuoteReviewModal';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
-import {
-  getQuoteSearchKeywordOptions,
-  QUOTE_LIST_TABLE_HEADERS,
-} from '@/app/(private)/sales/constant';
-import { QUOTE_STATUS_OPTIONS } from '@/app/(private)/sales/constant';
+import Table, { TableColumn } from '@/app/components/common/Table';
+import { getQuoteSearchKeywordOptions, QUOTE_STATUS_OPTIONS } from '@/app/(private)/sales/constant';
 import Pagination from '@/app/components/common/Pagination';
 import StatusLabel from '@/app/components/common/StatusLabel';
 import { useRole } from '@/app/hooks/useRole';
@@ -34,7 +31,6 @@ const SalesQuoteList = () => {
   const [searchType, setSearchType] = useState('quotationNumber');
   const [statusFilter, setStatusFilter] = useState<QuoteStatus>('ALL');
   const [showReviewModal, setShowReviewModal] = useState(false);
-  const [selectedQuotes, setSelectedQuotes] = useState<number[]>([]);
   const [selectedQuotationId, setSelectedQuotationId] = useState<string>('');
 
   const [startDate, setStartDate] = useState('');
@@ -69,6 +65,8 @@ const SalesQuoteList = () => {
   const pageInfo = quoteRes?.pageData;
   const totalPages = pageInfo?.totalPages ?? 1;
 
+  type QuoteItem = (typeof quotes)[0];
+
   const handleViewQuote = (quote: Quote) => {
     setSelectedQuotationId(quote.quotationId);
     openModal(QuoteDetailModal, {
@@ -93,6 +91,57 @@ const SalesQuoteList = () => {
 
   const role = useRole();
   const quoteOptions = getQuoteSearchKeywordOptions(role as string);
+
+  const columns: TableColumn<QuoteItem>[] = [
+    {
+      key: 'quotationId',
+      label: '선택',
+      render: (_, quote) => (
+        <input
+          type="checkbox"
+          checked={selectedQuotationId === quote.quotationId}
+          onChange={() => handleCheckboxChange(quote.quotationId)}
+          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+        />
+      ),
+    },
+    {
+      key: 'quotationNumber',
+      label: '견적번호',
+      render: (_, q) => (
+        <span className="text-sm font-medium text-gray-900">{q.quotationNumber}</span>
+      ),
+    },
+    { key: 'customerName', label: '고객사' },
+    { key: 'managerName', label: '담당자' },
+    { key: 'quotationDate', label: '견적일' },
+    { key: 'dueDate', label: '납기일' },
+    {
+      key: 'totalAmount',
+      label: '총금액',
+      align: 'right',
+      render: (_, q) => `₩${q.totalAmount.toLocaleString()}`,
+    },
+    {
+      key: 'statusCode',
+      label: '상태',
+      render: (_, q) => <StatusLabel $statusCode={q.statusCode} />,
+    },
+    {
+      key: 'action',
+      label: '작업',
+      align: 'center',
+      render: (_, quote) => (
+        <button
+          onClick={() => handleViewQuote(quote)}
+          className="text-blue-600 hover:text-blue-800 cursor-pointer"
+          title="상세보기"
+        >
+          <i className="ri-eye-line"></i>
+        </button>
+      ),
+    },
+  ];
 
   return (
     <>
@@ -142,80 +191,13 @@ const SalesQuoteList = () => {
               $type="error"
               $message="견적서 목록을 불러오는 중 오류가 발생했습니다."
             />
-          ) : !quotes || quotes.length === 0 ? (
-            <TableStatusBox $type="empty" $message="등록된 견적서가 없습니다." />
           ) : (
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  {QUOTE_LIST_TABLE_HEADERS.map((header) =>
-                    header === '선택' ? (
-                      <th key={header} className="px-6 py-3 text-left">
-                        <input
-                          type="checkbox"
-                          disabled
-                          checked={selectedQuotes.length === quotes.length && quotes.length > 0}
-                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        />
-                      </th>
-                    ) : (
-                      <th
-                        key={header}
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                      >
-                        {header}
-                      </th>
-                    ),
-                  )}
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {quotes.map((quote) => (
-                  <tr key={quote.quotationId} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <input
-                        type="checkbox"
-                        checked={selectedQuotationId === quote.quotationId}
-                        onChange={() => handleCheckboxChange(quote.quotationId)}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {quote.quotationNumber}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {quote.customerName}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {quote.managerName}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {quote.quotationDate}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {quote.dueDate}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      ₩{quote.totalAmount.toLocaleString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <StatusLabel $statusCode={quote.statusCode} />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
-                      <div className="flex items-center justify-center space-x-2">
-                        <button
-                          onClick={() => handleViewQuote(quote)}
-                          className="text-blue-600 hover:text-blue-800 cursor-pointer"
-                          title="상세보기"
-                        >
-                          <i className="ri-eye-line"></i>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <Table
+              columns={columns}
+              data={quotes}
+              keyExtractor={(row) => row.quotationId}
+              emptyMessage="등록된 견적서가 없습니다."
+            />
           )}
         </div>
 

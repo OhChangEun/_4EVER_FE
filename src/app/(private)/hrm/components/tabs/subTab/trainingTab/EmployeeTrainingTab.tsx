@@ -15,6 +15,7 @@ import AddEmployeeTrainingModal from '@/app/(private)/hrm/components/modals/AddE
 import { useDropdown } from '@/app/hooks/useDropdown';
 import Input from '@/app/components/common/Input';
 import { useDebouncedKeyword } from '@/app/hooks/useDebouncedKeyword';
+import Table, { TableColumn } from '@/app/components/common/Table';
 
 export default function EmployeeTrainingTab() {
   // --- 모달 출력 ---
@@ -57,7 +58,78 @@ export default function EmployeeTrainingTab() {
   const trainingList = trainingData?.items ?? [];
   const pageInfo = trainingData?.page;
 
-  const handleViewTrainingDetail = (training: TrainingListData) => {
+  type TrainingItem = (typeof trainingList)[0];
+  const columns: TableColumn<TrainingItem>[] = [
+    {
+      key: 'name',
+      label: '직원 정보',
+      render: (_, t) => (
+        <div>
+          <div className="text-sm font-medium text-gray-900">{t.name}</div>
+          <div className="text-sm text-gray-500">
+            {t.department} · {t.position}
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'completedCount',
+      label: '완료된 교육',
+      align: 'center',
+      render: (_, t) => (
+        <div className="flex items-center justify-center">
+          <span className="text-sm font-medium text-green-600">{t.completedCount}</span>
+          <span className="text-sm text-gray-500 ml-1">개</span>
+        </div>
+      ),
+    },
+    {
+      key: 'requiredMissingCount',
+      label: '필수 교육',
+      align: 'center',
+      render: (_, t) => (
+        <div className="flex items-center justify-center">
+          <span className="text-sm font-medium text-red-600">{t.requiredMissingCount}</span>
+          <span className="text-sm text-gray-500 ml-1">개 미완료</span>
+        </div>
+      ),
+    },
+    {
+      key: 'lastTrainingDate',
+      label: '최근 교육일',
+      render: (_, t) => t.lastTrainingDate?.split('T')[0] ?? '-',
+    },
+    {
+      key: 'action',
+      label: '작업',
+      align: 'center',
+      render: (_, t) => (
+        <div className="flex justify-center space-x-2">
+          <button
+            onClick={() => handleViewTrainingDetail(t)}
+            className="text-blue-600 hover:text-blue-900 cursor-pointer"
+            title="교육 상세보기"
+          >
+            <i className="ri-eye-line"></i>
+          </button>
+          <button
+            onClick={() =>
+              handleViewAddEmployeeTraining({
+                employeeId: t.employeeId,
+                employeeName: t.name,
+              })
+            }
+            className="text-green-600 hover:text-green-900 cursor-pointer"
+            title="교육 추가"
+          >
+            <i className="ri-add-line"></i>
+          </button>
+        </div>
+      ),
+    },
+  ];
+
+  const handleViewTrainingDetail = (training: TrainingItem) => {
     openModal(TrainingDetailModal, {
       title: `${training.name}의 교육현황`,
       employeeId: training.employeeId,
@@ -102,83 +174,12 @@ export default function EmployeeTrainingTab() {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                직원 정보
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                완료된 교육
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                필수 교육
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                최근 교육일
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                작업
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {trainingList.map((training) => (
-              <tr key={training.employeeId} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">{training.name}</div>
-                    <div className="text-sm text-gray-500">
-                      {training.department} · {training.position}
-                    </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <span className="text-sm font-medium text-green-600">
-                      {training.completedCount}
-                    </span>
-                    <span className="text-sm text-gray-500 ml-1">개</span>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <span className="text-sm font-medium text-red-600">
-                      {training.requiredMissingCount}
-                    </span>
-                    <span className="text-sm text-gray-500 ml-1">개 미완료</span>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {training.lastTrainingDate?.split('T')[0]}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => handleViewTrainingDetail(training)}
-                      className="text-blue-600 hover:text-blue-900 cursor-pointer"
-                      title="교육 상세보기"
-                    >
-                      <i className="ri-eye-line"></i>
-                    </button>
-                    <button
-                      onClick={() =>
-                        handleViewAddEmployeeTraining({
-                          employeeId: training.employeeId,
-                          employeeName: training.name,
-                        })
-                      }
-                      className="text-green-600 hover:text-green-900 cursor-pointer"
-                      title="교육 추가"
-                    >
-                      <i className="ri-add-line"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <Table
+          columns={columns}
+          data={trainingList}
+          keyExtractor={(row) => row.employeeId}
+          emptyMessage="교육 기록이 없습니다."
+        />
       </div>
 
       <Pagination

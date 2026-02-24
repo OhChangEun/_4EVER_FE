@@ -20,6 +20,7 @@ import Input from '@/app/components/common/Input';
 import Dropdown from '@/app/components/common/Dropdown';
 import SearchBar from '@/app/components/common/SearchBar';
 import { useModal } from '@/app/components/common/modal/useModal';
+import Table, { TableColumn } from '@/app/components/common/Table';
 
 const SalesOrderList = () => {
   const { openModal } = useModal();
@@ -72,6 +73,57 @@ const SalesOrderList = () => {
   const role = useRole();
   const orderOptions = getOrderSearchKeywordOptions(role as string);
 
+  type OrderItem = (typeof orders)[0];
+  const columns: TableColumn<OrderItem>[] = [
+    {
+      key: 'salesOrderNumber',
+      label: '주문번호',
+      render: (_, order) => (
+        <div className="text-sm font-medium text-gray-900">{order.salesOrderNumber}</div>
+      ),
+    },
+    {
+      key: 'customerName',
+      label: '고객사',
+      render: (_, order) => (
+        <div>
+          <div className="text-sm font-medium text-gray-900">{order.customerName}</div>
+          <div className="text-sm text-gray-500">
+            {order.manager.managerName} · {order.manager.managerPhone}
+          </div>
+        </div>
+      ),
+    },
+    { key: 'orderDate', label: '주문일' },
+    { key: 'dueDate', label: '납기일' },
+    {
+      key: 'totalAmount',
+      label: '총금액',
+      align: 'right',
+      render: (_, order) => `₩${order.totalAmount.toLocaleString()}`,
+    },
+    {
+      key: 'statusCode',
+      label: '상태',
+      align: 'center',
+      render: (_, order) => <StatusLabel $statusCode={order.statusCode} />,
+    },
+    {
+      key: 'action',
+      label: '작업',
+      align: 'center',
+      render: (_, order) => (
+        <button
+          onClick={() => handleViewOrder(order.salesOrderId)}
+          className="text-blue-600 hover:text-blue-900 cursor-pointer"
+          title="상세보기"
+        >
+          <i className="ri-eye-line"></i>
+        </button>
+      ),
+    },
+  ];
+
   return (
     <>
       {/* 헤더 */}
@@ -109,64 +161,13 @@ const SalesOrderList = () => {
           <TableStatusBox $type="loading" $message="주문 목록을 불러오는 중입니다..." />
         ) : isError ? (
           <TableStatusBox $type="error" $message="주문 목록을 불러오는 중 오류가 발생했습니다." />
-        ) : !orders || orders.length === 0 ? (
-          <TableStatusBox $type="empty" $message="등록된 주문서가 없습니다." />
         ) : (
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                {ORDER_LIST_TABLE_HEADERS.map((header) => (
-                  <th
-                    key={header}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {orders.map((order) => (
-                <tr
-                  key={order.salesOrderId}
-                  className="hover:bg-gray-50 transition-colors duration-200"
-                >
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">
-                      {order.salesOrderNumber}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="text-sm font-medium text-gray-900">{order.customerName}</div>
-                    <div className="text-sm text-gray-500">
-                      {order.manager.managerName} · {order.manager.managerPhone}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {order.orderDate}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {order.dueDate}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    ₩{order.totalAmount.toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <StatusLabel $statusCode={order.statusCode} />
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button
-                      onClick={() => handleViewOrder(order.salesOrderId)}
-                      className="text-blue-600 hover:text-blue-900 cursor-pointer"
-                      title="상세보기"
-                    >
-                      <i className="ri-eye-line"></i>
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <Table
+            columns={columns}
+            data={orders}
+            keyExtractor={(row) => row.salesOrderId}
+            emptyMessage="등록된 주문서가 없습니다."
+          />
         )}
       </div>
       {/* 페이지네이션 */}

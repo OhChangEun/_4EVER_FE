@@ -10,6 +10,7 @@ import IconButton from '@/app/components/common/IconButton';
 import { useModal } from '@/app/components/common/modal/useModal';
 import Pagination from '@/app/components/common/Pagination';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
+import Table, { TableColumn } from '@/app/components/common/Table';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { EmployeeDetailModal } from '@/app/(private)/hrm/components/modals/EmployeeDetailModal';
@@ -84,6 +85,52 @@ export default function EmployeesTab() {
     });
   };
 
+  const columns: TableColumn<EmployeeData>[] = [
+    {
+      key: 'name',
+      label: '직원 정보',
+      render: (_, employee) => (
+        <div>
+          <div className="text-sm font-medium text-gray-900">{employee.name}</div>
+        </div>
+      ),
+    },
+    {
+      key: 'department',
+      label: '부서/직급',
+      render: (_, employee) => (
+        <div>
+          <div className="text-sm text-gray-900">{employee.department}</div>
+          <div className="text-sm text-gray-500">{employee.position}</div>
+        </div>
+      ),
+    },
+    { key: 'hireDate', label: '입사일' },
+    {
+      key: 'phone',
+      label: '연락처',
+      render: (_, employee) => (
+        <div>
+          <div className="text-sm text-gray-900">{employee.phone}</div>
+          <div className="text-sm text-gray-500">{employee.email}</div>
+        </div>
+      ),
+    },
+    {
+      key: 'action',
+      label: '작업',
+      align: 'center',
+      render: (_, employee) => (
+        <Button
+          label="상세보기"
+          size="sm"
+          variant="ghost"
+          onClick={() => handleViewEmployeeDetail(employee)}
+        />
+      ),
+    },
+  ];
+
   return (
     <>
       <div className="flex justify-end items-center gap-4 mb-6 p-2 rounded-lg">
@@ -111,64 +158,13 @@ export default function EmployeesTab() {
           <TableStatusBox $type="loading" $message="직원 정보를 불러오는 중입니다..." />
         ) : isError ? (
           <TableStatusBox $type="error" $message="직원 정보를 불러오는 중 오류가 발생했습니다." />
-        ) : !employees || employees.length === 0 ? (
-          <TableStatusBox $type="empty" $message="등록된 직원이 없습니다." />
         ) : (
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  직원 정보
-                </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  부서/직급
-                </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  입사일
-                </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  연락처
-                </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  작업
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {employees.map((employee) => (
-                <tr key={employee.employeeId} className="text-center">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div>
-                      <div className="text-sm font-medium text-gray-900">{employee.name}</div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div>
-                      <div className="text-sm text-gray-900">{employee.department}</div>
-                      <div className="text-sm text-gray-500">{employee.position}</div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {employee.hireDate}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div>
-                      <div className="text-sm text-gray-900">{employee.phone}</div>
-                      <div className="text-sm text-gray-500">{employee.email}</div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <Button
-                      label="상세보기"
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleViewEmployeeDetail(employee)}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <Table
+            columns={columns}
+            data={employees}
+            keyExtractor={(row) => row.employeeId}
+            emptyMessage="등록된 직원이 없습니다."
+          />
         )}
 
         {isError || isLoading ? null : (

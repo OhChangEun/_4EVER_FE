@@ -9,12 +9,12 @@ import {
 import { LeaveRequestParams } from '@/app/(private)/hrm/types/HrmLeaveApiType';
 import Dropdown from '@/app/components/common/Dropdown';
 import Input from '@/app/components/common/Input';
-import { useModal } from '@/app/components/common/modal/useModal';
 import Pagination from '@/app/components/common/Pagination';
 import StatusLabel from '@/app/components/common/StatusLabel';
+import Table, { TableColumn } from '@/app/components/common/Table';
+import TableStatusBox from '@/app/components/common/TableStatusBox';
 import { useDebouncedKeyword } from '@/app/hooks/useDebouncedKeyword';
 import { useDropdown } from '@/app/hooks/useDropdown';
-import { getQueryClient } from '@/lib/queryClient';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
@@ -59,6 +59,8 @@ export default function LeaveTab() {
   const leaveList = leaveData?.content ?? [];
   const pageInfo = leaveData?.page;
 
+  type LeaveItem = (typeof leaveList)[0];
+
   const { mutate: approveLeave } = useMutation({
     mutationFn: (requestId: string) => postLeaveRelease(requestId),
     onSuccess: () => {
@@ -93,6 +95,70 @@ export default function LeaveTab() {
     }
   };
 
+  const columns: TableColumn<LeaveItem>[] = [
+    {
+      key: 'employee',
+      label: '직원 정보',
+      render: (_, leave) => (
+        <div>
+          <div className="text-sm font-medium text-gray-900">{leave.employee.employeeName}</div>
+          <div className="text-sm text-gray-500">{leave.employee.position}</div>
+        </div>
+      ),
+    },
+    {
+      key: 'leaveType',
+      label: '휴가 유형',
+      render: (_, leave) => <StatusLabel $statusCode={leave.leaveType} />,
+    },
+    {
+      key: 'startDate',
+      label: '시작 일자',
+      render: (_, leave) => leave.startDate.split('T')[0],
+    },
+    {
+      key: 'endDate',
+      label: '종료 일자',
+      render: (_, leave) => leave.endDate.split('T')[0],
+    },
+    {
+      key: 'numberOfLeaveDays',
+      label: '일수',
+      render: (_, leave) => `${leave.numberOfLeaveDays}일`,
+    },
+    {
+      key: 'remainingLeaveDays',
+      label: '잔여 연차',
+      render: (_, leave) => `${leave.remainingLeaveDays}일`,
+    },
+    {
+      key: 'status',
+      label: '작업',
+      align: 'center',
+      render: (_, leave) =>
+        leave.status === 'PENDING' ? (
+          <div className="flex justify-center space-x-2">
+            <button
+              onClick={() => handleApprove(leave.leaveRequestId)}
+              className="text-green-600 hover:text-green-900 cursor-pointer"
+              title="승인"
+            >
+              <i className="ri-check-line"></i>
+            </button>
+            <button
+              onClick={() => handleReject(leave.leaveRequestId)}
+              className="text-red-600 hover:text-red-900 cursor-pointer"
+              title="반려"
+            >
+              <i className="ri-close-line"></i>
+            </button>
+          </div>
+        ) : (
+          <StatusLabel $statusCode={leave.status} />
+        ),
+    },
+  ];
+
   return (
     <div className="mt-8">
       <div className="flex items-center justify-end mb-4">
@@ -116,85 +182,18 @@ export default function LeaveTab() {
         </div>
       </div>
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                직원 정보
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                휴가 유형
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                시작 일자
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                종료 일자
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                일수
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                잔여 연차
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                작업
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {leaveList.map((leave) => (
-              <tr key={leave.leaveRequestId} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">
-                      {leave.employee.employeeName}
-                    </div>
-                    <div className="text-sm text-gray-500">{leave.employee.position}</div>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  <StatusLabel $statusCode={leave.leaveType} />
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {leave.startDate.split('T')[0]}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {leave.endDate.split('T')[0]}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {leave.numberOfLeaveDays}일
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {leave.remainingLeaveDays}일
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  {/* 휴가 승인 대기중일 때만 */}
-                  {leave.status === 'PENDING' ? (
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => handleApprove(leave.leaveRequestId)}
-                        className="text-green-600 hover:text-green-900 cursor-pointer"
-                        title="승인"
-                      >
-                        <i className="ri-check-line"></i>
-                      </button>
-                      <button
-                        onClick={() => handleReject(leave.leaveRequestId)}
-                        className="text-red-600 hover:text-red-900 cursor-pointer"
-                        title="반려"
-                      >
-                        <i className="ri-close-line"></i>
-                      </button>
-                    </div>
-                  ) : (
-                    <StatusLabel $statusCode={leave.status} />
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {isLoading ? (
+          <TableStatusBox $type="loading" $message="휴가 목록을 불러오는 중입니다..." />
+        ) : isError ? (
+          <TableStatusBox $type="error" $message="휴가 목록을 불러오는 중 오류가 발생했습니다." />
+        ) : (
+          <Table
+            columns={columns}
+            data={leaveList}
+            keyExtractor={(row) => row.leaveRequestId}
+            emptyMessage="휴가 요청이 없습니다."
+          />
+        )}
       </div>
 
       <Pagination

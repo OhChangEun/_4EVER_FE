@@ -3,6 +3,7 @@ import React, { ReactNode } from 'react';
 export interface TableColumn<T = Record<string, unknown>> {
   key: string;
   label: string;
+  headerRender?: () => ReactNode;
   align?: 'left' | 'center' | 'right';
   width?: string;
   render?: (value: unknown, row: T, index: number) => ReactNode;
@@ -58,7 +59,7 @@ export default function Table<T = Record<string, unknown>>({
                   className={`px-4 py-3 text-sm font-semibold text-gray-700 ${getAlignClass(column.align)}`}
                   style={{ width: column.width }}
                 >
-                  {column.label}
+                  {column.headerRender ? column.headerRender() : column.label}
                 </th>
               ))}
             </tr>

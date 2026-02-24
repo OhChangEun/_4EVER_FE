@@ -23,6 +23,7 @@ import IconButton from '@/app/components/common/IconButton';
 import SearchBar from '@/app/components/common/SearchBar';
 import Dropdown from '@/app/components/common/Dropdown';
 import { useModal } from '@/app/components/common/modal/useModal';
+import Table, { TableColumn } from '@/app/components/common/Table';
 
 const CustomerList = () => {
   const { openModal } = useModal();
@@ -73,12 +74,73 @@ const CustomerList = () => {
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [editFormData, setEditFormData] = useState<CustomerDetail | null>(null);
-  // const handleEditClick = (customer: CustomerDetail) => {
-  //   setEditFormData({ ...customer });
-  //   setShowEditModal(true);
-  // };
 
   const totalPages = pageInfo?.totalPages ?? 1;
+
+  type CustomerItem = (typeof customers)[0];
+  const columns: TableColumn<CustomerItem>[] = [
+    {
+      key: 'customerName',
+      label: '고객사',
+      render: (_, customer) => (
+        <div>
+          <div className="text-sm font-medium text-gray-900">{customer.customerName}</div>
+          <div className="text-xs text-gray-500">{customer.customerNumber}</div>
+        </div>
+      ),
+    },
+    {
+      key: 'manager',
+      label: '담당자',
+      render: (_, customer) => (
+        <div>
+          <div className="text-sm text-gray-900">{customer.manager.managerName}</div>
+          <div className="text-xs text-gray-500">{customer.manager.managerPhone}</div>
+          <div className="text-xs text-gray-500">{customer.manager.managerEmail}</div>
+        </div>
+      ),
+    },
+    {
+      key: 'address',
+      label: '주소',
+      render: (_, customer) => (
+        <div className="text-sm text-gray-900 max-w-xs truncate">{customer.address}</div>
+      ),
+    },
+    {
+      key: 'totalTransactionAmount',
+      label: '거래액',
+      align: 'right',
+      render: (_, customer) => (
+        <div>
+          <div className="text-sm font-medium text-gray-900">
+            ₩{customer.totalTransactionAmount.toLocaleString()}
+          </div>
+          <div className="text-xs text-gray-500">{customer.orderCount}건</div>
+        </div>
+      ),
+    },
+    {
+      key: 'statusCode',
+      label: '상태',
+      align: 'center',
+      render: (_, customer) => <StatusLabel $statusCode={customer.statusCode} />,
+    },
+    {
+      key: 'action',
+      label: '작업',
+      align: 'center',
+      render: (_, customer) => (
+        <button
+          onClick={() => handleViewClick(customer.customerId)}
+          className="text-blue-600 hover:text-blue-800 cursor-pointer"
+          title="상세보기"
+        >
+          <i className="ri-eye-line"></i>
+        </button>
+      ),
+    },
+  ];
 
   return (
     <>
@@ -113,71 +175,13 @@ const CustomerList = () => {
           <TableStatusBox $type="loading" $message="고객 목록을 불러오는 중입니다..." />
         ) : isError ? (
           <TableStatusBox $type="error" $message="고객 목록을 불러오는 중 오류가 발생했습니다." />
-        ) : !customers || customers.length === 0 ? (
-          <TableStatusBox $type="empty" $message="고객 정보가 없습니다." />
         ) : (
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                {CUSTOMER_LIST_TABLE_HEADERS.map((header) => (
-                  <th
-                    key={header}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {customers.map((customer) => (
-                <tr key={customer.customerId} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">
-                          {customer.customerName}
-                        </div>
-                        <div className="text-xs text-gray-500">{customer.customerNumber}</div>
-                      </div>
-                    </div>
-                  </td>
-
-                  <td className="px-6 py-4">
-                    <div className="text-sm text-gray-900">{customer.manager.managerName}</div>
-                    <div className="text-xs text-gray-500">{customer.manager.managerPhone}</div>
-                    <div className="text-xs text-gray-500">{customer.manager.managerEmail}</div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="text-sm text-gray-900 max-w-xs truncate">
-                      {customer.address}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">
-                      ₩{customer.totalTransactionAmount.toLocaleString()}
-                    </div>
-                    <div className="text-xs text-gray-500">{customer.orderCount}건</div>
-                  </td>
-
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <StatusLabel $statusCode={customer.statusCode} />
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={() => handleViewClick(customer.customerId)}
-                        className="text-blue-600 hover:text-blue-800 cursor-pointer"
-                        title="상세보기"
-                      >
-                        <i className="ri-eye-line"></i>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <Table
+            columns={columns}
+            data={customers}
+            keyExtractor={(row) => row.customerId}
+            emptyMessage="고객 정보가 없습니다."
+          />
         )}
       </div>
 

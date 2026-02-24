@@ -25,6 +25,7 @@ import Dropdown from '@/app/components/common/Dropdown';
 import SearchBar from '@/app/components/common/SearchBar';
 import { useModal } from '@/app/components/common/modal/useModal';
 import InventoryPurchaseRequestModal from '../modals/InventoryPurchaseRequestModal';
+import Table, { TableColumn } from '@/app/components/common/Table';
 
 const InventoryList = () => {
   const { openModal } = useModal();
@@ -75,6 +76,94 @@ const InventoryList = () => {
   const pageInfo = InventoryRes?.pageData;
   const totalPages = pageInfo?.totalPages ?? 1;
 
+  type InventoryItem = (typeof inventories)[0];
+  const columns: TableColumn<InventoryItem>[] = [
+    {
+      key: 'itemName',
+      label: '품목',
+      render: (_, inv) => (
+        <div>
+          <div className="text-sm font-medium text-gray-900">{inv.itemName}</div>
+          <div className="text-sm text-gray-500">{inv.itemNumber}</div>
+        </div>
+      ),
+    },
+    {
+      key: 'category',
+      label: '카테고리',
+      render: (_, inv) => (
+        <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
+          {inv.category}
+        </span>
+      ),
+    },
+    {
+      key: 'currentStock',
+      label: '현재재고',
+      align: 'right',
+      render: (_, inv) => `${inv.currentStock.toLocaleString()} ${inv.uomName}`,
+    },
+    {
+      key: 'forShipmentStock',
+      label: '출고예정',
+      align: 'right',
+      render: (_, inv) => `${inv.forShipmentStock.toLocaleString()} ${inv.uomName}`,
+    },
+    {
+      key: 'reservedStock',
+      label: '예약재고',
+      align: 'right',
+      render: (_, inv) => `${inv.reservedStock.toLocaleString()} ${inv.uomName}`,
+    },
+    {
+      key: 'safetyStock',
+      label: '안전재고',
+      align: 'right',
+      render: (_, inv) => `${inv.safetyStock.toLocaleString()} ${inv.uomName}`,
+    },
+    {
+      key: 'unitPrice',
+      label: '단가',
+      align: 'right',
+      render: (_, inv) => `₩${inv.unitPrice.toLocaleString()}`,
+    },
+    {
+      key: 'totalAmount',
+      label: '재고가치',
+      align: 'right',
+      render: (_, inv) => `₩${inv.totalAmount.toLocaleString()}`,
+    },
+    {
+      key: 'warehouseName',
+      label: '창고',
+      render: (_, inv) => (
+        <div>
+          <div className="text-sm text-gray-900">{inv.warehouseName}</div>
+          <div className="text-sm text-gray-500">{inv.warehouseType}</div>
+        </div>
+      ),
+    },
+    {
+      key: 'statusCode',
+      label: '상태',
+      align: 'center',
+      render: (_, inv) => <StatusLabel $statusCode={inv.statusCode} />,
+    },
+    {
+      key: 'action',
+      label: '작업',
+      align: 'center',
+      render: (_, inv) => (
+        <button
+          onClick={() => handleItemDetail(inv.itemId)}
+          className="text-blue-600 hover:text-blue-900 cursor-pointer"
+        >
+          <i className="ri-eye-line"></i>
+        </button>
+      ),
+    },
+  ];
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -123,87 +212,13 @@ const InventoryList = () => {
             <TableStatusBox $type="loading" $message="재고 목록을 불러오는 중입니다..." />
           ) : isError ? (
             <TableStatusBox $type="error" $message="재고 목록을 불러오는 중 오류가 발생했습니다." />
-          ) : !inventories || inventories.length === 0 ? (
-            <TableStatusBox $type="empty" $message="등록된 재고가 없습니다." />
           ) : (
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  {INVENTORY_TABLE_HEADERS.map((header) => (
-                    <th
-                      key={header}
-                      className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      {header}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {inventories.map((inventory) => (
-                  <tr key={inventory.itemId} className="hover:bg-gray-50">
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">
-                          {inventory.itemName}
-                        </div>
-                        <div className="text-sm text-gray-500">{inventory.itemNumber}</div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
-                        {inventory.category}
-                      </span>
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {inventory.currentStock.toLocaleString()} {inventory.uomName}
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {inventory.forShipmentStock.toLocaleString()} {inventory.uomName}
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {inventory.reservedStock.toLocaleString()} {inventory.uomName}
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500">
-                        {inventory.safetyStock.toLocaleString()} {inventory.uomName}
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        ₩{inventory.unitPrice.toLocaleString()}
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
-                        ₩{inventory.totalAmount.toLocaleString()}
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{inventory.warehouseName}</div>
-                      <div className="text-sm text-gray-500">{inventory.warehouseType}</div>
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      <StatusLabel $statusCode={inventory.statusCode} />
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                      <button
-                        onClick={() => handleItemDetail(inventory.itemId)}
-                        className="text-blue-600 hover:text-blue-900 cursor-pointer"
-                      >
-                        <i className="ri-eye-line"></i>
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <Table
+              columns={columns}
+              data={inventories}
+              keyExtractor={(row) => row.itemId}
+              emptyMessage="등록된 재고가 없습니다."
+            />
           )}
         </div>
         {/* 페이지네이션 */}

@@ -15,6 +15,7 @@ import Button from '@/app/components/common/Button';
 import Input from '@/app/components/common/Input';
 import StatusLabel from '@/app/components/common/StatusLabel';
 import { formatDateTime } from '@/app/utils/date';
+import Table, { TableColumn } from '@/app/components/common/Table';
 
 export default function BomTab() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -57,6 +58,47 @@ export default function BomTab() {
     });
   };
 
+  type BomItem = BomListResponse['content'][0];
+
+  const columns: TableColumn<BomItem>[] = [
+    {
+      key: 'productName',
+      label: '제품 정보',
+      render: (_, bom) => (
+        <div>
+          <div className="text-sm font-medium text-gray-900">{bom.productName}</div>
+          <div className="text-sm text-gray-500">{bom.productNumber}</div>
+        </div>
+      ),
+    },
+    { key: 'bomNumber', label: 'BOM 번호' },
+    { key: 'version', label: '버전' },
+    {
+      key: 'statusCode',
+      label: '상태',
+      align: 'center',
+      render: (_, bom) => <StatusLabel $statusCode={bom.statusCode} />,
+    },
+    {
+      key: 'lastModifiedAt',
+      label: '최종 수정일',
+      render: (_, bom) => formatDateTime(bom.lastModifiedAt),
+    },
+    {
+      key: 'action',
+      label: '작업',
+      align: 'center',
+      render: (_, bom) => (
+        <Button
+          label="상세보기"
+          variant="ghost"
+          size="sm"
+          onClick={() => handleViewDetail(bom.bomId)}
+        />
+      ),
+    },
+  ];
+
   return (
     <>
       <div className="flex items-center justify-end">
@@ -74,73 +116,12 @@ export default function BomTab() {
           <p className="mt-3 text-red-500">데이터를 불러오는데 실패했습니다.</p>
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  제품 정보
-                </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  BOM 번호
-                </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  버전
-                </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  상태
-                </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  최종 수정일
-                </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  작업
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {bomList.length > 0 ? (
-                bomList.map((bom) => (
-                  <tr key={bom.bomId} className="hover:bg-gray-50 text-center">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">{bom.productName}</div>
-                        <div className="text-sm text-gray-500">{bom.productNumber}</div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{bom.bomNumber}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {bom.version}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <StatusLabel $statusCode={bom.statusCode} />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {formatDateTime(bom.lastModifiedAt)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <Button
-                        label="상세보기"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleViewDetail(bom.bomId)}
-                      />
-                      {/* <Button label="수정" variant="ghost" size="sm" onClick={() => handleEdit()} /> */}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
-                    등록된 BOM이 없습니다.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <Table
+          columns={columns}
+          data={bomList}
+          keyExtractor={(row) => row.bomId}
+          emptyMessage="등록된 BOM이 없습니다."
+        />
       )}
 
       {isError || isLoading ? null : (

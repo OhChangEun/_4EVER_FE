@@ -9,6 +9,7 @@ import Pagination from '@/app/components/common/Pagination';
 import { LOW_STOCK_STATUS_OPTIONS } from '../../inventory/inventory.constants';
 import { getLowStockList } from '../lowStock.api';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
+import Table, { TableColumn } from '@/app/components/common/Table';
 import Dropdown from '@/app/components/common/Dropdown';
 import IconButton from '@/app/components/common/IconButton';
 import { useModal } from '@/app/components/common/modal/useModal';
@@ -94,6 +95,98 @@ export default function LowStockList() {
     });
   };
 
+  type LowStockItem = (typeof lowStocks)[0];
+
+  const columns: TableColumn<LowStockItem>[] = [
+    {
+      key: 'select',
+      label: '',
+      headerRender: () => (
+        <input
+          ref={selectAllCheckboxRef}
+          type="checkbox"
+          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          onChange={toggleSelectAll}
+          checked={lowStocks.length > 0 && selectedItems.length === lowStocks.length}
+        />
+      ),
+      render: (_, lowStock) => (
+        <input
+          type="checkbox"
+          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          checked={selectedItems.includes(lowStock.itemId)}
+          onChange={() => toggleSelectItem(lowStock.itemId)}
+        />
+      ),
+    },
+    {
+      key: 'itemName',
+      label: '품목',
+      render: (_, lowStock) => (
+        <div>
+          <div className="text-sm font-medium text-gray-900">{lowStock.itemName}</div>
+          <div className="text-sm text-gray-500">{lowStock.itemNumber}</div>
+        </div>
+      ),
+    },
+    {
+      key: 'category',
+      label: '카테고리',
+      render: (_, lowStock) => (
+        <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
+          <StatusLabel $statusCode={lowStock.category} />
+        </span>
+      ),
+    },
+    {
+      key: 'currentStock',
+      label: '현재재고',
+      render: (_, lowStock) => (
+        <span className="text-sm text-gray-900">
+          {lowStock.currentStock.toLocaleString()} {lowStock.uomName}
+        </span>
+      ),
+    },
+    {
+      key: 'safetyStock',
+      label: '안전재고',
+      render: (_, lowStock) => (
+        <span className="text-sm text-gray-500">
+          {lowStock.safetyStock.toLocaleString()} {lowStock.uomName}
+        </span>
+      ),
+    },
+    {
+      key: 'unitPrice',
+      label: '단가',
+      render: (_, lowStock) => `₩${lowStock.unitPrice.toLocaleString()}`,
+    },
+    {
+      key: 'totalAmount',
+      label: '총 가치',
+      render: (_, lowStock) => (
+        <span className="text-sm font-medium text-gray-900">
+          ₩{lowStock.totalAmount.toLocaleString()}
+        </span>
+      ),
+    },
+    {
+      key: 'warehouseName',
+      label: '창고 위치',
+      render: (_, lowStock) => (
+        <div>
+          <div className="text-sm text-gray-900">{lowStock.warehouseName}</div>
+          <div className="text-sm text-gray-500">{lowStock.warehouseNumber}</div>
+        </div>
+      ),
+    },
+    {
+      key: 'statusCode',
+      label: '상태',
+      render: (_, lowStock) => <StatusLabel $statusCode={lowStock.statusCode} />,
+    },
+  ];
+
   return (
     <div className="">
       <Link
@@ -133,100 +226,13 @@ export default function LowStockList() {
               $type="error"
               $message="재고 부족 목록을 불러오는 중 오류가 발생했습니다."
             />
-          ) : !lowStocks || lowStocks.length === 0 ? (
-            <TableStatusBox $type="empty" $message="부족한 재고가 없습니다." />
           ) : (
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <input
-                      ref={selectAllCheckboxRef}
-                      type="checkbox"
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      onChange={toggleSelectAll}
-                      checked={lowStocks.length > 0 && selectedItems.length === lowStocks.length}
-                    />
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    품목
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    카테고리
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    현재재고
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    안전재고
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    단가
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    총 가치
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    창고 위치
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    상태
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {lowStocks.map((lowStock) => (
-                  <tr key={lowStock.itemId} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <input
-                        type="checkbox"
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        checked={selectedItems.includes(lowStock.itemId)}
-                        onChange={() => toggleSelectItem(lowStock.itemId)}
-                      />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">{lowStock.itemName}</div>
-                        <div className="text-sm text-gray-500">{lowStock.itemNumber}</div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
-                        <StatusLabel $statusCode={lowStock.category} />
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {lowStock.currentStock.toLocaleString()} {lowStock.uomName}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500">
-                        {lowStock.safetyStock.toLocaleString()} {lowStock.uomName}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        ₩{lowStock.unitPrice.toLocaleString()}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
-                        ₩{lowStock.totalAmount.toLocaleString()}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{lowStock.warehouseName}</div>
-                      <div className="text-sm text-gray-500">{lowStock.warehouseNumber}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <StatusLabel $statusCode={lowStock.statusCode} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <Table
+              columns={columns}
+              data={lowStocks}
+              keyExtractor={(row) => row.itemId}
+              emptyMessage="부족한 재고가 없습니다."
+            />
           )}
         </div>
         {isError || isLoading ? null : (

@@ -10,6 +10,7 @@ import Pagination from '@/app/components/common/Pagination';
 import ShippingDetailModal from '../modals/ShippingDetailModal';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
 import { useModal } from '@/app/components/common/modal/useModal';
+import Table, { TableColumn } from '@/app/components/common/Table';
 const ShippingManagementList = () => {
   const { openModal } = useModal();
   const [currentPage, setCurrentPage] = useState(1);
@@ -89,62 +90,59 @@ const ShippingManagementList = () => {
             <TableStatusBox $type="loading" $message="출고 목록을 불러오는 중입니다..." />
           ) : isProductionError || isReadyError ? (
             <TableStatusBox $type="error" $message="출고 목록을 불러오는 중 오류가 발생했습니다." />
-          ) : !currentData || currentData.length === 0 ? (
-            <TableStatusBox $type="empty" $message="등록된 출고 정보가 없습니다." />
           ) : (
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  {SHIPPING_TABLE_HEADERS.map((header) => (
-                    <th
-                      key={header}
-                      className="py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider text-left"
+            <Table
+              columns={[
+                { key: 'salesOrderNumber', label: '주문번호' },
+                { key: 'customerName', label: '고객사' },
+                {
+                  key: 'orderDate',
+                  label: '주문일',
+                  render: (_, row) => row.orderDate.slice(0, 10),
+                },
+                {
+                  key: 'dueDate',
+                  label: '낙기일',
+                  render: (_, row) => row.dueDate.slice(0, 10),
+                },
+                {
+                  key: 'totalAmount',
+                  label: '총금액',
+                  align: 'right',
+                  render: (_, row) => `₩${row.totalAmount.toLocaleString()}`,
+                },
+                {
+                  key: 'statusCode',
+                  label: '상태',
+                  align: 'center',
+                  render: (_, row) => <StatusLabel $statusCode={row.statusCode} />,
+                },
+                {
+                  key: 'action',
+                  label: '작업',
+                  align: 'center',
+                  render: (_, row) => (
+                    <button
+                      onClick={() => {
+                        openModal(ShippingDetailModal, {
+                          width: '900px',
+                          title: `주문 상세 - ${row.salesOrderNumber}`,
+                          $selectedOrderId: row.salesOrderId,
+                          $selectedSubTab: selectedSubTab,
+                        });
+                      }}
+                      className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                      title="상세보기"
                     >
-                      {header}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {currentData.map((production) => (
-                  <tr key={production.salesOrderId} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                      {production.salesOrderNumber}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">{production.customerName}</td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                      {production.orderDate.slice(0, 10)}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                      {production.dueDate.slice(0, 10)}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                      ₩{production.totalAmount.toLocaleString()}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                      <StatusLabel $statusCode={production.statusCode} />
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                      <button
-                        onClick={() => {
-                          setShowShipDetailModal(true);
-                          openModal(ShippingDetailModal, {
-                            width: '900px',
-                            title: `주문 상세 - ${production.salesOrderNumber}`,
-                            $selectedOrderId: production.salesOrderId,
-                            $selectedSubTab: selectedSubTab,
-                          });
-                        }}
-                        className="text-blue-600 hover:text-blue-800 cursor-pointer"
-                        title="상세보기"
-                      >
-                        <i className="ri-eye-line"></i>
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      <i className="ri-eye-line"></i>
+                    </button>
+                  ),
+                },
+              ]}
+              data={currentData}
+              keyExtractor={(row) => row.salesOrderId}
+              emptyMessage="등록된 출고 정보가 없습니다."
+            />
           )}
         </div>
         {/* 페이지네이션 */}

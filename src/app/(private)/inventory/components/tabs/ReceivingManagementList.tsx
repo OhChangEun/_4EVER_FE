@@ -12,6 +12,7 @@ import StatusLabel from '@/app/components/common/StatusLabel';
 import Pagination from '@/app/components/common/Pagination';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
 import DateRangePicker from '@/app/components/common/DateRangePicker';
+import Table, { TableColumn } from '@/app/components/common/Table';
 const ReceivingManagementList = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -121,45 +122,38 @@ const ReceivingManagementList = () => {
             <TableStatusBox $type="loading" $message="입고 목록을 불러오는 중입니다..." />
           ) : isReceivedError || isPendingError ? (
             <TableStatusBox $type="error" $message="입고 목록을 불러오는 중 오류가 발생했습니다." />
-          ) : !currentData || currentData.length === 0 ? (
-            <TableStatusBox $type="empty" $message="등록된 입고 정보가 없습니다." />
           ) : (
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  {getTableHeader().map((header) => (
-                    <th
-                      key={header}
-                      className="py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider text-left"
-                    >
-                      {header}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {currentData.map((order) => (
-                  <tr key={order.purchaseOrderId} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                      {order.purchaseOrderNumber}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">{order.supplierCompanyName}</td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                      {order.orderDate.slice(0, 10)}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                      {order.dueDate.slice(0, 10)}
-                    </td>
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                      ₩{order.totalAmount.toLocaleString()}
-                    </td>
-                    <td className="px-6 py-4">
-                      <StatusLabel $statusCode={order.statusCode} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <Table
+              columns={[
+                { key: 'purchaseOrderNumber', label: '납품서 번호' },
+                { key: 'supplierCompanyName', label: '공급업체' },
+                {
+                  key: 'orderDate',
+                  label: '주문일',
+                  render: (_, row) => row.orderDate.slice(0, 10),
+                },
+                {
+                  key: 'dueDate',
+                  label: '낙기일',
+                  render: (_, row) => row.dueDate.slice(0, 10),
+                },
+                {
+                  key: 'totalAmount',
+                  label: '총금액',
+                  align: 'right',
+                  render: (_, row) => `₩${row.totalAmount.toLocaleString()}`,
+                },
+                {
+                  key: 'statusCode',
+                  label: '상태',
+                  align: 'center',
+                  render: (_, row) => <StatusLabel $statusCode={row.statusCode} />,
+                },
+              ]}
+              data={currentData}
+              keyExtractor={(row) => row.purchaseOrderId}
+              emptyMessage="등록된 입고 정보가 없습니다."
+            />
           )}
         </div>
         {/* 페이지네이션 */}

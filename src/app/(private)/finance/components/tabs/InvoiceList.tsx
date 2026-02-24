@@ -1,10 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import {
-  VOUCHER_LIST_TABLE_HEADERS,
-  VOUCHER_STATUS_OPTIONS,
-} from '@/app/(private)/finance/constants';
+import { VOUCHER_STATUS_OPTIONS } from '@/app/(private)/finance/constants';
 import { InvoiceStatus } from '@/app/(private)/finance/types/InvoiceListType';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
@@ -17,6 +14,7 @@ import {
 import Pagination from '@/app/components/common/Pagination';
 import { useSearchParams } from 'next/navigation';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
+import Table, { TableColumn } from '@/app/components/common/Table';
 import InvoiceDetailModal from '@/app/(private)/finance/components/modals/InvoiceDetailModal';
 import StatusLabel from '@/app/components/common/StatusLabel';
 import { useRole } from '@/app/hooks/useRole';
@@ -82,6 +80,9 @@ const InvoiceList = () => {
   const invoices = invoiceReq?.data ?? [];
   const pageInfo = invoiceReq?.pageData;
   const totalPages = pageInfo?.totalPages ?? 1;
+
+  type InvoiceItem = (typeof invoices)[0];
+
   const { openModal } = useModal();
   const mutationFn =
     role === 'SUPPLIER_ADMIN'
@@ -130,6 +131,73 @@ const InvoiceList = () => {
     sendReq();
   };
 
+  const columns: TableColumn<InvoiceItem>[] = [
+    {
+      key: 'invoiceId',
+      label: '',
+      render: (_, invoice) => (
+        <input
+          type="checkbox"
+          checked={selectedInvoiceId === invoice.invoiceId}
+          disabled={
+            currentTab === 'sales'
+              ? invoice.statusCode === 'PAID' || invoice.statusCode === 'UNPAID'
+              : currentTab === 'purchase'
+                ? role === 'SUPPLIER_ADMIN'
+                  ? invoice.statusCode === 'PAID' || invoice.statusCode === 'UNPAID'
+                  : role === 'CUSTOMER_ADMIN'
+                    ? invoice.statusCode === 'PAID' || invoice.statusCode === 'PENDING'
+                    : invoice.statusCode === 'PAID' || invoice.statusCode === 'PENDING'
+                : false
+          }
+          onChange={(e) => handleSelectVoucher(invoice.invoiceId, e.target.checked)}
+          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+        />
+      ),
+    },
+    { key: 'invoiceNumber', label: '전표번호' },
+    {
+      key: 'connection',
+      label: '거래처',
+      render: (_, invoice) => invoice.connection.connectionName,
+    },
+    {
+      key: 'totalAmount',
+      label: '금액',
+      align: 'right',
+      render: (_, invoice) => `₩${invoice.totalAmount.toLocaleString()}`,
+    },
+    { key: 'issueDate', label: '발행일' },
+    { key: 'dueDate', label: '만기일' },
+    {
+      key: 'statusCode',
+      label: '상태',
+      render: (_, invoice) => <StatusLabel $statusCode={invoice.statusCode} />,
+    },
+    {
+      key: 'referenceNumber',
+      label: '참조번호',
+      render: (_, invoice) => (
+        <span className="text-blue-600 hover:text-blue-500 cursor-pointer">
+          {invoice.referenceNumber}
+        </span>
+      ),
+    },
+    {
+      key: 'action',
+      label: '작업',
+      align: 'center',
+      render: (_, invoice) => (
+        <button
+          onClick={() => handleViewDetail(invoice.invoiceId)}
+          className="text-blue-600 hover:text-blue-500 cursor-pointer"
+        >
+          <i className="ri-eye-line"></i>
+        </button>
+      ),
+    },
+  ];
+
   return (
     <>
       <div className="flex items-center justify-between mb-6">
@@ -163,85 +231,13 @@ const InvoiceList = () => {
           <TableStatusBox $type="loading" $message="전표 목록을 불러오는 중입니다..." />
         ) : isError ? (
           <TableStatusBox $type="error" $message="전표 목록을 불러오는 중 오류가 발생했습니다." />
-        ) : !invoices || invoices.length === 0 ? (
-          <TableStatusBox $type="empty" $message="등록된 전표가 없습니다." />
         ) : (
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  <input
-                    type="checkbox"
-                    disabled
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                </th>
-                {VOUCHER_LIST_TABLE_HEADERS.map((header) => (
-                  <th
-                    key={header}
-                    className="py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider text-left"
-                  >
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {invoices.map((invoice) => (
-                <tr
-                  key={invoice.invoiceId}
-                  className="hover:bg-gray-50 transition-colors duration-200"
-                >
-                  <td className="py-3 px-4">
-                    <input
-                      type="checkbox"
-                      checked={selectedInvoiceId === invoice.invoiceId}
-                      disabled={
-                        currentTab === 'sales'
-                          ? invoice.statusCode === 'PAID' || invoice.statusCode === 'UNPAID'
-                          : currentTab === 'purchase'
-                            ? role === 'SUPPLIER_ADMIN'
-                              ? invoice.statusCode === 'PAID' || invoice.statusCode === 'UNPAID'
-                              : role === 'CUSTOMER_ADMIN'
-                                ? invoice.statusCode === 'PAID' || invoice.statusCode === 'PENDING'
-                                : invoice.statusCode === 'PAID' || invoice.statusCode === 'PENDING'
-                            : false
-                      }
-                      onChange={(e) => handleSelectVoucher(invoice.invoiceId, e.target.checked)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                  </td>
-                  <td className="py-3 px-4 text-sm font-medium text-gray-900">
-                    {invoice.invoiceNumber}
-                  </td>
-                  <td className="py-3 px-4 text-sm text-gray-900">
-                    {invoice.connection.connectionName}
-                  </td>
-                  <td className="py-3 px-4 text-sm font-medium text-gray-900 text-right">
-                    ₩{invoice.totalAmount.toLocaleString()}
-                  </td>
-                  <td className="py-3 px-4 text-sm text-gray-500">{invoice.issueDate}</td>
-                  <td className="py-3 px-4 text-sm text-gray-500">{invoice.dueDate}</td>
-                  <td className="py-3 px-4">
-                    <StatusLabel $statusCode={invoice.statusCode} />
-                  </td>
-                  <td className="py-3 px-4 text-sm text-blue-600 hover:text-blue-500 cursor-pointer">
-                    {invoice.referenceNumber}
-                  </td>
-                  <td className="py-3 px-4 text-center">
-                    <div className="flex items-center justify-center space-x-2">
-                      <button
-                        onClick={() => handleViewDetail(invoice.invoiceId)}
-                        className="text-blue-600 hover:text-blue-500 cursor-pointer"
-                      >
-                        <i className="ri-eye-line"></i>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <Table
+            columns={columns}
+            data={invoices}
+            keyExtractor={(row) => row.invoiceId}
+            emptyMessage="등록된 전표가 없습니다."
+          />
         )}
       </div>
       {/* 페이지네이션 */}

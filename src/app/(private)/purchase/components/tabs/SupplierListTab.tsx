@@ -20,6 +20,7 @@ import Pagination from '@/app/components/common/Pagination';
 import { useModal } from '@/app/components/common/modal/useModal';
 import { useDropdown } from '@/app/hooks/useDropdown';
 import StatusLabel from '@/app/components/common/StatusLabel';
+import Table, { TableColumn } from '@/app/components/common/Table';
 
 export default function SupplierListTab() {
   const { openModal } = useModal();
@@ -85,6 +86,73 @@ export default function SupplierListTab() {
     openModal(SupplierDetailModal, { title: '공급업체 상세', supplierId: supplierId });
   };
 
+  type SupplierItem = (typeof suppliers)[0];
+  const columns: TableColumn<SupplierItem>[] = [
+    {
+      key: 'supplierNumber',
+      label: '공급업체 코드',
+      align: 'center',
+      render: (_, item) => item.supplierInfo.supplierNumber,
+    },
+    {
+      key: 'supplierName',
+      label: '업체명',
+      render: (_, item) => item.supplierInfo.supplierName,
+    },
+    {
+      key: 'category',
+      label: '카테고리',
+      align: 'center',
+      render: (_, item) => item.supplierInfo.category,
+    },
+    {
+      key: 'contact',
+      label: '연락처',
+      render: (_, item) => (
+        <div className="flex flex-col">
+          <span>{item.supplierInfo.supplierEmail}</span>
+          <span>{item.supplierInfo.supplierPhone}</span>
+        </div>
+      ),
+    },
+    {
+      key: 'address',
+      label: '주소',
+      render: (_, item) => (
+        <div className="flex flex-col">
+          <span>{item.supplierInfo.supplierBaseAddress}</span>
+          <span>{item.supplierInfo.supplierDetailAddress}</span>
+        </div>
+      ),
+    },
+    {
+      key: 'deliveryLeadTime',
+      label: '배송 기간',
+      align: 'center',
+      render: (_, item) => `${item.supplierInfo.deliveryLeadTime}일`,
+    },
+    {
+      key: 'statusCode',
+      label: '상태',
+      align: 'center',
+      render: (_, item) => <StatusLabel $statusCode={item.supplierInfo.supplierStatusCode} />,
+    },
+    {
+      key: 'action',
+      label: '작업',
+      align: 'center',
+      render: (_, item) => (
+        <button
+          onClick={() => handleViewDetail(item.supplierInfo.supplierId)}
+          className="w-8 h-8 flex items-center justify-center text-blue-500 hover:bg-blue-50 rounded cursor-pointer"
+          title="상세보기"
+        >
+          <i className="ri-eye-line"></i>
+        </button>
+      ),
+    },
+  ];
+
   return (
     <>
       <div className="flex justify-between items-center">
@@ -123,90 +191,12 @@ export default function SupplierListTab() {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50">
-            <tr className="text-center">
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                공급업체 코드
-              </th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                업체명
-              </th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                카테고리
-              </th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                연락처
-              </th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                주소
-              </th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                배송 기간
-              </th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                상태
-              </th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                작업
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {suppliers.map((supplier) => {
-              const { supplierInfo } = supplier;
-              return (
-                <tr key={supplierInfo.supplierId} className="hover:bg-gray-50 text-center">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {supplierInfo.supplierNumber}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {supplierInfo.supplierName}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {supplierInfo.category}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <div className="flex flex-col">
-                      <span>{supplierInfo.supplierEmail}</span>
-                      <span>{supplierInfo.supplierPhone}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <div className="flex flex-col">
-                      <span>{supplierInfo.supplierBaseAddress}</span>
-                      <span>{supplierInfo.supplierDetailAddress}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {supplierInfo.deliveryLeadTime}일
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <StatusLabel $statusCode={supplierInfo.supplierStatusCode} />
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => handleViewDetail(supplierInfo.supplierId)}
-                        className="w-8 h-8 flex items-center justify-center text-blue-500 hover:bg-blue-50 rounded cursor-pointer"
-                        title="상세보기"
-                      >
-                        <i className="ri-eye-line"></i>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-            {suppliers.length === 0 && (
-              <tr>
-                <td colSpan={7} className="px-6 py-8 text-center text-gray-500 text-sm">
-                  공급업체가 없습니다.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+        <Table
+          columns={columns}
+          data={suppliers}
+          keyExtractor={(row) => row.supplierInfo.supplierId}
+          emptyMessage="공급업체가 없습니다."
+        />
       </div>
 
       {/* 페이지네이션 */}
