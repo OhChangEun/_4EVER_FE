@@ -109,7 +109,7 @@ const ShippingManagementList = () => {
                 },
                 {
                   key: 'dueDate',
-                  label: '낙기일',
+                  label: '납기일',
                   render: (_, row) => row.dueDate.slice(0, 10),
                 },
                 {
