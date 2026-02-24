@@ -4,7 +4,11 @@ import { useEffect, useMemo, useState } from 'react';
 import { SHIPPING_TABLE_HEADERS } from '../../inventory.constants';
 import { useQuery } from '@tanstack/react-query';
 import { getProductionList, getReadyToShipList } from '../../inventory.api';
-import { ManageMentCommonQueryParams } from '../../types/ShippingManagementListType';
+import {
+  ManageMentCommonQueryParams,
+  ProductionListResponse,
+  ReadyToShipListResponse,
+} from '../../types/ShippingManagementListType';
 import StatusLabel from '@/app/components/common/StatusLabel';
 import Pagination from '@/app/components/common/Pagination';
 import ShippingDetailModal from '../modals/ShippingDetailModal';
@@ -47,7 +51,10 @@ const ShippingManagementList = () => {
   const isCurrentError = selectedSubTab === 'producing' ? isProductionError : isReadyError;
   const currentRes = selectedSubTab === 'producing' ? ProductionRes : ReadyToShipRes;
 
-  const currentData = currentRes?.data ?? [];
+  const currentData = (currentRes?.data ?? []) as (
+    | ProductionListResponse
+    | ReadyToShipListResponse
+  )[];
   const pageInfo = currentRes?.pageData;
   const totalPages = pageInfo?.totalPages ?? 1;
 
