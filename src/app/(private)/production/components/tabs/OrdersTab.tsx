@@ -11,6 +11,7 @@ import {
 } from '../../api/production.api';
 import TableStatusBox from '@/app/components/common/TableStatusBox';
 import Pagination from '@/app/components/common/Pagination';
+import Table, { TableColumn } from '@/app/components/common/Table';
 import {
   FetchMrpOrdersListParams,
   MrpOrdersListData,
@@ -120,6 +121,98 @@ export default function OrdersTab() {
     mrpConvert(body);
   };
 
+  // --- 컨럼 정의 ---
+  const columns: TableColumn<MrpOrdersListData>[] = [
+    {
+      key: 'itemId',
+      label: '',
+      width: '48px',
+      align: 'center',
+      headerRender: () => (
+        <input
+          type="checkbox"
+          checked={
+            selectedRequirements.length > 0 && selectedRequirements.length === orderItems.length
+          }
+          onChange={handleSelectAllRequirements}
+          className="rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
+        />
+      ),
+      render: (_, item) =>
+        item.convertStatus !== 'NOT_CONVERTED' ? (
+          <input type="checkbox" disabled className="rounded border-gray-300 text-gray-300" />
+        ) : (
+          <input
+            type="checkbox"
+            checked={selectedRequirements.includes(item.itemId)}
+            onChange={() => handleRequirementSelection(item.itemId)}
+            className="rounded border-gray-300 cursor-pointer"
+          />
+        ),
+    },
+    { key: 'itemName', label: '자재', align: 'center' },
+    {
+      key: 'requiredQuantity',
+      label: '소요 수량',
+      align: 'center',
+      render: (_, item) => <>{item.requiredQuantity.toLocaleString()}</>,
+    },
+    {
+      key: 'availableStock',
+      label: '가용 재고',
+      align: 'center',
+      render: (_, item) => <>{item.availableStock.toLocaleString()}</>,
+    },
+    {
+      key: 'consumptionQuantity',
+      label: '소모량',
+      align: 'center',
+      render: (_, item) => <>{item.consumptionQuantity.toLocaleString()}</>,
+    },
+    {
+      key: 'availableStatusCode',
+      label: '가용 재고 상태',
+      align: 'center',
+      render: (_, item) => <StatusLabel $statusCode={item.availableStatusCode} />,
+    },
+    {
+      key: 'shortageQuantity',
+      label: '부족 재고',
+      align: 'center',
+      render: (_, item) =>
+        item.shortageQuantity > 0 ? (
+          <span className="text-red-600 font-medium">{item.shortageQuantity.toLocaleString()}</span>
+        ) : (
+          <>0</>
+        ),
+    },
+    {
+      key: 'itemType',
+      label: '자재 유형',
+      align: 'center',
+      render: (_, item) => <StatusLabel $statusCode={item.itemType} />,
+    },
+    {
+      key: 'procurementStartDate',
+      label: '구매 권장일',
+      align: 'center',
+      render: (_, item) => <>{item.procurementStartDate || '-'}</>,
+    },
+    {
+      key: 'expectedArrivalDate',
+      label: '예상 도착일',
+      align: 'center',
+      render: (_, item) => <>{item.expectedArrivalDate || '-'}</>,
+    },
+    { key: 'supplierCompanyName', label: '공급사', align: 'center' },
+    {
+      key: 'convertStatus',
+      label: '전환 상태',
+      align: 'center',
+      render: (_, item) => <StatusLabel $statusCode={item.convertStatus} />,
+    },
+  ];
+
   return (
     <>
       <div className="flex justify-end items-center p-4 border-b border-gray-200">
@@ -155,117 +248,13 @@ export default function OrdersTab() {
         <TableStatusBox $type="loading" $message="순소요 목록을 불러오는 중입니다..." />
       ) : isError ? (
         <TableStatusBox $type="error" $message="순소요 목록을 불러오는 중 오류가 발생했습니다." />
-      ) : orderItems.length === 0 ? (
-        <TableStatusBox $type="empty" $message="조회된 순소요 데이터가 없습니다" />
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr className="whitespace-nowrap text-center">
-                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  <input
-                    type="checkbox"
-                    checked={selectedRequirements.length === orderItems.length}
-                    onChange={handleSelectAllRequirements}
-                    className="rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
-                  />
-                </th>
-                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  자재
-                </th>
-                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  소요 수량
-                </th>
-                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  가용 재고
-                </th>
-                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  소모량
-                </th>
-                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  가용 재고 상태
-                </th>
-                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  부족 재고
-                </th>
-                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  자재 유형
-                </th>
-                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  구매 권장일
-                </th>
-                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  예상 도착일
-                </th>
-                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  공급사
-                </th>
-                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  전환 상태
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {orderItems.map((item) => (
-                <tr key={item.itemId} className="hover:bg-gray-50 whitespace-nowrap truncate">
-                  <td className="px-4 py-3">
-                    {item.convertStatus !== 'NOT_CONVERTED' ? (
-                      <input
-                        type="checkbox"
-                        disabled
-                        className="rounded border-gray-300 text-gray-300"
-                      />
-                    ) : (
-                      <input
-                        type="checkbox"
-                        checked={selectedRequirements.includes(item.itemId)}
-                        onChange={() => handleRequirementSelection(item.itemId)}
-                        className="rounded border-gray-300 cursor-pointer"
-                      />
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-sm font-medium text-gray-900">{item.itemName}</td>
-                  <td className="px-4 py-3 text-sm text-gray-900">
-                    {item.requiredQuantity.toLocaleString()}
-                  </td>
-
-                  <td className="px-4 py-3 text-sm text-gray-900">
-                    {item.availableStock.toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-900">
-                    {item.consumptionQuantity.toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3">
-                    <StatusLabel $statusCode={item.availableStatusCode} />
-                  </td>
-                  <td className="px-4 py-3 text-sm">
-                    {item.shortageQuantity > 0 ? (
-                      <span className="text-red-600 font-medium">
-                        {item.shortageQuantity.toLocaleString()}
-                      </span>
-                    ) : (
-                      0
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-900">
-                    <StatusLabel $statusCode={item.itemType} />
-                  </td>
-
-                  <td className="px-4 py-3 text-sm text-gray-900">
-                    {item.procurementStartDate || '-'}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-900">
-                    {item.expectedArrivalDate || '-'}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-900">{item.supplierCompanyName}</td>
-                  <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                    <StatusLabel $statusCode={item.convertStatus} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <Table
+          columns={columns}
+          data={orderItems}
+          keyExtractor={(row) => row.itemId}
+          emptyMessage="조회된 순소요 데이터가 없습니다"
+        />
       )}
 
       {isError || isLoading ? null : (

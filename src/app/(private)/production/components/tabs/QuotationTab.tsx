@@ -25,7 +25,8 @@ import DateRangePicker from '@/app/components/common/DateRangePicker';
 import { useModal } from '@/app/components/common/modal/useModal';
 import { useDropdown } from '@/app/hooks/useDropdown';
 import StatusLabel from '@/app/components/common/StatusLabel';
-import { getQueryClient } from '@/lib/queryClient';
+import Table, { TableColumn } from '@/app/components/common/Table';
+import TableStatusBox from '@/app/components/common/TableStatusBox';
 
 export default function QuotationTab() {
   const { openModal, removeAllModals } = useModal();
@@ -180,25 +181,66 @@ export default function QuotationTab() {
     confirmQuotations(selectedQuotes);
   };
 
+  // --- 컬럼 정의 ---
+  const columns: TableColumn<QuotationData>[] = [
+    {
+      key: 'quotationId',
+      label: '',
+      width: '48px',
+      align: 'center',
+      headerRender: () => (
+        <input
+          type="checkbox"
+          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          onChange={(e) => {
+            if (e.target.checked) {
+              setSelectedQuotes(quotationDataList.map((q) => q.quotationId));
+            } else {
+              setSelectedQuotes([]);
+            }
+          }}
+          checked={
+            quotationDataList.length > 0 &&
+            quotationDataList.every((q) => selectedQuotes.includes(q.quotationId))
+          }
+        />
+      ),
+      render: (_, quote) =>
+        quote.availableStatus === 'CHECKED' ? (
+          <input type="checkbox" className="rounded border-gray-300 text-gray-300" disabled />
+        ) : (
+          <input
+            type="checkbox"
+            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            checked={selectedQuotes.includes(quote.quotationId)}
+            onChange={() => handleQuoteSelect(quote.quotationId)}
+          />
+        ),
+    },
+    { key: 'quotationNumber', label: '견적 번호', align: 'center' },
+    { key: 'customerName', label: '고객사', align: 'center' },
+    { key: 'requestDate', label: '요청 납기', align: 'center' },
+    {
+      key: 'availableStatus',
+      label: '가용 재고',
+      align: 'center',
+      render: (_, quote) => <StatusLabel $statusCode={quote.availableStatus} />,
+    },
+    {
+      key: 'dueDate',
+      label: '제안 납기',
+      align: 'center',
+      render: (_, quote) => <>{quote.dueDate || '-'}</>,
+    },
+    {
+      key: 'statusCode',
+      label: '상태',
+      align: 'center',
+      render: (_, quote) => <StatusLabel $statusCode={quote.statusCode} />,
+    },
+  ];
+
   // --- 렌더링 ---
-  if (isQuotationListLoading) {
-    return (
-      <div className="bg-white rounded-2xl p-6 shadow-sm flex justify-center items-center h-64">
-        <div className="text-lg font-semibold text-gray-900">견적 리스트를 불러오는 중...</div>
-      </div>
-    );
-  }
-
-  if (isQuotationListError) {
-    return (
-      <div className="bg-white rounded-2xl p-6 shadow-sm flex justify-center items-center h-64">
-        <div className="text-lg font-semibold text-red-600">
-          견적 리스트를 불러오는데 실패했습니다.
-        </div>
-      </div>
-    );
-  }
-
   return (
     <>
       <div className="flex items-center justify-between">
@@ -238,109 +280,24 @@ export default function QuotationTab() {
         </div>
       </div>
       <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="w-12 px-4 py-3">
-                  <input
-                    type="checkbox"
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedQuotes(quotationDataList.map((q) => q.quotationId));
-                      } else {
-                        setSelectedQuotes([]);
-                      }
-                    }}
-                    // 현재 페이지 데이터만 모두 선택했는지 확인
-                    checked={
-                      quotationDataList.length > 0 &&
-                      quotationDataList.every((q) => selectedQuotes.includes(q.quotationId))
-                    }
-                  />
-                </th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  견적 번호
-                </th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  고객사
-                </th>
-                {/* <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  제품
-                </th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  요청 수량
-                </th> */}
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  요청 납기
-                </th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  가용 재고
-                </th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  제안 납기
-                </th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  상태
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {/* API 데이터로 렌더링 */}
-              {quotationDataList.map((quote) => (
-                <tr key={quote.quotationId} className="hover:bg-gray-50 text-center">
-                  <td className="px-4 py-3">
-                    {quote.availableStatus === 'CHECKED' ? (
-                      <input
-                        type="checkbox"
-                        className="rounded border-gray-300 text-gray-300"
-                        disabled
-                      />
-                    ) : (
-                      <input
-                        type="checkbox"
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        checked={selectedQuotes.includes(quote.quotationId)}
-                        onChange={() => handleQuoteSelect(quote.quotationId)}
-                      />
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                    {quote.quotationNumber}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-900">{quote.customerName}</td>
-                  {/* <td className="px-4 py-3 text-sm text-gray-900">{quote.items[0].productName}</td>
-                  <td className="px-4 py-3 text-sm text-gray-900">
-                    {quote.requestQuantity}EA
-                  </td> */}
-                  <td className="px-4 py-3 text-sm text-gray-900">{quote.requestDate}</td>
-                  <td className="px-4 py-3">
-                    <StatusLabel $statusCode={quote.availableStatus} />
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-900">{quote.dueDate || '-'}</td>
-                  <td className="px-4 py-3">
-                    <StatusLabel $statusCode={quote.statusCode} />
-                  </td>
-                </tr>
-              ))}
-              {quotationDataList.length === 0 && (
-                <tr>
-                  <td colSpan={9} className="px-4 py-8 text-center text-gray-500">
-                    조회된 견적 데이터가 없습니다.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-        {/* 페이지네이션 */}
-        {quotationDataList.length > 0 && (
+        {isQuotationListLoading ? (
+          <TableStatusBox $type="loading" $message="견적 목록을 불러오는 중입니다..." />
+        ) : isQuotationListError ? (
+          <TableStatusBox $type="error" $message="견적 목록을 불러오는 중 오류가 발생했습니다." />
+        ) : (
+          <Table
+            columns={columns}
+            data={quotationDataList}
+            keyExtractor={(row) => row.quotationId}
+            emptyMessage="조회된 견적 데이터가 없습니다."
+          />
+        )}
+        {!isQuotationListLoading && !isQuotationListError && (
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
             totalElements={totalElements}
-            onPageChange={handlePageChange} // 수정된 핸들러 사용
+            onPageChange={handlePageChange}
           />
         )}
       </div>

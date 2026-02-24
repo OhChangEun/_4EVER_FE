@@ -1292,29 +1292,54 @@ export const handlers = [
   }),
   http.get(PRODUCTION_ENDPOINTS.QUOTATIONS, ({ request }) => {
     if (shouldError(request)) return error('Failed to load quotations', 500);
-    return ok({
-      content: [
-        {
-          quotationId: 'qt-001',
-          quotationNumber: 'QT-2026-001',
-          customerName: '한빛전자',
-          requestDate: '2026-01-10',
-          dueDate: '2026-02-01',
-          statusCode: 'CONFIRMED',
-          availableStatus: 'AVAILABLE',
-          items: [
-            {
-              productId: 'prod-001',
-              productName: '모터 A',
-              quantity: 100,
-              uomName: 'EA',
-              unitPrice: 12000,
-            },
-          ],
-        },
-      ],
-      page: makePage(0, 10, 1),
+    const url = new URL(request.url);
+    const page = Number(url.searchParams.get('page') ?? 0);
+    const size = Number(url.searchParams.get('size') ?? 10);
+    const filterStatus = url.searchParams.get('statusCode') ?? '';
+    const filterAvailable = url.searchParams.get('availableStatusCode') ?? '';
+    const filterStartDate = url.searchParams.get('startDate') ?? '';
+    const filterEndDate = url.searchParams.get('endDate') ?? '';
+    const customers = [
+      '한빛전자',
+      '대양상사',
+      '삼성전자',
+      '현대모비스',
+      '두산중공업',
+      'LG화학',
+      '포스코',
+      'SK하이닉스',
+      '론데케미칼',
+      'KT&G',
+    ];
+    const statusCodes = ['NEW', 'CONFIRMED'];
+    const availableStatuses = ['CHECKED', 'UNCHECKED'];
+    const baseTotal = 512;
+    const allData = Array.from({ length: baseTotal }, (_, i) => {
+      const idx = i + 1;
+      const year = 2025 + Math.floor(idx / 300);
+      const month = String((idx % 12) + 1).padStart(2, '0');
+      const day = String((idx % 28) + 1).padStart(2, '0');
+      const nextMonth = String((Number(month) % 12) + 1).padStart(2, '0');
+      return {
+        quotationId: `qt-${String(idx).padStart(3, '0')}`,
+        quotationNumber: `QT-${year}-${String(idx).padStart(3, '0')}`,
+        customerName: customers[idx % customers.length],
+        requestDate: `${year}-${month}-${day}`,
+        dueDate: `${year}-${nextMonth}-${day}`,
+        statusCode: statusCodes[idx % statusCodes.length],
+        availableStatus: availableStatuses[idx % availableStatuses.length],
+      };
     });
+    let filtered = allData;
+    if (filterStatus && filterStatus !== 'ALL')
+      filtered = filtered.filter((d) => d.statusCode === filterStatus);
+    if (filterAvailable && filterAvailable !== 'ALL')
+      filtered = filtered.filter((d) => d.availableStatus === filterAvailable);
+    if (filterStartDate) filtered = filtered.filter((d) => d.requestDate >= filterStartDate);
+    if (filterEndDate) filtered = filtered.filter((d) => d.requestDate <= filterEndDate);
+    const total = filtered.length;
+    const start = page * size;
+    return ok({ content: filtered.slice(start, start + size), page: makePage(page, size, total) });
   }),
   http.post(PRODUCTION_ENDPOINTS.QUOTATION_SIMULATE, ({ request }) => {
     if (shouldError(request)) return error('Failed to simulate quotation', 500);
@@ -1476,30 +1501,76 @@ export const handlers = [
   }),
   http.get(PRODUCTION_ENDPOINTS.MRP_ORDERS, ({ request }) => {
     if (shouldError(request)) return error('Failed to load MRP orders', 500);
-    return ok({
-      content: [
-        {
-          quotationId: 'qt-001',
-          itemId: 'item-1001',
-          itemName: '베어링 B',
-          requiredQuantity: 100,
-          currentStock: 20,
-          reservedStock: 10,
-          actualAvailableStock: 10,
-          safetyStock: 30,
-          availableStock: 10,
-          availableStatusCode: 'SHORTAGE',
-          shortageQuantity: 90,
-          consumptionQuantity: 10,
-          itemType: 'MATERIAL',
-          procurementStartDate: '2026-01-15',
-          expectedArrivalDate: '2026-02-01',
-          supplierCompanyName: '대한금속',
-          convertStatus: 'PENDING',
-        },
-      ],
-      page: makePage(0, 10, 1),
+    const url = new URL(request.url);
+    const page = Number(url.searchParams.get('page') ?? 0);
+    const size = Number(url.searchParams.get('size') ?? 10);
+    const filterQuotation = url.searchParams.get('quotationId') ?? '';
+    const filterAvailable = url.searchParams.get('availableStatusCode') ?? '';
+    const itemNames = [
+      '베어링 B',
+      '스프링 C',
+      '볼트 M10',
+      '너트 M10',
+      '기어 A',
+      '샤프트 D',
+      '플랜지 E',
+      '커플링 F',
+      '실린더 G',
+      '피스톤 H',
+    ];
+    const suppliers = [
+      '대한금속',
+      '현대파스너',
+      '하나금속',
+      '삼성부품',
+      '두산소재',
+      'LG부품',
+      '포스코재료',
+      'SK소재',
+      '론데금속',
+      'KT부품',
+    ];
+    const itemTypes = ['MATERIAL', 'PRODUCT'];
+    const convertStatuses = ['NOT_CONVERTED', 'CONVERTED', 'PENDING'];
+    const baseTotal = 500;
+    const allData = Array.from({ length: baseTotal }, (_, i) => {
+      const idx = i + 1;
+      const year = 2025 + Math.floor(idx / 300);
+      const month = String((idx % 12) + 1).padStart(2, '0');
+      const day = String((idx % 28) + 1).padStart(2, '0');
+      const nextMonth = String((Number(month) % 12) + 1).padStart(2, '0');
+      const requiredQty = ((idx % 50) + 1) * 10;
+      const availableStock = (idx % 30) * 5;
+      const consumptionQty = Math.min(availableStock, requiredQty);
+      const shortageQty = Math.max(0, requiredQty - availableStock);
+      return {
+        quotationId: `qt-${String((idx % 10) + 1).padStart(3, '0')}`,
+        itemId: `item-${1000 + idx}`,
+        itemName: itemNames[idx % itemNames.length],
+        requiredQuantity: requiredQty,
+        currentStock: availableStock + (idx % 10),
+        reservedStock: idx % 5,
+        actualAvailableStock: availableStock,
+        safetyStock: 30,
+        availableStock,
+        availableStatusCode: shortageQty > 0 ? 'INSUFFICIENT' : 'SUFFICIENT',
+        shortageQuantity: shortageQty,
+        consumptionQuantity: consumptionQty,
+        itemType: itemTypes[idx % itemTypes.length],
+        procurementStartDate: `${year}-${month}-${day}`,
+        expectedArrivalDate: `${year}-${nextMonth}-${day}`,
+        supplierCompanyName: suppliers[idx % suppliers.length],
+        convertStatus: convertStatuses[idx % convertStatuses.length],
+      };
     });
+    let filtered = allData;
+    if (filterQuotation && filterQuotation !== 'ALL')
+      filtered = filtered.filter((d) => d.quotationId === filterQuotation);
+    if (filterAvailable && filterAvailable !== 'ALL')
+      filtered = filtered.filter((d) => d.availableStatusCode === filterAvailable);
+    const total = filtered.length;
+    const start = page * size;
+    return ok({ content: filtered.slice(start, start + size), page: makePage(page, size, total) });
   }),
   http.post(PRODUCTION_ENDPOINTS.MRP_CONVERT, ({ request }) => {
     if (shouldError(request)) return error('Failed to convert MRP orders', 500);
@@ -1507,21 +1578,50 @@ export const handlers = [
   }),
   http.get(PRODUCTION_ENDPOINTS.MRP_PLANNED_ORDERS_LIST, ({ request }) => {
     if (shouldError(request)) return error('Failed to load MRP planned orders', 500);
-    return ok({
-      page: makePage(0, 10, 1),
-      content: [
-        {
-          mrpRunId: 'mrp-001',
-          quotationNumber: 'QT-2026-001',
-          itemId: 'item-1001',
-          itemName: '베어링 B',
-          quantity: 100,
-          status: 'PLANNED',
-          procurementStartDate: '2026-01-15',
-          expectedArrivalDate: '2026-02-01',
-        },
-      ],
+    const url = new URL(request.url);
+    const page = Number(url.searchParams.get('page') ?? 0);
+    const size = Number(url.searchParams.get('size') ?? 10);
+    const filterStatus = url.searchParams.get('status') ?? '';
+    const filterQuotation = url.searchParams.get('quotationId') ?? '';
+    const itemNames = [
+      '베어링 B',
+      '스프링 C',
+      '볼트 M10',
+      '너트 M10',
+      '기어 A',
+      '샤프트 D',
+      '플랜지 E',
+      '커플링 F',
+      '실린더 G',
+      '피스톤 H',
+    ];
+    const statuses = ['PENDING', 'PLANNED', 'APPROVED', 'REJECTED'];
+    const baseTotal = 500;
+    const allData = Array.from({ length: baseTotal }, (_, i) => {
+      const idx = i + 1;
+      const year = 2025 + Math.floor(idx / 300);
+      const month = String((idx % 12) + 1).padStart(2, '0');
+      const day = String((idx % 28) + 1).padStart(2, '0');
+      const nextMonth = String((Number(month) % 12) + 1).padStart(2, '0');
+      return {
+        mrpRunId: `mrp-${String(idx).padStart(3, '0')}`,
+        quotationNumber: `QT-${year}-${String((idx % 20) + 1).padStart(3, '0')}`,
+        itemId: `item-${1000 + idx}`,
+        itemName: itemNames[idx % itemNames.length],
+        quantity: ((idx % 50) + 1) * 10,
+        status: statuses[idx % statuses.length],
+        procurementStartDate: `${year}-${month}-${day}`,
+        expectedArrivalDate: `${year}-${nextMonth}-${day}`,
+      };
     });
+    let filtered = allData;
+    if (filterStatus && filterStatus !== 'ALL')
+      filtered = filtered.filter((d) => d.status === filterStatus);
+    if (filterQuotation && filterQuotation !== 'ALL')
+      filtered = filtered.filter((d) => d.quotationNumber.includes(filterQuotation));
+    const total = filtered.length;
+    const start = page * size;
+    return ok({ content: filtered.slice(start, start + size), page: makePage(page, size, total) });
   }),
   http.get(`${PRODUCTION_BASE_PATH}/mrp/planned-orders/detail/:mrpId`, ({ request, params }) => {
     if (shouldError(request)) return error('Failed to load MRP planned order detail', 500);
@@ -1549,27 +1649,52 @@ export const handlers = [
   }),
   http.get(PRODUCTION_ENDPOINTS.MES_LIST, ({ request }) => {
     if (shouldError(request)) return error('Failed to load MES list', 500);
-    return ok({
-      content: [
-        {
-          mesId: 'mes-001',
-          mesNumber: 'MES-2026-001',
-          productId: 'prod-001',
-          productName: '모터 A',
-          quantity: 100,
-          uomName: 'EA',
-          quotationId: 'qt-001',
-          quotationNumber: 'QT-2026-001',
-          status: 'IN_PROGRESS',
-          currentOperation: 2,
-          startDate: '2026-01-15',
-          endDate: '2026-02-01',
-          progressRate: 60,
-          sequence: ['OP10', 'OP20'],
-        },
-      ],
-      page: makePage(0, 10, 1),
+    const url = new URL(request.url);
+    const page = Number(url.searchParams.get('page') ?? 0);
+    const size = Number(url.searchParams.get('size') ?? 10);
+    const filterStatus = url.searchParams.get('status') ?? '';
+    const filterQuotation = url.searchParams.get('quotationId') ?? '';
+    const productNames = ['모터 A', '펌프 B', '밸브 C', '센서 D', '컨베이어 E'];
+    const quotationNumbers = [
+      'QT-2026-001',
+      'QT-2026-002',
+      'QT-2026-003',
+      'QT-2026-004',
+      'QT-2026-005',
+    ];
+    const quotationIds = ['qt-001', 'qt-002', 'qt-003', 'qt-004', 'qt-005'];
+    const statuses = ['WAITING', 'IN_PROGRESS', 'WAITING', 'IN_PROGRESS', 'WAITING'];
+    const baseTotal = 50;
+    const allData = Array.from({ length: baseTotal }, (_, i) => {
+      const idx = i + 1;
+      const statusIdx = idx % statuses.length;
+      const qIdx = idx % quotationIds.length;
+      const progress = statuses[statusIdx] === 'IN_PROGRESS' ? 20 + (idx % 70) : 0;
+      return {
+        mesId: `mes-${String(idx).padStart(3, '0')}`,
+        mesNumber: `MES-2026-${String(idx).padStart(3, '0')}`,
+        productId: `prod-${String((idx % 5) + 1).padStart(3, '0')}`,
+        productName: productNames[idx % productNames.length],
+        quantity: ((idx % 10) + 1) * 50,
+        uomName: 'EA',
+        quotationId: quotationIds[qIdx],
+        quotationNumber: quotationNumbers[qIdx],
+        status: statuses[statusIdx],
+        currentOperation: statuses[statusIdx] === 'IN_PROGRESS' ? 2 : 1,
+        startDate: `2026-0${(idx % 3) + 1}-${String((idx % 28) + 1).padStart(2, '0')}`,
+        endDate: `2026-0${(idx % 3) + 2}-${String((idx % 28) + 1).padStart(2, '0')}`,
+        progressRate: progress,
+        sequence: ['OP10', 'OP20', 'OP30'],
+      };
     });
+    let filtered = allData;
+    if (filterStatus && filterStatus !== 'ALL')
+      filtered = filtered.filter((d) => d.status === filterStatus);
+    if (filterQuotation && filterQuotation !== 'ALL')
+      filtered = filtered.filter((d) => d.quotationId === filterQuotation);
+    const total = filtered.length;
+    const start = page * size;
+    return ok({ content: filtered.slice(start, start + size), page: makePage(page, size, total) });
   }),
   http.get(`${PRODUCTION_BASE_PATH}/mes/:mesId`, ({ request, params }) => {
     if (shouldError(request)) return error('Failed to load MES detail', 500);
@@ -1649,14 +1774,16 @@ export const handlers = [
   http.get(PRODUCTION_ENDPOINTS.AVAILABLE_STATUS_DROPDOWN, ({ request }) => {
     if (shouldError(request)) return error('Failed to load available status dropdown', 500);
     return ok([
-      { key: 'AVAILABLE', value: '가용' },
-      { key: 'SHORTAGE', value: '부족' },
+      { key: 'ALL', value: '전체 가용재고' },
+      { key: 'CHECKED', value: '확인' },
+      { key: 'UNCHECKED', value: '미확인' },
     ]);
   }),
   http.get(PRODUCTION_ENDPOINTS.QUOTATION_STATUS_DROPDOWN, ({ request }) => {
     if (shouldError(request)) return error('Failed to load quotation status dropdown', 500);
     return ok([
-      { key: 'PENDING', value: '대기' },
+      { key: 'ALL', value: '전체 상태' },
+      { key: 'NEW', value: '신규' },
       { key: 'CONFIRMED', value: '확정' },
     ]);
   }),
@@ -1667,8 +1794,9 @@ export const handlers = [
   http.get(PRODUCTION_ENDPOINTS.MRP_AVAILABLE_STATUS_DROPDOWN, ({ request }) => {
     if (shouldError(request)) return error('Failed to load MRP available status dropdown', 500);
     return ok([
-      { key: 'AVAILABLE', value: '가용' },
-      { key: 'SHORTAGE', value: '부족' },
+      { key: 'ALL', value: '전체 상태' },
+      { key: 'SUFFICIENT', value: '충분' },
+      { key: 'INSUFFICIENT', value: '부족' },
     ]);
   }),
   http.get(PRODUCTION_ENDPOINTS.MRP_RUNS_QUOTATIONS_DROPDOWN, ({ request }) => {
@@ -1678,16 +1806,19 @@ export const handlers = [
   http.get(PRODUCTION_ENDPOINTS.MRP_RUNS_STATUS_DROPDOWN, ({ request }) => {
     if (shouldError(request)) return error('Failed to load MRP runs status dropdown', 500);
     return ok([
+      { key: 'ALL', value: '전체 상태' },
+      { key: 'PENDING', value: '대기' },
       { key: 'PLANNED', value: '계획' },
-      { key: 'COMPLETED', value: '완료' },
+      { key: 'APPROVED', value: '승인' },
+      { key: 'REJECTED', value: '반려' },
     ]);
   }),
   http.get(PRODUCTION_ENDPOINTS.MES_STATUS_DROPDOWN, ({ request }) => {
     if (shouldError(request)) return error('Failed to load MES status dropdown', 500);
     return ok([
-      { key: 'PLANNED', value: '계획' },
+      { key: 'ALL', value: '전체 상태' },
+      { key: 'WAITING', value: '대기' },
       { key: 'IN_PROGRESS', value: '진행중' },
-      { key: 'COMPLETED', value: '완료' },
     ]);
   }),
 
