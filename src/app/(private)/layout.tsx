@@ -32,7 +32,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           marginLeft: mounted && isMobile ? '0' : isExpanded ? '256px' : '64px',
         }}
       >
-        <main className="h-screen overflow-hidden bg-gray-50 flex flex-col">
+        <main className="h-screen overflow-auto bg-gray-50 flex flex-col">
           <PrivateGuard>{children}</PrivateGuard>
         </main>
       </div>
