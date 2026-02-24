@@ -61,12 +61,12 @@ export default function Sidebar() {
           </div>
           <button
             onClick={toggleSidebar}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors shrink-0"
+            className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors shrink-0"
             aria-label={isExpanded ? '사이드바 접기' : '사이드바 펼치기'}
           >
             <i
-              className={`ri-menu-fold-line text-xl text-gray-600 transition-transform duration-300 ${
-                isExpanded ? '' : 'rotate-180'
+              className={`text-2xl text-gray-500 font-light ${
+                isExpanded ? 'ri-arrow-left-double-line' : 'ri-arrow-right-double-line'
               }`}
             />
           </button>

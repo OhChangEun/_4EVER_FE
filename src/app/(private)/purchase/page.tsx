@@ -45,8 +45,8 @@ export default function PurchasePage() {
   }
 
   return (
-    <div className="bg-gray-50">
-      <main className="w-full px-6 py-6">
+    <div className="bg-gray-50 h-full flex flex-col">
+      <main className="flex-1 flex flex-col overflow-hidden px-6 pt-6">
         {statsData ? (
           //구매 관리 주요 지표
           <StatSection

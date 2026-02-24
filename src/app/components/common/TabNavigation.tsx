@@ -21,9 +21,9 @@ export default function TabNavigation({ tabs }: { tabs: Tab[] }) {
   const ActiveComponent = activeTab?.component;
 
   return (
-    <div className="my-8">
+    <div className="flex-1 flex flex-col min-h-0 pb-4">
       {/* 네비게이션바 */}
-      <nav className="-mb-px mx-1 border-b border-gray-200 flex space-x-6">
+      <nav className="-mb-px mx-1 border-b border-gray-200 flex space-x-6 shrink-0">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -40,7 +40,9 @@ export default function TabNavigation({ tabs }: { tabs: Tab[] }) {
         ))}
       </nav>
       {/* 렌더링 되는 컴포넌트 */}
-      <div className="mt-4 card-base p-6 space-y-6">{ActiveComponent && <ActiveComponent />}</div>
+      <div className="flex-1 min-h-0 mt-4 card-base p-6 space-y-6 overflow-hidden">
+        {ActiveComponent && <ActiveComponent />}
+      </div>
     </div>
   );
 }

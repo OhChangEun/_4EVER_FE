@@ -15,16 +15,22 @@ const NAV_ITEMS = [
     roles: ['ALL_ADMIN', ...MM, ...HRM, ...FCM, ...IM, ...PP, ...SD, 'CUSTOMER_ADMIN'],
   },
   {
-    href: '/purchase',
-    label: '구매관리',
-    icon: 'ri-shopping-cart-line',
-    roles: ['ALL_ADMIN', ...MM, ...SD, ...IM, ...PP, 'SUPPLIER_ADMIN'],
-  },
-  {
     href: '/sales',
     label: '영업관리',
     icon: 'ri-line-chart-line',
     roles: ['ALL_ADMIN', ...MM, ...SD, ...IM, ...PP, 'CUSTOMER_ADMIN'],
+  },
+  {
+    href: '/production',
+    label: '생산관리',
+    icon: 'ri-settings-3-line',
+    roles: ['ALL_ADMIN', ...MM, ...SD, ...IM, ...PP],
+  },
+  {
+    href: '/purchase',
+    label: '구매관리',
+    icon: 'ri-shopping-cart-line',
+    roles: ['ALL_ADMIN', ...MM, ...SD, ...IM, ...PP, 'SUPPLIER_ADMIN'],
   },
   {
     href: '/inventory',
@@ -43,12 +49,6 @@ const NAV_ITEMS = [
     label: '인적자원관리',
     icon: 'ri-team-line',
     roles: ['ALL_ADMIN', ...HRM],
-  },
-  {
-    href: '/production',
-    label: '생산관리',
-    icon: 'ri-settings-3-line',
-    roles: ['ALL_ADMIN', ...MM, ...SD, ...IM, ...PP],
   },
 ] as const;
 
@@ -107,14 +107,14 @@ export default function SidebarNavigation({ isExpanded }: SidebarNavigationProps
             onClick={handleLinkClick}
             className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 group ${
               isActive(item.href)
-                ? 'bg-blue-50 text-blue-600 font-semibold'
-                : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                ? 'bg-blue-100 text-blue-600 font-medium'
+                : 'text-gray-500 hover:bg-gray-100'
             }`}
             title={!isExpanded ? item.label : undefined}
           >
             <i
               className={`${item.icon} text-xl shrink-0 ${
-                isActive(item.href) ? 'text-blue-600' : 'text-gray-500 group-hover:text-gray-900'
+                isActive(item.href) ? 'text-blue-600' : 'text-gray-500'
               }`}
             />
             <span

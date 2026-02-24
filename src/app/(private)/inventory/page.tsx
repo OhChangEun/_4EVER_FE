@@ -27,8 +27,8 @@ export default function InventoryPage() {
     : { week: [], month: [], quarter: [], year: [] };
 
   return (
-    <div className="bg-gray-50">
-      <main className="w-full px-6 py-6">
+    <div className="bg-gray-50 h-full flex flex-col">
+      <main className="flex-1 flex flex-col overflow-hidden px-6 pt-6">
         {/* 페이지 헤더 */}
         <StatSection
           title="재고 관리"

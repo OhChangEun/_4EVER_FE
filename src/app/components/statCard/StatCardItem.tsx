@@ -91,7 +91,7 @@ export default function StatCardItem({ stat, currentPeriodLabel }: StatCardProps
 
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-[0_1px_4px_0_rgba(0,0,0,0.04)] p-5">
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex items-center justify-between gap-3">
         {/* 좌측: 수치 영역 */}
         <div className="flex flex-col gap-1 min-w-0">
           <p className="text-xs font-medium text-gray-500 truncate">{stat.title}</p>
@@ -109,7 +109,7 @@ export default function StatCardItem({ stat, currentPeriodLabel }: StatCardProps
         </div>
 
         {/* 우측: 스파크라인 그래프 */}
-        <div className="shrink-0 pt-1">
+        <div className="shrink-0">
           <Sparkline points={sparkPoints} changeType={stat.changeType} />
         </div>
       </div>
