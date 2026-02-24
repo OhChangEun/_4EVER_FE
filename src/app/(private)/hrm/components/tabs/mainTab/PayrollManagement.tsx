@@ -10,6 +10,8 @@ import { KeyValueItem } from '@/app/types/CommonType';
 import Dropdown from '@/app/components/common/Dropdown';
 import { PayrollDetailModal } from '@/app/(private)/hrm/components/modals/PayrollDetailModal';
 import Pagination from '@/app/components/common/Pagination';
+import TableStatusBox from '@/app/components/common/TableStatusBox';
+import Table, { TableColumn } from '@/app/components/common/Table';
 import { PayRollList, PayrollRequestParams } from '@/app/(private)/hrm/types/HrmPayrollApiType';
 import { useModal } from '@/app/components/common/modal/useModal';
 import { useDropdown } from '@/app/hooks/useDropdown';
@@ -103,6 +105,8 @@ export default function PayrollManagement() {
   const payrollList = payrollData?.content ?? [];
   const pageInfo = payrollData?.page;
 
+  type PayrollItem = (typeof payrollList)[0];
+
   const handleViewPayrollDetail = (payroll: PayRollList) => {
     openModal(PayrollDetailModal, {
       title: '급여 상세정보',
@@ -112,6 +116,66 @@ export default function PayrollManagement() {
       height: '680px',
     });
   };
+
+  const columns: TableColumn<PayrollItem>[] = [
+    {
+      key: 'employeeName',
+      label: '이름',
+      render: (_, p) => p.employee.employeeName,
+    },
+    {
+      key: 'department',
+      label: '부서',
+      render: (_, p) => p.employee.department,
+    },
+    {
+      key: 'position',
+      label: '직급',
+      render: (_, p) => p.employee.position,
+    },
+    {
+      key: 'basePay',
+      label: '기본급',
+      align: 'right',
+      render: (_, p) => `${p.pay.basePay.toLocaleString()}원`,
+    },
+    {
+      key: 'overtimePay',
+      label: '초과근무비',
+      align: 'right',
+      render: (_, p) => `${p.pay.overtimePay.toLocaleString()}원`,
+    },
+    {
+      key: 'deduction',
+      label: '공제액',
+      align: 'right',
+      render: (_, p) => `${p.pay.deduction.toLocaleString()}원`,
+    },
+    {
+      key: 'netPay',
+      label: '실지급액',
+      align: 'right',
+      render: (_, p) => `${p.pay.netPay.toLocaleString()}원`,
+    },
+    {
+      key: 'statusCode',
+      label: '상태',
+      render: (_, p) => <StatusLabel $statusCode={p.pay.statusCode} />,
+    },
+    {
+      key: 'action',
+      label: '작업',
+      align: 'center',
+      render: (_, p) => (
+        <Button
+          label="상세보기"
+          size="sm"
+          variant="ghost"
+          onClick={() => handleViewPayrollDetail(p)}
+        />
+      ),
+    },
+  ];
 
   return (
     <>
@@ -162,77 +226,18 @@ export default function PayrollManagement() {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  이름
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  부서
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  직급
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  기본급
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  초과근무비
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  공제액
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  실지급액
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  상태
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  작업
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {payrollList.map((payroll) => (
-                <tr key={payroll.payrollId} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {payroll.employee.employeeName}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {payroll.employee.department}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {payroll.employee.position}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {payroll.pay.basePay.toLocaleString()}원
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {payroll.pay.overtimePay.toLocaleString()}원
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {payroll.pay.deduction.toLocaleString()}원
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {payroll.pay.netPay.toLocaleString()}원
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <StatusLabel $statusCode={payroll.pay.statusCode} />
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <Button
-                      label="상세보기"
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleViewPayrollDetail(payroll)}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {isLoading ? (
+            <TableStatusBox $type="loading" $message="급여 목록을 불러오는 중입니다..." />
+          ) : isError ? (
+            <TableStatusBox $type="error" $message="급여 목록을 불러오는 중 오류가 발생했습니다." />
+          ) : (
+            <Table
+              columns={columns}
+              data={payrollList}
+              keyExtractor={(row) => row.payrollId}
+              emptyMessage="급여 데이터가 없습니다."
+            />
+          )}
         </div>
         {isError || isLoading ? null : (
           <Pagination

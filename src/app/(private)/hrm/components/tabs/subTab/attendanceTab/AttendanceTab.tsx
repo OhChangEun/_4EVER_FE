@@ -12,6 +12,8 @@ import {
 import Dropdown from '@/app/components/common/Dropdown';
 import { useModal } from '@/app/components/common/modal/useModal';
 import Pagination from '@/app/components/common/Pagination';
+import TableStatusBox from '@/app/components/common/TableStatusBox';
+import Table, { TableColumn } from '@/app/components/common/Table';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
 import { AttendanceEditModal } from '@/app/(private)/hrm/components/modals/AttendanceEditModal';
@@ -81,12 +83,54 @@ export default function AttendanceTab() {
   const attendanceList = attendanceData?.content ?? [];
   const pageInfo = attendanceData?.page;
 
+  type AttendanceItem = (typeof attendanceList)[0];
+
   const handleEditAttendance = (attendance: AttendanceListData) => {
     openModal(AttendanceEditModal, {
       title: '출퇴근 정보 수정',
       attendance: attendance,
     });
   };
+
+  const columns: TableColumn<AttendanceItem>[] = [
+    {
+      key: 'employee',
+      label: '직원 정보',
+      render: (_, attend) => (
+        <div>
+          <div className="text-sm font-medium text-gray-900">
+            {attend.employee?.employeeName || '-'}
+          </div>
+          <div className="text-sm text-gray-500">{attend.employee?.position || '-'}</div>
+        </div>
+      ),
+    },
+    {
+      key: 'checkInTime',
+      label: '출근 시간',
+      render: (_, attend) => formatTime(attend.checkInTime),
+    },
+    {
+      key: 'checkOutTime',
+      label: '퇴근 시간',
+      render: (_, attend) => formatTime(attend.checkOutTime),
+    },
+    {
+      key: 'totalWorkMinutes',
+      label: '근무 시간',
+      render: (_, attend) => formatMinutesToHourMin(attend.totalWorkMinutes),
+    },
+    {
+      key: 'overtimeMinutes',
+      label: '초과 근무',
+      render: (_, attend) => formatMinutesToHourMin(attend.overtimeMinutes),
+    },
+    {
+      key: 'statusCode',
+      label: '상태',
+      render: (_, attend) => <StatusLabel $statusCode={attend.statusCode} />,
+    },
+  ];
 
   return (
     <div className="mt-8">
@@ -127,67 +171,28 @@ export default function AttendanceTab() {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                직원 정보
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                출근 시간
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                퇴근 시간
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                근무 시간
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                초과 근무
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                상태
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {attendanceList.map((attend) => (
-              <tr key={attend.timerecordId} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">
-                      {attend.employee?.employeeName || '-'}
-                    </div>
-                    <div className="text-sm text-gray-500">{attend.employee?.position || '-'}</div>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {formatTime(attend.checkInTime)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {formatTime(attend.checkOutTime)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {formatMinutesToHourMin(attend.totalWorkMinutes)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {formatMinutesToHourMin(attend.overtimeMinutes)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <StatusLabel $statusCode={attend.statusCode} />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {isLoading ? (
+          <TableStatusBox $type="loading" $message="근태 목록을 불러오는 중입니다..." />
+        ) : isError ? (
+          <TableStatusBox $type="error" $message="근태 목록을 불러오는 중 오류가 발생했습니다." />
+        ) : (
+          <Table
+            columns={columns}
+            data={attendanceList}
+            keyExtractor={(row) => row.timerecordId}
+            emptyMessage="근태 기록이 없습니다."
+          />
+        )}
       </div>
 
-      <Pagination
-        currentPage={currentPage}
-        totalPages={pageInfo?.totalPages ?? 1}
-        totalElements={pageInfo?.totalElements}
-        onPageChange={(page) => setCurrentPage(page)}
-      />
+      {isError || isLoading ? null : (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={pageInfo?.totalPages ?? 1}
+          totalElements={pageInfo?.totalElements}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
+      )}
     </div>
   );
 }

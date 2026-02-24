@@ -16,6 +16,7 @@ import Dropdown from '@/app/components/common/Dropdown';
 import DateRangePicker from '@/app/components/common/DateRangePicker';
 import { getQueryClient } from '@/lib/queryClient';
 import Pagination from '@/app/components/common/Pagination';
+import TableStatusBox from '@/app/components/common/TableStatusBox';
 import { useDropdown } from '@/app/hooks/useDropdown';
 import { useModal } from '@/app/components/common/modal/useModal';
 import SearchBar from '@/app/components/common/SearchBar';
@@ -42,7 +43,7 @@ export default function PurchaseOrderListTab() {
   const [keyword, setKeyword] = useState<string>('');
   const [debouncedKeyword] = useDebounce(keyword, 200);
 
-  const [currentPage, setCurrentPage] = useState<number>(0); // 0부터 시작
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const pageSize = 10;
 
   const [startDate, setStartDate] = useState('');
@@ -57,8 +58,8 @@ export default function PurchaseOrderListTab() {
     (): FetchPurchaseOrderParams => ({
       statusCode: selectedStatus || undefined,
       type: selectedSearchType,
-      keyword: debouncedKeyword, // "" 대신 undefined
-      page: currentPage,
+      keyword: debouncedKeyword,
+      page: currentPage - 1,
       size: pageSize,
       startDate: startDate,
       endDate: endDate,
@@ -159,7 +160,7 @@ export default function PurchaseOrderListTab() {
             value={selectedStatus}
             onChange={(status: string) => {
               setSelectedStatus(status);
-              setCurrentPage(0); // 첫 페이지로
+              setCurrentPage(1);
             }}
           />
           <SearchBar
@@ -169,7 +170,7 @@ export default function PurchaseOrderListTab() {
             }}
             onKeywordSearch={(keyword) => {
               setKeyword(keyword);
-              setCurrentPage(0); // 검색 시 페이지 초기화
+              setCurrentPage(1);
             }}
             placeholder="검색어를 입력하세요"
             disabled={isSupplier}
@@ -181,9 +182,9 @@ export default function PurchaseOrderListTab() {
 
       <div className="overflow-x-auto">
         {isLoading ? (
-          <div className="text-center py-8 text-gray-500">불러오는 중...</div>
+          <TableStatusBox $type="loading" $message="발주서 목록을 불러오는 중입니다..." />
         ) : isError ? (
-          <div className="text-center py-8 text-red-500">데이터를 불러오지 못했습니다.</div>
+          <TableStatusBox $type="error" $message="발주서 목록을 불러오는 중 오류가 발생했습니다." />
         ) : (
           <PurchaseOrderTable
             currentOrders={orders}
@@ -197,10 +198,10 @@ export default function PurchaseOrderListTab() {
 
       {isError || isLoading ? null : (
         <Pagination
-          currentPage={currentPage + 1}
+          currentPage={currentPage}
           totalPages={totalPages}
           totalElements={pageInfo?.totalElements}
-          onPageChange={(page) => setCurrentPage(page - 1)}
+          onPageChange={(page) => setCurrentPage(page)}
         />
       )}
     </>
