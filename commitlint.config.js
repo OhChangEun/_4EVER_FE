@@ -3,8 +3,7 @@ module.exports = {
   parserPreset: {
     parserOpts: {
       // type + optional scope + subject (대/소문자, 한글, 특수문자 허용)
-      headerPattern:
-        /^(feat|fix|refac|test|chore|docs)(?:\(([a-zA-Z0-9_-]+)\))?: (.+)$/u,
+      headerPattern: /^(feat|fix|refac|test|chore|docs)(?:\(([a-zA-Z0-9_-]+)\))?: (.+)$/u,
       headerPatternFlags: 'u',
       headerCorrespondence: ['type', 'scope', 'subject'],
     },
@@ -19,4 +18,3 @@ module.exports = {
     'type-enum': [2, 'always', ['feat', 'fix', 'refac', 'test', 'chore', 'docs']],
   },
 };
-
