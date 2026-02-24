@@ -55,7 +55,7 @@ export default function PurchaseRequestListTab() {
   const [endDate, setEndDate] = useState('');
 
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const pageSize = 8;
 
   const queryClient = useQueryClient();
 

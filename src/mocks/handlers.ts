@@ -1789,7 +1789,14 @@ export const handlers = [
   }),
   http.get(PRODUCTION_ENDPOINTS.MRP_QUOTATION_DROPDOWN, ({ request }) => {
     if (shouldError(request)) return error('Failed to load MRP quotations dropdown', 500);
-    return ok([{ key: 'qt-001', value: 'QT-2026-001' }]);
+    return ok([
+      { key: 'ALL', value: '전체 견적' },
+      { key: 'qt-001', value: 'QT-2026-001' },
+      { key: 'qt-002', value: 'QT-2026-002' },
+      { key: 'qt-003', value: 'QT-2026-003' },
+      { key: 'qt-004', value: 'QT-2026-004' },
+      { key: 'qt-005', value: 'QT-2026-005' },
+    ]);
   }),
   http.get(PRODUCTION_ENDPOINTS.MRP_AVAILABLE_STATUS_DROPDOWN, ({ request }) => {
     if (shouldError(request)) return error('Failed to load MRP available status dropdown', 500);
@@ -1801,7 +1808,14 @@ export const handlers = [
   }),
   http.get(PRODUCTION_ENDPOINTS.MRP_RUNS_QUOTATIONS_DROPDOWN, ({ request }) => {
     if (shouldError(request)) return error('Failed to load MRP runs quotations dropdown', 500);
-    return ok([{ key: 'qt-001', value: 'QT-2026-001' }]);
+    return ok([
+      { key: 'ALL', value: '전체 견적' },
+      { key: 'qt-001', value: 'QT-2026-001' },
+      { key: 'qt-002', value: 'QT-2026-002' },
+      { key: 'qt-003', value: 'QT-2026-003' },
+      { key: 'qt-004', value: 'QT-2026-004' },
+      { key: 'qt-005', value: 'QT-2026-005' },
+    ]);
   }),
   http.get(PRODUCTION_ENDPOINTS.MRP_RUNS_STATUS_DROPDOWN, ({ request }) => {
     if (shouldError(request)) return error('Failed to load MRP runs status dropdown', 500);

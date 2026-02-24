@@ -52,7 +52,7 @@ export default function QuotationTab() {
   const [selectedQuotes, setSelectedQuotes] = useState<string[]>([]);
   // 페이지네이션 상태
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageSize] = useState(8);
 
   // 1. 견적 리스트를 가져오는 useQuery
   const quotationListQueryParams = useMemo(

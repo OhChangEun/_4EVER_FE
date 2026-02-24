@@ -24,7 +24,7 @@ export default function MesTab() {
   const [selectedMesStatus, setSelectedMesStatus] = useState('');
 
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const pageSize = 8;
 
   const { openModal } = useModal();
   // mrp 순소요 - 견적 드롭다운
@@ -193,11 +193,11 @@ export default function MesTab() {
                 return (
                   <div
                     key={order.mesId}
-                    className="bg-white border border-gray-200/80 rounded-xl p-4 transition duration-200"
+                    className="bg-white border border-gray-200 rounded-xl p-4 transition duration-200 hover:border-gray-300"
                   >
-                    <div className="flex justify-between gap-8">
-                      {/* 상단: MES 번호, 제품 정보 및 상태 */}
-                      <div className="max-w-[184px] flex flex-col gap-2">
+                    <div className="flex justify-between gap-6">
+                      {/* 좌측: MES 번호, 제품 정보 및 상태 */}
+                      <div className="w-45 shrink-0 flex flex-col gap-2.5">
                         <div className="flex items-center gap-1">
                           {getStatusBadge(order.status)}
                           <IconButton
@@ -209,29 +209,31 @@ export default function MesTab() {
                           />
                         </div>
 
-                        <div className="text-[22px] font-black text-blue-600 rounded-xl">
+                        <div className="text-xl font-bold text-gray-800">
                           {order.quotationNumber}
                         </div>
 
                         <div>
-                          <div className="pl-0.5 text-xs text-gray-400">MES 목록</div>
-                          <div className="text-lg font-semibold text-blue-600 rounded-xl">
-                            {order.productName} {order.quantity}
-                            {order.uomName}
+                          <div className="text-[11px] text-gray-400 mb-0.5">제품</div>
+                          <div className="text-sm font-semibold text-gray-700">
+                            {order.productName}
+                            <span className="ml-1 text-gray-400 font-normal text-xs">
+                              {order.quantity} {order.uomName}
+                            </span>
                           </div>
                         </div>
 
                         <div>
-                          <div className="pl-0.5 text-[13px] text-gray-400">기간</div>
-                          <div className="items-center gap-1 text-[15px] font-semibold text-blue-600">
-                            <div>
-                              {order.startDate} ~ {order.endDate}
-                            </div>
+                          <div className="text-[11px] text-gray-400 mb-0.5">기간</div>
+                          <div className="text-xs text-gray-600">
+                            {order.startDate}
+                            <br />
+                            {order.endDate}
                           </div>
                         </div>
                       </div>
 
-                      <div className="flex-1 rounded-xl bg-gray-100 px-6 p-4">
+                      <div className="flex-1 rounded-lg bg-gray-50 border border-gray-100 px-4 py-3">
                         <div className="flex items-center h-full">
                           {/* 공정 순서 (세로 방향) */}
                           <div
@@ -241,25 +243,23 @@ export default function MesTab() {
                             {order.sequence.map((operation, index) => {
                               const status = getOperationStatus(index, currentOpNum, order.status);
                               const isLast = index === order.sequence.length - 1;
-
-                              // 다음 공정의 라인 색상 결정
                               const nextStatus =
                                 !isLast &&
                                 getOperationStatus(index + 1, currentOpNum, order.status);
+                              const isCurrent = index + 1 === currentOpNum;
+                              const isDone = index + 1 < currentOpNum && order.status !== 'PENDING';
 
                               return (
                                 <div
                                   key={index}
-                                  className="flex w-[76px] items-start gap-2"
-                                  ref={index + 1 === currentOpNum ? currentStepRef : null} // 현재 공정에만 ref
+                                  className="flex w-19 items-start gap-2"
+                                  ref={isCurrent ? currentStepRef : null}
                                 >
                                   {/* 아이콘 + 라인 */}
-                                  <div className="relative flex flex-col items-center justify-start min-w-[16px]">
+                                  <div className="relative flex flex-col items-center justify-start min-w-4">
                                     <i
                                       className={`${status.icon} ${status.class} ${status.size} z-10`}
                                     ></i>
-
-                                    {/* 세로 라인: 아이콘 관통 */}
                                     {!isLast && nextStatus && (
                                       <div
                                         className={`absolute top-1/2 left-1/2 -translate-x-1/2 w-0.5 h-7 z-0 ${nextStatus.lineClass}`}
@@ -270,11 +270,11 @@ export default function MesTab() {
                                   <div className="flex-1 -mt-1">
                                     <span
                                       className={`text-xs ${
-                                        index + 1 === currentOpNum
-                                          ? 'text-blue-600 font-bold'
-                                          : index + 1 < currentOpNum && order.status !== 'PENDING'
-                                            ? 'text-blue-600 font-medium'
-                                            : 'text-gray-400'
+                                        isCurrent
+                                          ? 'text-gray-900 font-bold'
+                                          : isDone
+                                            ? 'text-gray-500 font-medium'
+                                            : 'text-gray-300'
                                       }`}
                                     >
                                       {operation}
@@ -286,19 +286,18 @@ export default function MesTab() {
                           </div>
 
                           {/* 진행률 바 */}
-                          <div className="flex-1 ml-4 p-2 pb-8">
-                            <div>
-                              <div className="flex items-center justify-end mb-0.5">
-                                <span className="text-lg font-bold text-blue-600">
-                                  {order.progressRate}%
-                                </span>
-                              </div>
-                              <div className="w-full bg-gray-200 rounded-md h-12 overflow-hidden shadow-inner">
-                                <div
-                                  className="bg-gradient-to-r from-blue-400 to-blue-600 h-12 rounded-sm transition-all duration-700 ease-out flex items-center justify-end"
-                                  style={{ width: `${order.progressRate}` }}
-                                ></div>
-                              </div>
+                          <div className="flex-1 ml-3">
+                            <div className="flex items-center justify-between mb-1.5">
+                              <span className="text-[11px] text-gray-400">진행률</span>
+                              <span className="text-sm font-bold text-gray-700">
+                                {order.progressRate}%
+                              </span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                              <div
+                                className="bg-blue-500 h-2 rounded-full transition-all duration-700 ease-out"
+                                style={{ width: `${order.progressRate}%` }}
+                              ></div>
                             </div>
                           </div>
                         </div>

@@ -47,7 +47,7 @@ export default function SupplierListTab() {
   const [keyword, setKeyword] = useState<string>('');
 
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const pageSize = 8;
 
   const queryParams = useMemo(
     (): SupplierListRequestParams => ({

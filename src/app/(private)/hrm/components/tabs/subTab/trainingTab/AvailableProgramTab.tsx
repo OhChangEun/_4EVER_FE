@@ -18,7 +18,7 @@ export default function AvailableProgramTab() {
 
   // --- 페이지 네이션 ---
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const pageSize = 8;
 
   const programQueryParams = useMemo(
     (): ProgramRequestParams => ({

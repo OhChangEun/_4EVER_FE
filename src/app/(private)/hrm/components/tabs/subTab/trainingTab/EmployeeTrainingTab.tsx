@@ -34,7 +34,7 @@ export default function EmployeeTrainingTab() {
 
   // --- 페이지 네이션 ---
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const pageSize = 8;
 
   const trainingQueryParams = useMemo(
     (): TrainingRequestParams => ({

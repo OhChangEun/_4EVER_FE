@@ -44,7 +44,7 @@ export default function PlannedOrdersTab() {
 
   // 페이지네이션 상태
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const pageSize = 8;
 
   // 쿼리 파라미터 객체 생성
   const queryParams = useMemo(

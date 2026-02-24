@@ -162,7 +162,7 @@ export default function MesDetail({ mesId }: MesDetailProps) {
         )}
 
         {/* MES 전체 제어 */}
-        <div className="bg-white p-6 rounded-xl border border-blue-200 shadow-md space-y-4">
+        <div className="bg-white p-5 rounded-xl border border-gray-200 space-y-4">
           <div className="flex justify-between items-start flex-col sm:flex-row sm:items-center">
             <h4 className="text-xl font-bold text-gray-900 mb-2 sm:mb-0">
               작업지시: {mesDetail.mesNumber}
@@ -210,10 +210,10 @@ export default function MesDetail({ mesId }: MesDetailProps) {
             {mesDetail.operations.map((operation) => (
               <div
                 key={operation.mesOperationLogId}
-                className={`border rounded-lg p-5 transition-all duration-300 
-                  ${operation.statusCode === 'COMPLETED' ? 'border-green-300 bg-green-50' : ''}
-                  ${operation.statusCode === 'IN_PROGRESS' ? 'border-blue-400 bg-blue-50 ring-2 ring-blue-100' : 'border-gray-200 bg-white'}
-                  ${operation.canStart ? 'shadow-lg' : 'shadow-sm'}`}
+                className={`border-l-4 border border-gray-200 bg-white rounded-lg p-5 transition-all duration-200
+                  ${operation.statusCode === 'COMPLETED' ? 'border-l-green-400' : ''}
+                  ${operation.statusCode === 'IN_PROGRESS' ? 'border-l-blue-500' : ''}
+                  ${operation.statusCode !== 'COMPLETED' && operation.statusCode !== 'IN_PROGRESS' ? 'border-l-gray-200' : ''}`}
               >
                 <div className="flex items-center justify-between mb-3 border-b pb-3">
                   <div className="flex items-center gap-3">
@@ -251,24 +251,30 @@ export default function MesDetail({ mesId }: MesDetailProps) {
                 </div>
 
                 {/* 공정 제어 버튼 */}
-                <div className="mt-4 pt-4 border-t flex justify-end space-x-3">
+                <div className="mt-4 pt-3 border-t flex justify-end gap-2">
                   <button
                     onClick={() => startOperationMutation.mutate(operation.mesOperationLogId)}
                     disabled={!operation.canStart || isProcessing}
-                    className={`px-4 py-2 text-sm font-semibold rounded-lg transition duration-150 
-                      ${operation.canStart ? 'bg-yellow-500 text-white hover:bg-yellow-600 shadow-md cursor-pointer' : 'bg-gray-200 text-gray-500 cursor-not-allowed'}`}
+                    className={`px-4 py-1.5 text-sm rounded-md border transition duration-150 
+                      ${
+                        operation.canStart && !isProcessing
+                          ? 'border-gray-300 text-gray-600 hover:bg-gray-50 cursor-pointer'
+                          : 'border-gray-200 text-gray-300 cursor-not-allowed bg-gray-50'
+                      }`}
                   >
-                    <i className="ri-play-line mr-1"></i>
-                    공정 시작
+                    <i className="ri-play-line mr-1"></i>공정 시작
                   </button>
                   <button
                     onClick={() => completeOperationMutation.mutate(operation.mesOperationLogId)}
                     disabled={!operation.canComplete || isProcessing}
-                    className={`px-4 py-2 text-sm font-semibold rounded-lg transition duration-150 
-                      ${operation.canComplete ? 'bg-indigo-500 text-white hover:bg-indigo-600 shadow-md cursor-pointer' : 'bg-gray-200 text-gray-500 cursor-not-allowed'}`}
+                    className={`px-4 py-1.5 text-sm rounded-md border transition duration-150 
+                      ${
+                        operation.canComplete && !isProcessing
+                          ? 'border-blue-600 bg-blue-600 text-white hover:bg-blue-700 cursor-pointer'
+                          : 'border-gray-200 text-gray-300 cursor-not-allowed bg-gray-50'
+                      }`}
                   >
-                    <i className="ri-check-line mr-1"></i>
-                    공정 완료
+                    <i className="ri-check-line mr-1"></i>공정 완료
                   </button>
                 </div>
               </div>

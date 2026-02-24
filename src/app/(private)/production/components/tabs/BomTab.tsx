@@ -19,7 +19,7 @@ import Table, { TableColumn } from '@/app/components/common/Table';
 
 export default function BomTab() {
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const pageSize = 8;
 
   const { openModal } = useModal();
 

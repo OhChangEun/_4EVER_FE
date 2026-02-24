@@ -54,7 +54,7 @@ export default function AttendanceTab() {
 
   // --- 페이지 네이션 ---
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const pageSize = 8;
 
   // --- 달력 데이터 ---
   const today = new Date().toISOString().split('T')[0];

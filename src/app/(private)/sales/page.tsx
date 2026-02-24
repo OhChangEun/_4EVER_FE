@@ -37,8 +37,8 @@ export default function SalesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="bg-gray-50">
+      <main className="w-full px-6 py-6">
         {/* 페이지 헤더 */}
         <StatSection
           title={role === 'CUSTOMER_ADMIN' ? '구매 관리' : '영업관리'}

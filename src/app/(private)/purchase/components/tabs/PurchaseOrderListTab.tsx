@@ -44,7 +44,7 @@ export default function PurchaseOrderListTab() {
   const [debouncedKeyword] = useDebounce(keyword, 200);
 
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const pageSize = 10;
+  const pageSize = 8;
 
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');

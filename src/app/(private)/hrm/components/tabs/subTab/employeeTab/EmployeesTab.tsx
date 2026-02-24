@@ -26,7 +26,7 @@ export default function EmployeesTab() {
 
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const pageSize = 8;
 
   // 모달창
   const { openModal } = useModal();

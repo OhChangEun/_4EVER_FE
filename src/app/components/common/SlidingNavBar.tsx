@@ -24,17 +24,15 @@ export default function SlidingNavBar({ items, selectedKey, onSelect }: SlidingN
   }, [selectedKey, items]);
 
   return (
-    <div
-      className={`relative inline-flex max-h-12 gap-1 items-center bg-white rounded-lg border border-gray-300 p-1`}
-    >
+    <div className="relative inline-flex items-center bg-white rounded-md border border-gray-200 p-0.5 gap-0.5">
       {/* 슬라이딩 인디케이터 */}
       <div
-        className="absolute top-1 bottom-1 bg-blue-500 rounded-md transition-all duration-300 ease-out pointer-events-none"
+        className="absolute top-0.5 bottom-0.5 bg-blue-500 rounded transition-all duration-300 ease-out pointer-events-none"
         style={indicatorStyle}
       />
 
       {/* 버튼들 */}
-      <div className=" flex gap-1">
+      <div className="flex gap-0.5">
         {items.map((item, index) => (
           <button
             key={item.key}
@@ -42,8 +40,8 @@ export default function SlidingNavBar({ items, selectedKey, onSelect }: SlidingN
               navRefs.current[index] = el;
             }}
             onClick={() => onSelect(item.key)}
-            className={`font-medium transition-colors duration-200 whitespace-nowrap cursor-pointer z-10 rounded-md px-4 py-2 text-sm ${
-              selectedKey === item.key ? 'text-white' : 'text-gray-700 hover:text-gray-900'
+            className={`relative z-10 whitespace-nowrap cursor-pointer rounded px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${
+              selectedKey === item.key ? 'text-white' : 'text-gray-500 hover:text-gray-700'
             }`}
           >
             {item.value}

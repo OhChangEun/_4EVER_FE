@@ -40,7 +40,7 @@ export default function OrdersTab() {
   const [selectedRequirements, setSelectedRequirements] = useState<string[]>([]);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const pageSize = 8;
 
   const queryParams = useMemo(
     (): FetchMrpOrdersListParams => ({

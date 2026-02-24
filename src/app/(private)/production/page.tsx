@@ -26,8 +26,8 @@ export default function ProductionPage() {
   const productionStatsData = data ? mapProductionStatsToCards(data ?? {}) : null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="bg-gray-50">
+      <main className="w-full px-6 py-6">
         {productionStatsData ? (
           //생산 관리 주요 지표
           <StatSection
