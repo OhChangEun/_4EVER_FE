@@ -1,6 +1,7 @@
 // 공통 API Base URL
-// Vercel 배포 시 NEXT_PUBLIC_API_BASE_URL=/api 로 설정하면 Next.js API Routes 사용
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'https://api.everp.co.kr/api';
+// 기본값: /api (Next.js API Routes → 로컬/Vercel 모두 별도 설정 불필요)
+// 실제 백엔드 연결 시: NEXT_PUBLIC_API_BASE_URL=https://api.everp.co.kr/api
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? '/api';
 
 export const SALES_BASE_PATH = `${API_BASE_URL}/business/sd`;
 export const FINANCE_BASE_PATH = `${API_BASE_URL}/business/fcm`;
