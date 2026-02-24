@@ -22,7 +22,7 @@ const WorkflowStatus = ({ $workflowData }: DashboardProps) => {
   const currentWorkflows = activeTab === 'first' ? firstTabItems : secondTabItems;
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
+    <div className="card-base p-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-2">
           <i className="ri-flow-chart text-blue-600 text-lg"></i>

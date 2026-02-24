@@ -8,7 +8,7 @@ interface StatCardProps {
 
 export default function StatCardItem({ stat, currentPeriodLabel }: StatCardProps) {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
+    <div className="card-base p-6">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-gray-600">{stat.title}</p>

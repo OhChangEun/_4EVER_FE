@@ -1,0 +1,102 @@
+import React, { ReactNode } from 'react';
+
+export interface TableColumn<T = Record<string, unknown>> {
+  key: string;
+  label: string;
+  align?: 'left' | 'center' | 'right';
+  width?: string;
+  render?: (value: unknown, row: T, index: number) => ReactNode;
+}
+
+export interface TableProps<T = Record<string, unknown>> {
+  columns: TableColumn<T>[];
+  data: T[];
+  keyExtractor?: (row: T, index: number) => string | number;
+  onRowClick?: (row: T, index: number) => void;
+  emptyMessage?: string;
+  hoverable?: boolean;
+  className?: string;
+}
+
+export default function Table<T = Record<string, unknown>>({
+  columns,
+  data,
+  keyExtractor,
+  onRowClick,
+  emptyMessage = '데이터가 없습니다.',
+  hoverable = true,
+  className = '',
+}: TableProps<T>) {
+  const getAlignClass = (align?: string) => {
+    switch (align) {
+      case 'center':
+        return 'text-center';
+      case 'right':
+        return 'text-right';
+      default:
+        return 'text-left';
+    }
+  };
+
+  const getCellValue = (row: T, column: TableColumn<T>, index: number): ReactNode => {
+    const value = (row as Record<string, unknown>)[column.key];
+    if (column.render) {
+      return column.render(value, row, index);
+    }
+    return String(value ?? '-');
+  };
+
+  return (
+    <div className={`bg-white rounded-xl border border-gray-100 overflow-hidden ${className}`}>
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="bg-gray-50 border-b border-gray-100">
+              {columns.map((column) => (
+                <th
+                  key={column.key}
+                  className={`px-4 py-3 text-sm font-semibold text-gray-700 ${getAlignClass(column.align)}`}
+                  style={{ width: column.width }}
+                >
+                  {column.label}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {data.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length} className="px-4 py-12 text-center text-gray-500">
+                  <div className="flex flex-col items-center gap-2">
+                    <i className="ri-inbox-line text-3xl text-gray-400"></i>
+                    <p>{emptyMessage}</p>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              data.map((row, index) => (
+                <tr
+                  key={keyExtractor ? keyExtractor(row, index) : index}
+                  className={`border-b border-gray-50 last:border-0 ${
+                    hoverable ? 'hover:bg-gray-50 transition-colors' : ''
+                  } ${onRowClick ? 'cursor-pointer' : ''}`}
+                  onClick={() => onRowClick?.(row, index)}
+                >
+                  {columns.map((column) => (
+                    <td
+                      key={column.key}
+                      className={`px-4 py-3 text-sm text-gray-700 ${getAlignClass(column.align)}`}
+                      style={{ width: column.width }}
+                    >
+                      {getCellValue(row, column, index)}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}

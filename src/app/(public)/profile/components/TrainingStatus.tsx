@@ -56,7 +56,7 @@ const TrainingStatus = () => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div className="card-base">
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">

@@ -104,7 +104,7 @@ export default function AttendanceRecord() {
 
   return (
     <>
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 min-h-188">
+      <div className="card-base min-h-188">
         <div className="p-6 border-b border-gray-200 ">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center space-x-3">

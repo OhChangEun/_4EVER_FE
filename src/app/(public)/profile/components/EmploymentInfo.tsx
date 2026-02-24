@@ -107,8 +107,8 @@ const EmploymentInfo = ({ $isEditing, $setIsEditing }: EmploymentInfoProps) => {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-      <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 px-6 py-8 text-white">
+    <div className="card-base overflow-hidden">
+      <div className="bg-linear-to-r from-blue-600 via-blue-500 to-blue-400 px-6 py-8 text-white">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-xl bg-white/15 flex items-center justify-center">

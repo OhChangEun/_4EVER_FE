@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import ProfileDropdown from '@/app/components/header/ProfileDropdown';
 import { useSidebarStore } from '@/store/sidebarStore';
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(true);
   const { isExpanded, toggleSidebar } = useSidebarStore();
 
   useEffect(() => {
@@ -13,22 +13,31 @@ export default function Header() {
       setIsScrolled(window.scrollY > 0);
     };
 
+    const checkDesktop = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+
+    checkDesktop();
+    handleScroll();
+
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('resize', checkDesktop);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', checkDesktop);
+    };
   }, []);
 
   return (
     <header
-      className={`fixed top-0 right-0 z-30 transition-all duration-300 ${
-        isScrolled ? 'bg-white shadow-sm border-gray-100' : 'bg-gray-50'
+      className={`fixed top-0 right-0 z-30 transition-all duration-300 border-b border-gray-200 ${
+        isScrolled ? 'bg-white/95 backdrop-blur-sm shadow-sm' : 'bg-white/80 backdrop-blur-sm'
       } lg:left-auto`}
       style={{
-        left: typeof window !== 'undefined' && window.innerWidth >= 1024
-          ? isExpanded ? '256px' : '64px'
-          : '0',
+        left: isDesktop ? (isExpanded ? '256px' : '64px') : '0',
       }}
     >
-      <div className="min-w-full mx-auto px-4 sm:px-6 lg:px-4">
+      <div className="min-w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* 모바일 햄버거 메뉴 */}
           <button
@@ -39,10 +48,8 @@ export default function Header() {
             <i className="ri-menu-line text-2xl text-gray-600" />
           </button>
 
-          {/* 우측: 알림 + 프로필 */}
-          <div className="flex items-center space-x-4 ml-auto">
-            <ProfileDropdown />
-          </div>
+          {/* 빈 공간 유지 (필요시 알림 등 추가 가능) */}
+          <div className="flex-1" />
         </div>
       </div>
     </header>

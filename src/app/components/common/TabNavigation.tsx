@@ -40,9 +40,7 @@ export default function TabNavigation({ tabs }: { tabs: Tab[] }) {
         ))}
       </nav>
       {/* 렌더링 되는 컴포넌트 */}
-      <div className="mt-4 bg-white rounded-2xl p-6 space-y-6 shadow-sm">
-        {ActiveComponent && <ActiveComponent />}
-      </div>
+      <div className="mt-4 card-base p-6 space-y-6">{ActiveComponent && <ActiveComponent />}</div>
     </div>
   );
 }

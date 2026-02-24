@@ -18,7 +18,7 @@ const QuickActions = () => {
   // const role = 'PP_USER';
   const visibleActions = allActions.filter((a) => a.roles?.includes(role as string));
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
+    <div className="card-base p-6">
       <div className="flex items-center space-x-2 mb-6">
         <i className="ri-flashlight-line text-blue-600 text-lg"></i>
         <h2 className="text-lg font-semibold text-gray-900">빠른 작업</h2>
