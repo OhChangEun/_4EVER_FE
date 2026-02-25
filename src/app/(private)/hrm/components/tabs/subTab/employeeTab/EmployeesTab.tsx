@@ -26,7 +26,7 @@ export default function EmployeesTab() {
 
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 8;
+  const pageSize = 10;
 
   // 모달창
   const { openModal } = useModal();
@@ -132,8 +132,8 @@ export default function EmployeesTab() {
   ];
 
   return (
-    <>
-      <div className="flex justify-end items-center gap-4 mb-6 p-2 rounded-lg">
+    <div className="flex flex-col h-full gap-6">
+      <div className="flex justify-end items-center gap-4 p-2 rounded-lg shrink-0">
         <Dropdown
           placeholder="전체 부서"
           items={departmentsOptions}
@@ -153,7 +153,7 @@ export default function EmployeesTab() {
         />
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="flex flex-col flex-1 min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden">
         {isLoading ? (
           <TableStatusBox $type="loading" $message="직원 정보를 불러오는 중입니다..." />
         ) : isError ? (
@@ -164,6 +164,7 @@ export default function EmployeesTab() {
             data={employees}
             keyExtractor={(row) => row.employeeId}
             emptyMessage="등록된 직원이 없습니다."
+            className="flex-1 min-h-0"
           />
         )}
 
@@ -176,6 +177,6 @@ export default function EmployeesTab() {
           />
         )}
       </div>
-    </>
+    </div>
   );
 }

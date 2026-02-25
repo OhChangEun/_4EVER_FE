@@ -19,7 +19,7 @@ import Table, { TableColumn } from '@/app/components/common/Table';
 
 export default function BomTab() {
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 8;
+  const pageSize = 10;
 
   const { openModal } = useModal();
 
@@ -100,38 +100,41 @@ export default function BomTab() {
   ];
 
   return (
-    <>
-      <div className="flex items-center justify-end">
+    <div className="flex flex-col h-full gap-6">
+      <div className="flex items-center justify-end shrink-0">
         <IconButton label="BOM 생성" icon="ri-add-line" onClick={handleCreate} />
       </div>
 
-      {isLoading ? (
-        <div className="text-center py-12">
-          <i className="ri-loader-4-line animate-spin text-3xl text-gray-400"></i>
-          <p className="mt-3 text-gray-500">로딩 중...</p>
-        </div>
-      ) : isError ? (
-        <div className="text-center py-12">
-          <i className="ri-error-warning-line text-3xl text-red-400"></i>
-          <p className="mt-3 text-red-500">데이터를 불러오는데 실패했습니다.</p>
-        </div>
-      ) : (
-        <Table
-          columns={columns}
-          data={bomList}
-          keyExtractor={(row) => row.bomId}
-          emptyMessage="등록된 BOM이 없습니다."
-        />
-      )}
+      <div className="flex flex-col flex-1 min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden">
+        {isLoading ? (
+          <div className="text-center py-12">
+            <i className="ri-loader-4-line animate-spin text-3xl text-gray-400"></i>
+            <p className="mt-3 text-gray-500">로딩 중...</p>
+          </div>
+        ) : isError ? (
+          <div className="text-center py-12">
+            <i className="ri-error-warning-line text-3xl text-red-400"></i>
+            <p className="mt-3 text-red-500">데이터를 불러오는데 실패했습니다.</p>
+          </div>
+        ) : (
+          <Table
+            columns={columns}
+            data={bomList}
+            keyExtractor={(row) => row.bomId}
+            emptyMessage="등록된 BOM이 없습니다."
+            className="flex-1 min-h-0"
+          />
+        )}
 
-      {isError || isLoading ? null : (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={pageInfo?.totalPages ?? 1}
-          totalElements={pageInfo?.totalElements}
-          onPageChange={(page) => setCurrentPage(page)}
-        />
-      )}
-    </>
+        {isError || isLoading ? null : (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={pageInfo?.totalPages ?? 1}
+            totalElements={pageInfo?.totalElements}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
+        )}
+      </div>
+    </div>
   );
 }

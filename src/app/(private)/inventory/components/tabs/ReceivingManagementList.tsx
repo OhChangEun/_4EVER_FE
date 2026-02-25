@@ -79,8 +79,8 @@ const ReceivingManagementList = () => {
   ];
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 mt-6">
-      <div className="p-6 border-b border-gray-200">
+    <div className="flex flex-col h-full bg-white rounded-lg border border-gray-200 overflow-hidden">
+      <div className="p-6 border-b border-gray-200 shrink-0">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900">입고 관리</h2>
 
@@ -100,8 +100,8 @@ const ReceivingManagementList = () => {
         </div>
       </div>
 
-      <div className="p-6">
-        <div className="flex space-x-1 bg-gray-100 rounded-lg p-1 mb-6">
+      <div className="flex flex-col flex-1 min-h-0 p-6 overflow-hidden">
+        <div className="flex space-x-1 bg-gray-100 rounded-lg p-1 mb-6 shrink-0">
           {receivingStatusTabs.map((tab) => (
             <button
               key={tab.id}
@@ -117,7 +117,7 @@ const ReceivingManagementList = () => {
           ))}
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
           {isReceivedLoading || isPendingLoading ? (
             <TableStatusBox $type="loading" $message="입고 목록을 불러오는 중입니다..." />
           ) : isReceivedError || isPendingError ? (
@@ -153,6 +153,7 @@ const ReceivingManagementList = () => {
               data={currentData}
               keyExtractor={(row) => row.purchaseOrderId}
               emptyMessage="등록된 입고 정보가 없습니다."
+              className="flex-1 min-h-0"
             />
           )}
         </div>

@@ -52,7 +52,7 @@ export default function PayrollManagement() {
 
   // --- 페이지 네이션 ---
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 8;
+  const pageSize = 10;
 
   // 년도 옵션 (최근 5년)
   const yearOptions: KeyValueItem[] = useMemo(() => {
@@ -178,67 +178,65 @@ export default function PayrollManagement() {
   ];
 
   return (
-    <>
-      <div>
-        {/* 필터링 및 검색 */}
-        <div className="flex justify-between items-center gap-2 mb-4">
-          <div className="flex pl-1 gap-2">
-            <Dropdown
-              placeholder="전체 년도"
-              items={yearOptions}
-              value={selectedYear}
-              onChange={(year: string) => setSelectedYear(year)}
-            />
-            <Dropdown
-              placeholder="전체 월"
-              items={monthOptions}
-              value={selectedMonth}
-              onChange={(month: string) => setSelectedMonth(month)}
-            />
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Dropdown
-              placeholder="전체 부서"
-              items={departmentsOptions}
-              value={selectedDepartment}
-              onChange={(dept: string) => {
-                setSelectedDepartment(dept);
-                setCurrentPage(1);
-              }}
-            />
-            <Dropdown
-              placeholder="전체 상태"
-              items={statusOptions}
-              value={selectedPayrollStatus}
-              onChange={(status: string) => {
-                setSelectedPayrollStatus(status);
-                setCurrentPage(1);
-              }}
-            />
-            <Input
-              value={keyword}
-              onChange={handleKeywordChange}
-              icon="ri-search-line"
-              placeholder="직원 이름 검색"
-            />
-          </div>
+    <div className="flex flex-col h-full gap-6">
+      <div className="flex justify-between items-center gap-2 shrink-0">
+        <div className="flex pl-1 gap-2">
+          <Dropdown
+            placeholder="전체 년도"
+            items={yearOptions}
+            value={selectedYear}
+            onChange={(year: string) => setSelectedYear(year)}
+          />
+          <Dropdown
+            placeholder="전체 월"
+            items={monthOptions}
+            value={selectedMonth}
+            onChange={(month: string) => setSelectedMonth(month)}
+          />
         </div>
 
-        <div className="overflow-x-auto">
-          {isLoading ? (
-            <TableStatusBox $type="loading" $message="급여 목록을 불러오는 중입니다..." />
-          ) : isError ? (
-            <TableStatusBox $type="error" $message="급여 목록을 불러오는 중 오류가 발생했습니다." />
-          ) : (
-            <Table
-              columns={columns}
-              data={payrollList}
-              keyExtractor={(row) => row.payrollId}
-              emptyMessage="급여 데이터가 없습니다."
-            />
-          )}
+        <div className="flex items-center gap-3">
+          <Dropdown
+            placeholder="전체 부서"
+            items={departmentsOptions}
+            value={selectedDepartment}
+            onChange={(dept: string) => {
+              setSelectedDepartment(dept);
+              setCurrentPage(1);
+            }}
+          />
+          <Dropdown
+            placeholder="전체 상태"
+            items={statusOptions}
+            value={selectedPayrollStatus}
+            onChange={(status: string) => {
+              setSelectedPayrollStatus(status);
+              setCurrentPage(1);
+            }}
+          />
+          <Input
+            value={keyword}
+            onChange={handleKeywordChange}
+            icon="ri-search-line"
+            placeholder="직원 이름 검색"
+          />
         </div>
+      </div>
+
+      <div className="flex flex-col flex-1 min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden">
+        {isLoading ? (
+          <TableStatusBox $type="loading" $message="급여 목록을 불러오는 중입니다..." />
+        ) : isError ? (
+          <TableStatusBox $type="error" $message="급여 목록을 불러오는 중 오류가 발생했습니다." />
+        ) : (
+          <Table
+            columns={columns}
+            data={payrollList}
+            keyExtractor={(row) => row.payrollId}
+            emptyMessage="급여 데이터가 없습니다."
+            className="flex-1 min-h-0"
+          />
+        )}
         {isError || isLoading ? null : (
           <Pagination
             currentPage={currentPage}
@@ -248,6 +246,6 @@ export default function PayrollManagement() {
           />
         )}
       </div>
-    </>
+    </div>
   );
 }

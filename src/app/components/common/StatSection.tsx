@@ -39,7 +39,7 @@ export default function StatSection({ title, subTitle, statsData }: StatSectionP
         </button>
       </div>
 
-      <div className="flex flex-col gap-3 mb-8">
+      <div className="flex flex-col gap-3">
         {isOpen && (
           <div className="w-fit">
             <SlidingNavBar

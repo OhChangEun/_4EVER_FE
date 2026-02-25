@@ -165,13 +165,13 @@ const InventoryList = () => {
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="flex flex-col h-full gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 shrink-0">
         <LowStockAlert />
         <StockMovement />
       </div>
-      <div className="bg-white rounded-lg border border-gray-200 mt-6">
-        <div className="p-6 border-b border-gray-200">
+      <div className="flex flex-col flex-1 min-h-0 bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="p-6 border-b border-gray-200 shrink-0">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900">재고 목록</h2>
             <div className="flex items-center gap-4">
@@ -207,20 +207,19 @@ const InventoryList = () => {
             </div>
           </div>
         </div>
-        <div className="overflow-x-auto">
-          {isLoading ? (
-            <TableStatusBox $type="loading" $message="재고 목록을 불러오는 중입니다..." />
-          ) : isError ? (
-            <TableStatusBox $type="error" $message="재고 목록을 불러오는 중 오류가 발생했습니다." />
-          ) : (
-            <Table
-              columns={columns}
-              data={inventories}
-              keyExtractor={(row) => row.itemId}
-              emptyMessage="등록된 재고가 없습니다."
-            />
-          )}
-        </div>
+        {isLoading ? (
+          <TableStatusBox $type="loading" $message="재고 목록을 불러오는 중입니다..." />
+        ) : isError ? (
+          <TableStatusBox $type="error" $message="재고 목록을 불러오는 중 오류가 발생했습니다." />
+        ) : (
+          <Table
+            columns={columns}
+            data={inventories}
+            keyExtractor={(row) => row.itemId}
+            emptyMessage="등록된 재고가 없습니다."
+            className="flex-1 min-h-0"
+          />
+        )}
         {/* 페이지네이션 */}
         {isError || isLoading ? null : (
           <Pagination

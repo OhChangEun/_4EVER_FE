@@ -34,7 +34,7 @@ export default function EmployeeTrainingTab() {
 
   // --- 페이지 네이션 ---
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 8;
+  const pageSize = 10;
 
   const trainingQueryParams = useMemo(
     (): TrainingRequestParams => ({
@@ -150,9 +150,9 @@ export default function EmployeeTrainingTab() {
   };
 
   return (
-    <div>
+    <div className="flex flex-col h-full gap-6">
       {/* 필터링 및 검색 */}
-      <div className="flex items-center justify-end gap-3 mb-4">
+      <div className="flex items-center justify-end gap-3 shrink-0">
         <div className="flex items-center gap-3">
           <Dropdown
             placeholder="전체 부서"
@@ -173,21 +173,21 @@ export default function EmployeeTrainingTab() {
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="flex flex-col flex-1 min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden">
         <Table
           columns={columns}
           data={trainingList}
           keyExtractor={(row) => row.employeeId}
           emptyMessage="교육 기록이 없습니다."
+          className="flex-1 min-h-0"
+        />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={pageInfo?.totalPages ?? 1}
+          totalElements={pageInfo?.totalElements}
+          onPageChange={(page) => setCurrentPage(page)}
         />
       </div>
-
-      <Pagination
-        currentPage={currentPage}
-        totalPages={pageInfo?.totalPages ?? 1}
-        totalElements={pageInfo?.totalElements}
-        onPageChange={(page) => setCurrentPage(page)}
-      />
     </div>
   );
 }

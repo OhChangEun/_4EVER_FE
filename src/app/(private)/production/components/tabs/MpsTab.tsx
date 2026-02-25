@@ -17,7 +17,7 @@ export default function MpsTab() {
   const [startDate, setStartDate] = useState(date);
   const [endDate, setEndDate] = useState(date);
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 7;
+  const pageSize = 10;
 
   const queryParams = useMemo(
     (): MpsListParams => ({

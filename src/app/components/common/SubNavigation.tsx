@@ -26,9 +26,9 @@ export default function SubNavigation({ tabs, paramName = 'subTab' }: SubNavigat
   const ActiveComponent = activeTab?.component;
 
   return (
-    <>
+    <div className="flex flex-col h-full">
       {/* 네비게이션바 */}
-      <nav className="-mb-px border-b border-gray-200 flex space-x-6">
+      <nav className="-mb-px border-b border-gray-200 flex space-x-6 shrink-0">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -45,7 +45,7 @@ export default function SubNavigation({ tabs, paramName = 'subTab' }: SubNavigat
         ))}
       </nav>
       {/* 렌더링 되는 컴포넌트 */}
-      <div className="mt-4">{ActiveComponent && <ActiveComponent />}</div>
-    </>
+      <div className="flex-1 min-h-0 mt-4">{ActiveComponent && <ActiveComponent />}</div>
+    </div>
   );
 }

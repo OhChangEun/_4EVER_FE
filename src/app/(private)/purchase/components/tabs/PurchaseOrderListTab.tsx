@@ -44,7 +44,7 @@ export default function PurchaseOrderListTab() {
   const [debouncedKeyword] = useDebounce(keyword, 200);
 
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const pageSize = 8;
+  const pageSize = 10;
 
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -144,8 +144,8 @@ export default function PurchaseOrderListTab() {
   };
 
   return (
-    <>
-      <div className="flex items-center justify-between mb-6">
+    <div className="flex flex-col h-full gap-6">
+      <div className="flex items-center justify-between shrink-0">
         <DateRangePicker
           startDate={startDate}
           onStartDateChange={setStartDate}
@@ -180,7 +180,7 @@ export default function PurchaseOrderListTab() {
         {/* 상태 필터 */}
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="flex flex-col flex-1 min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden">
         {isLoading ? (
           <TableStatusBox $type="loading" $message="발주서 목록을 불러오는 중입니다..." />
         ) : isError ? (
@@ -192,18 +192,18 @@ export default function PurchaseOrderListTab() {
             handleApprove={handleApprove}
             handleReject={handleReject}
             handleDelivery={handleDelivery}
+            className="flex-1 min-h-0"
+          />
+        )}
+        {isError || isLoading ? null : (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalElements={pageInfo?.totalElements}
+            onPageChange={(page) => setCurrentPage(page)}
           />
         )}
       </div>
-
-      {isError || isLoading ? null : (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalElements={pageInfo?.totalElements}
-          onPageChange={(page) => setCurrentPage(page)}
-        />
-      )}
-    </>
+    </div>
   );
 }

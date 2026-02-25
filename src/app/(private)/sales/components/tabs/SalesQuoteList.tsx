@@ -144,9 +144,9 @@ const SalesQuoteList = () => {
   ];
 
   return (
-    <>
+    <div className="flex flex-col h-full gap-6">
       {/* 헤더 및 필터 */}
-      <div className="flex flex-col space-y-4">
+      <div className="flex flex-col space-y-4 shrink-0">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <DateRangePicker
             startDate={startDate}
@@ -182,24 +182,20 @@ const SalesQuoteList = () => {
       </div>
 
       {/* 견적 목록 */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="overflow-x-auto">
-          {isLoading ? (
-            <TableStatusBox $type="loading" $message="견적서 목록을 불러오는 중입니다..." />
-          ) : isError ? (
-            <TableStatusBox
-              $type="error"
-              $message="견적서 목록을 불러오는 중 오류가 발생했습니다."
-            />
-          ) : (
-            <Table
-              columns={columns}
-              data={quotes}
-              keyExtractor={(row) => row.quotationId}
-              emptyMessage="등록된 견적서가 없습니다."
-            />
-          )}
-        </div>
+      <div className="flex flex-col flex-1 min-h-0 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        {isLoading ? (
+          <TableStatusBox $type="loading" $message="견적서 목록을 불러오는 중입니다..." />
+        ) : isError ? (
+          <TableStatusBox $type="error" $message="견적서 목록을 불러오는 중 오류가 발생했습니다." />
+        ) : (
+          <Table
+            columns={columns}
+            data={quotes}
+            keyExtractor={(row) => row.quotationId}
+            emptyMessage="등록된 견적서가 없습니다."
+            className="flex-1 min-h-0"
+          />
+        )}
 
         {/* 페이지네이션 */}
         {isError || isLoading ? null : (
@@ -211,7 +207,7 @@ const SalesQuoteList = () => {
           />
         )}
       </div>
-    </>
+    </div>
   );
 };
 

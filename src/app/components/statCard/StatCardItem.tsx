@@ -90,7 +90,7 @@ export default function StatCardItem({ stat, currentPeriodLabel }: StatCardProps
   const sparkPoints = getSparklinePoints(stat.title, stat.changeType);
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-[0_1px_4px_0_rgba(0,0,0,0.04)] p-5">
+    <div className="bg-white rounded-xl border border-gray-100 shadow-[0_1px_4px_0_rgba(0,0,0,0.04)] p-5 mb-5">
       <div className="flex items-center justify-between gap-3">
         {/* 좌측: 수치 영역 */}
         <div className="flex flex-col gap-1 min-w-0">

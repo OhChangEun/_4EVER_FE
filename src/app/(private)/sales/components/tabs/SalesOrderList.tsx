@@ -125,9 +125,9 @@ const SalesOrderList = () => {
   ];
 
   return (
-    <>
+    <div className="flex flex-col h-full gap-6">
       {/* 헤더 */}
-      <div className="border-b border-gray-200 flex justify-between items-center gap-4 py-2">
+      <div className="border-b border-gray-200 flex justify-between items-center gap-4 py-2 shrink-0">
         {/* 날짜 필터 */}
         <DateRangePicker
           startDate={startDate}
@@ -156,7 +156,7 @@ const SalesOrderList = () => {
       </div>
 
       {/* 테이블 */}
-      <div className="overflow-x-auto">
+      <div className="flex flex-col flex-1 min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden">
         {isLoading ? (
           <TableStatusBox $type="loading" $message="주문 목록을 불러오는 중입니다..." />
         ) : isError ? (
@@ -167,19 +167,20 @@ const SalesOrderList = () => {
             data={orders}
             keyExtractor={(row) => row.salesOrderId}
             emptyMessage="등록된 주문서가 없습니다."
+            className="flex-1 min-h-0"
+          />
+        )}
+        {/* 페이지네이션 */}
+        {isError || isLoading ? null : (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalElements={pageInfo?.totalElements}
+            onPageChange={(page) => setCurrentPage(page)}
           />
         )}
       </div>
-      {/* 페이지네이션 */}
-      {isError || isLoading ? null : (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalElements={pageInfo?.totalElements}
-          onPageChange={(page) => setCurrentPage(page)}
-        />
-      )}
-    </>
+    </div>
   );
 };
 

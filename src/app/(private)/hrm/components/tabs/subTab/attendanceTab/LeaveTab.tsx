@@ -34,7 +34,7 @@ export default function LeaveTab() {
 
   // --- 페이지 네이션 ---
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 8;
+  const pageSize = 10;
 
   const leaveQueryParams = useMemo(
     (): LeaveRequestParams => ({
@@ -160,8 +160,8 @@ export default function LeaveTab() {
   ];
 
   return (
-    <div className="mt-8">
-      <div className="flex items-center justify-end mb-4">
+    <div className="flex flex-col h-full gap-6">
+      <div className="flex items-center justify-end shrink-0">
         <div className="flex items-center gap-3">
           <Dropdown
             placeholder="전체 부서"
@@ -181,7 +181,7 @@ export default function LeaveTab() {
           />
         </div>
       </div>
-      <div className="overflow-x-auto">
+      <div className="flex flex-col flex-1 min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden">
         {isLoading ? (
           <TableStatusBox $type="loading" $message="휴가 목록을 불러오는 중입니다..." />
         ) : isError ? (
@@ -192,16 +192,16 @@ export default function LeaveTab() {
             data={leaveList}
             keyExtractor={(row) => row.leaveRequestId}
             emptyMessage="휴가 요청이 없습니다."
+            className="flex-1 min-h-0"
           />
         )}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={pageInfo?.totalPages ?? 1}
+          totalElements={pageInfo?.totalElements}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
       </div>
-
-      <Pagination
-        currentPage={currentPage}
-        totalPages={pageInfo?.totalPages ?? 1}
-        totalElements={pageInfo?.totalElements}
-        onPageChange={(page) => setCurrentPage(page)}
-      />
     </div>
   );
 }

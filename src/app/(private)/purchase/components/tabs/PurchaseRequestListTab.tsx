@@ -55,7 +55,7 @@ export default function PurchaseRequestListTab() {
   const [endDate, setEndDate] = useState('');
 
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 8;
+  const pageSize = 10;
 
   const queryClient = useQueryClient();
 
@@ -207,9 +207,9 @@ export default function PurchaseRequestListTab() {
   ];
 
   return (
-    <>
+    <div className="flex flex-col h-full bg-white border border-gray-200 rounded-lg overflow-hidden">
       {/* 필터 헤더 */}
-      <div className="pb-4 border-b border-gray-200 flex justify-between items-center">
+      <div className="p-4 border-b border-gray-200 flex justify-between items-center shrink-0">
         {/* <CalendarButton /> */}
         <DateRangePicker
           startDate={startDate}
@@ -245,25 +245,22 @@ export default function PurchaseRequestListTab() {
         </div>
       </div>
 
-      {/* 테이블 */}
-      <div className="overflow-x-auto">
-        {isLoading ? (
-          <TableStatusBox $type="loading" $message="구매 요청 목록을 불러오는 중입니다..." />
-        ) : isError ? (
-          <TableStatusBox
-            $type="error"
-            $message="구매 요청 목록을 불러오는 중 오류가 발생했습니다."
-          />
-        ) : (
-          <Table
-            columns={columns}
-            data={requests}
-            keyExtractor={(row) => row.purchaseRequisitionId}
-            emptyMessage="구매 요청 정보가 없습니다."
-          />
-        )}
-      </div>
-
+      {isLoading ? (
+        <TableStatusBox $type="loading" $message="구매 요청 목록을 불러오는 중입니다..." />
+      ) : isError ? (
+        <TableStatusBox
+          $type="error"
+          $message="구매 요청 목록을 불러오는 중 오류가 발생했습니다."
+        />
+      ) : (
+        <Table
+          columns={columns}
+          data={requests}
+          keyExtractor={(row) => row.purchaseRequisitionId}
+          emptyMessage="구매 요청 정보가 없습니다."
+          className="flex-1 min-h-0"
+        />
+      )}
       {isError || isLoading ? null : (
         <Pagination
           currentPage={currentPage}
@@ -272,6 +269,6 @@ export default function PurchaseRequestListTab() {
           onPageChange={(page) => setCurrentPage(page)}
         />
       )}
-    </>
+    </div>
   );
 }

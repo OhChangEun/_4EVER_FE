@@ -199,8 +199,8 @@ const InvoiceList = () => {
   ];
 
   return (
-    <>
-      <div className="flex items-center justify-between mb-6">
+    <div className="flex flex-col h-full gap-6">
+      <div className="flex items-center justify-between shrink-0">
         <div className="flex items-center space-x-2">
           <i className="ri-shopping-cart-line text-blue-600 text-lg"></i>
           <h2 className="text-lg font-semibold text-gray-900">
@@ -226,7 +226,7 @@ const InvoiceList = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="flex flex-col flex-1 min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden">
         {isLoading ? (
           <TableStatusBox $type="loading" $message="전표 목록을 불러오는 중입니다..." />
         ) : isError ? (
@@ -237,19 +237,20 @@ const InvoiceList = () => {
             data={invoices}
             keyExtractor={(row) => row.invoiceId}
             emptyMessage="등록된 전표가 없습니다."
+            className="flex-1 min-h-0"
+          />
+        )}
+        {/* 페이지네이션 */}
+        {isError || isLoading ? null : (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalElements={pageInfo?.totalElements}
+            onPageChange={(page) => setCurrentPage(page)}
           />
         )}
       </div>
-      {/* 페이지네이션 */}
-      {isError || isLoading ? null : (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalElements={pageInfo?.totalElements}
-          onPageChange={(page) => setCurrentPage(page)}
-        />
-      )}
-    </>
+    </div>
   );
 };
 

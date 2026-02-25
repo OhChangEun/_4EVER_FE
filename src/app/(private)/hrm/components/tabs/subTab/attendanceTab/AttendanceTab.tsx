@@ -54,7 +54,7 @@ export default function AttendanceTab() {
 
   // --- 페이지 네이션 ---
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 8;
+  const pageSize = 10;
 
   // --- 달력 데이터 ---
   const today = new Date().toISOString().split('T')[0];
@@ -133,8 +133,8 @@ export default function AttendanceTab() {
   ];
 
   return (
-    <div className="mt-8">
-      <div className="flex justify-between items-center mb-4">
+    <div className="flex flex-col h-full gap-6">
+      <div className="flex justify-between items-center shrink-0">
         <CalendarButton
           selectedDate={selectedDate}
           onDateChange={setSelectedDate}
@@ -170,7 +170,7 @@ export default function AttendanceTab() {
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="flex flex-col flex-1 min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden">
         {isLoading ? (
           <TableStatusBox $type="loading" $message="근태 목록을 불러오는 중입니다..." />
         ) : isError ? (
@@ -181,18 +181,18 @@ export default function AttendanceTab() {
             data={attendanceList}
             keyExtractor={(row) => row.timerecordId}
             emptyMessage="근태 기록이 없습니다."
+            className="flex-1 min-h-0"
+          />
+        )}
+        {isError || isLoading ? null : (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={pageInfo?.totalPages ?? 1}
+            totalElements={pageInfo?.totalElements}
+            onPageChange={(page) => setCurrentPage(page)}
           />
         )}
       </div>
-
-      {isError || isLoading ? null : (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={pageInfo?.totalPages ?? 1}
-          totalElements={pageInfo?.totalElements}
-          onPageChange={(page) => setCurrentPage(page)}
-        />
-      )}
     </div>
   );
 }

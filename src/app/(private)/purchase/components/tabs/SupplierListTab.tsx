@@ -47,7 +47,7 @@ export default function SupplierListTab() {
   const [keyword, setKeyword] = useState<string>('');
 
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 8;
+  const pageSize = 10;
 
   const queryParams = useMemo(
     (): SupplierListRequestParams => ({
@@ -154,8 +154,8 @@ export default function SupplierListTab() {
   ];
 
   return (
-    <>
-      <div className="flex justify-between items-center">
+    <div className="flex flex-col h-full gap-6">
+      <div className="flex justify-between items-center shrink-0">
         <h3 className="text-lg font-semibold text-gray-900">공급업체 목록</h3>
         <div className="flex items-center space-x-4">
           {/* 공급업체 카테고리 드롭다운 */}
@@ -190,24 +190,24 @@ export default function SupplierListTab() {
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="flex flex-col flex-1 min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden">
         <Table
           columns={columns}
           data={suppliers}
           keyExtractor={(row) => row.supplierInfo.supplierId}
           emptyMessage="공급업체가 없습니다."
+          className="flex-1 min-h-0"
         />
+        {/* 페이지네이션 */}
+        {isError || isLoading ? null : (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalElements={pageInfo?.totalElements}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
+        )}
       </div>
-
-      {/* 페이지네이션 */}
-      {isError || isLoading ? null : (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalElements={pageInfo?.totalElements}
-          onPageChange={(page) => setCurrentPage(page)}
-        />
-      )}
-    </>
+    </div>
   );
 }

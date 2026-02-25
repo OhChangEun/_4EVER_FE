@@ -13,6 +13,7 @@ export interface PurchaseOrderTableProps {
   handleApprove: (orderId: string) => void;
   handleReject: (orderId: string) => void;
   handleDelivery: (orderId: string) => void;
+  className?: string;
 }
 
 export default function PurchaseOrderTable({
@@ -21,6 +22,7 @@ export default function PurchaseOrderTable({
   handleApprove,
   handleReject,
   handleDelivery,
+  className,
 }: PurchaseOrderTableProps) {
   const role = useRole();
   const isSupplier = role === 'SUPPLIER_ADMIN';
@@ -99,6 +101,7 @@ export default function PurchaseOrderTable({
 
   return (
     <Table
+      className={className}
       columns={columns}
       data={currentOrders}
       keyExtractor={(row) => row.purchaseOrderId}

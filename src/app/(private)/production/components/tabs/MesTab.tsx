@@ -24,7 +24,7 @@ export default function MesTab() {
   const [selectedMesStatus, setSelectedMesStatus] = useState('');
 
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 8;
+  const pageSize = 10;
 
   const { openModal } = useModal();
   // mrp 순소요 - 견적 드롭다운

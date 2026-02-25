@@ -113,7 +113,6 @@ export default function MpsPreviewModal({ previewResults, onConfirm }: MpsPrevie
             totalPages={totalPages}
             totalElements={previewResults.length}
             onPageChange={setCurrentPage}
-            maxVisible={5}
           />
 
           <div className="flex justify-end">

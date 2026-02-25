@@ -52,7 +52,7 @@ export default function QuotationTab() {
   const [selectedQuotes, setSelectedQuotes] = useState<string[]>([]);
   // 페이지네이션 상태
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(8);
+  const [pageSize] = useState(10);
 
   // 1. 견적 리스트를 가져오는 useQuery
   const quotationListQueryParams = useMemo(
@@ -242,8 +242,8 @@ export default function QuotationTab() {
 
   // --- 렌더링 ---
   return (
-    <>
-      <div className="flex items-center justify-between">
+    <div className="flex flex-col h-full gap-6">
+      <div className="flex items-center justify-between shrink-0">
         <DateRangePicker
           startDate={startDate}
           endDate={endDate}
@@ -272,14 +272,14 @@ export default function QuotationTab() {
             />
           </div>
           <IconButton
-            label={simulationPending ? '시뮬레이션 중...' : '시뮬레이션 실행'}
+            label={simulationPending ? '시뮬레이션 중...' : '시뮬레이션'}
             icon={simulationPending ? 'ri-loader-4-line animate-spin' : 'ri-play-line'}
             onClick={handleSimulation}
             disabled={selectedQuotes.length === 0 || simulationPending}
           />
         </div>
       </div>
-      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+      <div className="flex flex-col flex-1 min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden">
         {isQuotationListLoading ? (
           <TableStatusBox $type="loading" $message="견적 목록을 불러오는 중입니다..." />
         ) : isQuotationListError ? (
@@ -290,6 +290,7 @@ export default function QuotationTab() {
             data={quotationDataList}
             keyExtractor={(row) => row.quotationId}
             emptyMessage="조회된 견적 데이터가 없습니다."
+            className="flex-1 min-h-0"
           />
         )}
         {!isQuotationListLoading && !isQuotationListError && (
@@ -301,6 +302,6 @@ export default function QuotationTab() {
           />
         )}
       </div>
-    </>
+    </div>
   );
 }

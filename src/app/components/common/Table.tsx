@@ -48,9 +48,7 @@ export default function Table<T = Record<string, unknown>>({
   };
 
   return (
-    <div
-      className={`bg-white rounded-xl border border-gray-100 overflow-hidden h-full flex flex-col ${className}`}
-    >
+    <div className={`bg-white rounded-xl  overflow-hidden h-full flex flex-col ${className}`}>
       <div className="overflow-auto flex-1 min-h-0">
         <table className="w-full">
           <thead>
